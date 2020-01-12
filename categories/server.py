@@ -29,7 +29,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         else:
             config["STATUS_LOG"] = 1
             gconfig.save_config(config)
-            await ctx.send("Logging is enabled for this server. You should setup a log channel." % ctx.prefix)
+            await ctx.send("Logging is enabled for this server. You should setup a log channel.")
 
     @commands.command(name = "log-setup")
     @commands.has_permissions(manage_guild = True)

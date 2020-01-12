@@ -4,7 +4,6 @@ from discord.ext import commands
 import traceback
 import sys
 import json
-#from Record import Record
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -50,7 +49,7 @@ class Events(commands.Cog):
         print("------------")
         await self.bot.change_presence(
             status = discord.Status.idle, 
-            activity = discord.Game(" Minecraft")
+            activity = discord.Game(" with Discord API")
         )
 
     @commands.Cog.listener()
@@ -60,16 +59,16 @@ class Events(commands.Cog):
             
         elif isinstance(message.channel, discord.DMChannel):
             RESPONSE_LIST = [
-                            "I only talk in server, sorry.",
-                            "Sorry mate, I really hate responding to DM.",
-                            "Hey my developer hasn't allowed me to say in DM.",
-                            "You may go to your server and use one of my commands.",
-                            "So many people try to DM bots, but they always fail.",
-                            "Bot is my name, DM is not my game.",
-                            "Stop raiding my DM.",
-                            "Sorry, can't respond your message here :(",
-                            "It is really impossible to expect from a bot to respond to someone's DM.",
-                            "I can't talk in DM, ask this guy -> <@472832990012243969>"
+                    "I only talk in server, sorry.",
+                    "Sorry mate, I really hate responding to DM.",
+                    "Hey my developer hasn't allowed me to say in DM.",
+                    "You may go to your server and use one of my commands.",
+                    "So many people try to DM bots, but they always fail.",
+                    "Bot is my name, DM is not my game.",
+                    "Stop raiding my DM.",
+                    "Sorry, can't respond your message here :(",
+                    "It is really impossible to expect from a bot to respond to someone's DM.",
+                    "I can't talk in DM, ask this guy -> <@472832990012243969>"
             ]
             dm_chan = message.author.dm_channel
             
@@ -77,7 +76,7 @@ class Events(commands.Cog):
             random_response = random.randint(0, len(RESPONSE_LIST) - 1)
             await dm_chan.send(RESPONSE_LIST[random_response])
         
-        #await self.bot.process_commands(message)
+        #await self.bot.process_commands(message) # uncomment this if this event is outside of a cog.
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

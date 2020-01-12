@@ -31,20 +31,39 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         You need: None.
         I need: send_messages.
         '''
+        from datetime import datetime
+
         embed = discord.Embed(
             title = self.bot.user.name, 
             description = "A utility bot.", 
-            color = discord.Color.green()
+            color = discord.Color.green(),
+            timestamp = datetime.utcnow()
         )
 
         embed.add_field(
-            name = "Team:", 
-            value = "**Owner**: Stranger.com#4843\n**Developer**: MikeJollie#1067", 
+            name  = "Team:", 
+            value = '''
+                    **Owner    :** <@462726152377860109>
+                    **Developer:** <@472832990012243969>
+                    ''', 
             inline = False
         )
         embed.add_field(
-            name = "Bot info:", 
-            value = "**Language**: Python", 
+            name  = "Bot info:", 
+            value = '''
+                    **Language :** Python
+                    **Library  :** `discord.py`, `youtube_dl`
+                    **Repo     :** [Click here](https://github.com/MikeJollie2707/Discord-Bot-Python)
+                    ''', 
+            inline = False
+        )
+        embed.add_field(
+            name = "Host Device:",
+            value = '''
+                    **Machine  :** HP-EliteDesk-800-G1-USDT
+                    **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
+                    **OS       :** Ubuntu 18.04.3
+                    ''',
             inline = False
         )
         embed.set_author(
@@ -71,7 +90,10 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             member = ctx.author
         else:
             member = user
-        embed = discord.Embed()
+
+        embed = discord.Embed(
+            color = discord.Color.green()
+        )
 
         embed.set_author(
             name = member.name, 
@@ -80,26 +102,28 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         embed.add_field(
             name = "Username:", 
-            value = member.name
+            value = member.name,
+            inline = False
         )
         embed.add_field(
             name = "Nickname:", 
-            value = member.nick
+            value = member.nick if member.nick != None else member.name,
+            inline = False
         )
         embed.add_field(
             name = "Avatar URL:", 
-            value = "[Click here](%s)" % member.avatar_url
+            value = "[Click here](%s)" % member.avatar_url,
+            inline = False
         )
 
         embed.set_thumbnail(url = member.avatar_url)
 
-        roleList = member.roles
-        roles = ""
-        for index in range(len(roleList) - 1, 0, -1): # The roles are ordered from bottom to top, so roleList[0] is @everyone.
-            roles = roles + "<@&%s>" % str(roleList[index].id)
-            if index > 1:
-                roles += "- "
-        embed.add_field(name = "Roles:", value = roles)
+        role_list = ["<@&%d>" % role.id for role in member.roles[::-1]]
+        role_list[-1] = "@everyone"
+        s = " - "
+        s = s.join(role_list)
+
+        embed.add_field(name = "Roles:", value = s)
 
         await ctx.send(embed = embed)
 

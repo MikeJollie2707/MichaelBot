@@ -1,7 +1,7 @@
 # MichaelBotPy
 MichaelBotPy is a bot written in Python using `discord py`.
 
-The repository is meant to be private.
+The repository is meant to be private. This is not an open-source project.
 
 - To run the bot, run the file `DiscordBot.py`.
 

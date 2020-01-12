@@ -49,16 +49,14 @@ class Logging(commands.Cog):
         config = gconfig.get_config(guild.id)
         if config["ERROR"] == 0 and config["STATUS_LOG"] == 1 and config["LOG_CHANNEL"] != 0:
             return True
-        #elif config["ERROR"] != 0:
-        #    print("File not found.")
-        #    return False
-        #elif config["STATUS_LOG"] == 0:
-        #    print("Logging not enabled.")
-        #    return False
-        #else:
-        #    print("Log channel not set.")
-        #    return False
+        elif config["ERROR"] != 0:
+            print("File not found.")
+            return False
+        elif config["STATUS_LOG"] == 0:
+            print("Logging not enabled.")
+            return False
         else:
+            print("Log channel not set.")
             return False
 
     def role_dpyperms_to_dperms(self, role_permissions : str):
@@ -182,7 +180,7 @@ class Logging(commands.Cog):
 
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
                 executor_id = entry.user.id
-                log_time = datetime.datetime.utcnow() # Audit log doesn't log message that the author delete himself.
+                log_time = datetime.utcnow() # Audit log doesn't log message that the author delete himself.
 
                 log_content = '''
                                 Content: %s

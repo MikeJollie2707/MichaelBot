@@ -1,5 +1,3 @@
-# This application use the convenience of discord.ext.
-
 import discord
 from discord.ext import commands
 
@@ -8,14 +6,14 @@ import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
-TOKEN = os.getenv("token")
-prefix = os.getenv("prefix")
+TOKEN = os.getenv("token2")
+prefix = os.getenv("prefix2")
 
 bot = commands.Bot(command_prefix = commands.when_mentioned_or(prefix))
 
 try:
     if __name__ == "__main__":
-        for filename in os.listdir('./categories'):
+        for filename in sorted(os.listdir('./categories')):
             if filename.endswith('.py'):
                 bot.load_extension(f'categories.{filename[:-3]}')
 except commands.ExtensionNotFound as enf:
