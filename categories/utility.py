@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
+
 import asyncio
+import random
 
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
@@ -16,7 +18,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
 
         latency = self.bot.latency
@@ -31,12 +33,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
-        import random
+
         await ctx.send("It's %d :game_die:" % (random.randint(1, 6)))
 
-    @commands.command(enabled = False)
+    @commands.command(enabled = False, hidden = True)
     async def poll(self, ctx, title, *choices):
         '''
         Make a poll for you.
@@ -54,7 +56,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name} MikeJollie is gay.
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
         await ctx.message.delete()
         await ctx.send(content)
@@ -67,7 +69,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name} MikeJollie is gay
 
         You need: None.
-        I need: send_tts_messages.
+        I need: `Send TTS Messages`.
         '''
         await ctx.message.delete()
         await ctx.send(content, tts = True)
@@ -83,7 +85,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 3:** {prefix}{command_name} sqrt(25)
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
 
         from categories.utilityfun.calc import calculate
@@ -106,7 +108,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: read_message_history, manage_messages, send_messages.
+        I need: `Read Message History`, `Manage Messages`, `Send Messages`.
         '''
 
         await ctx.message.delete()
@@ -189,10 +191,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} "iPhone 11"
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
         
-        import random
         percent_gay = random.randint(0, 100)
         await ctx.send(target + " is `" + str(percent_gay) + "%` gay.")
 
@@ -207,10 +208,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} "stupidly dumb" "Nightmare monsters"
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
 
-        import random
         percent_thing = random.randint(0, 100)
         await ctx.send(target + " is `" + str(percent_thing) + "%` " + measure_unit + ".")
 
@@ -225,7 +225,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} 400983101507108876 All of you are gay.
 
         You need: None.
-        I need: send_messages at <destination>.
+        I need: `Send Messages` at <destination>.
         '''
         target = self.bot.get_user(id)
         if target == None:

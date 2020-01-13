@@ -25,11 +25,10 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Information about the bot.
         **Usage:** <prefix>**{command_name}**
-        **Cooldown:** None.
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
         from datetime import datetime
 
@@ -53,7 +52,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             value = '''
                     **Language :** Python
                     **Library  :** `discord.py`, `youtube_dl`
-                    **Repo     :** [Click here](https://github.com/MikeJollie2707/Discord-Bot-Python)
+                    **Repo     :** [Click here](https://github.com/MikeJollie2707/MichaelBotPy)
                     ''', 
             inline = False
         )
@@ -83,7 +82,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
 
         if user == None:
@@ -135,7 +134,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
         guild = ctx.guild
         embed = discord.Embed(
@@ -202,8 +201,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} %
         
-        You need: manage_guild.
-        I need: send_messages.
+        You need: `Manage Server`.
+        I need: `Send Messages`.
         '''
 
         if pref == None:
@@ -214,6 +213,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             # Save the prefix
             import os
             os.environ["token2"] = pref
+
     @commands.command()
     async def note(self, ctx):
         '''
@@ -222,7 +222,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
 
         embed = discord.Embed(
@@ -296,7 +296,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} suggest This command should be improved.
 
         You need: None.
-        I need: send_messages.
+        I need: `Send Messages`.
         '''
         report_chan = 644339079164723201
         channel = ctx.bot.get_channel(report_chan)
@@ -332,7 +332,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         You need: None.
-        I need: send_messages.
+        I need: `Add Reactions`, `Send Messages`.
         '''
         channel_id = 644393721512722432
         channel = self.bot.get_channel(channel_id)
@@ -359,7 +359,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 3:** {prefix}{command_name} Core
                        
         You need: None.
-        I need: send_messages.
+        I need: `Add Reactions`, `Send Messages`.
         '''
 
         help_command = SmallHelp(ctx)
