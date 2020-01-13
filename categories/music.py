@@ -220,7 +220,7 @@ class Music (commands.Cog):
         """
         Connect to a voice channel.
         Alias: `join`
-        **Usage:** <prefix>{command_name} [ID/mention/name of the voice channel]
+        **Usage:** <prefix>**{command_name}** [ID/mention/name of the voice channel]
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} discord-got-talents
 

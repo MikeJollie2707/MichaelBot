@@ -18,7 +18,7 @@ class Cog(commands.Cog):
     Description
     Aliases: alias
     Note: note
-    **Usage:** <prefix>{command_name}
+    **Usage:** <prefix>**{command_name}**
     **Example:** {prefix}{command_name}
 
     You need: `perm`.

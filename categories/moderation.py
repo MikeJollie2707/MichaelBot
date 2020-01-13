@@ -14,14 +14,14 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def kick(self, ctx, member : discord.Member, *, reason = None):
         '''
         Kick a member.
-        **Usage:** <prefix>**kick** <name/ID/nickname/mention> [reason]
+        **Usage:** <prefix>**{command_name}** <name/ID/nickname/mention> [reason]
         **Cooldown:** 5 seconds after 2 uses (guild cooldown).
-        **Example 1:** {0}kick MikeJollie Dumb
-        **Example 2:** {0}kick @MikeJollie Still dumb
-        **Example 3:** {0}kick 472832990012243969
+        **Example 1:** {prefix}{command_name} MikeJollie Dumb
+        **Example 2:** {prefix}{command_name} @MikeJollie Still dumb
+        **Example 3:** {prefix}{command_name} 472832990012243969
 
-        You need: kick_members.
-        I need: kick_members, send_messages.
+        You need: `Kick Members`.
+        I need: `Kick Members`, `Send Messages`.
         '''
 
         guild = ctx.author.guild
