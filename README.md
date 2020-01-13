@@ -15,3 +15,10 @@ This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/Michae
 ## Contributing
 - Don't push to `master`. Only I can do that.
 - Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
+
+## TODO
+- Fix help `music.py`
+- Fix add reaction problem in `core.py`
+- Fix permission in `server.py`
+- Fix some permissions in `utility.py`
+- Fix major error handlers in `moderation.py`
