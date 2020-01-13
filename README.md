@@ -9,9 +9,9 @@ Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 - Do not alter `data` without reasonable reason to do so.
 
-# LICENSE
+## LICENSE
 This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/LICENSE).
 
-# Contributing
+## Contributing
 - Don't push to `master`. Only I can do that.
 - Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
