@@ -1,6 +1,8 @@
 # MichaelBotPy
 MichaelBotPy is a bot written in Python using `discord py`.
 
+Join the [support server](https://discord.gg/jeMeyNw) to get help.
+
 - To run the bot, run the file `DiscordBot.py`.
 
 - To edit categories, look into `categories` folder.
@@ -8,4 +10,8 @@ MichaelBotPy is a bot written in Python using `discord py`.
 - Do not alter `data` without reasonable reason to do so.
 
 # LICENSE
-This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/LICENSE)
+This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/LICENSE).
+
+# Contributing
+- Don't push to `master`. Only I can do that.
+- Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
