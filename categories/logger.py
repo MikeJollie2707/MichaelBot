@@ -180,7 +180,7 @@ class Logging(commands.Cog):
 
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
                 executor_id = entry.user.id
-                log_time = datetime.utcnow() # Audit log doesn't log message that the author delete himself.
+                log_time = datetime.datetime.utcnow() # Audit log doesn't log message that the author delete himself.
 
                 log_content = '''
                                 Content: %s
@@ -1365,10 +1365,6 @@ class Logging(commands.Cog):
 
                         except StopIteration:
                             break
-
-    @commands.Cog.listener()
-    async def on_command_error(self, error):
-        pass
 
 
 def setup(bot):
