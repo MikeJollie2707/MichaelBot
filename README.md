@@ -19,7 +19,7 @@ This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/Michae
 ## TODO
 
 - Fix help `music.py`
-- Consider to use Lavalink instead of FFMPEG
+- Consider to use Wavelink instead of FFMPEG
 - Fix add reaction problem in `core.py`
 - Fix permission in `server.py`
 - Fix some permissions in `utility.py`
