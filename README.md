@@ -2,6 +2,8 @@
 
 MichaelBotPy is a bot written in Python using [discord py](https://github.com/Rapptz/discord.py).
 
+The reason why this bot exist is because...I'm free, and I like to make one.
+
 Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 ## Features
