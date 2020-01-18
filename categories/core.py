@@ -51,7 +51,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             name  = "Bot info:", 
             value = '''
                     **Language :** Python
-                    **Library  :** `discord.py`, `youtube_dl`, `wavelink.py`.
+                    **Library  :** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
                     **Repo     :** [Click here](https://github.com/MikeJollie2707/MichaelBotPy)
                     ''', 
             inline = False
