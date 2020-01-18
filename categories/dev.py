@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+import asyncio
+
 # Commands for developers to test things and stuffs.
 
 
@@ -72,6 +74,39 @@ class Dev(commands.Cog):
         fout.write("\n\n")
         fout.close()
         await ctx.send("Journal recorded.")
+
+    @commands.command(hidden = True)
+    @commands.check(is_dev)
+    @commands.cooldown(1, 120.0, commands.BucketType.default)
+    async def create_changelog(self, ctx):
+        try:
+            length = 0
+
+            await ctx.send("Input version")
+            msg = self.bot.wait_for("message", timeout = 60.0)
+            version = "**__%s__**" % msg
+            length += len(msg.content)
+
+            await ctx.send("Any bug fixes (type NO to skip)")
+            msg = self.bot.wait_for("message", timeout = 60.0)
+            if msg.content.upper() == "NO":
+                bugs = ""
+            else:
+                bugs = "**Bug Fixes:**\n" + msg.content
+            length += len(bugs)
+
+            if length > 2000:
+                await ctx.send("Content exceeded 2000 characters.")
+                return
+            
+            await ctx.send("Any changes (type NO to skip)")
+            msg = self.bot.wait_for("message", timeout = 60.0)
+            
+
+
+
+        except asyncio.TimeoutError:
+            pass
 
 
 def setup(bot):
