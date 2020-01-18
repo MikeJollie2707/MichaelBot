@@ -42,7 +42,7 @@ Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 ![music](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/music.png)
 
-  - Support playlist
+- Support playlist
 
   ![playlist](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/playlist.png)
 
