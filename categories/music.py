@@ -685,6 +685,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         If there are more than one person in the voice channel, a poll will be created.
         The admin/DJ reaction will cancel the vote and in favor of that person.
 
+        **Aliases:** `dc`, `disconnect`
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
