@@ -35,7 +35,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         except discord.Forbidden as f:
             await ctx.send("I cannot kick someone that's higher than me!")
         else:
-            await ctx.send("**User** `%s` has been kicked from %s**" % (victim_name, guild.name))
+            await ctx.send("**User** `%s` has been kicked from **%s**" % (victim_name, guild.name))
             await ctx.send("**Reason:** `%s`" % reason)
     @kick.error
     async def kick_error(self, ctx, error):
