@@ -17,7 +17,6 @@ def cog_help_format(cog):
 
 def command_help_format(ctx, command):
     content = discord.Embed(color = discord.Color.green())
-    print(command.name)
     content.add_field(name = command.name, value = command.help.format(prefix = ctx.prefix, command_name = command.name))
 
     return content
