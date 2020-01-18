@@ -2,6 +2,8 @@
 
 __pycache__/
 .vscode/
+./categories/__pycache__
+./categories/templates/__pycache__
 
 experiment.py
 diary.txt
