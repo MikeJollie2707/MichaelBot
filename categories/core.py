@@ -51,7 +51,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             name  = "Bot info:", 
             value = '''
                     **Language :** Python
-                    **Library  :** `discord.py`, `youtube_dl`
+                    **Library  :** `discord.py`, `youtube_dl`, `wavelink.py`.
                     **Repo     :** [Click here](https://github.com/MikeJollie2707/MichaelBotPy)
                     ''', 
             inline = False
@@ -325,6 +325,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
 
     @commands.command()
+    @commands.has_permissions(add_reactions = True)
     async def changelog(self, ctx):
         '''
         Show the latest 10 changes of the bot.
@@ -349,6 +350,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await paginator.event(self.bot, ctx.channel, False, ctx.author)
 
     @commands.command()
+    @commands.has_permissions(add_reactions = True)
     async def help(self, ctx, categoryOrcommand = ""):
         '''
         Show compact help about the bot, a command, or a category.
