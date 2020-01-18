@@ -4,6 +4,14 @@ MichaelBotPy is a bot written in Python using [discord py](https://github.com/Ra
 
 Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
+## Features
+
+- Play music
+- Fun commands
+- Moderation commands
+
+## Development notes
+
 - To run the bot, run the file `DiscordBot.py`.
 - To edit categories, look into `categories` folder.
 - Do not alter `data` without reasonable reason to do so.
@@ -19,8 +27,6 @@ This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/Michae
 ## TODO
 
 - Fix help `music.py`
-- Consider to use Wavelink instead of FFMPEG
-- Fix add reaction problem in `core.py`
 - Fix permission in `server.py`
 - Fix some permissions in `utility.py`
 - Fix major error handlers in `moderation.py`
