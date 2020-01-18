@@ -1,7 +1,6 @@
 *.env
 
 __pycache__/
-.vscode/
 ./categories/__pycache__
 ./categories/templates/__pycache__
 
