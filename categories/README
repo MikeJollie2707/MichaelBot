@@ -17,13 +17,26 @@ class Cog(commands.Cog):
     async def command(self, ctx):
     '''
     Description
-    Aliases: alias
-    Note: note
-    **Usage:** <prefix>**{command_name}**
-    **Example:** {prefix}{command_name}
-
-    You need: `perm`.
-    I need: `perm`.
+    Notes
+    Aliases
+    ----------
+        # Aliases here
+    Cooldown
+    ----------
+        # Cooldown here
+    Usage
+    ----------
+        # Usage here
+    Parameters
+    ----------
+        # Param explain here
+    Examples
+    ----------
+        # Examples here
+    Permissions
+    ----------
+        You:
+        Bot:
     '''
     # Implementation here
 
