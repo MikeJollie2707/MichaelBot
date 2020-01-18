@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from datetime import datetime
+
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.menu import Menu
 from categories.templates.navigate import Pages
@@ -24,13 +26,13 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def info(self, ctx):
         '''
         Information about the bot.
+
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
-        from datetime import datetime
 
         embed = discord.Embed(
             title = self.bot.user.name, 
@@ -77,12 +79,13 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def profile(self, ctx, user: discord.Member = None):
         '''
         Information about yourself or another __member__.
+
         **Usage:** <prefix>**{command_name}** [ID/mention/name/nickname]
         **Example 1:** {prefix}{command_name} MikeJollie
         **Example 2:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
 
         if user == None:
@@ -126,15 +129,17 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         await ctx.send(embed = embed)
 
-    @commands.command()
+    @commands.command(aliases = ["server-info"])
     async def serverinfo(self, ctx):
         '''
         Information about the server that invoke this command.
+
+        **Aliases:** `server-info`
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
         guild = ctx.guild
         embed = discord.Embed(
@@ -196,13 +201,14 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def prefix(self, ctx, pref : str = None):
         '''
         View and set the prefix for the bot.
+
         **Usage:** <prefix>**{command_name}** [new prefix]
-        **Cooldown:** 5 seconds (global cooldown).
+        **Cooldown:** 5 seconds per 1 use (global).
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} %
         
-        You need: `Manage Server`.
-        I need: `Send Messages`.
+        **You need:** `Manage Server`.
+        **I need:** `Send Messages`.
         '''
 
         if pref == None:
@@ -218,11 +224,12 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def note(self, ctx):
         '''
         Provide syntax convention in `help` and `help-all`.
+
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
 
         embed = discord.Embed(
@@ -257,9 +264,9 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             name =     "**Cooldown**", 
             value = '''
                         + Optional, tells you the command's interval.
-                        + If it says (guild cooldown), it means the command is not available for the entire server in that interval.
-                        + If it says (user cooldown), it means the command is not available for the user invoked in that interval.
-                        + If it says (global cooldown), it means the command is not available for anywhere that use the bot.
+                        + If it says (guild), it means the command is not available for the entire server in that interval.
+                        + If it says (user), it means the command is not available for the user invoked in that interval.
+                        + If it says (global), it means the command is not available for anywhere that use the bot.
                     ''',
             inline = False
         )
@@ -285,18 +292,19 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(embed = embed)
 
     @commands.command()
-    @commands.cooldown(1, 3.0, commands.BucketType.default)
+    @commands.cooldown(1, 30.0, commands.BucketType.user)
     async def report(self, ctx, *, content : str):
         '''
         Report a bug or suggest a feature for the bot.
-        Note: Provide constructive reports and suggestions are appreciated.
+        Provide constructive reports and suggestions are appreciated.
+
         **Usage:** <prefix>**{command_name}** <report/suggest> <content>
-        **Cooldown:** 3 seconds (global cooldown).
+        **Cooldown:** 30 seconds per use (user).
         **Example 1:** {prefix}{command_name} report This command has a bug.
         **Example 2:** {prefix}{command_name} suggest This command should be improved.
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
         report_chan = 644339079164723201
         channel = ctx.bot.get_channel(report_chan)
@@ -329,11 +337,12 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def changelog(self, ctx):
         '''
         Show the latest 10 changes of the bot.
+
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Add Reactions`, `Send Messages`.
+        **You need:** None.
+        **I need:** `Add Reactions`, `Send Messages`.
         '''
         channel_id = 644393721512722432
         channel = self.bot.get_channel(channel_id)
@@ -355,13 +364,14 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Show compact help about the bot, a command, or a category.
         Note: command name and category name is case sensitive; Core is different from core.
+
         **Usage:** <prefix>**{command_name}** [command/category]
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} info
         **Example 3:** {prefix}{command_name} Core
                        
-        You need: None.
-        I need: `Add Reactions`, `Send Messages`.
+        **You need:** None.
+        **I need:** `Add Reactions`, `Send Messages`.
         '''
 
         help_command = SmallHelp(ctx)

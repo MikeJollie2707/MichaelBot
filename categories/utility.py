@@ -14,11 +14,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def ping(self, ctx):
         '''
         Show the latency of the bot.
+
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
 
         latency = self.bot.latency
@@ -29,11 +30,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def dice(self, ctx):
         '''
         Roll a dice for you.
+
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
 
         await ctx.send("It's %d :game_die:" % (random.randint(1, 6)))
@@ -43,8 +45,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Make a poll for you.
         Note: the number of options must greater than 1.
+
         **Usage:** <prefix>**{command_name}** <title> <choice 1 / choice 2 / choice n>
         **Example:** {prefix}{command_name} "What's the most awesome bot in Discord?" MichaelBotPy MikeJollie
+
+        **You need:** None.
+        **I need:** `Add Reactions`, `Send Messages`.
         '''
         await ctx.send("Randomly")
 
@@ -52,11 +58,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def say(self, ctx, *, content: str):
         '''
         Repeat what you say.
-        **Usage:** <prefix>**{command_name}** <message (can contain spaces)>
+
+        **Usage:** <prefix>**{command_name}** <message>
         **Example:** {prefix}{command_name} MikeJollie is gay.
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Manage Messages`, `Send Messages`.
         '''
         await ctx.message.delete()
         await ctx.send(content)
@@ -65,11 +72,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def speak(self, ctx, *, content: str):
         '''
         Make the bot speak!
-        **Usage:** <prefix>**{command_name}** <message (can contain spaces)>
+
+        **Usage:** <prefix>**{command_name}** <message>
         **Example:** {prefix}{command_name} MikeJollie is gay
 
-        You need: None.
-        I need: `Send TTS Messages`.
+        **You need:** None.
+        **I need:** `Manage Messages`, `Send TTS Messages`, `Send Messages`.
         '''
         await ctx.message.delete()
         await ctx.send(content, tts = True)
@@ -79,13 +87,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         A mini calculator that calculate almost everything.
         Note: This command is still in testing. Trignometry functions return radian.
+
         **Usage:** <prefix>**{command_name}** <expression>
         **Example 1:** {prefix}{command_name} 1+2
         **Example 2:** {prefix}{command_name} 5*(2 + 3)
         **Example 3:** {prefix}{command_name} sqrt(25)
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
 
         from categories.utilityfun.calc import calculate
@@ -103,12 +112,13 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Send an embed message.
         Note: You'll respond to 3 questions to set the embed you want.
+
         **Usage:** <prefix>**{command_name}**
-        **Cooldown:** 5 seconds (user cooldown).
+        **Cooldown:** 5 seconds per use (user)
         **Example:** {prefix}{command_name}
 
-        You need: None.
-        I need: `Read Message History`, `Manage Messages`, `Send Messages`.
+        **You need:** None.
+        **I need:** `Read Message History`, `Manage Messages`, `Send Messages`.
         '''
 
         await ctx.message.delete()
@@ -185,13 +195,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def howgay(self, ctx, *, target: str):
         '''
         An ultimate measurement of gayness.
+
         **Usage:** <prefix>**{command_name}** <anything you want to measure>
-        **Cooldown:** 10 seconds after 5 uses (user cooldown).
+        **Cooldown:** 10 seconds per 5 uses (user)
         **Example 1:** {prefix}{command_name} MikeJollie
         **Example 2:** {prefix}{command_name} "iPhone 11"
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
         
         percent_gay = random.randint(0, 100)
@@ -202,13 +213,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def how(self, ctx, measure_unit : str, *, target : str):
         '''
         An ultimate measurement to measure everything except gayness.
+
         **Usage:** <prefix>**{command_name}** <something to use to rate> <something to rate>
-        **Cooldown:** 10 seconds after 5 uses (user cooldown).
+        **Cooldown:** 10 seconds per 5 uses (user)
         **Example 1:** {prefix}{command_name} smart Stranger.com
         **Example 2:** {prefix}{command_name} "stupidly dumb" "Nightmare monsters"
 
-        You need: None.
-        I need: `Send Messages`.
+        **You need:** None.
+        **I need:** `Send Messages`.
         '''
 
         percent_thing = random.randint(0, 100)
@@ -219,12 +231,13 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def send(self, ctx, id : int, *, msg : str):
         '''
         Send a message to either a channel or a user that the bot can see.
+
         **Usage:** <prefix>**{command_name}** <user ID / channel ID> <content>
-        **Cooldown:** 120 seconds (user cooldown)
+        **Cooldown:** 120 seconds per use (user)
         **Example 1:** {prefix}{command_name} 577663051722129427 Gay.
         **Example 2:** {prefix}{command_name} 400983101507108876 All of you are gay.
 
-        You need: None.
+        **You need:** None.
         I need: `Send Messages` at <destination>.
         '''
         target = self.bot.get_user(id)

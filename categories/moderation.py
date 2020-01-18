@@ -14,14 +14,15 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def kick(self, ctx, member : discord.Member, *, reason = None):
         '''
         Kick a member.
+
         **Usage:** <prefix>**{command_name}** <name/ID/nickname/mention> [reason]
-        **Cooldown:** 5 seconds after 2 uses (guild cooldown).
+        **Cooldown:** 5 seconds per 2 uses (guild).
         **Example 1:** {prefix}{command_name} MikeJollie Dumb
-        **Example 2:** {prefix}{command_name} @MikeJollie Still dumb
+        **Example 2:** {prefix}{command_name} <@472832990012243969> Still dumb
         **Example 3:** {prefix}{command_name} 472832990012243969
 
-        You need: `Kick Members`.
-        I need: `Kick Members`, `Send Messages`.
+        **You need:** `Kick Members`.
+        **I need:** `Kick Members`, `Send Messages`.
         '''
 
         guild = ctx.author.guild
@@ -48,13 +49,14 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def ban(self, ctx, user : discord.Member, *, reason = None):
         '''
         Ban a member __in__ the server.
+
         **Usage:** <prefix>**{command_name}** <name/ID/nickname/mention> [reason]
-        **Cooldown:** 5 seconds after 2 uses (guild cooldown).
+        **Cooldown:** 5 seconds per 2 uses (guild).
         **Example 1:** {prefix}{command_name} MikeJollie Spam too much
         **Example 2:** {prefix}{command_name} @MikeJollie Stop spamming!
         
-        You need: `Ban Members`.
-        I need: `Ban Members`, `Send Messages`.
+        **You need:** `Ban Members`.
+        **I need:** `Ban Members`, `Send Messages`.
         '''
 
         guild = ctx.author.guild
@@ -80,12 +82,13 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def hackban(self, ctx, id : int, *, reason = None):
         '''
         Ban a user __outside__ the server.
+
         **Usage:** <prefix>**{command_name}** <ID> [reason]
-        **Cooldown:** 5 seconds after 2 uses (guild cooldown).
+        **Cooldown:** 5 seconds per 2 uses (guild).
         **Example:** {prefix}{command_name} 472832990012243969 Develope a bot
 
-        You need: `Ban Members`.
-        I need: `Ban Members`, `Send Messages`.
+        **You need:** `Ban Members`.
+        **I need:** `Ban Members`, `Send Messages`.
         '''
         guild = ctx.author.guild
         await guild.ban(discord.Object(id = id), reason = reason)
@@ -99,12 +102,13 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def unban(self, ctx, id : int, *, reason = None):
         '''
         Unban a user.
+
         **Usage:** <prefix>**{command_name}** <ID> [reason]
-        **Cooldown:** 5 seconds after 2 uses (guild cooldown).
+        **Cooldown:** 5 seconds per 2 uses (guild).
         **Example:** {prefix}{command_name} 472832990012243969 You've redeemed your goodness.
 
-        You need: ban_members.
-        I need: ban_members, send_messages.
+        **You need:** `Ban Members`.
+        **I need:** `Ban Members`, `Send Messages`.
         '''
         guild = ctx.author.guild
         await guild.unban(discord.Object(id = id), reason = reason)

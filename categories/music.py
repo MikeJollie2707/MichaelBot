@@ -405,21 +405,15 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def connect(self, ctx, *, channel : discord.VoiceChannel = None):
         '''
         Connect to a voice channel.
-        ----------
-        Aliases: `join`
-        ----------
-        Usage: <prefix>{command_name} [channel]
-        ----------
-        Parameters:
-        - `channel`: the ID or the mention or the name of the voice channel you want the bot to join. If this is not specified, the bot will try to connect to your current voice channel.
-        ----------
-        Examples:
-            `{prefix}{command_name}`
-            `{prefix}{command_name} discord-got-talents`
-        ----------
-        Permissions:
-            You: None.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+        If the channel is not specified, the bot will try to connect to your current voice channel.
+
+        **Aliases:** `join`
+        **Usage:** <prefix>**{command_name}** [ID/mention/name of voice channel]
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} discord-got-talents
+
+        **You need:** None.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         try:
             await ctx.message.delete()
@@ -450,26 +444,15 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def play(self, ctx, *, query : str):
         '''
-        Queue a song or playlist for playback.
-        Cooldown
-        ----------
-            2 seconds per 1 use (user).
-        Usage
-        ----------
-            <prefix>{command_name} <query>
-        Parameters
-        ------------
-            query: the video name or video URL.
-                The query to search for a song. This could be a simple search term or a valid URL.
-                e.g Youtube URL or Spotify Playlist URL.
-        Example
-        ----------
-            {prefix}{command_name} You've been gnomed
-            {prefix}{command_name} https://www.youtube.com/watch?v=md7dK5-qvHc
-        Permissions
-        ----------
-            You: None.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+        Play a song.
+
+        **Usage:** <prefix>**{command_name}** <video name/url>
+        **Cooldown:** 2 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name} You've been gnomed
+        **Example 2:** {prefix}{command_name} https://www.youtube.com/watch?v=md7dK5-qvHc
+
+        **You need:** None.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         await ctx.trigger_typing()
 
@@ -534,22 +517,13 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def now_playing(self, ctx):
         '''
         Indicate what song is playing.
-        Aliases
-        ---------
-            `np`
-        Cooldown
-        ----------
-            15 seconds per 2 uses (user).
-        Usage
-        ----------
-            <prefix>{command_name}
-        Example
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 15 seconds per 2 uses (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
         if not player:
@@ -569,16 +543,12 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         Pause the currently playing song.
         If there are more than one person in the voice channel, a poll will be created.
         The admin/DJ reaction will cancel the vote and in favor of that person.
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None (vote required) OR `Manage Server`.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None (vote required) or `Manage Server`.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
         if not player:
@@ -616,19 +586,15 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     @commands.command()
     async def resume(self, ctx):
         '''
-        Resume a currently paused song.
+        Resume the currently paused song.
         If there are more than one person in the voice channel, a poll will be created.
         The admin/DJ reaction will cancel the vote and in favor of that person.
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None (vote required) OR `Manage Server`.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None (vote required) or `Manage Server`.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 
@@ -664,18 +630,14 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def skip(self, ctx):
         '''
         Skip the current song.
-        If there's more than one person in the voice channel, a poll will be created.
+        If there are more than one person in the voice channel, a poll will be created.
         The admin/DJ reaction will cancel the vote and in favor of that person.
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None (vote required) OR `Manage Server`.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None (vote required) or `Manage Server`.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 
@@ -722,20 +684,12 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         Stop the player, disconnect and clear the queue.
         If there are more than one person in the voice channel, a poll will be created.
         The admin/DJ reaction will cancel the vote and in favor of that person.
-        Aliases
-        ----------
-            `dc`
-            `disconnect`
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None (vote required) OR `Manage Server`.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`,
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None (vote required) or `Manage Server`.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 
@@ -771,25 +725,14 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def volume(self, ctx, *, value: int):
         '''
         Change the player volume.
-        Aliases
-        ---------
-            `vol`
-        Cooldown
-        ----------
-            2 seconds per 1 use (server).
-        Usage
-        ----------
-            <prefix>{command_name} <value>
-        Parameters
-        ------------
-            value: The volume level you would like to set. Range: 1 - 1000.
-        Examples
-        ----------
-            {prefix}{command_name} 1000
-        Permissions
-        ----------
-            You: None.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+        
+        **Aliases:** `vol`
+        **Usage:** <prefix>**{command_name}** <1-1000>
+        **Cooldown:** 2 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name} 100
+
+        **You need:** None.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 
@@ -832,19 +775,13 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def queue(self, ctx):
         '''
         Retrieve a list of currently queued songs.
-        Cooldown
-        ----------
-            10 seconds per 1 use (user).
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+        
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 10 seconds per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls=Player)
 
@@ -878,19 +815,12 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         Shuffle the current queue.
         If there are more than one person in the voice channel, a poll will be created.
         The admin/DJ reaction will cancel the vote and in favor of that person.
-        Aliases
-        ---------
-            `mix`
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None (vote required) OR `Manage Server`.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None (vote required) or `Manage Server`.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 
@@ -933,16 +863,12 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def repeat(self, ctx):
         '''
         Repeat the currently playing song.
-        Usage
-        ----------
-            <prefix>{command_name}
-        Examples
-        ----------
-            {prefix}{command_name}
-        Permissions
-        ----------
-            You: None.
-            Bot: `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
+        
+        **Usage:** <prefix>{command_name}
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Connect`, `Speak`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 

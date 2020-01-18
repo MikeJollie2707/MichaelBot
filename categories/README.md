@@ -19,25 +19,14 @@ class Cog(commands.Cog):
     '''
     Description
     Notes
-    Aliases
-    ----------
-        # Aliases here
-    Cooldown
-    ----------
-        # Cooldown here
-    Usage
-    ----------
-        # Usage here
-    Parameters
-    ----------
-        # Param explain here
-    Examples
-    ----------
-        # Examples here
-    Permissions
-    ----------
-        You:
-        Bot:
+    
+    **Aliases:** `alias`, `aliases`.
+    **Usage:** <prefix>{command_name} <param>
+    **Cooldown:**
+    **Examples:** {prefix}{command_name}
+
+    **You need:**
+    **I need:**
     '''
     # Implementation here
 
