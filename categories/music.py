@@ -45,7 +45,7 @@ class Player(wavelink.Player):
         self.queue = asyncio.Queue()
         self.next_event = asyncio.Event()
 
-        self.volume = 40
+        self.volume = 100
         self.dj = None
         self.controller_message = None
         self.reaction_task = None
@@ -167,7 +167,7 @@ class Player(wavelink.Player):
         )
         embed.add_field(
             name = "Volume", 
-            value = "**%d%**" % self.volume
+            value = "**%d**" % self.volume
         )
 
         if len(self.entries) > 0:
@@ -762,7 +762,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.set_volume(value)
         embed = discord.Embed(
             title = "Message",
-            description = "Set the volume to **%d**%" % value,
+            description = "Set the volume to **%d**." % value,
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
         )
