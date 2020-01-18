@@ -17,6 +17,7 @@ def cog_help_format(cog):
 
 def command_help_format(ctx, command):
     content = discord.Embed(color = discord.Color.green())
+    print(command.name)
     content.add_field(name = command.name, value = command.help.format(prefix = ctx.prefix, command_name = command.name))
 
     return content
@@ -103,12 +104,16 @@ class SmallHelp():
     async def send_cog_help(self, cog):
         paginate = Pages()
         for command in cog.get_commands():
+            if command.hidden:
+                continue
             page = command_help_format(self.ctx, command)
             paginate.add_page(page)
         
         await paginate.event(self.ctx.bot, self.ctx.channel)
     
     async def send_command_help(self, command):
+        if command.hidden:
+            return
         await self.ctx.send(embed = command_help_format(self.ctx, command))
 
         
