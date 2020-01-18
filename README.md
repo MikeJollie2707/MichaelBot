@@ -68,7 +68,7 @@ This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/Michae
 
 ## TODO
 
-[x] Fix help `music.py`
-[ ] Fix permission in `server.py`
-[ ] Fix some permissions in `utility.py`
-[ ] Fix major error handlers in `moderation.py`
+- [x] Fix help `music.py`
+- [ ] Fix permission in `server.py`
+- [ ] Fix some permissions in `utility.py`
+- [ ] Fix major error handlers in `moderation.py`
