@@ -52,6 +52,12 @@ Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 ![bug](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/bug.png)  
 
+## Limitations
+
+- Not bug-free ie. a lot of bugs.
+- No support for multi-server yet.
+- Uptime not 24/7.
+
 ## Development notes
 
 - To run the bot, run the file `DiscordBot.py`.
@@ -64,7 +70,10 @@ This project is under the [MIT LICENSE](https://github.com/MikeJollie2707/Michae
 
 ## Contributing
 
-- Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
+You can contribute to this bot via:
+
+- Development: Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
+- Testing: use commands, do actions and report via the `report` command.
 
 ## TODO
 
