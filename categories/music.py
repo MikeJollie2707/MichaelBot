@@ -440,12 +440,13 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         await player.connect(channel.id)
 
-    @commands.command()
+    @commands.command(aliases = ['p'])
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def play(self, ctx, *, query : str):
         '''
         Play a song.
 
+        **Aliases:** `p`
         **Usage:** <prefix>**{command_name}** <video name/url>
         **Cooldown:** 2 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name} You've been gnomed
@@ -721,7 +722,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.destroy_controller()
         await player.disconnect()
 
-    @commands.command(aliases = ['vol'])
+    @commands.command(aliases = ["vol"])
     @commands.cooldown(1, 2, commands.BucketType.guild)
     async def volume(self, ctx, *, value: int):
         '''
@@ -809,7 +810,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         await ctx.send(embed = embed)
 
-    @commands.command(aliases = ['mix'])
+    @commands.command(aliases = ["mix"])
     @commands.cooldown(2, 10, commands.BucketType.user)
     async def shuffle(self, ctx):
         '''
@@ -860,11 +861,12 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         player.update = True
 
-    @commands.command()
+    @commands.command(aliases = ["loop"])
     async def repeat(self, ctx):
         '''
         Repeat the currently playing song.
         
+        **Aliases:** `loop`
         **Usage:** <prefix>{command_name}
         **Example:** {prefix}{command_name}
 
