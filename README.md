@@ -78,6 +78,8 @@ You can contribute to this bot via:
 ## TODO
 
 - [x] Fix help `music.py`
+- [ ] Find a database
+- [ ] Fix permission in `core.py`
 - [ ] Fix permission in `server.py`
 - [ ] Fix some permissions in `utility.py`
 - [ ] Fix major error handlers in `moderation.py`
