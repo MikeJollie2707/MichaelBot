@@ -10,47 +10,47 @@ Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 - Basic information
 
-![fun](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/info.png)
+![info](./img/info.png)
 
 - Interactive help menu
 
-![help](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/help.png)
+![help](./img/help.png)
 
 - Detailed command description
 
-![help2](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/help2.png)
+![help2](./img/help2.png)
 
 - Moderation commands
 
-![mod](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/kick.png)
+![mod](./img/kick.png)
 
 - Detailed logging
 
-![log](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/log.png)
+![log](./img/log.png)
 
 - Fun commands
 
-![fun](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/fun.png)
+![fun](./img/fun.png)
 
 - Utility commands
 
-![utility](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/utility.png)
+![utility](./img/utility.png)
 
 - Warm welcome messages
 
-![welcome](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/welcome.png)
+![welcome](./img/welcome.png)
 
 - Interactive music menu
 
-![music](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/music.png)
+![music](./img/music.png)
 
 - Support playlist
 
-  ![playlist](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/playlist.png)
+  ![playlist](./img/playlist.png)
 
 - Report and suggest features
 
-![bug](https://github.com/MikeJollie2707/MichaelBotPy/blob/master/img/bug.png)  
+![bug](./img/bug.png)  
 
 ## Limitations
 
