@@ -23,6 +23,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         return True
 
     @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def info(self, ctx):
         '''
         Information about the bot.
@@ -44,7 +45,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         embed.add_field(
             name  = "Team:", 
             value = '''
-                    **Owner    :** <@462726152377860109>
+                    **Owner:** <@462726152377860109>
                     **Developer:** <@472832990012243969>
                     ''', 
             inline = False
@@ -52,18 +53,18 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         embed.add_field(
             name  = "Bot info:", 
             value = '''
-                    **Language :** Python
-                    **Library  :** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
-                    **Repo     :** [Click here](https://github.com/MikeJollie2707/MichaelBotPy)
+                    **Language:** Python
+                    **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
+                    **Repo:** [Click here](https://github.com/MikeJollie2707/MichaelBotPy)
                     ''', 
             inline = False
         )
         embed.add_field(
             name = "Host Device:",
             value = '''
-                    **Machine  :** HP-EliteDesk-800-G1-USDT
+                    **Machine:** HP-EliteDesk-800-G1-USDT
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
-                    **OS       :** Ubuntu 18.04.3
+                    **OS:** Ubuntu 18.04.3
                     ''',
             inline = False
         )
@@ -76,6 +77,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(embed = embed)
 
     @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def profile(self, ctx, user: discord.Member = None):
         '''
         Information about yourself or another __member__.
@@ -130,6 +132,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(embed = embed)
 
     @commands.command(aliases = ["server-info"])
+    @commands.bot_has_permissions(send_messages = True)
     async def serverinfo(self, ctx):
         '''
         Information about the server that invoke this command.
@@ -141,6 +144,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **You need:** None.
         **I need:** `Send Messages`.
         '''
+
         guild = ctx.guild
         embed = discord.Embed(
             description = "Information about this server.", 
@@ -197,6 +201,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.has_permissions(manage_guild = True)
+    @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(1, 5.0, commands.BucketType.default)
     async def prefix(self, ctx, pref : str = None):
         '''
@@ -218,9 +223,10 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.send("New prefix: " + self.bot.command_prefix)
             # Save the prefix
             import os
-            os.environ["token2"] = pref
+            os.environ["prefix2"] = pref
 
     @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def note(self, ctx):
         '''
         Provide syntax convention in `help` and `help-all`.
@@ -249,14 +255,10 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             value =    "+ Optional, usually it means the command has something special condition.", 
             inline = False
         )
-        # Usage
+        # Alias
         embed.add_field(
-            name =      "**Usage**", 
-            value = '''
-                        + Shows you the syntax of the command.
-                        + [argument] is optional argument, while <argument> is required.
-                        + If one of your arguments has spaces, use "this argument". Ex: %skick "This is a user" Dumb.
-                    ''' % ctx.prefix, 
+            name =     "**Alias(es)**",
+            value =    "+ Optional, it's another name for a command; you can use the alias in place of the main command.",
             inline = False
         )
         # Cooldown
@@ -264,10 +266,20 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             name =     "**Cooldown**", 
             value = '''
                         + Optional, tells you the command's interval.
-                        + If it says (guild), it means the command is not available for the entire server in that interval.
-                        + If it says (user), it means the command is not available for the user invoked in that interval.
-                        + If it says (global), it means the command is not available for anywhere that use the bot.
+                        + If it says `(guild)`, it means the command is not available for the entire server in that interval.
+                        + If it says `(user)`, it means the command is not available for the user invoked in that interval.
+                        + If it says `(global)`, it means the command is not available for anywhere that use the bot.
                     ''',
+            inline = False
+        )
+        # Usage
+        embed.add_field(
+            name =      "**Usage**", 
+            value = '''
+                        + Shows you the syntax of the command.
+                        + [argument] is optional argument, while <argument> is required.
+                        + If one of your arguments has spaces, use "this argument". Ex: `%skick "This is a user" Dumb`.
+                    ''' % ctx.prefix, 
             inline = False
         )
         # Examples
@@ -292,6 +304,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(embed = embed)
 
     @commands.command()
+    @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     @commands.cooldown(1, 30.0, commands.BucketType.user)
     async def report(self, ctx, *, content : str):
         '''
@@ -304,10 +317,16 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} suggest This command should be improved.
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Manage Messages`, `Send Messages`.
         '''
-        report_chan = 644339079164723201
+
+        report_chan = 644339079164723201 # Do not change
         channel = ctx.bot.get_channel(report_chan)
+        if channel == None:
+            await channel = ctx.bot.fetch_channel(report_chan)
+            if channel == None:
+                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
+                raise RuntimeError("Cannot find report channel.")
 
         flag = content.split()[0]
         if (flag == "report") or (flag == "suggest"):
@@ -327,13 +346,18 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             )
             embed.set_footer(text = "Sender ID: " + str(ctx.author.id))
 
-            await channel.send(embed = embed)
-            await ctx.send("Your opinion has been sent.")
+            try:
+                await channel.send(embed = embed)
+            except discord.Forbidden:
+                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
+                raise discord.Forbidden(message = "Cannot send message in report channel.")
+            else:
+                await ctx.send("Your opinion has been sent.")
         else:
             await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
 
     @commands.command()
-    @commands.has_permissions(add_reactions = True)
+    @commands.bot_has_permissions(add_reactions = True, send_messages = True)
     async def changelog(self, ctx):
         '''
         Show the latest 10 changes of the bot.
@@ -344,7 +368,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **You need:** None.
         **I need:** `Add Reactions`, `Send Messages`.
         '''
-        channel_id = 644393721512722432
+        channel_id = 644393721512722432 # Do not change
         channel = self.bot.get_channel(channel_id)
 
         paginator = Pages()
@@ -359,7 +383,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await paginator.event(self.bot, ctx.channel, False, ctx.author)
 
     @commands.command()
-    @commands.has_permissions(add_reactions = True)
+    @commands.bot_has_permissions(add_reactions = True, send_messages = True)
     async def help(self, ctx, categoryOrcommand = ""):
         '''
         Show compact help about the bot, a command, or a category.
