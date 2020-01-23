@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from datetime import datetime
+
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to moderate actions such as kick, ban, etc.'''
     def __init__(self, bot):
@@ -9,7 +11,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     
     @commands.command()
     @commands.has_permissions(kick_members = True)
-    @commands.bot_has_permissions(kick_members = True)
+    @commands.bot_has_permissions(kick_members = True, send_messages = True)
     @commands.cooldown(2, 5.0, commands.BucketType.guild)
     async def kick(self, ctx, member : discord.Member, *, reason = None):
         '''
@@ -35,8 +37,14 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         except discord.Forbidden as f:
             await ctx.send("I cannot kick someone that's higher than me!")
         else:
-            await ctx.send("**User** `%s` has been kicked from **%s**" % (victim_name, guild.name))
-            await ctx.send("**Reason:** `%s`" % reason)
+            embed = discord.Embed(
+                title = "Member Kicked",
+                description = "User `%s` has been **kicked** from **%s**\n**Reason:** %s" % (victim_name, guild.name, reason), # Does not use ''' because of mobile formatting.
+                color = 0x000000,
+                timestamp = datetime.utcnow()
+            )
+            
+            await ctx.send(embed = embed)
     @kick.error
     async def kick_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
@@ -44,7 +52,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
 
     @commands.command()
     @commands.has_permissions(ban_members = True)
-    @commands.bot_has_permissions(ban_members = True)
+    @commands.bot_has_permissions(ban_members = True, send_messages = True)
     @commands.cooldown(2, 5.0, commands.BucketType.guild)
     async def ban(self, ctx, user : discord.Member, *, reason = None):
         '''
