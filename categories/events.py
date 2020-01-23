@@ -91,19 +91,26 @@ class Events(commands.Cog):
                 n = 0
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send("You are missing the following permission(s) to execute this command: " + str(error.missing_perms))
+        
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send("I'm missing the following permission(s) to execute this command: " + str(error.missing_perms))
+        
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+        
         elif isinstance(error, commands.TooManyArguments):
             await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+        
         elif isinstance(error, commands.BadArgument):
             if ctx.command.name == "kick" or ctx.command.name == "ban":
                 return
+        
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send("Sorry, but this command is disabled for now, it'll be back soon :thumbsup:")
+        
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Hey there slow down! %0.2f seconds left!" % error.retry_after)
+        
         else:
             error_text = "This command raised the following exception. Please copy and report it to the developer using `report`. Thank you and sorry for this inconvenience."
             error_text += "```%s```" % error
