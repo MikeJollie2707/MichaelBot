@@ -58,20 +58,24 @@ class Pages:
                 self.__current_page__ = -1
                 await message.edit(content = ":clock12:", embed = None)
                 await message.clear_reactions()
-                return
+                break
             else:
                 if interupt:
                     if reaction.emoji in self.__emoji_list__:
                         if reaction.emoji == '⏮️':
                             self.__current_page__ = 0
+                        
                         elif reaction.emoji == '◀️':
                             if self.__current_page__ != 0:
                                 self.__current_page__ -= 1
+
                         elif reaction.emoji == '▶️':
                             if self.__current_page__ < len(self.__page_list__) - 1:
                                 self.__current_page__ += 1
+
                         elif reaction.emoji == '⏭️':
                             self.__current_page__ = len(self.__page_list__) - 1
+                            
                         elif reaction.emoji == '⏹️':
                             self.__current_page__ = -1
                             await message.edit(content = ":white_check_mark:", embed = None)

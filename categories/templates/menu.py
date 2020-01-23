@@ -81,7 +81,8 @@ class Menu:
             except asyncio.TimeoutError:
                 await message.edit(content = ":clock12:", embed = None)
                 await message.clear_reactions()
-                return
+
+                break
             else:
                 if interupt == False:
                     if user == author:
@@ -89,46 +90,52 @@ class Menu:
                             if reaction.emoji == self.__terminator__:
                                 await message.edit(content = ":white_check_mark:", embed = None)
                                 await message.clear_reactions()
-                                return
+                                break
+
                             elif reaction.emoji == self.__return__:
                                 await message.edit(embed = self.__init_page__)
 
                                 available_options = []
                                 for key in self.__pages__:
                                     available_options.append(key)
+                                
                             else:
                                 available_options = []
                                 available_options = self.__return__
-
                             
                                 await message.edit(embed = self.__pages__[reaction.emoji])
+                            
                             await message.clear_reactions()
                             for emoji in available_options:
                                 await message.add_reaction(emoji)
-                        else:
-                            await message.remove_reaction(reaction, user)
-                    else:
-                        await message.remove_reaction(reaction, user)
+                            continue
+                        #else:
+                        #    await message.remove_reaction(reaction, user)
+                    #else: # If uncomment then 1 tab the next line
+                    await message.remove_reaction(reaction, user)
                 else:
                     if reaction.emoji in available_options:
                         if reaction.emoji == self.__terminator__:
                             await message.edit(content = ":white_check_mark:", embed = None)
                             await message.clear_reactions()
-                            return
+                            break
+
                         elif reaction.emoji == self.__return__:
                             await message.edit(embed = self.__init_page__)
 
                             available_options = []
                             for key in self.__pages__:
                                 available_options.append(key)
+                        
                         else:
                             available_options = []
                             available_options = self.__return__
 
-                        
                             await message.edit(embed = self.__pages__[reaction.emoji])
+                        
                         await message.clear_reactions()
                         for emoji in available_options:
                             await message.add_reaction(emoji)
+                        continue
                     else:
                         await message.remove_reaction(reaction, user)
