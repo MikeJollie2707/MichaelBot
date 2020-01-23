@@ -11,6 +11,7 @@ def is_dev(ctx):
                             #MikeJollie#1067     Stranger.com#4843   MJ2#8267
 
 class Dev(commands.Cog):
+    '''Commands for developers to abuze power'''
     def __init__(self, bot):
         self.bot = bot
     
@@ -85,15 +86,36 @@ class Dev(commands.Cog):
             await ctx.send("Input version")
             msg = self.bot.wait_for("message", timeout = 60.0)
             version = "**__%s__**" % msg
-            length += len(msg.content)
+            length += len(version)
 
-            await ctx.send("Any bug fixes (type NO to skip)")
+            await ctx.send("Any bug fixes (Yes/No)?")
             msg = self.bot.wait_for("message", timeout = 60.0)
-            if msg.content.upper() == "NO":
+            if msg.content.upper() == "NO" or msg.content.upper() == "N":
                 bugs = ""
             else:
-                bugs = "**Bug Fixes:**\n" + msg.content
+                bugs = "**Bug Fixes:**\n"
             length += len(bugs)
+
+            bug_list = []
+            await ctx.send("Type all the bug fixed here. Type `Done` when you're finished.")
+            
+            content = ""
+            while content.upper() != "DONE":
+                msg = self.bot.wait_for("message", timeout = 60.0)
+
+                content = msg.content
+                if content.upper() == "DONE":
+                    break
+                
+                bug_list.append(content)
+                length += len("- %s\n" % content)
+                if length > 2000:
+                    bug_list.pop()
+                    await ctx.send("Content exceeded 2000 characters.")
+                    break
+            
+            
+
 
             if length > 2000:
                 await ctx.send("Content exceeded 2000 characters.")
