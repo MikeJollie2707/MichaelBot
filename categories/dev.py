@@ -130,6 +130,26 @@ class Dev(commands.Cog):
         except asyncio.TimeoutError:
             pass
 
+    @commands.command(hidden = True)
+    @commands.is_owner()
+    async def leave_guild(self, ctx):
+        await ctx.send("Are you sure for me to leave this guild?")
+        def check(msg):
+            return msg.author == ctx.author
+        
+        try:
+            confirm = self.bot.wait_for("message", check = check, timeout = 30.0)
+        except asyncio.TimeoutError:
+            await ctx.send("You took too long to respond. I'll stay still.")
+            return
+        else:
+            confirm_str = confirm.content.upper()
+            if confirm_str[0] == "Y":
+                try:
+                    await ctx.send("Bye! :wave:")
+                    await ctx.guild.leave()
+                except discord.HTTPException:
+                    await ctx.send("Leaving the guild failed.")
 
 def setup(bot):
     bot.add_cog(Dev(bot))
