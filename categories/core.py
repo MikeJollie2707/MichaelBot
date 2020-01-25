@@ -59,6 +59,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     ''', 
             inline = False
         )
+        current_time = datetime.datetime.utcnow()
+        up_time = current_time - self.bot.online_at
         embed.add_field(
             name = "Host Device:",
             value = '''
