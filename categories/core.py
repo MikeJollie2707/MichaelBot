@@ -341,13 +341,18 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             embed = discord.Embed(
                 title = flag.capitalize(), 
                 description = msg, 
-                color = discord.Color.green()
+                color = discord.Color.green(),
+                timestamp = datetime.datetime.utcnow()
             )
             embed.set_author(
                 name = ctx.author.name, 
                 icon_url = ctx.author.avatar_url
             )
-            embed.set_footer(text = "Sender ID: " + str(ctx.author.id))
+            embed.add_field(
+                name = "Sender ID:",
+                value = ctx.author.id,
+                inline = False
+            )
 
             try:
                 await channel.send(embed = embed)
