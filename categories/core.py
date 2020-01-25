@@ -370,6 +370,9 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         channel_id = 644393721512722432 # Do not change
         channel = self.bot.get_channel(channel_id)
+        if channel == None:
+            await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
+            return
 
         paginator = Pages()
 
