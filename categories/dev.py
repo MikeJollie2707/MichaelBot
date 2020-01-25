@@ -150,6 +150,53 @@ class Dev(commands.Cog):
                     await ctx.guild.leave()
                 except discord.HTTPException:
                     await ctx.send("Leaving the guild failed.")
+    
+    @commands.command(hidden = True, aliases = ["suggest_response"])
+    @commands.check(is_dev)
+    @commands.cooldown(1, 60.0, commands.BucketType.default)
+    async def report_response(self, ctx, message_ID : int, *, response : str):
+        '''
+        Response to a report/suggest.
+        Note that the command will look over the last 100 messages in the report channel.
+
+        **Aliases:** `suggest_response`
+        **Usage:** <prefix>**{command_name}** <message ID> <response>
+        **Cooldown:** 60 seconds per 1 use (global)
+        **Examples:** {prefix}{command_name} 670493266629886002 I like this idea, but the library doesn't allow so.
+
+        **You need:** dev status.
+        **I need:** `Send Messages`.
+        '''
+
+        report_chan = 644339079164723201 # Do not change
+        channel = self.bot.get_channel(report_chan)
+        if channel == None:
+            await ctx.send("Seems like I can't find the report channel. You can check again and edit the channel ID.")
+            return
+        
+        messages = await channel.history(limit = 100).flatten()
+        for message in messages:
+            if message_ID == message.id:
+                if len(message.embeds) == 0:
+                    await ctx.send("This message is not a report/suggest type. Please check again.")
+                else:
+                    report = message.embeds[0]
+
+                    response_embed = discord.Embed().from_dict(report.to_dict()) # Create a new embed using the old's dictionary form. This will make it work fast.
+
+                    response_embed.add_field(
+                        name = "**Developer Response:**",
+                        value = response,
+                        inline = False
+                    )
+                    response_embed.set_footer(
+                        text = str(ctx.author),
+                        icon_url = ctx.author.avatar_url
+                    )
+
+                    await message.edit(embed = response_embed)
+
+
 
 def setup(bot):
     bot.add_cog(Dev(bot))
