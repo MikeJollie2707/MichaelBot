@@ -393,7 +393,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def help(self, ctx, categoryOrcommand = ""):
         '''
         Show compact help about the bot, a command, or a category.
-        Note: command name and category name is case sensitive; Core is different from core.
+        Note: command name and category name is case sensitive; `Core` is different from `core`.
 
         **Usage:** <prefix>**{command_name}** [command/category]
         **Example 1:** {prefix}{command_name}
