@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from datetime import datetime
+import datetime
 
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.menu import Menu
@@ -39,7 +39,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             title = self.bot.user.name, 
             description = "A utility bot.", 
             color = discord.Color.green(),
-            timestamp = datetime.utcnow()
+            timestamp = datetime.datetime.utcnow()
         )
 
         embed.add_field(
@@ -62,12 +62,13 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         current_time = datetime.datetime.utcnow()
         up_time = current_time - self.bot.online_at
         embed.add_field(
-            name = "Host Device:",
+            name  = "Host Device:",
             value = '''
                     **Machine:** HP-EliteDesk-800-G1-USDT
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
                     **OS:** Ubuntu 18.04.3
-                    ''',
+                    **Bot uptime:** %d day(s) %d minute(s) %d second(s)
+                    ''' % (up_time.days, up_time.seconds / 60, up_time.seconds % 60),
             inline = False
         )
         embed.set_author(
@@ -325,7 +326,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         report_chan = 644339079164723201 # Do not change
         channel = ctx.bot.get_channel(report_chan)
         if channel == None:
-            await channel = ctx.bot.fetch_channel(report_chan)
+            channel = await ctx.bot.fetch_channel(report_chan)
             if channel == None:
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
                 raise RuntimeError("Cannot find report channel.")
