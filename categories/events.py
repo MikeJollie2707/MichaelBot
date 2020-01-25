@@ -4,6 +4,7 @@ from discord.ext import commands
 import traceback
 import sys
 import json
+from datetime import datetime
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -52,6 +53,11 @@ class Events(commands.Cog):
             activity = discord.Game(" with Discord API")
         )
 
+    @commands.Cog.listener()
+    async def on_connect(self):
+        if not hasattr(self.bot, "online_at"):
+            self.bot.online_at = datetime.utcnow()
+    
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.bot.user:
