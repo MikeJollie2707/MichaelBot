@@ -50,7 +50,11 @@ Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 - Report and suggest features
 
-![bug](./img/bug.png)  
+![bug](./img/bug.png)
+
+- And the best thing is...all features are free-guaranteed.
+
+  - Features like changing volume in Rythm is absolutely pennyless in this bot (meaning you don't have to pay to use this).
 
 ## Limitations
 
