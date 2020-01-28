@@ -720,6 +720,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         player = self.bot.wavelink.get_player(ctx.guild.id, cls = Player)
 
         await player.destroy_controller()
+        await player.destroy()
         await player.disconnect()
 
     @commands.command(aliases = ["vol"])
