@@ -1,0 +1,176 @@
+2020-01-27 19:14:26.019  INFO 15337 --- [main] lavalink.server.Launcher                 : 
+
+[32m       .  [31m _                  _ _       _    [32m__ _ _
+[32m      /\\ [31m| | __ ___   ____ _| (_)_ __ | | __[32m\ \ \ \
+[32m     ( ( )[31m| |/ _` \ \ / / _` | | | '_ \| |/ /[32m \ \ \ \
+[32m      \\/ [31m| | (_| |\ V / (_| | | | | | |   < [32m  ) ) ) )
+[32m       '  [31m|_|\__,_| \_/ \__,_|_|_|_| |_|_|\_\[32m / / / /
+[0m    =========================================[32m/_/_/_/[0m
+
+	Version:        4f53d09491ba5254eb5c55c234a63b208388d3ef-SNAPSHOT
+	Build:          965
+	Build time:     28.12.2019 17:02:58 UTC
+	Branch          master
+	Commit:         4f53d09
+	Commit time:    28.12.2019 17:00:51 UTC
+	JVM:            11.0.6
+	Lavaplayer      1.3.32
+
+2020-01-27 19:14:26.348  INFO 15337 --- [main] lavalink.server.Launcher                 : Starting Launcher on mikengo-HP-EliteDesk-800-G1-USDT with PID 15337 (/media/mikengo/C8D1-0485/Private/DiscordBot/Python/Discord-Bot-Python/Discord/lib/Lavalink3.3/Lavalink.jar started by mikengo in /media/mikengo/C8D1-0485/Private/DiscordBot/Python/Discord-Bot-Python/Discord/lib/Lavalink3.3)
+2020-01-27 19:14:26.349  INFO 15337 --- [main] lavalink.server.Launcher                 : No active profile set, falling back to default profiles: default
+2020-01-27 19:14:26.367  WARN 15337 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2020-01-27 19:14:27.623  WARN 15337 --- [main] io.undertow.websockets.jsr               : UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used
+2020-01-27 19:14:27.684  INFO 15337 --- [main] io.undertow.servlet                      : Initializing Spring embedded WebApplicationContext
+2020-01-27 19:14:27.685  INFO 15337 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1269 ms
+2020-01-27 19:14:28.271  WARN 15337 --- [main] l.server.config.SentryConfiguration      : Turning off sentry
+2020-01-27 19:14:28.289  INFO 15337 --- [main] l.s.c.AudioSendFactoryConfiguration      : OS: Linux, Arch: amd64
+2020-01-27 19:14:28.290  INFO 15337 --- [main] l.s.c.AudioSendFactoryConfiguration      : JDA-NAS supported system detected. Enabled native audio sending.
+2020-01-27 19:14:28.291  INFO 15337 --- [main] l.s.c.AudioSendFactoryConfiguration      : Setting buffer to 400ms
+2020-01-27 19:14:28.291  INFO 15337 --- [main] l.s.c.AudioSendFactoryConfiguration      : Setting playlist load limit to 6
+2020-01-27 19:14:29.395  INFO 15337 --- [main] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
+2020-01-27 19:14:29.782  INFO 15337 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-01-27 19:14:30.084  INFO 15337 --- [main] org.xnio                                 : XNIO version 3.3.8.Final
+2020-01-27 19:14:30.100  INFO 15337 --- [main] org.xnio.nio                             : XNIO NIO Implementation Version 3.3.8.Final
+2020-01-27 19:14:30.189  INFO 15337 --- [main] o.s.b.w.e.u.UndertowServletWebServer     : Undertow started on port(s) 2333 (http) with context path ''
+2020-01-27 19:14:30.192  INFO 15337 --- [main] lavalink.server.Launcher                 : Started Launcher in 4.97 seconds (JVM running for 6.122)
+2020-01-27 19:14:39.991  INFO 15337 --- [XNIO-1 task-1] io.undertow.servlet                      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-01-27 19:14:39.992  INFO 15337 --- [XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-01-27 19:14:39.999  INFO 15337 --- [XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 7 ms
+2020-01-27 19:14:40.022  INFO 15337 --- [XNIO-1 task-1] l.server.io.HandshakeInterceptorImpl     : Incoming connection from /127.0.0.1:37676
+2020-01-27 19:14:40.085  INFO 15337 --- [XNIO-1 task-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
+2020-01-27 19:14:40.184  INFO 15337 --- [XNIO-1 task-1] lavalink.server.io.SocketServer          : Connection successfully established from /127.0.0.1:37676
+2020-01-27 19:15:27.828  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "equalizer", "guildId": "644336990698995712", "bands": [{"band": 0, "gain": 0.0}, {"band": 1, "gain": 0.0}, {"band": 2, "gain": 0.0}, {"band": 3, "gain": 0.0}, {"band": 4, "gain": 0.0}, {"band": 5, "gain": 0.0}, {"band": 6, "gain": 0.0}, {"band": 7, "gain": 0.0}, {"band": 8, "gain": 0.0}, {"band": 9, "gain": 0.0}, {"band": 10, "gain": 0.0}, {"band": 11, "gain": 0.0}, {"band": 12, "gain": 0.0}, {"band": 13, "gain": 0.0}, {"band": 14, "gain": 0.0}]}
+2020-01-27 19:15:27.838  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 100}
+2020-01-27 19:15:45.077  INFO 15337 --- [XNIO-1 task-2] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-01-27 19:15:45.214  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "644336990698995712", "sessionId": "1592777bf88a930e79674854514d53a9", "event": {"token": "4006bd4e9d46b90d", "guild_id": "644336990698995712", "endpoint": "us-west452.discord.media:80"}}
+2020-01-27 19:15:46.290  INFO 15337 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: assassin's creed 2 soundtrack
+2020-01-27 19:15:48.427  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "644336990698995712", "track": "QAAAqQIAOkFzc2Fzc2luJ3MgQ3JlZWQgMiAoRnVsbCBPZmZpY2lhbCBTb3VuZHRyYWNrKSAtIEplc3BlciBreWQAFVViaXNvZnQgTXVzaWMgVUJJTE9VRAAAAAAAZ/kwAAtpcmlpWk9lSW5EZwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PWlyaWlaT2VJbkRnAAd5b3V0dWJlAAAAAAAAAAA=", "noReplace": false}
+2020-01-27 20:12:42.356  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 50}
+2020-01-27 20:12:42.387  INFO 15337 --- [lava-daemon-pool-playback-5-thread-1] c.s.l.c.natives.NativeLibraryLoader      : Native library libmpg123-0: loading with filter com.sedmelluq.discord.lavaplayer.natives.ConnectorNativeLibLoader$$Lambda$629/0x00000001007c7840@3743d641
+2020-01-27 20:12:42.389  INFO 15337 --- [lava-daemon-pool-playback-5-thread-1] c.s.l.c.natives.NativeLibraryLoader      : Native library connector: loading with filter null
+2020-01-27 20:12:42.462  INFO 15337 --- [lava-daemon-pool-playback-5-thread-1] c.s.l.c.natives.NativeLibraryLoader      : Native library connector: successfully loaded.
+2020-01-27 20:44:46.225  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 70}
+2020-01-27 20:44:56.186  INFO 15337 --- [parallel-4] s.n.m.impl.connections.AudioWebSocket    : Websocket to wss://us-west452.discord.media/?v=4 closed with code 4014 and reason Disconnected.
+2020-01-27 20:44:56.187  INFO 15337 --- [parallel-4] s.n.m.impl.connections.AudioWebSocket    : Closing
+2020-01-27 20:45:07.310  INFO 15337 --- [XNIO-1 task-4] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-01-27 20:45:07.479  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "644336990698995712", "sessionId": "1592777bf88a930e79674854514d53a9", "event": {"token": "d174e39c0c6850aa", "guild_id": "644336990698995712", "endpoint": "us-west452.discord.media:80"}}
+2020-01-27 20:45:08.043  INFO 15337 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: assassin's creed revelation soundtrack
+2020-01-27 20:45:19.003  INFO 15337 --- [parallel-3] s.n.m.impl.connections.AudioWebSocket    : Websocket to wss://us-west452.discord.media/?v=4 closed with code 4014 and reason Disconnected.
+2020-01-27 20:45:19.003  INFO 15337 --- [parallel-3] s.n.m.impl.connections.AudioWebSocket    : Closing
+2020-01-27 20:45:29.558  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : Connection closed from /127.0.0.1:37676 -- CloseStatus[code=1006, reason=]
+2020-01-27 20:45:29.558  INFO 15337 --- [XNIO-1 I/O-4] lavalink.server.io.SocketContext         : Shutting down 1 playing players.
+2020-01-27 20:45:29.559  INFO 15337 --- [XNIO-1 I/O-4] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
+2020-01-27 20:45:29.582  WARN 15337 --- [lava-daemon-pool-playback-5-thread-1] c.s.d.l.t.p.LocalAudioTrackExecutor      : Suspicious exception for playback of iriiZOeInDg
+
+com.sedmelluq.discord.lavaplayer.tools.FriendlyException: The track was unexpectedly terminated.
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.handlePlaybackInterrupt(LocalAudioTrackExecutor.java:334) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.executeProcessingLoop(LocalAudioTrackExecutor.java:278) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.executeProcessingLoop(LocalAudioTrackExecutor.java:236) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack.process(MatroskaAudioTrack.java:39) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack.processDelegate(DelegatedAudioTrack.java:25) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack.processStatic(YoutubeAudioTrack.java:57) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack.process(YoutubeAudioTrack.java:49) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.execute(LocalAudioTrackExecutor.java:91) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager.lambda$executeTrack$1(DefaultAudioPlayerManager.java:349) ~[lavaplayer-1.3.32.jar!/:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:834) ~[na:na]
+Caused by: java.lang.InterruptedException: null
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2056) ~[na:na]
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2090) ~[na:na]
+	at java.base/java.util.concurrent.ArrayBlockingQueue.put(ArrayBlockingQueue.java:367) ~[na:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.AllocatingAudioFrameBuffer.consume(AllocatingAudioFrameBuffer.java:179) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.BufferingPostProcessor.process(BufferingPostProcessor.java:41) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.FinalPcmAudioFilter.dispatch(FinalPcmAudioFilter.java:158) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.FinalPcmAudioFilter.process(FinalPcmAudioFilter.java:130) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.UserProvidedAudioFilters.process(UserProvidedAudioFilters.java:77) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.AudioPipeline.process(AudioPipeline.java:33) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.common.OpusPacketRouter.passDownstream(OpusPacketRouter.java:161) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.common.OpusPacketRouter.process(OpusPacketRouter.java:97) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaOpusTrackConsumer.consume(MatroskaOpusTrackConsumer.java:47) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.processFrameInBlock(MatroskaStreamingFile.java:372) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.parseClusterSimpleBlock(MatroskaStreamingFile.java:336) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.parseNextCluster(MatroskaStreamingFile.java:321) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.provideFrames(MatroskaStreamingFile.java:297) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack.lambda$process$0(MatroskaAudioTrack.java:40) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.executeProcessingLoop(LocalAudioTrackExecutor.java:262) ~[lavaplayer-1.3.32.jar!/:na]
+	... 10 common frames omitted
+
+2020-01-27 20:45:35.798  INFO 15337 --- [XNIO-1 task-6] l.server.io.HandshakeInterceptorImpl     : Incoming connection from /127.0.0.1:39210
+2020-01-27 20:45:35.801  INFO 15337 --- [XNIO-1 task-6] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
+2020-01-27 20:45:35.810  INFO 15337 --- [XNIO-1 task-6] lavalink.server.io.SocketServer          : Connection successfully established from /127.0.0.1:39210
+2020-01-27 20:45:54.815  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "equalizer", "guildId": "644336990698995712", "bands": [{"band": 0, "gain": 0.0}, {"band": 1, "gain": 0.0}, {"band": 2, "gain": 0.0}, {"band": 3, "gain": 0.0}, {"band": 4, "gain": 0.0}, {"band": 5, "gain": 0.0}, {"band": 6, "gain": 0.0}, {"band": 7, "gain": 0.0}, {"band": 8, "gain": 0.0}, {"band": 9, "gain": 0.0}, {"band": 10, "gain": 0.0}, {"band": 11, "gain": 0.0}, {"band": 12, "gain": 0.0}, {"band": 13, "gain": 0.0}, {"band": 14, "gain": 0.0}]}
+2020-01-27 20:45:54.816  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 100}
+2020-01-27 20:45:54.820  INFO 15337 --- [XNIO-1 task-7] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-01-27 20:45:54.983  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "644336990698995712", "sessionId": "9384bc8d5538d9121c05e8c06e4d2c51", "event": {"token": "cdd153479119cf86", "guild_id": "644336990698995712", "endpoint": "us-west452.discord.media:80"}}
+2020-01-27 20:45:55.397  INFO 15337 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: assassin's creed revelation soundtrack
+2020-01-27 20:45:55.591  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "644336990698995712", "track": "QAAAqwIAPEFzc2Fzc2lu4oCZcyBDcmVlZCBSZXZlbGF0aW9ucyAtIFRoZSBDb21wbGV0ZSBSZWNvcmRpbmdzIE9TVAAVVWJpc29mdCBNdXNpYyBVQklMT1VEAAAAAACTy/AAC3lWZ1gtYmZiT2FBAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9eVZnWC1iZmJPYUEAB3lvdXR1YmUAAAAAAAAAAA==", "noReplace": false}
+2020-01-27 20:46:12.212  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 80}
+2020-01-27 20:46:22.889  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 70}
+2020-01-27 20:47:00.018  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 60}
+2020-01-27 20:47:04.605  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 50}
+2020-01-27 21:09:52.291  INFO 15337 --- [parallel-4] s.n.m.impl.connections.AudioWebSocket    : Websocket to wss://us-west452.discord.media/?v=4 closed with code 4014 and reason Disconnected.
+2020-01-27 21:09:52.291  INFO 15337 --- [parallel-4] s.n.m.impl.connections.AudioWebSocket    : Closing
+2020-01-27 21:10:01.413  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : Connection closed from /127.0.0.1:39210 -- CloseStatus[code=1006, reason=]
+2020-01-27 21:10:01.413  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketContext         : Shutting down 1 playing players.
+2020-01-27 21:10:01.413  INFO 15337 --- [XNIO-1 I/O-2] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
+2020-01-27 21:10:01.416  WARN 15337 --- [lava-daemon-pool-playback-9-thread-1] c.s.d.l.t.p.LocalAudioTrackExecutor      : Suspicious exception for playback of yVgX-bfbOaA
+
+com.sedmelluq.discord.lavaplayer.tools.FriendlyException: The track was unexpectedly terminated.
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.handlePlaybackInterrupt(LocalAudioTrackExecutor.java:334) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.executeProcessingLoop(LocalAudioTrackExecutor.java:278) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.executeProcessingLoop(LocalAudioTrackExecutor.java:236) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack.process(MatroskaAudioTrack.java:39) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack.processDelegate(DelegatedAudioTrack.java:25) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack.processStatic(YoutubeAudioTrack.java:57) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack.process(YoutubeAudioTrack.java:49) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.execute(LocalAudioTrackExecutor.java:91) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager.lambda$executeTrack$1(DefaultAudioPlayerManager.java:349) ~[lavaplayer-1.3.32.jar!/:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[na:na]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[na:na]
+	at java.base/java.lang.Thread.run(Thread.java:834) ~[na:na]
+Caused by: java.lang.InterruptedException: null
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2056) ~[na:na]
+	at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2090) ~[na:na]
+	at java.base/java.util.concurrent.ArrayBlockingQueue.put(ArrayBlockingQueue.java:367) ~[na:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.AllocatingAudioFrameBuffer.consume(AllocatingAudioFrameBuffer.java:179) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.BufferingPostProcessor.process(BufferingPostProcessor.java:41) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.FinalPcmAudioFilter.dispatch(FinalPcmAudioFilter.java:158) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.FinalPcmAudioFilter.process(FinalPcmAudioFilter.java:130) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.UserProvidedAudioFilters.process(UserProvidedAudioFilters.java:77) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.filter.AudioPipeline.process(AudioPipeline.java:33) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.common.OpusPacketRouter.passDownstream(OpusPacketRouter.java:161) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.common.OpusPacketRouter.process(OpusPacketRouter.java:97) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaOpusTrackConsumer.consume(MatroskaOpusTrackConsumer.java:47) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.processFrameInBlock(MatroskaStreamingFile.java:372) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.parseClusterSimpleBlock(MatroskaStreamingFile.java:336) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.parseNextCluster(MatroskaStreamingFile.java:321) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile.provideFrames(MatroskaStreamingFile.java:297) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack.lambda$process$0(MatroskaAudioTrack.java:40) ~[lavaplayer-1.3.32.jar!/:na]
+	at com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor.executeProcessingLoop(LocalAudioTrackExecutor.java:262) ~[lavaplayer-1.3.32.jar!/:na]
+	... 10 common frames omitted
+
+2020-01-27 21:10:07.255  INFO 15337 --- [XNIO-1 task-9] l.server.io.HandshakeInterceptorImpl     : Incoming connection from /127.0.0.1:39562
+2020-01-27 21:10:07.258  INFO 15337 --- [XNIO-1 task-9] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
+2020-01-27 21:10:07.265  INFO 15337 --- [XNIO-1 task-9] lavalink.server.io.SocketServer          : Connection successfully established from /127.0.0.1:39562
+2020-01-27 21:10:17.422  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "equalizer", "guildId": "644336990698995712", "bands": [{"band": 0, "gain": 0.0}, {"band": 1, "gain": 0.0}, {"band": 2, "gain": 0.0}, {"band": 3, "gain": 0.0}, {"band": 4, "gain": 0.0}, {"band": 5, "gain": 0.0}, {"band": 6, "gain": 0.0}, {"band": 7, "gain": 0.0}, {"band": 8, "gain": 0.0}, {"band": 9, "gain": 0.0}, {"band": 10, "gain": 0.0}, {"band": 11, "gain": 0.0}, {"band": 12, "gain": 0.0}, {"band": 13, "gain": 0.0}, {"band": 14, "gain": 0.0}]}
+2020-01-27 21:10:17.422  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 100}
+2020-01-27 21:10:17.438  INFO 15337 --- [XNIO-1 task-10] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-01-27 21:10:17.596  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "644336990698995712", "sessionId": "cc27b15c993a307082eb65499327faa2", "event": {"token": "8371ef8c595a39fd", "guild_id": "644336990698995712", "endpoint": "us-west452.discord.media:80"}}
+2020-01-27 21:10:18.174  INFO 15337 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: assassin's creed revelation soundtrac
+2020-01-27 21:10:18.334  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "644336990698995712", "track": "QAAAqwIAPEFzc2Fzc2lu4oCZcyBDcmVlZCBSZXZlbGF0aW9ucyAtIFRoZSBDb21wbGV0ZSBSZWNvcmRpbmdzIE9TVAAVVWJpc29mdCBNdXNpYyBVQklMT1VEAAAAAACTy/AAC3lWZ1gtYmZiT2FBAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9eVZnWC1iZmJPYUEAB3lvdXR1YmUAAAAAAAAAAA==", "noReplace": false}
+2020-01-27 21:10:23.611  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "stop", "guildId": "644336990698995712"}
+2020-01-27 21:10:23.612  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "destroy", "guildId": "644336990698995712"}
+2020-01-27 21:10:33.296  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "equalizer", "guildId": "644336990698995712", "bands": [{"band": 0, "gain": 0.0}, {"band": 1, "gain": 0.0}, {"band": 2, "gain": 0.0}, {"band": 3, "gain": 0.0}, {"band": 4, "gain": 0.0}, {"band": 5, "gain": 0.0}, {"band": 6, "gain": 0.0}, {"band": 7, "gain": 0.0}, {"band": 8, "gain": 0.0}, {"band": 9, "gain": 0.0}, {"band": 10, "gain": 0.0}, {"band": 11, "gain": 0.0}, {"band": 12, "gain": 0.0}, {"band": 13, "gain": 0.0}, {"band": 14, "gain": 0.0}]}
+2020-01-27 21:10:33.296  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 100}
+2020-01-27 21:10:33.298  INFO 15337 --- [XNIO-1 task-12] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-01-27 21:10:33.474  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "644336990698995712", "sessionId": "cc27b15c993a307082eb65499327faa2", "event": {"token": "878f44002ffae233", "guild_id": "644336990698995712", "endpoint": "us-west452.discord.media:80"}}
+2020-01-27 21:10:34.002  INFO 15337 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: assassin's creed revelation soundtrack
+2020-01-27 21:10:34.154  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "644336990698995712", "track": "QAAAqwIAPEFzc2Fzc2lu4oCZcyBDcmVlZCBSZXZlbGF0aW9ucyAtIFRoZSBDb21wbGV0ZSBSZWNvcmRpbmdzIE9TVAAVVWJpc29mdCBNdXNpYyBVQklMT1VEAAAAAACTy/AAC3lWZ1gtYmZiT2FBAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9eVZnWC1iZmJPYUEAB3lvdXR1YmUAAAAAAAAAAA==", "noReplace": false}
+2020-01-27 21:12:26.181  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 50}
+2020-01-27 21:40:33.951  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "644336990698995712", "volume": 100}
+2020-01-27 23:35:11.040  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "stop", "guildId": "644336990698995712"}
+2020-01-27 23:35:11.042  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "destroy", "guildId": "644336990698995712"}
+2020-01-27 23:35:16.582  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : Connection closed from /127.0.0.1:39562 -- CloseStatus[code=1006, reason=]
+2020-01-27 23:35:16.582  INFO 15337 --- [XNIO-1 I/O-2] lavalink.server.io.SocketContext         : Shutting down 0 playing players.
+2020-01-27 23:35:16.583  INFO 15337 --- [XNIO-1 I/O-2] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
