@@ -55,7 +55,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             value = '''
                     **Language:** Python
                     **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
-                    **Repo:** [Click here](https://github.com/MikeJollie2707/MichaelBotPy)
+                    **Repo:** [This is private!](https://github.com/MikeJollie2707/MichaelBotPy)
                     ''', 
             inline = False
         )
