@@ -4,5 +4,4 @@ __pycache__/
 ./categories/__pycache__
 ./categories/templates/__pycache__
 
-experiment.py
-diary.txt
+./categories/experiment.py
