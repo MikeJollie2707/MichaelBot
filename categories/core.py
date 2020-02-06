@@ -66,6 +66,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             value = '''
                     **Machine:** HP-EliteDesk-800-G1-USDT
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
+                    **Memory:** 15.5 GiB of RAM
                     **OS:** Ubuntu 18.04.3
                     **Bot uptime:** %d day(s) %d minute(s) %d second(s)
                     ''' % (up_time.days, up_time.seconds / 60, up_time.seconds % 60),
@@ -99,7 +100,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             member = user
 
         embed = discord.Embed(
-            color = discord.Color.green()
+            color = discord.Color.green(),
+            timestampt = datetime.datetime.utcnow()
         )
 
         embed.set_author(
@@ -151,7 +153,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         guild = ctx.guild
         embed = discord.Embed(
             description = "Information about this server.", 
-            color = discord.Color.green()
+            color = discord.Color.green(),
+            timestamp = datetime.datetime.utcnow()
         )
         embed.set_thumbnail(url = guild.icon_url)
 
@@ -244,7 +247,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         embed = discord.Embed(
             title = "Note:", 
             description = "A help of a command usually consisted of these parts:", 
-            color = discord.Color.green()
+            color = discord.Color.green(),
+            timestamp = datetime.datetime.utcnow()
         )
         # Title
         embed.add_field(
@@ -360,7 +364,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
                 raise discord.Forbidden(message = "Cannot send message in report channel.")
             else:
-                await ctx.send("Your opinion has been sent.")
+                await ctx.send("Your opinion has been sent.", delete_after = 5)
         else:
             await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
 
@@ -424,8 +428,5 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             else:
                 await ctx.send("Command \"%s\" not found." % categoryOrcommand)
         
-
-
-
 def setup(bot):
     bot.add_cog(Core(bot))
