@@ -82,14 +82,13 @@ You can contribute to this bot via:
 - Development: Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
 - Testing: use commands, do actions and report via the `report` command.
 
+Any sort of contributions are highly appreciated.
+
 ## TODO
 
-- [ ] Find a database
-- [ ] Fix permission in `core.py`
-- [ ] Add stricter error handlers
-- [ ] Fix permission in `server.py`
-- [ ] Fix some permissions in `utility.py`
-- [ ] Fix major error handlers in `moderation.py`
+- [ ] Find a database.
+- [ ] Debug everything.
+- [ ] Find a way to deal with broken embed display on mobile.
 
 ## Acknowledgement
 
