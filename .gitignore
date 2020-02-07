@@ -5,3 +5,4 @@ __pycache__/
 ./categories/templates/__pycache__
 
 ./categories/experiment.py
+./categories/utilityfun/embed_test.py
