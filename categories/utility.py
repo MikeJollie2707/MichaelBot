@@ -112,7 +112,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.cooldown(1, 5.0, commands.BucketType.user)
     async def embed_simple(self, ctx, title : str = "", content : str = '', color : str = "", destination : str = ""):
         '''
-        Send an embed message.
+        Send a simple embed message.
         Note: You'll respond to 3 questions to set the embed you want.
 
         **Usage:** <prefix>**{command_name}**
@@ -143,54 +143,47 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         content = ""
         color = discord.Color.default()
 
-        prompt = await ctx.send("What's your title?")
+        prompt = await ctx.send("What's your title?\n(Example: Ok boomer)")
 
         try:
             msg1 = await self.bot.wait_for("message", timeout = 60.0, check = check)
-        except asyncio.TimeoutError:
-            await ctx.send("Process ended due to overtime.")
-        else:
             title = "**" + msg1.content + "**"
-
             await clean(prompt)
 
-            prompt = await ctx.send("What's your content?")
+            prompt = await ctx.send("What's your content?\n(Example: MikeJollie sucks)")
+            msg2 = await self.bot.wait_for("message", timeout = 60.0, check = check)
+            content = msg2.content
+            await clean(prompt)
 
-            try:
-                msg2 = await self.bot.wait_for("message", timeout = 60.0, check = check)
-            except asyncio.TimeoutError:
-                await ctx.send("Process ended due to overtime.")
+            prompt = await ctx.send("What color do you want? You can type a hex number (6-digit number with `0x`prefix) or type these predefined colors: `green`, `default`, `red`, `orange`, `blue`.\n(Example: 0x00ffff)")
+            msg3 = await self.bot.wait_for("message", timeout = 60.0, check = check)
+            if msg3.content.upper() == 'RED':
+                color = discord.Color.red()
+            elif msg3.content.upper() == 'GREEN':
+                color = discord.Color.green()
+            elif msg3.content.upper() == 'BLUE':
+                color = discord.Color.blue()
+            elif msg3.content.upper() == 'ORANGE':
+                color = discord.Color.orange()
             else:
-                content = msg2.content
-
-                await clean(prompt)
-
-                prompt = await ctx.send("What color do you want? Supported colors: green, default (Discord's default color), red, orange, blue.")
-
                 try:
-                    msg3 = await self.bot.wait_for("message", timeout = 60.0, check = check)
-                except asyncio.TimeoutError:
-                    pass
-                else:
-                    if msg3.content.upper() == 'RED':
-                        color = discord.Color.red()
-                    elif msg3.content.upper() == 'GREEN':
-                        color = discord.Color.green()
-                    elif msg3.content.upper() == 'BLUE':
-                        color = discord.Color.blue()
-                    elif msg3.content.upper() == 'ORANGE':
-                        color = discord.Color.orange()
-
-                    await clean(prompt)
+                    hex_color = int(msg3.content, base = 16)
+                    color = discord.Color(value = hex_color)
+                except ValueError:
+                    await ctx.send("Invalid color number and option.")
+                    return
                 
+        except asyncio.TimeoutError:
+            await ctx.send("Process ended due to overtime.")
+            return
+        
+        embed = discord.Embed(
+            title = title, 
+            description = content, 
+            color = color
+        )
 
-                embed = discord.Embed(
-                    title = title, 
-                    description = content, 
-                    color = color
-                )
-
-                await ctx.send(embed = embed)
+        await ctx.send(embed = embed)
 
     @commands.command()
     async def embed(self, ctx, *, inp : str = ""):
