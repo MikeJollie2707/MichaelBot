@@ -36,6 +36,7 @@ class Pages:
         - AttributeError: This exception is raised when either `bot` and/or `channel` is wrong type.
         - RuntimeError: This exception is raised when `interupt` is `False` and `author` is `None`, or `interupt` is `True`
         and `author` is not `None`.
+        - discord.Forbidden: This exception is raised when the bot doesn't have permissions in general. Check if it has `Add Reactions`.
         '''
         if len(self.__page_list__) == 0:
             return
@@ -51,6 +52,7 @@ class Pages:
 
         def reaction_check(reaction, user):
             return reaction.message.id == message.id and user != message.author
+        
         while True:
             try:
                 reaction, user = await bot.wait_for("reaction_add", check = reaction_check, timeout = 120.0)

@@ -1365,6 +1365,10 @@ class Logging(commands.Cog):
 
                         except StopIteration:
                             break
+    
+    @commands.Cog.listener()
+    async def on_command_error():
+        pass
 
 
 def setup(bot):

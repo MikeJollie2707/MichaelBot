@@ -177,8 +177,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         embed.add_field(
             name = "Channels", 
             value = '''
-                        Text channels: %d
-                        Voice channels: %d
+                    Text channels: %d
+                    Voice channels: %d
                     ''' % (len(guild.text_channels), len(guild.voice_channels))
         )
         

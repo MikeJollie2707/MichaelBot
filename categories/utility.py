@@ -4,6 +4,8 @@ from discord.ext import commands
 import asyncio
 import random
 
+from categories.utilityfun.embedparser import parser
+
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
     def __init__(self, bot):
@@ -106,9 +108,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         )
         await ctx.send(embed = embed)
 
-    @commands.command(cooldown_after_parsing = True)
+    @commands.command()
     @commands.cooldown(1, 5.0, commands.BucketType.user)
-    async def embed(self, ctx, title : str = "", content : str = '', color : str = "", destination : str = ""):
+    async def embed_simple(self, ctx, title : str = "", content : str = '', color : str = "", destination : str = ""):
         '''
         Send an embed message.
         Note: You'll respond to 3 questions to set the embed you want.
@@ -189,6 +191,11 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 )
 
                 await ctx.send(embed = embed)
+
+    @commands.command()
+    async def embed(self, ctx, *, inp : str = ""):
+        embed = discord.Embed.from_dict(parser(inp))
+        await ctx.send(embed = embed)
 
     @commands.command(cooldown_after_parsing = True)
     @commands.cooldown(5, 10.0, commands.BucketType.user)

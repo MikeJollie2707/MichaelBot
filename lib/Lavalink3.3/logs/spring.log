@@ -1,3 +1,6 @@
-2020-01-28 15:59:01.838  INFO 15337 --- [Thread-1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
-2020-01-28 15:59:01.958  INFO 15337 --- [Thread-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
-2020-01-28 15:59:01.970  INFO 15337 --- [Thread-1] io.undertow.servlet                      : Destroying Spring FrameworkServlet 'dispatcherServlet'
+2020-02-04 16:25:15.548  INFO 17310 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : Connection closed from /127.0.0.1:58060 -- CloseStatus[code=1006, reason=]
+2020-02-04 16:25:15.654  INFO 17310 --- [XNIO-1 I/O-4] lavalink.server.io.SocketContext         : Shutting down 0 playing players.
+2020-02-04 16:25:15.655  INFO 17310 --- [XNIO-1 I/O-4] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
+2020-02-04 16:25:15.769  INFO 17310 --- [Thread-1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-02-04 16:25:15.771  INFO 17310 --- [Thread-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
+2020-02-04 16:25:15.780  INFO 17310 --- [Thread-1] io.undertow.servlet                      : Destroying Spring FrameworkServlet 'dispatcherServlet'
