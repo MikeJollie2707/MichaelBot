@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 import datetime
+import textwrap
 
 import gconfig
 
@@ -196,7 +197,7 @@ class Logging(commands.Cog):
                                 )
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color, 
                     timestamp = log_time
                 )
@@ -236,7 +237,7 @@ class Logging(commands.Cog):
 
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color
                 )
                 await log_channel.send(embed = embed)
@@ -261,7 +262,7 @@ class Logging(commands.Cog):
 
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color, 
                     timestamp = log_time
                 )
@@ -310,7 +311,7 @@ class Logging(commands.Cog):
 
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color, 
                     timestamp = log_time
                 )
@@ -357,7 +358,7 @@ class Logging(commands.Cog):
                 
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color, 
                     timestamp = log_time
                 )
@@ -402,7 +403,7 @@ class Logging(commands.Cog):
 
             embed = discord.Embed(
                 title = log_title,
-                description = log_content,
+                description = textwrap.dedent(log_content),
                 color = log_color,
                 timestamp = log_time
             )
@@ -455,7 +456,7 @@ class Logging(commands.Cog):
                     
                     embed = discord.Embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = textwrap.dedent(log_content), 
                         color = log_color, 
                         timestamp = log_time
                     )
@@ -561,7 +562,7 @@ class Logging(commands.Cog):
                 if flag:
                     embed = discord.Embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = textwrap.dedent(log_content), 
                         color = log_color, 
                         timestamp = log_time
                     )
@@ -648,7 +649,7 @@ class Logging(commands.Cog):
                 
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color,
                     timestamp = log_time
                 )
@@ -736,7 +737,7 @@ class Logging(commands.Cog):
                 
                 embed = discord.Embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = textwrap.dedent(log_content), 
                     color = log_color,
                     timestamp = log_time
                 )
@@ -788,7 +789,7 @@ class Logging(commands.Cog):
                     # Put embed inside here instead of outside because user can change multiple thing before pressing save.
                     embed = discord.Embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = textwrap.dedent(log_content), 
                         color = log_color, 
                         timestamp = log_time
                     )
@@ -834,7 +835,7 @@ class Logging(commands.Cog):
                     
                     embed = discord.Embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = textwrap.dedent(log_content), 
                         color = log_color, 
                         timestamp = log_time
                     )
@@ -886,7 +887,7 @@ class Logging(commands.Cog):
                             
                             embed = discord.Embed(
                                 title = log_title, 
-                                description = log_content, 
+                                description = textwrap.dedent(log_content), 
                                 color = log_color, 
                                 timestamp = log_time
                             )
@@ -950,7 +951,7 @@ class Logging(commands.Cog):
                                         
                                         embed = discord.Embed(
                                             title = log_title, 
-                                            description = log_content, 
+                                            description = textwrap.dedent(log_content), 
                                             color = log_color, 
                                             timestamp = log_time
                                         )
@@ -984,7 +985,7 @@ class Logging(commands.Cog):
                             
                             embed = discord.Embed(
                                 title = log_title, 
-                                description = log_content, 
+                                description = textwrap.dedent(log_content), 
                                 color = log_color, 
                                 timestamp = log_time
                             )
@@ -1045,7 +1046,7 @@ class Logging(commands.Cog):
                 if flag:
                     embed = discord.Embed(
                         title = log_title,
-                        description = log_content,
+                        description = textwrap.dedent(log_content),
                         color = log_color,
                         timestamp = log_time
                     )
@@ -1162,7 +1163,7 @@ class Logging(commands.Cog):
 
                 embed = discord.Embed(
                     title = log_title,
-                    description = log_content,
+                    description = textwrap.dedent(log_content),
                     color = log_color,
                     timestamp = log_time
                 )
@@ -1212,7 +1213,7 @@ class Logging(commands.Cog):
                 
                 embed = discord.Embed(
                     title = log_title,
-                    description = log_content,
+                    description = textwrap.dedent(log_content),
                     color = log_color,
                     timestamp = log_time
                 )
@@ -1263,7 +1264,7 @@ class Logging(commands.Cog):
                     
                     embed = discord.Embed(
                         title = log_title,
-                        description = log_content,
+                        description = textwrap.dedent(log_content),
                         color = log_color,
                         timestamp = log_time
                     )
@@ -1294,7 +1295,7 @@ class Logging(commands.Cog):
                     
                     embed = discord.Embed(
                         title = log_title,
-                        description = log_content,
+                        description = textwrap.dedent(log_content),
                         color = log_color,
                         timestamp = log_time
                     )
@@ -1348,7 +1349,7 @@ class Logging(commands.Cog):
                                 
                                 embed = discord.Embed(
                                     title = log_title,
-                                    description = log_content,
+                                    description = textwrap.dedent(log_content),
                                     color = log_color,
                                     timestamp = log_time
                                 )
@@ -1365,10 +1366,6 @@ class Logging(commands.Cog):
 
                         except StopIteration:
                             break
-    
-    @commands.Cog.listener()
-    async def on_command_error():
-        pass
 
 
 def setup(bot):
