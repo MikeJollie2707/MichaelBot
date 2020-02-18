@@ -15,6 +15,14 @@ class Dev(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
+    async def cog_check(self, ctx):
+        if isinstance(ctx.channel, discord.DMChannel):
+            raise commands.NoPrivateMessage()
+    
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send("This command is reserved for bot developers only!")
+
     @commands.command(hidden = True)
     @commands.check(is_dev)
     @commands.cooldown(1, 5.0, commands.BucketType.default)
@@ -34,9 +42,7 @@ class Dev(commands.Cog):
         print("Reloaded extension " + name)
     @reload.error
     async def reload_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.send("This command is reserved for bot developers only!")
-        elif isinstance(error, commands.ExtensionNotFound):
+        if isinstance(error, commands.ExtensionNotFound):
             await ctx.send("I cannot find this extension. Check your typo or the repo again.")
     
     @commands.command(hidden = True)
