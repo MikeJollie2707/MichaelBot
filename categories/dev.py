@@ -10,7 +10,7 @@ def is_dev(ctx):
     return ctx.author.id in [472832990012243969, 462726152377860109, 481934034130174010]
                             #MikeJollie#1067     Stranger.com#4843   MJ2#8267
 
-class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
+class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidden" : True}):
     '''Commands for developers to abuze power'''
     def __init__(self, bot):
         self.bot = bot
@@ -25,7 +25,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("This command is reserved for bot developers only!")
 
-    @commands.command(hidden = True)
+    @commands.command()
     @commands.cooldown(1, 5.0, commands.BucketType.default)
     async def reload(self, ctx, name):
         '''
@@ -46,7 +46,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         if isinstance(error, commands.ExtensionNotFound):
             await ctx.send("I cannot find this extension. Check your typo or the repo again.")
     
-    @commands.command(hidden = True)
+    @commands.command()
     async def reset_all_cooldown(self, ctx):
         '''
         Self-explanatory.
@@ -61,7 +61,8 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 command.reset_cooldown(ctx)
         await ctx.send("All cooldown reseted.")
 
-    @commands.command(hidden = True)
+    # I'm intending to move this command to a category called "Administrator" or something.
+    @commands.command()
     @commands.is_owner()
     async def leave_guild(self, ctx):
         '''
@@ -92,7 +93,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 except discord.HTTPException:
                     await ctx.send("Leaving the guild failed. Guess you'll stick with me for a while :smile:")
     
-    @commands.command(hidden = True, aliases = ["suggest_response"])
+    @commands.command(aliases = ["suggest_response"])
     @commands.cooldown(1, 60.0, commands.BucketType.default)
     async def report_response(self, ctx, message_ID : int, *, response : str):
         '''
