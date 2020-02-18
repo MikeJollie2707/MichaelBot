@@ -12,8 +12,10 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+        if not hasattr(self.bot, "guild_config"):
+            self.bot.guild_config = {}
+
         guild_list = self.bot.guilds
-        #guild_info = Record("./data/guild.db")
         for guild in guild_list:
             # guild configuration
             try:
@@ -35,22 +37,14 @@ class Events(commands.Cog):
                 json.dump(default_config, fout, indent = 4)
                 print("File %s created." % file_name)
                 fout.close()
-
-            # guild data
-            #guild_info.create_table(str(guild.id))
-            #for member in guild.members:
-            #    guild_info.create_row(member_id = member.id, description = "", money = 0, warns = 0)
         
-
-        
-
         print("Logged in as")
         print(self.bot.user.name)
         print(self.bot.user.id)
         print("------------")
         await self.bot.change_presence(
             status = discord.Status.idle, 
-            activity = discord.Game(" with Discord API")
+            activity = discord.Game(name = " with Discord")
         )
 
     @commands.Cog.listener()
@@ -58,6 +52,11 @@ class Events(commands.Cog):
         if not hasattr(self.bot, "online_at"):
             self.bot.online_at = datetime.utcnow()
     
+    @commands.Cog.listener()
+    async def on_disconnect(self):
+        if hasattr(self.bot, "guild_config"):
+            pass
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.bot.user:
@@ -82,7 +81,7 @@ class Events(commands.Cog):
             random_response = random.randint(0, len(RESPONSE_LIST) - 1)
             await dm_chan.send(RESPONSE_LIST[random_response])
         
-        #await self.bot.process_commands(message) # uncomment this if this event is outside of a cog.
+        #await bot.process_commands(message) # uncomment this if this event is outside of a cog.
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -95,27 +94,31 @@ class Events(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             async with ctx.typing(): # This will make the bot type for 10 seconds.
                 n = 0
+        
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+
+        elif isinstance(error, commands.BadArgument):
+            if ctx.command.name == "kick" or ctx.command.name == "ban":
+                return
+
+        elif isinstance(error, commands.NoPrivateMessage):
+            return
+        
+        elif isinstance(error, commands.DisabledCommand):
+            await ctx.send("Sorry, but this command is disabled for now, it'll be back soon :thumbsup:")
+
+        elif isinstance(error, commands.TooManyArguments):
+            await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+        
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("Hey there slow down! %0.2f seconds left!" % error.retry_after)
+
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send("You are missing the following permission(s) to execute this command: " + str(error.missing_perms))
         
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send("I'm missing the following permission(s) to execute this command: " + str(error.missing_perms))
-        
-        elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
-        
-        elif isinstance(error, commands.TooManyArguments):
-            await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
-        
-        elif isinstance(error, commands.BadArgument):
-            if ctx.command.name == "kick" or ctx.command.name == "ban":
-                return
-        
-        elif isinstance(error, commands.DisabledCommand):
-            await ctx.send("Sorry, but this command is disabled for now, it'll be back soon :thumbsup:")
-        
-        elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Hey there slow down! %0.2f seconds left!" % error.retry_after)
         
         else:
             error_text = "This command raised the following exception. Please copy and report it to the developer using `report`. Thank you and sorry for this inconvenience."
