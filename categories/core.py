@@ -15,12 +15,10 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         self.bot.help_command = BigHelp()
         self.bot.help_command.cog = self
-    
+
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
-            await ctx.send("Boi this is not the place to use commands.")
-            return False
-        return True
+            raise commands.NoPrivateMessage()
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
@@ -101,7 +99,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         embed = discord.Embed(
             color = discord.Color.green(),
-            timestampt = datetime.datetime.utcnow()
+            timestamp = datetime.datetime.utcnow()
         )
 
         embed.set_author(
@@ -369,7 +367,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
 
     @commands.command()
-    @commands.bot_has_permissions(add_reactions = True, send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
     async def changelog(self, ctx):
         '''
         Show the latest 10 changes of the bot.
@@ -378,7 +376,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Add Reactions`, `Send Messages`.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
         '''
         channel_id = 644393721512722432 # Do not change
         channel = self.bot.get_channel(channel_id)
@@ -398,7 +396,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await paginator.event(self.bot, ctx.channel, False, ctx.author)
 
     @commands.command()
-    @commands.bot_has_permissions(add_reactions = True, send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
     async def help(self, ctx, categoryOrcommand = ""):
         '''
         Show compact help about the bot, a command, or a category.
@@ -410,7 +408,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 3:** {prefix}{command_name} Core
                        
         **You need:** None.
-        **I need:** `Add Reactions`, `Send Messages`.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
         '''
 
         help_command = SmallHelp(ctx)
