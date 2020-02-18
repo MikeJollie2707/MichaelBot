@@ -26,8 +26,8 @@ class Dev(commands.Cog):
         **Cooldown:** 5 seconds (global cooldown)
         **Example:** {prefix}{command_name} categories.templates.navigate
 
-        You need: dev status.
-        I need: send_messages.
+        **You need:** `dev status`.
+        **I need:** `Send Messages`.
         '''
         self.bot.reload_extension(name)
         await ctx.send("Reloaded extension " + name)
@@ -47,8 +47,8 @@ class Dev(commands.Cog):
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        You need: dev status.
-        I need: send_messages.
+        You need: `dev status`.
+        I need: `Send Messages`.
         '''
         for command in self.bot.commands:
             if command.is_on_cooldown(ctx):
@@ -56,83 +56,18 @@ class Dev(commands.Cog):
         await ctx.send("All cooldown reseted.")
 
     @commands.command(hidden = True)
-    @commands.check(is_dev)
-    @commands.cooldown(1, 10.0, commands.BucketType.default)
-    async def diary(self, ctx, *, msg : str = ""):
-        '''
-        Act as a commit on GitHub, but personal.
-        **Usage:** <prefix>**{command_name} <message>
-        **Cooldown:** 10 seconds (global cooldown)
-        **Example:** {prefix}{command_name} Created diary
-
-        You need: dev status.
-        I need: send_messages.
-        '''
-        fout = open("./diary.txt", 'a')
-        fout.write("--------------------------------\n")
-        fout.write("Writer: %s\n" % ctx.author.name)
-        fout.write("Content: %s\n" % msg)
-        fout.write("\n\n")
-        fout.close()
-        await ctx.send("Journal recorded.")
-
-    @commands.command(hidden = True)
-    @commands.check(is_dev)
-    @commands.cooldown(1, 120.0, commands.BucketType.default)
-    async def create_changelog(self, ctx):
-        try:
-            length = 0
-
-            await ctx.send("Input version")
-            msg = self.bot.wait_for("message", timeout = 60.0)
-            version = "**__%s__**" % msg
-            length += len(version)
-
-            await ctx.send("Any bug fixes (Yes/No)?")
-            msg = self.bot.wait_for("message", timeout = 60.0)
-            if msg.content.upper() == "NO" or msg.content.upper() == "N":
-                bugs = ""
-            else:
-                bugs = "**Bug Fixes:**\n"
-            length += len(bugs)
-
-            bug_list = []
-            await ctx.send("Type all the bug fixed here. Type `Done` when you're finished.")
-            
-            content = ""
-            while content.upper() != "DONE":
-                msg = self.bot.wait_for("message", timeout = 60.0)
-
-                content = msg.content
-                if content.upper() == "DONE":
-                    break
-                
-                bug_list.append(content)
-                length += len("- %s\n" % content)
-                if length > 2000:
-                    bug_list.pop()
-                    await ctx.send("Content exceeded 2000 characters.")
-                    break
-            
-            
-
-
-            if length > 2000:
-                await ctx.send("Content exceeded 2000 characters.")
-                return
-            
-            await ctx.send("Any changes (type NO to skip)")
-            msg = self.bot.wait_for("message", timeout = 60.0)
-            
-
-
-
-        except asyncio.TimeoutError:
-            pass
-
-    @commands.command(hidden = True)
     @commands.is_owner()
     async def leave_guild(self, ctx):
+        '''
+        Leave the current guild.
+        Note: This does not delete the server's config file yet.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** `Owner of the server` OR `dev status`.
+        **I need:** `Send Messages`.
+        '''
         await ctx.send("Are you sure for me to leave this guild?")
         def check(msg):
             return msg.author == ctx.author
@@ -149,7 +84,7 @@ class Dev(commands.Cog):
                     await ctx.send("Bye! :wave:")
                     await ctx.guild.leave()
                 except discord.HTTPException:
-                    await ctx.send("Leaving the guild failed.")
+                    await ctx.send("Leaving the guild failed. Guess you'll stick with me for a while :smile:")
     
     @commands.command(hidden = True, aliases = ["suggest_response"])
     @commands.check(is_dev)
@@ -164,7 +99,7 @@ class Dev(commands.Cog):
         **Cooldown:** 60 seconds per 1 use (global)
         **Examples:** {prefix}{command_name} 670493266629886002 I like this idea, but the library doesn't allow so.
 
-        **You need:** dev status.
+        **You need:** `dev status`.
         **I need:** `Send Messages`.
         '''
 
@@ -195,7 +130,6 @@ class Dev(commands.Cog):
                     )
 
                     await message.edit(embed = response_embed)
-
 
 
 def setup(bot):
