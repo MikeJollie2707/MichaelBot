@@ -10,7 +10,7 @@ def is_dev(ctx):
     return ctx.author.id in [472832990012243969, 462726152377860109, 481934034130174010]
                             #MikeJollie#1067     Stranger.com#4843   MJ2#8267
 
-class Dev(commands.Cog):
+class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands for developers to abuze power'''
     def __init__(self, bot):
         self.bot = bot
@@ -18,13 +18,14 @@ class Dev(commands.Cog):
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
+        elif not is_dev(ctx):
+            raise commands.CheckFailure()
     
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("This command is reserved for bot developers only!")
 
     @commands.command(hidden = True)
-    @commands.check(is_dev)
     @commands.cooldown(1, 5.0, commands.BucketType.default)
     async def reload(self, ctx, name):
         '''
@@ -46,7 +47,6 @@ class Dev(commands.Cog):
             await ctx.send("I cannot find this extension. Check your typo or the repo again.")
     
     @commands.command(hidden = True)
-    @commands.check(is_dev)
     async def reset_all_cooldown(self, ctx):
         '''
         Self-explanatory.
@@ -93,7 +93,6 @@ class Dev(commands.Cog):
                     await ctx.send("Leaving the guild failed. Guess you'll stick with me for a while :smile:")
     
     @commands.command(hidden = True, aliases = ["suggest_response"])
-    @commands.check(is_dev)
     @commands.cooldown(1, 60.0, commands.BucketType.default)
     async def report_response(self, ctx, message_ID : int, *, response : str):
         '''
