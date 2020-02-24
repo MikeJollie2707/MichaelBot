@@ -3,6 +3,7 @@
 ## Table of Content
 
 * [Introduction](#introduction)
+* [Conventions](#conventions)
 
 <a name = "introduction"></a>
 
