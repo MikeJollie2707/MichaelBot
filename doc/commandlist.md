@@ -2,10 +2,11 @@
 
 ## Table of Content
 
-* [Introduction](#introduction)
-* [Conventions](#conventions)
+- [Introduction](#introduction)
+- [Conventions](#conventions)
+  - [Parameters](#conventions-param)
 
-<a name = "introduction"></a>
+<a id = "introduction"></a>
 
 ## Introduction
 
@@ -15,11 +16,13 @@ This document will tries to be detailed and easy-to-understand (consider it as a
 
 If you want to invite the bot, you won't be able to, yet. You can however, ask MikeJollie#1067 to invite the bot via MichaelBotPy support server: <https://discord.gg/jeMeyNw>
 
-<a name = "conventions"></a>
+<a id = "conventions"></a>
 
 ## Conventions
 
 These are the conventions used throughout this document:
+
+<a id = "conventions-param"></a>
 
 ### Parameters
 
