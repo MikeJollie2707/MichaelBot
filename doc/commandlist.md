@@ -1,5 +1,12 @@
 # Command List
 
+## Table of Content
+
+* [Introduction](#introduction)
+
+<a name = "introduction"></a>
+## Introduction
+
 This is the help for almost every commands in MichaelBotPy bot.
 
 This document will tries to be detailed and easy-to-understand (consider it as a bigger `help`).
@@ -68,4 +75,8 @@ These are the conventions used throughout this document:
   - **Example 5:** `profile MikeJollie#1067` (most preferred)
 - **Expected Output:** *An embed contains information*
 
+3. `serverinfo`: Provide information about the current server.
 
+- **Alias:** `server-info`
+- **Syntax:** `serverinfo` or `server-info`
+- **Example:** `serverinfo`
