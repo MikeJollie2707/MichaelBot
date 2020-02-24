@@ -5,6 +5,7 @@
 * [Introduction](#introduction)
 
 <a name = "introduction"></a>
+
 ## Introduction
 
 This is the help for almost every commands in MichaelBotPy bot.
@@ -12,6 +13,8 @@ This is the help for almost every commands in MichaelBotPy bot.
 This document will tries to be detailed and easy-to-understand (consider it as a bigger `help`).
 
 If you want to invite the bot, you won't be able to, yet. You can however, ask MikeJollie#1067 to invite the bot via MichaelBotPy support server: <https://discord.gg/jeMeyNw>
+
+<a name = "conventions"></a>
 
 ## Conventions
 
