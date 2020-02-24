@@ -5,10 +5,14 @@
 - [Introduction](#introduction)
 - [Conventions](#conventions)
   - [Parameters](#conventions-param)
+  - [Permissions](#convetions-permit)
+  - [Prefix](#convetions-prefix)
+  - [User/Member](#conventions-user/member)
+  - [Cooldown](#conventions-cooldown)
+- [Core commands](#core)
+  - [`info`](#info)
 
-<a id = "introduction"></a>
-
-## Introduction
+## Introduction <a id = "introduction"></a>
 
 This is the help for almost every commands in MichaelBotPy bot.
 
@@ -16,9 +20,7 @@ This document will tries to be detailed and easy-to-understand (consider it as a
 
 If you want to invite the bot, you won't be able to, yet. You can however, ask MikeJollie#1067 to invite the bot via MichaelBotPy support server: <https://discord.gg/jeMeyNw>
 
-<a id = "conventions"></a>
-
-## Conventions
+## Conventions <a id = "conventions"></a>
 
 These are the conventions used throughout this document:
 
@@ -33,22 +35,30 @@ These are the conventions used throughout this document:
 - If the parameter has space, use `"this is considered a param"` to make it a param.
   - Example: if it's `profile [mention/ID/name/nickname]` and the `name` is `Hello World` then you will use `profile "Hello World"`. Using `profile Hello World` will most likely **raise error**.
 
+<a id = "conventions-permit"></a>
+
 ### Permissions
 
 - `You need`: The required permission **you** need to have to execute the command.
 - `I need`: The required permission **the bot** need to have to execute the command.
 - This document will asssume the bot has `Send Messages` and `Read Messages` in the channel you provoke the command.
 
+<a id = "conventions-prefix"></a>
+
 ### Prefix
 
 - This document will assume you know **how to provoke a command** ~~using `<prefix><command_name>`~~. If you don't know the prefix of the bot, use `@MichaelBotPy prefix` or use the bot's mention as the prefix (not recommended).
   - The default prefix is `$` ~~no it doesn't have $sudo~~.
+
+<a id = "conventions-user/member"></a>
 
 ### User/Member
 
 - When this document refers to **"user"**, it refers to a **Discord user regardless of the server**.
 - When this document refers to **"member"**, it refers to a **Discord user in a certain server(s)**.
 - The difference will be clarified later on in this document.
+
+<a id = "conventions-cooldown"></a>
 
 ### Cooldown
 
@@ -65,7 +75,11 @@ These are the conventions used throughout this document:
     - `member`: The cooldown applies to that **certain member**.
       - Example: If the member `MikeJollie` invoke `test` n times, **that certain member** can not invoke `MikeJollie` **in the same server he invoked** again until x seconds are passed. **He can invoke the command in a different server in that duration however**.
 
+<a id = "core"></a>
+
 ## Core commands
+
+<a id = "info"></a>
 
 1. `info`: Provide information about the bot.
 
@@ -91,7 +105,7 @@ These are the conventions used throughout this document:
 - **Example:** `serverinfo`
 - **Expected Output:** *An embed contains information*
 
-4. `prefix`: View and set the prefix for the bot. **Unstable command**
+4. `prefix`: View and set the prefix for the bot. `Unstable`.
 
 - **Syntax:** `prefix [new prefix]`
 - **Cooldown:** `5 seconds per 1 use (global)`
@@ -102,4 +116,11 @@ These are the conventions used throughout this document:
   - **Example 1:** `Current prefix: <current prefix>`
   - **Example 2:** `New prefix: /invoke`
 - **You need:** `Manage Server`
+
+5. `note`: Provide syntax convention for `help` and `help-all`. You most likely should read [Conventions](#conventions) if that's why you're reading this.
+
+- **Syntax:** `note`
+- **Example:** `note`
+- **Expected Output:** *Undefined*
+
 
