@@ -88,6 +88,14 @@ Any sort of contributions are highly appreciated.
 
 - [ ] Find a database.
 - [ ] Debug everything.
+  - [x] `Core`
+  - [x] `Dev`
+  - [ ] `Logger`
+  - [ ] `Moderation`
+  - [ ] `Music`
+  - [ ] `Server`
+  - [ ] `Utility`
+  - [ ] `Events`
 - [ ] Find a way to deal with broken embed display on mobile.
 
 ## Acknowledgement
