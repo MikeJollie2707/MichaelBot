@@ -16,6 +16,13 @@ ATTRS = [
     "AUTHOR",
     "FIELDS"
 ]
+# This contains all possible attributes in all options. DON'T USE THIS in parser().
+KEYS = [
+    "NAME",
+    "VALUE",
+    "INLINE",
+    "ICON_URL"
+]
 
 class InvalidDiscordSyntax(Exception):
     pass
@@ -28,25 +35,44 @@ class CustomEmbed:
         self.embed = {}
     
     def TITLE_attr(self, title):
-        if isinstance(title, str):
-            self.embed["title"] = title
-        else:
-            raise TypeError("'title' must be 'str'")
+        self.embed["title"] = title
     
     def DESCRIPTION_attr(self, description):
-        if isinstance(description, str):
-            self.embed["description"] = description
-        else:
-            raise TypeError("'description' must be 'str'")
+        self.embed["description"] = description
+    
+    def URL_attr(self, url):
+        pass
+
+    def TIMESTAMP_attr(self, timestamp_confirm):
+        try:
+            if int(timestamp_confirm) == 1:
+                self.embed["timestamp"] = datetime.datetime.utcnow()
+        except ValueError:
+            raise InvalidEmbedSyntax("`TIMESTAMP` must be 1 or 0")
 
     def COLOR_attr(self, color):
         try:
             color = int(color)
         except ValueError:
-            raise TypeError("'color' must be 'int'")
+            raise InvalidEmbedSyntax("`COLOR` must be in numbers (int).")
         
         self.embed["color"] = color
     
+    def FOOTER_attr(self, footer_info):
+        pass
+
+    def IMAGE_attr(self, image):
+        pass
+
+    def THUMBNAIL_attr(self, thumbnail):
+        pass
+
+    def VIDEO_attr(self, video):
+        pass
+
+    def PROVIDER_attr(self, provider_info):
+        pass
+
     def AUTHOR_attr(self, author_info):
         keywords = [
             "NAME",
@@ -72,17 +98,17 @@ class CustomEmbed:
                     if params != "":
                         author["name"] = params
                     else:
-                        pass # Raise exception here
+                        raise InvalidDiscordSyntax("`NAME` attribute in `AUTHOR` is required")
                 if command == "ICON_URL":
                     if params != "":
                         author["icon_url"] = params
                     else:
-                        pass # Raise exception here
+                        raise InvalidEmbedSyntax("Must specify `ICON_URL` in `AUTHOR` if mentioned")
         
         if len(author) != 0:
             self.embed["author"] = author
         else:
-            pass # raise exception here
+            raise InvalidEmbedSyntax("`AUTHOR` has wrong syntax. Must specify attribute `NAME`")
     
     def FIELDS_attr(self, fields_info):
         keywords = [
@@ -113,29 +139,28 @@ class CustomEmbed:
                     if params != "":
                         field["name"] = params
                     else:
-                        pass # Raise exception here
+                        raise InvalidDiscordSyntax("`NAME` attribute in `FIELDS` is required.")
                 if command == "VALUE":
                     if params != "":
                         field["value"] = params
                     else:
-                        pass # Raise exception here
+                        raise InvalidDiscordSyntax("`VALUE` attribute in `FIELDS` is required.")
                 if command == "INLINE":
                     if params != "":
                         field["inline"] = bool(int(params))
                         if "name" not in field:
-                            pass # Raise exception here
+                            raise InvalidDiscordSyntax("`NAME` attribute in `FIELDS` is required.")
                         else:
                             fields.append(field)
                     else:
-                        pass # Raise different exception
+                        raise InvalidEmbedSyntax("`INLINE` attribute in `FIELDS` is required.")
                 
                 if "name" not in field:
-                    pass # Raise exception here
+                    raise InvalidDiscordSyntax("`NAME` attribute in `FIELDS` is required.")
                 
                 params = ""
         
         self.embed["fields"] = fields
-                
 
 
 
