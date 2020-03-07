@@ -87,11 +87,14 @@ Any sort of contributions are highly appreciated.
 ## TODO
 
 - [ ] Find a database.
+  - [ ] Learn PostgreSQL
+  - [ ] Split `Logging` into different channels.
+  - [ ] Track many stuffs.
 - [ ] Debug everything.
   - [x] `Core`
   - [x] `Dev`
   - [ ] `Logger`
-  - [ ] `Moderation`
+  - [x] `Moderation`
   - [ ] `Music`
   - [ ] `Server`
   - [ ] `Utility`
