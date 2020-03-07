@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 import datetime
+import textwrap
 
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.menu import Menu
@@ -19,6 +20,8 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
+        else:
+            return True
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
@@ -42,32 +45,32 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         embed.add_field(
             name  = "Team:", 
-            value = '''
+            value = textwrap.dedent('''
                     **Owner:** <@462726152377860109>
                     **Developer:** <@472832990012243969>
-                    ''', 
+                    '''), 
             inline = False
         )
         embed.add_field(
             name  = "Bot info:", 
-            value = '''
+            value = textwrap.dedent('''
                     **Language:** Python
                     **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
-                    **Repo:** [This is private!](https://github.com/MikeJollie2707/MichaelBotPy)
-                    ''', 
+                    **Repo:** [This is currently private!](https://github.com/MikeJollie2707/MichaelBotPy)
+                    '''), 
             inline = False
         )
         current_time = datetime.datetime.utcnow()
         up_time = current_time - self.bot.online_at
         embed.add_field(
             name  = "Host Device:",
-            value = '''
+            value = textwrap.dedent('''
                     **Machine:** HP-EliteDesk-800-G1-USDT
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
                     **Memory:** 15.5 GiB of RAM
                     **OS:** Ubuntu 18.04.3
                     **Bot uptime:** %d day(s) %d minute(s) %d second(s)
-                    ''' % (up_time.days, up_time.seconds / 60, up_time.seconds % 60),
+                    ''' % (up_time.days, up_time.seconds / 60, up_time.seconds % 60)),
             inline = False
         )
         embed.set_author(
@@ -174,10 +177,11 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         )
         embed.add_field(
             name = "Channels", 
-            value = '''
+            value = textwrap.dedent('''
                     Text channels: %d
                     Voice channels: %d
                     ''' % (len(guild.text_channels), len(guild.voice_channels))
+            )
         )
         
         online = 0
