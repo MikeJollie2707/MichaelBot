@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from datetime import datetime
+import textwrap
 
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to moderate actions such as kick, ban, etc.'''
@@ -17,7 +18,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
         Kick a member.
 
-        **Usage:** <prefix>**{command_name}** <name/ID/nickname/mention> [reason]
+        **Usage:** <prefix>**{command_name}** <ID/mention/name/nickname> [reason]
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example 1:** {prefix}{command_name} MikeJollie Dumb
         **Example 2:** {prefix}{command_name} <@472832990012243969> Still dumb
@@ -30,7 +31,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         guild = ctx.guild
         victim_name = str(member)
         if reason == None:
-            reason = "Not provided."
+            reason = "`None provided`"
 
         try:
             await guild.kick(member, reason = reason)
@@ -39,7 +40,12 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         else:
             embed = discord.Embed(
                 title = "Member Kicked",
-                description = "User `%s` has been **kicked** from **%s**\n**Reason:** %s" % (victim_name, guild.name, reason), # Does not use ''' because of mobile formatting.
+                description = textwrap.dedent(
+                    '''
+                    **User `%s` has been kicked out from this server.**.
+                    **Reason:** %s
+                    ''' % (victim_name, guild.name, reason)
+                ),
                 color = 0x000000,
                 timestamp = datetime.utcnow()
             )
@@ -70,14 +76,25 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         guild = ctx.guild
         victim_name = str(user)
         if reason == None:
-            reason = "Not provided."
+            reason = "`None provided`"
         try:
             await guild.ban(user, reason = reason)
         except discord.Forbidden as f:
             await ctx.send("I cannot ban someone that's higher than me!")
         else:
-            await ctx.send("**User `%s` has been banned from %s**" % (victim_name, guild.name))
-            await ctx.send("**Reason:** `%s`" % reason)
+            embed = discord.Embed(
+                title = "Member Banned",
+                description = textwrap.dedent(
+                    '''
+                    **User `%s` has been banned from this server.**
+                    **Reason:** %s
+                    ''' % (victim_name, guild.name, reason)
+                ),
+                color = 0x000000,
+                timestamp = datetime.utcnow()
+            )
+
+            await ctx.send(embed = embed)
     @ban.error
     async def ban_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
@@ -105,9 +122,24 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         
         try:
             await guild.ban(discord.Object(id = id), reason = reason)
-        await ctx.send("**User `%s` has been banned from %s**" % (str(id), guild))
-        await ctx.send("**Reason:** `%s`" % reason)
-    
+        except discord.HTTPException as httperr:
+            await ctx.send("I can't ban this person. The most common one would be your id is wrong.")
+            return
+        else:
+            embed = discord.Embed(
+                title = "User Banned",
+                description = textwrap.dedent(
+                    '''
+                    **User `%d` has been banned from this server.**
+                    **Reason:** %s
+                    ''' % (id, guild.name, reason)
+                ),
+                color = 0x000000,
+                timestamp = datetime.utcnow()
+            )
+
+            await ctx.send(embed = embed)
+
     @commands.command()
     @commands.has_permissions(ban_members = True)
     @commands.bot_has_permissions(ban_members = True)
@@ -125,12 +157,28 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
 
         guild = ctx.guild
-        
-        await guild.unban(discord.Object(id = id), reason = reason)
-        await ctx.send("**User `%s` has been unbanned from %s**" % (str(id), guild))
-        await ctx.send("**Reason:** `%s`" % reason)
 
-    @commands.command(hidden = True)
+        try:
+            await guild.unban(discord.Object(id = id), reason = reason)
+        except discord.HTTPException:
+            await ctx.send("The ban hammer is too heavy! Make sure the id is correct, and that the user is already banned.")
+            return
+        else:
+            embed = discord.Embed(
+                title = "Member Unbanned",
+                description = textwrap.dedent(
+                    '''
+                    **User `%d` has been unbanned from this server.**
+                    **Reason:** %s
+                    ''' % (id, reason)
+                ),
+                color = 0x000000,
+                timestamp = datetime.utcnow()
+            )
+            
+            await ctx.send(embed = embed)
+
+    @commands.command(hidden = True, disabled = True)
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_permissions(kick_members = True)
     @commands.cooldown(1, 5.0, commands.BucketType.guild)
