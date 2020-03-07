@@ -6,8 +6,8 @@ import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
-TOKEN = os.getenv("token2")
-prefix = os.getenv("prefix2")
+TOKEN = os.getenv("token")
+prefix = os.getenv("prefix")
 
 bot = commands.Bot(command_prefix = commands.when_mentioned_or(prefix))
 

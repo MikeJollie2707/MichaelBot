@@ -101,6 +101,8 @@ class Events(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.name == "kick" or ctx.command.name == "ban":
                 return
+            else:
+                await ctx.send("Wrong argument type. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
 
         elif isinstance(error, commands.NoPrivateMessage):
             return

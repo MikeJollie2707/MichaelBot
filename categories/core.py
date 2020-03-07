@@ -211,7 +211,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.has_permissions(manage_guild = True)
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(1, 5.0, commands.BucketType.default)
-    async def prefix(self, ctx, pref : str = None):
+    async def prefix(self, ctx, new_prefix : str = None):
         '''
         View and set the prefix for the bot.
 
@@ -224,14 +224,14 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        if pref == None:
+        if new_prefix == None:
             await ctx.send("Current prefix: " + self.bot.command_prefix)
         else:
-            self.bot.command_prefix = pref
+            self.bot.command_prefix = new_prefix
             await ctx.send("New prefix: " + self.bot.command_prefix)
             # Save the prefix
             import os
-            os.environ["prefix2"] = pref
+            os.environ["prefix2"] = new_prefix
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
