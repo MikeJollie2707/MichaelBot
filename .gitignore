@@ -1,6 +1,7 @@
 *.env
 
 __pycache__/
+lib/
 ./categories/__pycache__
 ./categories/templates/__pycache__
 
