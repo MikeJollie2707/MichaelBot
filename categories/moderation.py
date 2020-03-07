@@ -27,7 +27,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **I need:** `Kick Members`, `Send Messages`.
         '''
 
-        guild = ctx.author.guild
+        guild = ctx.guild
         victim_name = str(member)
         if reason == None:
             reason = "Not provided."
@@ -67,7 +67,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **I need:** `Ban Members`, `Send Messages`.
         '''
 
-        guild = ctx.author.guild
+        guild = ctx.guild
         victim_name = str(user)
         if reason == None:
             reason = "Not provided."
@@ -98,8 +98,13 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **You need:** `Ban Members`.
         **I need:** `Ban Members`, `Send Messages`.
         '''
-        guild = ctx.author.guild
-        await guild.ban(discord.Object(id = id), reason = reason)
+
+        guild = ctx.guild
+        if reason == None:
+            reason = "`None provided`"
+        
+        try:
+            await guild.ban(discord.Object(id = id), reason = reason)
         await ctx.send("**User `%s` has been banned from %s**" % (str(id), guild))
         await ctx.send("**Reason:** `%s`" % reason)
     
@@ -118,7 +123,9 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **You need:** `Ban Members`.
         **I need:** `Ban Members`, `Send Messages`.
         '''
-        guild = ctx.author.guild
+
+        guild = ctx.guild
+        
         await guild.unban(discord.Object(id = id), reason = reason)
         await ctx.send("**User `%s` has been unbanned from %s**" % (str(id), guild))
         await ctx.send("**Reason:** `%s`" % reason)
