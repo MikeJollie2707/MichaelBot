@@ -185,12 +185,14 @@ class Logging(commands.Cog):
 
                 log_content = '''
                                 Content: %s
+                                Embed count: %d
                                 Author: <@%d>
                                 Deleted by: <@%d>
                                 ----------------------------
                                 Channel: <#%s>
                                 ''' % (
                                     message.content, 
+                                    len(message.embeds),
                                     message.author.id, 
                                     executor_id, 
                                     message.channel.id
@@ -1367,6 +1369,41 @@ class Logging(commands.Cog):
                         except StopIteration:
                             break
 
+    @commands.Cog.listener("on_command_error")
+    async def command_error(self, ctx, error):
+        if self.log_check(ctx.guild):
+            config = gconfig.get_config(ctx.guild.id)
+            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+
+            log_title = "Command Raised Error"
+            log_content = '''
+                            A command raised an error.
+                            Command Signature:
+                            ```%s```
+                            Message:
+                            ```%s```
+                            Error:
+                            ```%s```
+                            ''' % (ctx.command.signature, ctx.message.content, error)
+            log_color = self.color_other
+            log_time = datetime.datetime.utcnow()
+
+            embed = discord.Embed(
+                title = log_title,
+                description = textwrap.dedent(log_content),
+                color = log_color,
+                timestamp = log_time
+            )
+            embed.set_author(
+                name = ctx.author, 
+                icon_url = ctx.author.avatar_url
+            )
+            embed.set_footer(
+                text = ctx.author, 
+                icon_url = ctx.author.avatar_url
+            )
+
+            await log_channel.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(Logging(bot))
