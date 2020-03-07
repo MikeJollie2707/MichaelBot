@@ -20,6 +20,8 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             raise commands.NoPrivateMessage()
         elif not is_dev(ctx):
             raise commands.CheckFailure()
+
+        return True
     
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -136,6 +138,24 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
                     )
 
                     await message.edit(embed = response_embed)
+
+    @commands.command()
+    @commands.cooldown(1, 60.0, commands.BucketType.default)
+    async def rename_bot(self, ctx, old : str, new : str):
+        await ctx.send("Are you sure to change the bot's name from `%s` to `%s`?" % (old, new))
+        def check(msg):
+            return msg.channel == ctx.channel and msg.author == ctx.author
+        try:
+            msg = await self.bot.wait_for("message", check = check, timeout = 30.0)
+        except asyncio.TimeoutError:
+            await ctx.send("Process ended.")
+            return
+        
+        if msg.content.upper() == "Y":
+            await self.bot.user.edit(username = new)
+            await ctx.send("Process completed. Please note that you still have to manually edit the role in each guild yourself.")
+        else:
+            await ctx.send("Process cancelled.")
 
 
 def setup(bot):
