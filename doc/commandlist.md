@@ -14,11 +14,11 @@
 
 ## Introduction <a id = "introduction"></a>
 
-This is the help for almost every commands in MichaelBotPy bot.
+This is the help for almost every commands in MichaelBot bot.
 
 This document will tries to be detailed and easy-to-understand (consider it as a bigger `help`).
 
-If you want to invite the bot, you won't be able to, yet. You can however, ask MikeJollie#1067 to invite the bot via MichaelBotPy support server: <https://discord.gg/jeMeyNw>
+If you want to invite the bot, you won't be able to, yet. You can however, ask `MikeJollie#1067` to invite the bot via MichaelBot support server: <https://discord.gg/jeMeyNw>
 
 ## Conventions <a id = "conventions"></a>
 
