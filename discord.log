@@ -1,0 +1,7 @@
+2020-03-27 15:03:47,078:INFO:discord.client: logging in using static token
+2020-03-27 15:03:47,773:INFO:discord.gateway: Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2020-03-27 15:03:47,775:INFO:discord.gateway: Shard ID None has sent the IDENTIFY payload.
+2020-03-27 15:03:47,942:INFO:discord.gateway: Shard ID None has connected to Gateway: ["gateway-prd-main-47q2",{"micros":47361,"calls":["discord-sessions-prd-1-50",{"micros":43995,"calls":["start_session",{"micros":36546,"calls":["api-prd-main-fj9l",{"micros":32906,"calls":["get_user",{"micros":3243},"add_authorized_ip",{"micros":1747},"get_guilds",{"micros":3020},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":24,"calls":[]},"presence_connect",{"micros":1,"calls":[]}]}]}] (Session ID: 1286d35e5ceff5b35cfb09e4e64c57eb).
+2020-03-27 15:03:51,048:INFO:discord.client: Cleaning up tasks.
+2020-03-27 15:03:51,049:INFO:discord.client: Cleaning up after 4 tasks.
+2020-03-27 15:03:52,145:INFO:discord.client: Closing the event loop.
