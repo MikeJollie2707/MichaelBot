@@ -67,7 +67,46 @@ Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
 ## Development notes
 
-- To run the bot, run the file `DiscordBot.py`.
+I would prefer if you don't run the bot yourself. The source here is for educational purpose.
+
+Nevertheless, the step to run this bot is fairly simple:
+
+- Clone this directory.
+
+``` git
+git clone https://github.com/MikeJollie2707/MichaelBotPy.git
+```
+
+- Go into the `setup` directory, create a token `json` file, name it whatever.
+
+``` json
+# Let's say I'm creating a bot.json. Here's what the inside should look like
+{
+    "token": "<token here>"
+}
+```
+
+- Go into the `config.json` file, add your bot in the following pattern:
+
+``` json
+{
+    "TheIndexWithoutSpace":{
+        "name": "Undecided if optional or not",
+        "version": "Optional",
+        "description": "Optional, but recommended",
+
+        "prefix": "Required",
+        "token": "The token file you created (bot.json)"
+    }
+}
+```
+
+- To run the bot, run the file `bot.py`.
+
+``` terminal
+python3.6 bot.py TheIndexWithoutSpace_in_configjson
+```
+
 - To edit categories, look into `categories` folder.
 - Do not alter `data` without reasonable reason to do so.
 
@@ -99,7 +138,7 @@ Any sort of contributions are highly appreciated.
   - [ ] `Server`
   - [ ] `Utility`
   - [ ] `Events`
-- [ ] Find a way to deal with broken embed display on mobile.
+- [x] Find a way to deal with broken embed display on mobile.
 
 ## Acknowledgement
 
