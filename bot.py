@@ -16,7 +16,7 @@ def setup(bot_name):
     initial_bot_state = json.load(fin)
 
     try:
-        fi = open(f"./setup/{initial_bot_state['bots'][bot_name]['token']}")
+        fi = open(f"./setup/{initial_bot_state[bot_name]['token']}")
         bot_config = json.load(fi)
     except FileNotFoundError:
         print("Cannot open file containing the token.")
@@ -26,8 +26,8 @@ def setup(bot_name):
         print(traceback.print_exc())
     else:
         TOKEN = bot_config["token"]
-        prefix = initial_bot_state["bots"][bot_name]["prefix"]
-        description = initial_bot_state["bots"][bot_name]["description"]
+        prefix = initial_bot_state[bot_name]["prefix"]
+        description = initial_bot_state[bot_name]["description"]
     
     return (TOKEN, prefix, description)
 
@@ -40,7 +40,7 @@ def setupLogger(enable : bool = True):
 
 if __name__ == "__main__":
     argc = len(sys.argv)
-    
+
     bot_info = None
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.

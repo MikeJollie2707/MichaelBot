@@ -1,20 +1,18 @@
 {
-    "bots": {
-        "MichaelBot": {
-            "name": "MichaelBot",
-            "version": "1.4.15.3",
-            "description": "A utility bot",
+    "MichaelBot": {
+        "name": "MichaelBot",
+        "version": "1.4.15.3",
+        "description": "A utility bot",
 
-            "prefix": "$",
-            "token": "bot1.json"
-        },
-        "MichaelBeta": {
-            "name": "MichaelBotPy (beta)",
-            "version": "1.4.15.16",
-            "description": "A testing bot for MichaelBot",
-            
-            "prefix": "!",
-            "token": "botbeta.json"
-        }
+        "prefix": "$",
+        "token": "bot1.json"
+    },
+    "MichaelBeta": {
+        "name": "MichaelBotPy (beta)",
+        "version": "1.4.15.16",
+        "description": "A testing bot for MichaelBot",
+        
+        "prefix": "!",
+        "token": "botbeta.json"
     }
 }
