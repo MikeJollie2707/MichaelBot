@@ -327,6 +327,15 @@ class Logging(commands.Cog):
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
                 log_title = "Message Edited"
+
+                # Basically, we generally have 3 types of messages: normal text, attachments and embeds.
+                # However, attachments can't be edited, so that's one task down.
+                # For the rest, just do like message_delete.
+                content_message = ("**Content before:** %s\n**Content after:** %s" % (before.content, after.content)) if after.content != "" else ""
+
+                # We don't support edited embed because displaying both dict form is too large.
+                # TODO: Find an alternative for this.
+
                 log_content = '''
                                 **Before:** %s
                                 **After:** %s
