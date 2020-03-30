@@ -286,6 +286,15 @@ class Logging(commands.Cog):
                 config = gconfig.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
                 
+                # We're attempting to retrieve the message here...
+                try:
+                    channel = self.bot.get_channel(payload.channel_id)
+                    edited_message = await channel.fetch_message(payload.message_id)
+                except discord.HTTPException:
+                    pass
+                except discord.NotFound:
+                    channel = None
+                
                 log_title = "Message Edited"
                 log_content = '''
                                 :warning: The content of the message is not found.
