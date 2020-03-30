@@ -337,12 +337,11 @@ class Logging(commands.Cog):
                 # TODO: Find an alternative for this.
 
                 log_content = '''
-                                **Before:** %s
-                                **After:** %s
-                                Author: <@%d>
+                                %s%s
+                                **Author:** %s
                                 ----------------------------
-                                Channel: <#%s>
-                                ''' % (before.content, after.content, after.author.id, after.channel.id)
+                                **Channel:** %s
+                                ''' % (content_message, after.author.mention, after.channel.mention)
                 log_color = self.color_change
                 log_time = after.edited_at
 
