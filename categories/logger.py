@@ -281,7 +281,7 @@ class Logging(commands.Cog):
         if payload.cached_message != None: # on_message_edit
             return
         else:
-            guild = self.bot.get_guild(self.bot.get_channel(payload.channel_id))
+            guild = self.bot.get_channel(payload.channel_id).guild
             if self.log_check(guild):
                 config = gconfig.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
