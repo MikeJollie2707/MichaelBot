@@ -376,7 +376,7 @@ class Logging(commands.Cog):
             log_time = None
 
             reason = "Not provided."
-            executor_id = 0
+            executor = None
             
             async for entry in guild.audit_logs(action = discord.AuditLogAction.ban, limit = 1):        
                 if entry.reason == None:
@@ -400,13 +400,15 @@ class Logging(commands.Cog):
                     color = log_color, 
                     timestamp = log_time
                 )
+
+                embed.set_thumbnail(url = user.avatar_url)
                 embed.set_author(
-                    name = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    name = str(executor),
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
 
                 await log_channel.send(embed = embed)
@@ -447,13 +449,15 @@ class Logging(commands.Cog):
                     color = log_color, 
                     timestamp = log_time
                 )
+
+                embed.set_thumbnail(url = user.avatar_url)
                 embed.set_author(
-                    name = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    name = str(executor),
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
 
                 await log_channel.send(embed = embed)
@@ -547,12 +551,12 @@ class Logging(commands.Cog):
                     )
                     embed.set_thumbnail(url = member.avatar_url)
                     embed.set_author(
-                        name = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        name = str(executor),
+                        icon_url = executor.avatar_url
                     )
                     embed.set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        text = str(executor),
+                        icon_url = executor.avatar_url
                     )
 
                     await log_channel.send(embed = embed)
@@ -574,6 +578,14 @@ class Logging(commands.Cog):
                     timestamp = log_time
                 )
                 embed.set_thumbnail(url = member.avatar_url)
+                embed.set_author(
+                    name = str(member),
+                    icon_url = member.avatar_url
+                )
+                embed.set_footer(
+                    text = str(member),
+                    icon_url = member.avatar_url
+                )
 
                 await log_channel.send(embed = embed)
 
