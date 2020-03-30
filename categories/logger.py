@@ -296,11 +296,15 @@ class Logging(commands.Cog):
                     channel = None
                 
                 log_title = "Message Edited"
-                log_content = '''
-                                :warning: The content of the message is not found.
-                                Message ID: %d
-                                Channel: <#%s>
-                                ''' % (payload.message_id, payload.channel_id)
+                log_content = f'''
+                                :warning: The original content of the message is not found.
+                                **Current content:** {edited_message.content}
+                                **Author:** {edited_message.author.mention}
+                                ----------------------------
+                                **Message ID:** {payload.message_id}
+                                **Message URL:** [Click here to jump to the message]({edited_message.jump_url})
+                                **Channel:** {channel.mention if channel is not None else "Channel not found."}
+                                '''
                 log_color = self.color_change
 
                 embed = discord.Embed(
