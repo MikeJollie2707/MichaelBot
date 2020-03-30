@@ -306,11 +306,13 @@ class Logging(commands.Cog):
                                 **Channel:** {channel.mention if channel is not None else "Channel not found."}
                                 '''
                 log_color = self.color_change
+                log_time = edited_message.edited_at
 
                 embed = discord.Embed(
                     title = log_title, 
                     description = textwrap.dedent(log_content), 
-                    color = log_color
+                    color = log_color,
+                    timestamp = log_time
                 )
 
                 embed.set_thumbnail(
@@ -320,9 +322,12 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
+        # We don't log bot messages yet.
         if after.author.bot == False:
             guild = before.guild
+            # First we check if the logging feature is enabled in that guild.
             if self.log_check(guild):
+                # We retrieve the logging channel for that guild.
                 config = gconfig.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -366,7 +371,9 @@ class Logging(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -378,21 +385,22 @@ class Logging(commands.Cog):
             reason = "Not provided."
             executor = None
             
+            # Simply retrieve the latest ban log and get info from that.
             async for entry in guild.audit_logs(action = discord.AuditLogAction.ban, limit = 1):        
                 if entry.reason == None:
                     reason = "Not provided."
                 else:
                     reason = entry.reason
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
                 
-                log_content = '''
-                                User: <@%d>
-                                User name: %s
-                                Reason: %s
+                log_content = f'''
+                                **User:** {user.mention}
+                                **User Name:** {user}
+                                **Reason:** {reason}
                                 ----------------------------
-                                Banned by: <@%d>
-                                '''  % (user.id, str(user), reason, executor_id)
+                                **Banned by:** {executor.mention}
+                                '''
 
                 embed = discord.Embed(
                     title = log_title, 
@@ -415,7 +423,9 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, user):
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -425,23 +435,24 @@ class Logging(commands.Cog):
             log_time = None
 
             reason = ""
-            executor_id = None
+            executor = None
             
+            # Similar to on_member_ban
             async for entry in guild.audit_logs(action = discord.AuditLogAction.unban, limit = 1):        
                 if entry.reason == None:
                     reason = "Not provided."
                 else:
                     reason = entry.reason
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
                 
-                log_content = '''
-                                User: <@%d>
-                                User name: %s
-                                Reason: %s
+                log_content = f'''
+                                **User:** {user.mention}
+                                **User Name:** {user}
+                                **Reason:** {reason}
                                 ----------------------------
-                                Unbanned by: <@%d>
-                                '''  % (user.id, str(user), reason, executor_id)
+                                **Unbanned by:** {executor.mention}
+                                '''
                 
                 embed = discord.Embed(
                     title = log_title, 
@@ -465,21 +476,25 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         guild = member.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Member Joined"
             log_content = '''
-                            Member: <@%d>
-                            Member name: %s
+                            **Member:** %s
+                            **Member Name:** %s
                             ----------------------------
-                            Member ID: %d
-                            Account created on: %d/%d/%d %d:%s %s (UTC)
+                            **Member ID:** %d
+                            **Account created on:** %d/%d/%d %d:%s %s (UTC)
                             ''' % (
-                                member.id,
+                                member.mention,
                                 str(member),
                                 member.id,
+
                                 member.created_at.month,
                                 member.created_at.day,
                                 member.created_at.year,
@@ -511,7 +526,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         guild = member.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -521,26 +539,35 @@ class Logging(commands.Cog):
             log_time = None
 
             reason = "Not provided."
-            executor_id = 0
+            executor = None
             
+            # When a member is banned/kicked/left by their will, this event will be triggered. 
+            # For banning, we already have on_member_ban to deal with.
+            # Now we have to separate whether a member is kicked or left on their own will.
+            # The approach is to look at the latest kick log and determine if it's the same user.
+            # Now, this approach has a flaw, and that's when the kicked member rejoin and left, then it'll log that member as kicked twice. (Not tested yet, just by observating the code)
+            # A probably solution for that is to retrieve the time between the on_member_remove, but that's straight up hardcode.
+
+            # We retrieve the latest entry.
             async for entry in guild.audit_logs(limit = 1):
+                # If that entry is a kick entry with the same member, then it's a kick. Again, this still has the same flaw.
                 if entry.target.id == member.id and entry.action == discord.AuditLogAction.kick:
                     if entry.reason == None:
                         reason = "Not provided."
                     else:
                         reason = entry.reason
                     
-                    executor_id = entry.user.id
+                    executor = entry.user
                     log_time = entry.created_at
 
                     log_title = "Member Kicked"
-                    log_content = '''
-                                Member: <@%d>
-                                Member name: %s
-                                Reason: %s
-                                ----------------------------
-                                Executor: <@%d>
-                                '''  % (member.id, str(member), reason, executor_id)
+                    log_content = f'''
+                                    **Member:** {member.mention}
+                                    **Member Name:** {member}
+                                    **Reason:** {reason}
+                                    ----------------------------
+                                    **Kicked by:** {executor.mention}
+                                    '''
                     log_color = self.color_moderation
                     
                     embed = discord.Embed(
@@ -560,16 +587,17 @@ class Logging(commands.Cog):
                     )
 
                     await log_channel.send(embed = embed)
-            
+
+                # We still want to display the leave message, so we need this.
                 log_title = "Member Left"
-                log_content = '''
-                                Member: <@%d>
-                                Member name: %s
+                log_content = f'''
+                                **Member:** {member.mention}
+                                **Member name:** {member}
                                 ----------------------------
-                                Member ID: %d
-                                ''' % (member.id, str(member), member.id)
+                                **Member ID:** {member.id}
+                                '''
                 log_color = self.color_guild_join_leave
-                log_time = datetime.datetime.utcnow() # entry.created_at is unreliable
+                log_time = datetime.datetime.utcnow()
 
                 embed = discord.Embed(
                     title = log_title, 
@@ -592,7 +620,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         guild = before.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -601,46 +632,63 @@ class Logging(commands.Cog):
             log_color = self.color_change
             log_time = None
 
-            executor_id = 0
-            flag = False # avoid displaying embed if the member change their activity / status
+            executor = None
+            flag = False # Avoid displaying embed if the member change their activity / status because it's spammy (and unnecessary).
 
             async for entry in guild.audit_logs(limit = 1):
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
 
+                # If the role changed.
                 if entry.action == discord.AuditLogAction.member_role_update:
                     flag = True
 
+                    # First, we check is it a role remove, or a role add.
+                    # The check is simple, if the previous role list is longer, it's a role remove, if the after role list is longer, it's a role add; there's no otherwise.
+                    # A role add can be performed multiple roles (add_roles() in dpy), so we display all of them. Same goes for role remove.
+
                     old_roles = before.roles
                     new_roles = after.roles
+
                     role_change = []
                     if len(old_roles) < len(new_roles):
                         log_title = "Member Role Added"
-                        role_change = ["<@&%d>" % role.id for role in new_roles if role not in old_roles]
+                        role_change = [role.mention for role in new_roles if role not in old_roles]
 
-                        log_content = '''
-                                        Member: <@%d>
-                                        Member name: %s
-                                        Role added: %s
+                        # The role_change will contain something like this: ["<@&1234>", "<@&2345>", ...]
+
+                        log_content = f'''
+                                        **Member:** {after.mention}
+                                        **Member Name:** {after}
+                                        **Role added:** {self.striplist(role_change)}
                                         ----------------------------
-                                        Added by: <@%d>
-                                        ''' % (after.id, str(after), role_change[0], executor_id)
-                    else:
+                                        **Added by:** {executor.mention}
+                                        '''
+                    elif len(old_roles) > len(new_roles):
                         log_title = "Member Role Removed"
-                        role_change = ["<@&%d>" % role.id for role in old_roles if role not in new_roles]
+                        role_change = [role.mention for role in old_roles if role not in new_roles]
 
-                        log_content = '''
-                                        Member: <@%d>
-                                        Member name: %s
-                                        Role removed: %s
+                        log_content = f'''
+                                        **Member:** {after.mention}
+                                        **Member Name:** {after}
+                                        **Role removed:** {str(role_change).strip("[']")}
                                         ----------------------------
-                                        Removed by: <@%d>
-                                        ''' % (after.id, str(after), role_change[0], executor_id)
+                                        **Removed by:** {executor.mention}
+                                        '''
+                    # There was an unknown bug that print an empty embed for no reason.
+                    # TODO: Find out what happened.
+                    else:
+                        flag = False
+                # If the nickname changed OR they're mute/deafen/... We currently don't update voice channel logging yet (cuz it's unnecessary in my opinion)
                 elif entry.action == discord.AuditLogAction.member_update:
                     flag = True
 
+                    # The approach is simple: check the before nickname and the after nickname.
+                    # There are also cases that the before nickname is None and vice versa, so we need to set accordingly to the original name.
+
                     old_nick = before.nick
                     new_nick = after.nick
+
                     if old_nick == new_nick:
                         return
                     elif old_nick == None:
@@ -649,12 +697,12 @@ class Logging(commands.Cog):
                         new_nick = after.name
                     
                     log_title = "Nickname Changed"
-                    log_content = '''
-                                    **Before:** %s
-                                    **After:** %s
+                    log_content = f'''
+                                    **Before:** {old_nick}
+                                    **After:** {new_nick}
                                     ----------------------------
-                                    Edited by: <@%d>
-                                    ''' % (old_nick, new_nick, executor_id)
+                                    **Edited by:** {executor.mention}
+                                    '''
                 
                 if flag:
                     embed = discord.Embed(
@@ -663,13 +711,15 @@ class Logging(commands.Cog):
                         color = log_color, 
                         timestamp = log_time
                     )
+
+                    embed.set_thumbnail(url = after.avatar_url)
                     embed.set_author(
-                        name = str(entry.user), 
-                        icon_url = entry.user.avatar_url
+                        name = str(executor), 
+                        icon_url = executor.avatar_url
                     )
                     embed.set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        text = str(executor),
+                        icon_url = executor.avatar_url
                     )
 
                     await log_channel.send(embed = embed)
@@ -677,7 +727,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel):
         guild = channel.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -686,60 +739,70 @@ class Logging(commands.Cog):
             log_color = self.color_create
             log_time = None
 
-            executor_id = 0
+            executor = None
 
+            # Simply look into the audit log and get the information.
+            # There are 3 types of channel we're interested: TextChannel, VoiceChannel and CategoryChannel (aka category)
+            # We simply just check if it's an instance of one of those three.
             async for entry in guild.audit_logs(limit = 1, action = discord.AuditLogAction.channel_create):
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
 
                 if isinstance(channel, discord.TextChannel):
                     log_title = "Text Channel Created"
                     log_content = '''
-                                    Name: `%s`
-                                    Type: Text Channel
-                                    Category: `%s`
-                                    Created by: <@%d>
+                                    **Name:** `%s`
+                                    **Jump to:** %s
+                                    **Category:** `%s`
+                                    **Created by:** %s
                                     ----------------------------
-                                    ID: %d
-                                    Is NSFW: %s
-                                    Position: %d
+                                    **ID:** %d
+                                    **Is NSFW:** %s
+                                    **Position:** %d
                                     ''' % (
-                                        channel.name, 
+                                        channel.name,
+                                        channel.mention,
                                         channel.category.name if channel.category != None else "<None>", 
-                                        executor_id, 
+                                        executor.mention,
+
                                         channel.id, 
                                         "Yes" if channel.is_nsfw() else "No", 
                                         channel.position
                                     )
 
                 elif isinstance(channel, discord.VoiceChannel):
+                    # We'll probably cover some info about bitrate in the future.
                     log_title = "Voice Channel Created"
                     log_content = '''
-                                    Name: `%s`
-                                    Type: Voice Channel
-                                    Category: `%s`
-                                    Created by: <@%d>
+                                    **Name:** `%s`
+                                    **Jump to:** %s
+                                    **Category:** `%s`
+                                    **Created by:** %s
                                     ----------------------------
-                                    ID: %d
-                                    Position: %d
+                                    **ID:** %d
+                                    **Position:** %d
                                     ''' % (
                                         channel.name, 
+                                        channel.mention,
                                         channel.category.name if channel.category != None else "<None>",
-                                        executor_id, 
+                                        executor.mention,
+
+                                        channel.id, 
                                         channel.position
                                     )
 
                 elif isinstance(channel, discord.CategoryChannel):
                     log_title = "Category Created"
                     log_content = '''
-                                    Name: `%s`
-                                    Created by: <@%d>
+                                    **Name:** `%s`
+                                    **Created by:** %s
                                     ----------------------------
-                                    ID: %d
-                                    Position: %d
+                                    **ID:** %d
+                                    **Position:** %d
                                     ''' % (
                                         channel.name, 
-                                        entry.user.id, 
+                                        executor.mention, 
+
                                         channel.id, 
                                         channel.position
                                     )
@@ -751,12 +814,12 @@ class Logging(commands.Cog):
                     timestamp = log_time
                 )
                 embed.set_author(
-                    name = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    name = str(executor),
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
 
                 await log_channel.send(embed = embed)
@@ -764,7 +827,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel):
         guild = channel.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
             
@@ -773,27 +839,28 @@ class Logging(commands.Cog):
             log_color = self.color_delete
             log_time = None
 
-            executor_id = 0
+            executor = None
 
+            # Same idea as on_guild_channel_create.
             async for entry in guild.audit_logs(limit = 1, action = discord.AuditLogAction.channel_delete):
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
 
                 if isinstance(channel, discord.TextChannel):
                     log_title = "Text Channel Deleted"
                     log_content = '''
-                                    Name: `%s`
-                                    Type: Text Channel
-                                    Category: `%s`
-                                    Deleted by: <@%d>
+                                    **Name:** `%s`
+                                    **Category:** `%s`
+                                    **Deleted by:** %s
                                     ----------------------------
-                                    ID: %d
-                                    Was NSFW: %s
-                                    Position: %d
+                                    **ID:** %d
+                                    **Was NSFW:** %s
+                                    **Position:** %d
                                     ''' % (
                                         channel.name, 
                                         channel.category.name if channel.category != None else "<None>", 
-                                        executor_id, 
+                                        executor.mention,
+
                                         channel.id, 
                                         "Yes" if channel.is_nsfw() else "No", 
                                         channel.position
@@ -802,17 +869,18 @@ class Logging(commands.Cog):
                 elif isinstance(channel, discord.VoiceChannel):
                     log_title = "Voice Channel Deleted"
                     log_content = '''
-                                    Name: `%s`
-                                    Type: Voice Channel
-                                    Category: `%s`
-                                    Deleted by: <@%d>
+                                    **Name:** `%s`
+                                    **Category:** `%s`
+                                    **Deleted by:** %s
                                     ----------------------------
-                                    ID: %d
-                                    Position: %d
+                                    **ID:** %d
+                                    **Position:** %d
                                     ''' % (
                                         channel.name, 
                                         channel.category.name if channel.category != None else "<None>",
-                                        executor_id, 
+                                        executor.mention,
+
+                                        channel.id, 
                                         channel.position
                                     )
                     log_time = entry.created_at
@@ -820,14 +888,15 @@ class Logging(commands.Cog):
                 elif isinstance(channel, discord.CategoryChannel):
                     log_title = "Category Deleted"
                     log_content = '''
-                                    Name: `%s`
-                                    Created by: <@%d>
+                                    **Name:** `%s`
+                                    **Deleted by:** %s
                                     ----------------------------
-                                    ID: %d
-                                    Position: %d
+                                    **ID:** %d
+                                    **Position:** %d
                                     ''' % (
                                         channel.name, 
-                                        executor_id, 
+                                        executor.mention,
+
                                         channel.id, 
                                         channel.position
                                     )
@@ -839,12 +908,12 @@ class Logging(commands.Cog):
                     timestamp = log_time
                 )
                 embed.set_author(
-                    name = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    name = str(executor),
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
 
                 await log_channel.send(embed = embed)
@@ -852,7 +921,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_update(self, before, after):
         guild = before.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -861,28 +933,27 @@ class Logging(commands.Cog):
             log_color = self.color_change
             log_time = None
 
-            executor_id = 0
+            executor = None
 
+            # We have 4 changes possible to a channel: name, topic, position and permission.
+            # name and topic is self-explanatory: we just need to check the prev name/topic and after name/topic.
+            # We don't support position yet, because it's spammy if you move a channel way up/down. TODO: Find alternatives.
+            # Permission is one heck of a problem, and will be explained clearer down below.
             async for entry in guild.audit_logs(action = discord.AuditLogAction.channel_update, limit = 1):
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
 
                 if before.name != after.name:
                     log_title = "Channel Name Changed"
-                    log_content = '''
-                                    Channel: <#%d>
-                                    **Before:** %s
-                                    **After:** %s
+                    log_content = f'''
+                                    **Channel:** {after.mention}
+                                    **Before:** {before.name}
+                                    **After:** {after.name}
                                     ----------------------------
-                                    Channel ID: %d
-                                    Changed by: <@%d>
-                                    ''' % (
-                                        after.id,
-                                        before.name, 
-                                        after.name, 
-                                        after.id, 
-                                        executor_id
-                                    )
+                                    **Channel ID:** {after.id}
+                                    **Changed by:** {executor.mention}
+                                    '''
+                    
                     # Put embed inside here instead of outside because user can change multiple thing before pressing save.
                     embed = discord.Embed(
                         title = log_title, 
@@ -891,44 +962,28 @@ class Logging(commands.Cog):
                         timestamp = log_time
                     )
                     embed.set_author(
-                        name = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        name = str(executor),
+                        icon_url = executor.avatar_url
                     )
                     embed.set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        text = str(executor),
+                        icon_url = executor.avatar_url
                     )
 
                     await log_channel.send(embed = embed)
                 # Archived, can cause spamming if move a channel way up/down.
                 if before.position != after.position:
                     pass
-                    #log_title = "Channel position changed"
-                    #log_content = '''
-                    #                **Before:** %d
-                    #                **After:** %d
-                    #                ----------------------------
-                    #                Channel ID: %d
-                    #                Category before: %s
-                    #                Category after: %s
-                    #                Executor: <@%d>
-                    #                ''' % (before.position, after.position, after.id, before.category, after.category, executor)
                 if before.topic != after.topic and before.topic != None: # For some reasons, changing the name of a new channel will also call this.
                     log_title = "Channel Topic Changed"
-                    log_content = '''
-                                    Channel: <#%d>
-                                    **Before:** %s
-                                    **After:** %s
+                    log_content = f'''
+                                    **Channel:** {after.mention}
+                                    **Before:** {before.topic}
+                                    **After:** {after.topic}
                                     ----------------------------
-                                    Channel ID: %d
-                                    Changed by: <@%d>
-                                    ''' % (
-                                        after.id,
-                                        before.topic, 
-                                        after.topic, 
-                                        after.id, 
-                                        executor_id
-                                    )
+                                    **Channel ID:** {after.id}
+                                    **Changed by:** {executor.mention}
+                                    '''
                     
                     embed = discord.Embed(
                         title = log_title, 
@@ -950,14 +1005,15 @@ class Logging(commands.Cog):
             # class PermissionOverwrite { self.send_messages = True/None/False; self.read_messages = True/None/False;...}
             # before.overwrites and after.overwrites return sth like this:
             # {"Role/Member": PermissionOverwrite, "Role/Member": PermissionOverwrite,...}
+            # which is a dict.
             #
             # So first of, we check if there are any new keys or missing keys
-            # If yes, then it's permission added, and we look for the key and its value.
-            # If no, then we iterate (by iter()) through all the attributes in PermissionOverwrite for before and after
-            # If there's sth different, then we log it right away, because a user can edit many...
-            # ...permissions before one press "Save Changes".
+            # If yes, then it's permission added/removed, and we look for the key and its value.
+            # If no, we'll check every keys if is there any differences in the PermissionOverwrite part (remember, Channel.overwrites is a dict)
+            # Then we iterate (by iter()) through all the attributes in PermissionOverwrite for before and after
+            # If there's sth different, then we log it right away, because a user can edit many permissions before one press "Save Changes".
             async for entry in guild.audit_logs(action = discord.AuditLogAction.overwrite_update, limit = 1):
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
 
                 if before.overwrites != after.overwrites:
@@ -967,19 +1023,20 @@ class Logging(commands.Cog):
 
                     for key in after.overwrites:
 
-                        # If there's a permission added/removed (add/remove permission for a member/role)
+                        # If there's a permission added (add permission for a member/role)
                         if key not in before.overwrites:
                             log_title = "Channel Permission Added"
                             log_content = '''
-                                            Target: <@%s> (%s)
+                                            **Target:** %s (%s)
                                             ----------------------------
-                                            Channel: <#%d>
-                                            Added by: <@%d>
+                                            **Channel:** %s
+                                            **Added by:** %s
                                             ''' % (
-                                                ("&" + str(key.id)) if isinstance(key, discord.Role) else str(key.id), 
+                                                key.mention, 
                                                 "Role" if isinstance(key, discord.Role) else "Member", 
-                                                after.id, 
-                                                executor_id
+
+                                                after.mention, 
+                                                executor.mention
                                             )
                             
                             embed = discord.Embed(
@@ -989,17 +1046,18 @@ class Logging(commands.Cog):
                                 timestamp = log_time
                             )
                             embed.set_author(
-                                name = str(entry.user),
-                                icon_url = entry.user.avatar_url
+                                name = str(executor),
+                                icon_url = executor.avatar_url
                             )
                             embed.set_footer(
-                                text = str(entry.user),
-                                icon_url = entry.user.avatar_url
+                                text = str(executor),
+                                icon_url = executor.avatar_url
                             )
 
                             await log_channel.send(embed = embed)
                             
                         else:
+                            # If the current key with the overwrite is different, then we start the process.
                             if before.overwrites[key] != after.overwrites[key]:
                                 if isinstance(key, discord.Role):
                                     target_type = "Role"
@@ -1017,67 +1075,121 @@ class Logging(commands.Cog):
                             iter_before = iter(before_overwrite)
                             iter_after = iter(after_overwrite)
 
+                            granted = []
+                            neutralized = []
+                            denied = []
+
                             while True:
                                 try:
-                                    i_before = next(iter_before) # A tuple of (perm, False/None/True)
+                                    i_before = next(iter_before) # i_before and i_after is a tuple of (perm, False/None/True)
                                     i_after = next(iter_after)
 
                                     if i_before != i_after:
                                         permission = self.channel_dpyperms_to_dperms(i_after[0])
                                         if i_after[1]:
-                                            action = "Granted"
-                                        elif i_after[1] is None:
-                                            action = "Neutralized"
-                                        else:
-                                            action = "Denied"
-                                    
-                                        log_title = "Channel Permission %s" % action
-                                        log_content = '''
-                                                        Permission: `%s`
-                                                        Target: <@%s> (%s)
-                                                        ----------------------------
-                                                        Channel: <#%d>
-                                                        Executor: <@%d>
-                                                        ''' % (
-                                                            permission, 
-                                                            ("&" + str(key.id)) if isinstance(key, discord.Role) else str(key.id), 
-                                                            target_type, 
-                                                            after.id, 
-                                                            executor_id
-                                                        )
-                                        
-                                        embed = discord.Embed(
-                                            title = log_title, 
-                                            description = textwrap.dedent(log_content), 
-                                            color = log_color, 
-                                            timestamp = log_time
-                                        )
-                                        embed.set_author(
-                                            name = str(entry.user),
-                                            icon_url = entry.user.avatar_url
-                                        )
-                                        embed.set_footer(
-                                            text = str(entry.user),
-                                            icon_url = entry.user.avatar_url
-                                        )
+                                            action = "`%s`: " % permission
+                                            if i_before[1] is None:
+                                                action += "`Neutralized -> Granted`"
+                                            else:
+                                                action += "`Denied -> Granted`"
 
-                                        await log_channel.send(embed = embed)
-                                    
+                                            granted.append(action)
+                                        elif i_after[1] is None:
+                                            action = "`%s`: " % permission
+                                            if i_before[1]:
+                                                action += "`Granted -> Neutralized`"
+                                            else:
+                                                action += "`Denied -> Neutralized`"
+
+                                            neutralized.append(action)
+                                        else:
+                                            action = "`%s`: " % permission
+                                            if i_before[1] is None:
+                                                action += "`Neutralized -> Denied`"
+                                            else:
+                                                action += "`Granted -> Denied`"
+
+                                            denied.append(action)
                                 except StopIteration:
                                     break
+                                
+                            if len(granted) == 0 and len(neutralized) == 0 and len(denied) == 0:
+                                continue
+                            
+                            # Visual format...
+                            # TODO: Change the process to local functions cuz it's repetitive af
+
+                            # Remove the [] and ' in the list...
+                            granted_message = self.striplist(granted)
+                            neutralized_message = self.striplist(neutralized)
+                            denied_message = self.striplist(denied)
+                            
+                            if granted_message == "":
+                                pass
+                            elif neutralized_message == "" and granted_message != "" and denied_message != "":
+                                neutralized_message = '\n\n'
+                            elif granted_message != "" and neutralized_message != "" and denied_message == "":
+                                granted_message += '\n\n'
+                            elif granted_message != "" and neutralized_message != "" and denied_message != "":
+                                granted_message += '\n\n'
+                                neutralized_message += '\n\n'
+                            
+                            # Now the string will be like `Perm`: `PreState -> NewState`, `Perm`: `PreState -> NewState`, ...
+                            # This part is to insert newline after the comma.
+                            for i in range(0, len(granted_message)):
+                                if granted_message[i] == ',':
+                                    granted_message = granted_message[0:(i + 1)] + '\n' + granted_message[(i + 1):]
+                            for i in range(0, len(neutralized_message)):
+                                if neutralized_message[i] == ',':
+                                    neutralized_message = neutralized_message[0:(i + 1)] + '\n' + neutralized_message[(i + 1):]
+                            for i in range(0, len(denied_message)):
+                                if denied_message[i] == ',':
+                                    denied_message = denied_message[0:(i + 1)] + '\n' + denied_message[(i + 1):]
+
+
+                            log_title = "Channel Permission Changed"
+                            log_content = f'''
+                                            **Target:** {key.mention} ({target_type})
+
+                                            {granted_message}{neutralized_message}{denied_message}
+
+                                            ----------------------------
+                                            **Channel:** {after.mention}
+                                            **Changed by:** {executor.mention}
+                                            '''
+                            
+                            embed = discord.Embed(
+                                title = log_title,
+                                description = textwrap.dedent(log_content),
+                                color = log_color,
+                                timestamp = log_time
+                            )
+
+                            embed.set_author(
+                                name = str(executor),
+                                icon_url = executor.avatar_url
+                            )
+                            embed.set_footer(
+                                text = str(executor),
+                                icon_url = executor.avatar_url
+                            )
+
+                            await log_channel.send(embed = embed)
+
                     for key in before.overwrites:
                         if key not in after.overwrites:
                             log_title = "Channel Permission Removed"
                             log_content = '''
-                                            Target: <@%s> (%s)
+                                            **Target:** %s (%s)
                                             ----------------------------
-                                            Channel: <#%d>
-                                            Removed by: <@%d>
+                                            **Channel:** %s
+                                            **Removed by:** %s
                                             ''' % (
-                                                ("&" + str(key.id)) if isinstance(key, discord.Role) else str(key.id), 
+                                                key.mention, 
                                                 "Role" if isinstance(key, discord.Role) else "Member", 
+
                                                 after.id, 
-                                                executor_id
+                                                executor.mention
                                             )
                             
                             embed = discord.Embed(
@@ -1087,19 +1199,21 @@ class Logging(commands.Cog):
                                 timestamp = log_time
                             )
                             embed.set_author(
-                                name = str(entry.user),
-                                icon_url = entry.user.avatar_url
+                                name = str(executor),
+                                icon_url = executor.avatar_url
                             )
                             embed.set_footer(
-                                text = str(entry.user),
-                                icon_url = entry.user.avatar_url
+                                text = str(executor),
+                                icon_url = executor.avatar_url
                             )
 
                             await log_channel.send(embed = embed)
 
     @commands.Cog.listener()
     async def on_guild_update(self, before, after):
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(after.guild):
+            # We retrieve the logging channel for that guild
             config = gconfig.get_config(after.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -1108,10 +1222,10 @@ class Logging(commands.Cog):
             log_color = self.color_change
             log_time = None
 
-            executor_id = 0
+            executor = None
 
             async for entry in after.guild.audit_logs(action = discord.AuditLogAction.guild_update, limit = 1):
-                executor_id = entry.user.id
+                executor = entry.user
                 log_time = entry.created_at
 
                 flag = False
@@ -1119,26 +1233,19 @@ class Logging(commands.Cog):
                 if hasattr(entry.before, "name") and hasattr(entry.after, "name"):
                     flag = True
                     log_title = "Server Name Changed"
-                    log_content = '''
-                                    **Before:** %s
-                                    **After:** %s
+                    log_content = f'''
+                                    **Before:** {before.name}
+                                    **After:** {after.name}
                                     ----------------------------
-                                    Changed by: <@%d>
-                                    ''' % (
-                                        before.name,
-                                        after.name,
-                                        executor_id
-                                    )
+                                    **Changed by:** {executor.mention}
+                                    '''
                 elif hasattr(entry.before, "owner") and hasattr(entry.after, "owner"):
                     flag = True
                     log_title = "Server Owner Changed"
-                    log_content = '''
-                                    **Before:** <@%d>
-                                    **After:** <@%d>
-                                    ''' % (
-                                        before.owner.id,
-                                        after.owner.id,
-                                    )
+                    log_content = f'''
+                                    **Before:** {before.owner.mention}
+                                    **After:** {after.owner.mention}
+                                    '''
                 
                 if flag:
                     embed = discord.Embed(
@@ -1148,12 +1255,12 @@ class Logging(commands.Cog):
                         timestamp = log_time
                     )
                     embed.set_author(
-                        name = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        name = str(executor),
+                        icon_url = executor.avatar_url
                     )
                     embed.set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        text = str(executor),
+                        icon_url = executor.avatar_url
                     )
 
                     await log_channel.send(embed = embed)
@@ -1161,7 +1268,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):
         guild = role.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -1170,14 +1280,15 @@ class Logging(commands.Cog):
             log_color = self.color_create
             log_time = None
 
-            executor_id = 0
+            executor = None
 
             async for entry in guild.audit_logs(action = discord.AuditLogAction.role_create, limit = 1):
                 log_time = entry.created_at
-                executor_id = entry.user.id
+                executor = entry.user
 
                 role_perm = []
                 
+                # Painful experience :D
                 if role.permissions.administrator:
                     role_perm.append("Administrator")
                 if role.permissions.view_audit_log:
@@ -1239,19 +1350,20 @@ class Logging(commands.Cog):
                 for perm in role_perm:
                     str_role_perm += "`%s` " % perm
 
+                # TODO: Although this method will bypass user created role, it'll not pass the bot created role, as bot created role can have denied permissions on creation.
                 log_content = '''
-                                Role: <@&%d>
-                                Name: %s
-                                Created by: <@%d>
-                                Granted Permissions: %s
+                                **Role:** %s
+                                **Name:** %s
+                                **Created by:** %s
+                                **Granted Permissions:** %s
                                 ----------------------------
-                                Is separated: %s
-                                Is mentionable: %s
-                                Color: %s
+                                **Is separated:** %s
+                                **Is mentionable:** %s
+                                **Color:** %s
                                 ''' % (
-                                    role.id, 
+                                    role.mention, 
                                     role.name, 
-                                    executor_id, 
+                                    executor.mention, 
                                     str_role_perm,
                                     "Yes" if role.hoist else "No",
                                     "Yes" if role.mentionable else "No",
@@ -1264,13 +1376,14 @@ class Logging(commands.Cog):
                     color = log_color,
                     timestamp = log_time
                 )
+
                 embed.set_author(
-                    name = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    name = str(executor),
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
 
                 await log_channel.send(embed = embed)
@@ -1278,7 +1391,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
         guild = role.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -1287,22 +1403,22 @@ class Logging(commands.Cog):
             log_color = self.color_delete
             log_time = None
 
-            executor_id = 0
+            executor = None
 
             async for entry in guild.audit_logs(action = discord.AuditLogAction.role_delete, limit = 1):
                 log_time = entry.created_at
-                executor_id = entry.user.id
+                executor = entry.user
             
                 log_content = '''
-                                Name: `%s`
-                                Deleted by: <@%d>
+                                **Name:** `%s`
+                                **Deleted by:** %s
                                 ----------------------------
-                                Was separated: %s
-                                Was mentionable: %s
-                                Color: %s
+                                **Was separated:** %s
+                                **Was mentionable:** %s
+                                **Color:** %s
                                 ''' % (
                                     role.name,
-                                    executor_id,
+                                    executor.mention,
                                     "Yes" if role.hoist else "No",
                                     "Yes" if role.mentionable else "No",
                                     str(role.color)
@@ -1314,22 +1430,25 @@ class Logging(commands.Cog):
                     color = log_color,
                     timestamp = log_time
                 )
+
                 embed.set_author(
-                    name = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    name = str(executor),
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
-
 
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before, after):
         guild = before.guild
+
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # We retrieve the logging channel for that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
@@ -1338,26 +1457,21 @@ class Logging(commands.Cog):
             log_color = self.color_change
             log_time = None
 
-            executor_id = 0
+            executor = None
 
             async for entry in guild.audit_logs(action = discord.AuditLogAction.role_update, limit = 1):
                 log_time = entry.created_at
-                executor_id = entry.user.id
+                executor = entry.user
 
                 if before.name != after.name:
                     log_title = "Role Name Changed"
-                    log_content = '''
-                                    Role: <@&%d>
-                                    **Before:** %s
-                                    **After:** %s
+                    log_content = f'''
+                                    **Role:** {after.mention}
+                                    **Before:** {before.name}
+                                    **After:** {after.name}
                                     ----------------------------
-                                    Changed by: <@%d>
-                                    ''' % (
-                                        after.id,
-                                        before.name,
-                                        after.name,
-                                        executor_id
-                                    )
+                                    **Changed by:** {executor.mention}
+                                    '''
                     
                     embed = discord.Embed(
                         title = log_title,
@@ -1365,30 +1479,26 @@ class Logging(commands.Cog):
                         color = log_color,
                         timestamp = log_time
                     )
+
                     embed.set_author(
-                        name = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        name = str(executor),
+                        icon_url = executor.avatar_url
                     )
                     embed.set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        text = str(executor),
+                        icon_url = executor.avatar_url
                     )
 
                     await log_channel.send(embed = embed)
                 if before.color != after.color:
                     log_title = "Role Color Changed"
-                    log_content = '''
-                                    Role: <@&%d>
-                                    **Before:** %s
-                                    **After:**
+                    log_content = f'''
+                                    **Role:** {after.mention}
+                                    **Before:** {before.color}
+                                    **After:** {after.color}
                                     ----------------------------
-                                    Changed by: <@%d>
-                                    ''' % (
-                                        after.id,
-                                        before.color, 
-                                        after.color,
-                                        executor_id
-                                    )
+                                    **Changed by:** {executor.mention}
+                                    '''
                     
                     embed = discord.Embed(
                         title = log_title,
@@ -1396,13 +1506,14 @@ class Logging(commands.Cog):
                         color = log_color,
                         timestamp = log_time
                     )
+
                     embed.set_author(
-                        name = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        name = str(executor),
+                        icon_url = executor.avatar_url
                     )
                     embed.set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
+                        text = str(executor),
+                        icon_url = executor.avatar_url
                     )
 
                     await log_channel.send(embed = embed)
@@ -1412,6 +1523,8 @@ class Logging(commands.Cog):
                 if before.hoist != after.hoist:
                     pass
                 # Quite similar to on_guild_channel_update
+                # However, it's easier because it's a Permission, which only have False/True field.
+                # And also, before.permissions directly return a Permission instead of a dictionary of {"key": PermissionOverwrite}
                 if before.permissions != after.permissions:
                     action = ""
                     permission = None
@@ -1419,53 +1532,68 @@ class Logging(commands.Cog):
                     iter_before = iter(before.permissions)
                     iter_after = iter(after.permissions)
 
+                    granted = []
+                    denied = []
+
                     while True:
                         try:
-                            i_before = next(iter_before)
+                            i_before = next(iter_before) # i_before and i_after now is a tuple of (perm, False/True)
                             i_after = next(iter_after)
 
                             if i_before != i_after:
                                 permission = self.role_dpyperms_to_dperms(i_after[0])
                                 
                                 if i_after[1]:
-                                    action = "Granted"
+                                    action = "`%s`: `Denied -> Granted`" % permission
+                                    granted.append(action)
                                 else:
-                                    action = "Denied"
-                                
-                                log_title = "Role Permission %s" % action
-                                log_content = '''
-                                                Permission: `%s`
-                                                Target: <@&%d>
-                                                ----------------------------
-                                                Executor: <@%d>
-                                                ''' % (
-                                                    permission,
-                                                    after.id,
-                                                    executor_id
-                                                )
-                                
-                                embed = discord.Embed(
-                                    title = log_title,
-                                    description = textwrap.dedent(log_content),
-                                    color = log_color,
-                                    timestamp = log_time
-                                )
-                                embed.set_author(
-                                    name = str(entry.user),
-                                    icon_url = entry.user.avatar_url
-                                )
-                                embed.set_footer(
-                                    text = str(entry.user),
-                                    icon_url = entry.user.avatar_url
-                                )
-
-                                await log_channel.send(embed = embed)
-
+                                    action = "`%s`: `Granted -> Denied`" % permission
+                                    denied.append(action)
                         except StopIteration:
                             break
+                    
+                    if len(granted) == 0 and len(denied) == 0:
+                        return
+                    
+                    granted_message = self.striplist(granted)
+                    denied_message = self.striplist(denied)
+
+                    if denied_message != "" and granted_message != "":
+                        granted_message += "\n\n"
+                    
+                    log_title = "Role Permission Changed"
+                    log_content = f'''
+                                    **Target:** {after.name}
+
+                                    {granted_message}{denied_message}
+
+                                    ----------------------------
+                                    **Changed by:** {executor.mention}
+                                    '''
+
+                    embed = discord.Embed(
+                        title = log_title,
+                        description = textwrap.dedent(log_content),
+                        color = log_color,
+                        timestamp = log_time
+                    )
+
+                    embed.set_author(
+                        name = str(executor),
+                        icon_url = executor.avatar_url
+                    )
+                    embed.set_footer(
+                        text = str(executor),
+                        icon_url = executor.avatar_url
+                    )
+
+                    await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_command_error")
     async def command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            return
+        
         if self.log_check(ctx.guild):
             config = gconfig.get_config(ctx.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
