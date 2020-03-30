@@ -182,21 +182,25 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message):
         guild = message.guild
+        # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
+            # Then we get the log channel of that guild.
             config = gconfig.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
+            # Initialize variables according to specification.
             log_title = "Message Deleted"
             log_content = ""
             log_color = self.color_delete
             log_time = None
 
-            executor_id = 0
+            executor = None
 
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
-                executor_id = entry.user.id
-                log_time = datetime.datetime.utcnow() # Audit log doesn't log message that the author delete himself.
-
+                executor = entry.user
+                # Audit log doesn't log message that the author delete himself.
+                log_time = datetime.datetime.utcnow()
+                
                 # Because audit log doesn't log message that the author delete himself,
                 # we need to check if the latest message_delete is roughly the same time as the event is fired.
                 # The 60 seconds is relative. Can be changed, but shouldn't lower than 30 seconds.
