@@ -312,6 +312,11 @@ class Logging(commands.Cog):
                     description = textwrap.dedent(log_content), 
                     color = log_color
                 )
+
+                embed.set_thumbnail(
+                    url = edited_message.author.avatar_url
+                )
+
                 await log_channel.send(embed = embed)
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
