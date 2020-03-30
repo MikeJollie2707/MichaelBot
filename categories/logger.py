@@ -240,12 +240,14 @@ class Logging(commands.Cog):
                                 %s%s%s**Author:** %s
                                 **Deleted by:** %s
                                 ----------------------------
-                                Channel: <#%s>
+                                **Channel:** <#%s>
                                 ''' % (
-                                    message.content, 
-                                    len(message.embeds),
-                                    message.author.id, 
-                                    executor_id, 
+                                    content_message,
+                                    attachment_message,
+                                    embed_message,
+
+                                    message.author.mention, 
+                                    executor.mention, 
                                     message.channel.id
                                 )
                 embed = discord.Embed(
@@ -256,12 +258,12 @@ class Logging(commands.Cog):
                 )
                 embed.set_thumbnail(url = message.author.avatar_url)
                 embed.set_author(
-                    name = str(entry.user), 
-                    icon_url = entry.user.avatar_url
+                    name = str(executor), 
+                    icon_url = executor.avatar_url
                 )
                 embed.set_footer(
-                    text = str(entry.user),
-                    icon_url = entry.user.avatar_url
+                    text = str(executor),
+                    icon_url = executor.avatar_url
                 )
 
                 await log_channel.send(embed = embed)
