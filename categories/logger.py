@@ -197,6 +197,45 @@ class Logging(commands.Cog):
                 executor_id = entry.user.id
                 log_time = datetime.datetime.utcnow() # Audit log doesn't log message that the author delete himself.
 
+                # Because audit log doesn't log message that the author delete himself,
+                # we need to check if the latest message_delete is roughly the same time as the event is fired.
+                # The 60 seconds is relative. Can be changed, but shouldn't lower than 30 seconds.
+                log_time2 = entry.created_at
+                deltatime = log_time2 - log_time
+                if deltatime.seconds > 60:
+                    executor = message.author
+
+                # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
+                # For attachment, what we can do is to provide a proxy URL to the attachment, which only usable for images.
+                # For embed, what we can do is to provide the preview of a single embed a.k.a the dict version of the embed.
+                # How are we gonna display the embed correctly?
+                # We can have a content = ("Content: %s" % message.content) if message.content != "" else ""
+                # For attachment, first we get the list of attachments through message.attachments
+                # Same as content, we check if the attachments list is empty or not.
+                # Then, for each attachment, we get the proxy URL, and put it to attachment_message.
+                # For embeds, it's relatively easy but messy: we also get the list of embeds through message.embeds
+                # Then we simply display the dict, easy.
+                content_message = f"**Content:** {message.content}\n" if message.content != "" else ""
+                if len(message.attachments) == 0:
+                    attachment_message = ""
+                else:
+                    counter = 1
+                    attachment_message = "----------------------------\n" if content_message != "" else ""
+                    for attachment in message.attachments:
+                        attachment_message += f"**Attachment {counter}**\n[View]({attachment.proxy_url}) (Only available for images)\n"
+                        counter += 1
+                    attachment_message += "----------------------------\n"
+                if len(message.embeds) == 0:
+                    embed_message = ""
+                else:
+                    import json # This help formatting the dict better
+                    counter = 1
+                    embed_message = "----------------------------\n" if (content_message != "" and attachment_message != "") else ""
+                    for embed in message.embeds:
+                        embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 4))
+                        counter += 1
+                    embed_message += "----------------------------\n"
+
                 log_content = '''
                                 Content: %s
                                 Embed count: %d
