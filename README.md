@@ -139,6 +139,8 @@ Any sort of contributions are highly appreciated.
   - [ ] `Utility`
   - [ ] `Events`
 - [x] Find a way to deal with broken embed display on mobile.
+- [ ] Add `Account Age` to `profile`
+- [ ] Update `commandlist.md`.
 
 ## Acknowledgement
 
