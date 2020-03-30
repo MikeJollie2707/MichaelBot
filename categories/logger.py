@@ -165,6 +165,19 @@ class Logging(commands.Cog):
         if channel_permissions == "stream":
             return "Go Live"
     
+    def striplist(self, array):
+        '''
+        Turn the list of objects into a string.
+        '''
+
+        st = str(array)
+
+        st = st.replace('[', "")
+        st = st.replace(']', "")
+        st = st.replace("'", "")
+
+        return st
+
     @commands.Cog.listener()
     async def on_message_delete(self, message):
         guild = message.guild
