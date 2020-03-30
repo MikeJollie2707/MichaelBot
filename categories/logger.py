@@ -237,10 +237,8 @@ class Logging(commands.Cog):
                     embed_message += "----------------------------\n"
 
                 log_content = '''
-                                Content: %s
-                                Embed count: %d
-                                Author: <@%d>
-                                Deleted by: <@%d>
+                                %s%s%s**Author:** %s
+                                **Deleted by:** %s
                                 ----------------------------
                                 Channel: <#%s>
                                 ''' % (
