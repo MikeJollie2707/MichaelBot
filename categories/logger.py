@@ -23,6 +23,7 @@ import gconfig
 # Embed.color as log_color.
 # Embed.timestamp as log_time.
 # Embed.footer as the executor.
+# Optional (Embed.thumbnail) as the target.
 
 
 class Logging(commands.Cog):
