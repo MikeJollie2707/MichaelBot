@@ -13,7 +13,7 @@ import gconfig
 # - log_content: the log content that's gonna pass in description in discord.Embed
 # - log_color: the color of the embed. It must be self.color_... depend on the current event.
 # - log_time: the timestamp of the embed. Typically get from entry.created_at.
-# - Optional(executor): the Member ID that triggered the event.
+# - Optional(executor): the Member that triggered the event.
 
 # Log embed specification:
 # Every single embed send here (except raw events) must have the following format:
