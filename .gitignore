@@ -1,6 +1,7 @@
 *.env
 ./setup/bot1.json
 ./setup/botbeta.json
+discord.log
 
 __pycache__/
 lib/
