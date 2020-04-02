@@ -206,7 +206,7 @@ class Logging(commands.Cog):
                 # The 60 seconds is relative. Can be changed, but shouldn't lower than 30 seconds.
                 log_time2 = entry.created_at
                 deltatime = log_time2 - log_time
-                if deltatime.seconds > 60:
+                if deltatime.seconds > 60 and deltatime.days == 0:
                     executor = message.author
 
                 # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
