@@ -342,7 +342,7 @@ class Logging(commands.Cog):
                 # TODO: Find an alternative for this.
 
                 log_content = '''
-                                %s%s
+                                %s
                                 **Author:** %s
                                 ----------------------------
                                 **Channel:** %s
