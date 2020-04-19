@@ -188,6 +188,19 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     async def embed(self, ctx, *, inp : str = ""):
+        '''
+        Send a full-featured rich embed.
+        Note: It is recommended to use `embed help` to know more about how to use this command.
+
+        **Usage:** <prefix>**{command_name}** <args>
+        **Example 1:** {prefix}{command_name} TITLE This is the title DESCRIPTION description COLOR 111111
+        *View `embed help` for more examples*
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+        
+        if ctx.invoked_subcommand is None:
         embed = discord.Embed.from_dict(parser(inp))
         await ctx.send(embed = embed)
 
