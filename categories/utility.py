@@ -223,8 +223,17 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
         
-        percent_gay = random.randint(0, 100)
-        await ctx.send(target + " is `" + str(percent_gay) + "%` gay.")
+        if target.upper() == "MIKEJOLLIE":
+            percent_gay = 0
+        elif target.upper() == "STRANGER.COM":
+            percent_gay = 100
+        else:
+            percent_gay = random.randint(0, 100)
+        
+        if percent_gay == 0:
+            await ctx.send(f"Holy moly, the {target} is 100% straight :open_mouth:, zero trace of gayness.")
+        else:
+            await ctx.send(f"{target} is `{percent_gay}%` gay :rainbow_flag:.")
 
     @commands.command(cooldown_after_parsing = True)
     @commands.cooldown(5, 10.0, commands.BucketType.user)
