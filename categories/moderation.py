@@ -44,7 +44,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                     '''
                     **User `%s` has been kicked out from this server.**.
                     **Reason:** %s
-                    ''' % (victim_name, guild.name, reason)
+                    ''' % (victim_name, reason)
                 ),
                 color = 0x000000,
                 timestamp = datetime.utcnow()
@@ -88,7 +88,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                     '''
                     **User `%s` has been banned from this server.**
                     **Reason:** %s
-                    ''' % (victim_name, guild.name, reason)
+                    ''' % (victim_name, reason)
                 ),
                 color = 0x000000,
                 timestamp = datetime.utcnow()
@@ -132,7 +132,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                     '''
                     **User `%d` has been banned from this server.**
                     **Reason:** %s
-                    ''' % (id, guild.name, reason)
+                    ''' % (id, reason)
                 ),
                 color = 0x000000,
                 timestamp = datetime.utcnow()
