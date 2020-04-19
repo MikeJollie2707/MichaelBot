@@ -3,6 +3,7 @@ from discord.ext import commands
 
 import asyncio
 import random
+import datetime
 
 from categories.utilityfun.embedparser import parser
 
@@ -46,16 +47,68 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
     async def poll(self, ctx, title, *, choices):
         '''
-        Make a poll for you.
-        Note: the number of options must greater than 1.
+        Make a poll for you right in the current channel.
+        Note: the number of options must greater than 1, and at max 10.
 
-        **Usage:** <prefix>**{command_name}** <title> <choice 1 / choice 2 / choice n>
-        **Example:** {prefix}{command_name} "What's the most awesome bot in Discord?" MichaelBotPy MikeJollie
+        **Usage:** <prefix>**{command_name}** <title> <choice 1 | choice 2 | choice n>
+        **Example:** {prefix}{command_name} "What's the most awesome bot in Discord?" MichaelBot | MikeJollie | Some random dude
 
         **You need:** None.
-        **I need:** `Add Reactions`, `Send Messages`.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
         '''
-        await ctx.send("Randomly")
+        
+        embed = discord.Embed(
+            title = title,
+            color = discord.Color.green(),
+            timestamp = datetime.datetime.utcnow()
+        )
+
+        embed.set_author(
+            name = ctx.author.name, 
+            icon_url = ctx.author.avatar_url
+        )
+        embed.set_footer(
+            text = f"Created by: {ctx.author.name}",
+            icon_url = ctx.author.avatar_url
+        )
+
+        # TODO: Make it support near endless options by the format <emoji 1> <option 1> | <emoji 2> <option 2> | ....
+        options = choices.split(" | ")
+        if len(options) <= 1:
+            ctx.send("The option is too low! It must be greater than 1.")
+        elif len(options) > 10:
+            ctx.send("The option is too high! It must not exceed 10.")
+        else:
+            emojis = []
+            for i in range(1, len(options) + 1):
+                emoji = ''
+                if i == 1:
+                    emoji = '1️⃣'
+                elif i == 2:
+                    emoji = '2️⃣'
+                elif i == 3:
+                    emoji = '3️⃣'
+                elif i == 4:
+                    emoji = '4️⃣'
+                elif i == 5:
+                    emoji = '5️⃣'
+                elif i == 6:
+                    emoji = '6️⃣'
+                elif i == 7:
+                    emoji = '7️⃣'
+                elif i == 8:
+                    emoji = '8️⃣'
+                elif i == 9:
+                    emoji = '9️⃣'
+                elif i == 10:
+                    emoji = '🔟'
+                
+                embed.add_field(name = emoji, value = options[i - 1])
+                emojis.append(emoji)
+        
+        poll = await ctx.send(embed = embed)
+        for i in range (0, len(options)):
+            await poll.add_reaction(emojis[i])
 
     @commands.command()
     async def say(self, ctx, *, content: str):
@@ -68,6 +121,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **You need:** None.
         **I need:** `Manage Messages`, `Send Messages`.
         '''
+
         await ctx.message.delete()
         await ctx.send(content)
 
@@ -82,6 +136,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **You need:** None.
         **I need:** `Manage Messages`, `Send TTS Messages`, `Send Messages`.
         '''
+
         await ctx.message.delete()
         await ctx.send(content, tts = True)
 
@@ -89,7 +144,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def calc(self, ctx, *, content: str):
         '''
         A mini calculator that calculate almost everything.
-        Note: This command is still in testing. Trignometry functions return radian.
+        Note: Trignometry functions return radian.
 
         **Usage:** <prefix>**{command_name}** <expression>
         **Example 1:** {prefix}{command_name} 1+2
@@ -102,11 +157,13 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         from categories.utilityfun.calc import calculate
         result = calculate(content)
+
         embed = discord.Embed(color = discord.Color.green())
         embed.add_field(
             name = "**Result:**", 
             value = result
         )
+
         await ctx.send(embed = embed)
 
     @commands.command()
@@ -235,7 +292,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         else:
             await ctx.send(f"{target} is `{percent_gay}%` gay :rainbow_flag:.")
 
-    @commands.command(cooldown_after_parsing = True)
+    @commands.command()
     @commands.cooldown(5, 10.0, commands.BucketType.user)
     async def how(self, ctx, measure_unit : str, *, target : str):
         '''
@@ -253,7 +310,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         percent_thing = random.randint(0, 100)
         await ctx.send(target + " is `" + str(percent_thing) + "%` " + measure_unit + ".")
 
-    @commands.command(hidden = True, cooldown_after_parsing = True)
+    @commands.command(hidden = True)
     @commands.cooldown(1, 120.0, commands.BucketType.user)
     async def send(self, ctx, id : int, *, msg : str):
         '''
@@ -265,8 +322,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} 400983101507108876 All of you are gay.
 
         **You need:** None.
-        I need: `Send Messages` at <destination>.
+        **I need:** `Send Messages` at <destination>.
         '''
+
         target = self.bot.get_user(id)
         if target == None:
             target = self.bot.get_channel(id)
@@ -280,7 +338,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         except discord.Forbidden:
             await ctx.send("It seems like I cannot send message to this place!")
         else:
-            await ctx.send("Message sent!")
+            await ctx.send("Message sent!", delete_after = 5)
 
 def setup(bot):
     bot.add_cog(Utility(bot))
