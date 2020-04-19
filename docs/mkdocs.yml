@@ -1,0 +1,17 @@
+site_name: MichaelBot Documentation
+
+nav:
+  - "Home": index.md
+  - "Commands":
+    - "Core": core.md
+    - "Dev": dev.md
+    - "Bot events": events.md
+    - "Experiment": experiment.md
+    - "Logging events": logger.md
+    - "Moderation": moderation.md
+    - "Music": music.md
+    - "Settings": server.md
+    - "Utility": utility.md
+
+theme:
+  name: "readthedocs"
