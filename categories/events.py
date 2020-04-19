@@ -85,17 +85,18 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        ERROR_SEPARATOR = "-----------------------------------------------------------------------"
         try:
             if isinstance(error, commands.CommandError):
                 print("%s raised an error!" % ctx.command.name)
         except AttributeError: # If command not found, wrong syntax, etc.
-            pass
-
-        if isinstance(error, commands.CommandNotFound):
             async with ctx.typing(): # This will make the bot type for 10 seconds.
                 n = 0
+            return
+
+        isErrorComplex = False    
         
-        elif isinstance(error, commands.MissingRequiredArgument):
+        if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
 
         elif isinstance(error, commands.BadArgument):
@@ -126,14 +127,23 @@ class Events(commands.Cog):
             error_text = "This command raised the following exception. Please copy and report it to the developer using `report`. Thank you and sorry for this inconvenience."
             error_text += "```%s```" % error
             await ctx.send(error_text)
-            print('Ignoring exception in command {}:'.format(ctx.command), file = sys.stderr)
+            print(ERROR_SEPARATOR)
+            print("Ignoring exception in command {}:".format(ctx.command), file = sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file = sys.stderr)
+            print(ERROR_SEPARATOR)
+            print("\n\n")
+            isErrorComplex = True
+        
+        if not isErrorComplex:
+            print("It seems that this error isn't fatal (no traceback). Check the logging channel to know more.")
+            print("\n\n")
+
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         if ctx.cog.qualified_name == "Dev":
-            import datetime
-            print("\n\n%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.datetime.today())), end = '\n\n')
+            print("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.today())))
+            print("\n\n")
 
 def setup(bot):
     bot.add_cog(Events(bot))
