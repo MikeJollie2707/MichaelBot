@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 
 import asyncio
+import datetime
+import textwrap
 
 # Commands for developers to test things and stuffs.
 
@@ -156,6 +158,32 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             await ctx.send("Process completed. Please note that you still have to manually edit the role in each guild yourself.")
         else:
             await ctx.send("Process cancelled.")
+
+    @commands.command()
+    async def all_guild(self, ctx):
+        '''
+        Display all the guilds the bot is currently in.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** `dev status`.
+        **I need:** `Send Messages`.
+        '''
+        
+        embed = discord.Embed(
+            title = "%d Guilds" % len(ctx.bot.guilds),
+            color = discord.Color.green(),
+            datetime = datetime.datetime.utcnow()
+        )
+
+        guilds = ctx.bot.guilds
+
+        for index in range(0, len(guilds)):
+            embed.add_field(name = f"{index + 1}. {guilds[index].name}", value = f"ID: {guilds[index].id}", inline = False)
+        
+        await ctx.send(embed = embed)
+        
 
 
 def setup(bot):
