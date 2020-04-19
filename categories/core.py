@@ -8,8 +8,8 @@ from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.menu import Menu
 from categories.templates.navigate import Pages
 
-class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
-    '''Commands related to information and bot settings.'''
+class Core(commands.Cog):
+    """Commands related to information and bot settings."""
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '⚙️'
@@ -46,8 +46,9 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         embed.add_field(
             name  = "Team:", 
             value = textwrap.dedent('''
-                    **Owner:** <@462726152377860109>
+                    **Original Owner + Tester:** <@462726152377860109>
                     **Developer:** <@472832990012243969>
+                    **Lazy Tester:** <@391582107446804485>
                     '''), 
             inline = False
         )
@@ -56,21 +57,22 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             value = textwrap.dedent('''
                     **Language:** Python
                     **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
-                    **Repo:** [This is currently private!](https://github.com/MikeJollie2707/MichaelBotPy)
+                    **Repo:** [404](https://github.com/MikeJollie2707/MichaelBotPy) :warning:
                     '''), 
             inline = False
         )
         current_time = datetime.datetime.utcnow()
         up_time = current_time - self.bot.online_at
+        days = up_time.days
+        hours = int(up_time.seconds / 3600) # We gotta round here, or else minutes will always be 0.
+        minutes = (up_time.seconds / 60) - (hours * 60) # Hour = second / 3600, minute = second / 60 (true minute without converting to hour) - hour * 60 (convert hour to minute) = remain minute
         embed.add_field(
             name  = "Host Device:",
             value = textwrap.dedent('''
-                    **Machine:** HP-EliteDesk-800-G1-USDT
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
                     **Memory:** 15.5 GiB of RAM
-                    **OS:** Ubuntu 18.04.3
-                    **Bot uptime:** %d day(s) %d minute(s) %d second(s)
-                    ''' % (up_time.days, up_time.seconds / 60, up_time.seconds % 60)),
+                    **Bot Uptime:** %d day(s) %d hour(s) %d minute(s)
+                    ''' % (days, hours, minutes)),
             inline = False
         )
         embed.set_author(
@@ -83,7 +85,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
-    async def profile(self, ctx, user: discord.Member = None):
+    async def profile(self, ctx, member: discord.Member = None):
         '''
         Information about yourself or another __member__.
 
@@ -95,10 +97,10 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        if user == None:
+        if member == None:
             member = ctx.author
         else:
-            member = user
+            member = member
 
         embed = discord.Embed(
             color = discord.Color.green(),
@@ -210,7 +212,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command()
     @commands.has_permissions(manage_guild = True)
     @commands.bot_has_permissions(send_messages = True)
-    @commands.cooldown(1, 5.0, commands.BucketType.default)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
     async def prefix(self, ctx, new_prefix : str = None):
         '''
         View and set the prefix for the bot.
@@ -314,7 +316,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
-    @commands.cooldown(1, 30.0, commands.BucketType.user)
+    @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
     async def report(self, ctx, *, content : str):
         '''
         Report a bug or suggest a feature for the bot.
@@ -403,7 +405,7 @@ class Core(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
     async def help(self, ctx, categoryOrcommand = ""):
         '''
-        Show compact help about the bot, a command, or a category.
+        Show compact help about a command, or a category.
         Note: command name and category name is case sensitive; `Core` is different from `core`.
 
         **Usage:** <prefix>**{command_name}** [command/category]
