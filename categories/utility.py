@@ -42,8 +42,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         await ctx.send("It's %d :game_die:" % (random.randint(1, 6)))
 
-    @commands.command(enabled = False, hidden = True)
-    async def poll(self, ctx, title, *choices):
+    @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
+    async def poll(self, ctx, title, *, choices):
         '''
         Make a poll for you.
         Note: the number of options must greater than 1.
