@@ -133,8 +133,8 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             gconfig.save_config(config)
             await welcome_chan.send("Your welcome message is: %s" % welcome_text)
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
+    @commands.Cog.listener("on_member_join")
+    async def welcome_new_member(self, member):
         config = gconfig.get_config(member.guild.id)
         if config["ERROR"] == 0 and config["STATUS_WELCOME"] == 1 and config["WELCOME_CHANNEL"] != 0:
             welcome_channel = self.bot.get_channel(config["WELCOME_CHANNEL"])
