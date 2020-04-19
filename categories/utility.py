@@ -186,7 +186,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         await ctx.send(embed = embed)
 
-    @commands.command()
+    @commands.group()
     async def embed(self, ctx, *, inp : str = ""):
         '''
         Send a full-featured rich embed.
@@ -201,10 +201,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         
         if ctx.invoked_subcommand is None:
-        embed = discord.Embed.from_dict(parser(inp))
-        await ctx.send(embed = embed)
+            embed = discord.Embed.from_dict(parser(inp))
+            await ctx.send(embed = embed)
+    
+    @embed.command()
+    async def help(self, ctx):
+        pass
 
-    @commands.command(cooldown_after_parsing = True)
+    @commands.command()
     @commands.cooldown(5, 10.0, commands.BucketType.user)
     async def howgay(self, ctx, *, target: str):
         '''
