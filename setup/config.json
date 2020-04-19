@@ -8,9 +8,9 @@
         "token": "bot1.json"
     },
     "MichaelBeta": {
-        "name": "MichaelBotPy (beta)",
-        "version": "1.4.15.16",
-        "description": "A testing bot for MichaelBot",
+        "name": "MichaelBeta",
+        "version": "1.4.15.17",
+        "description": "A testing bot for MichaelBot :)",
         
         "prefix": "!",
         "token": "botbeta.json"
