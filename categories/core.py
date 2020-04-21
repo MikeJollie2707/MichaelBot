@@ -115,17 +115,17 @@ class Core(commands.Cog):
         embed.add_field(
             name = "Username:", 
             value = member.name,
-            inline = False
+            inline = True
         )
         embed.add_field(
             name = "Nickname:", 
             value = member.nick if member.nick != None else member.name,
-            inline = False
+            inline = True
         )
         embed.add_field(
             name = "Avatar URL:", 
             value = "[Click here](%s)" % member.avatar_url,
-            inline = False
+            inline = True
         )
 
         embed.set_thumbnail(url = member.avatar_url)
