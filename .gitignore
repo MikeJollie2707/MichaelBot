@@ -7,6 +7,7 @@ __pycache__/
 lib/
 ./categories/__pycache__
 ./categories/templates/__pycache__
+./categories/utilityfun/__pycache__
 
 ./categories/experiment.py
 ./categories/utilityfun/embed_test.py
