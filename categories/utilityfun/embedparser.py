@@ -24,10 +24,16 @@ KEYS = [
     "ICON_URL"
 ]
 
-class InvalidDiscordSyntax(Exception):
+class InvalidDiscordSyntax(SyntaxError):
+    '''
+    This exception is raised when the syntax for the embed is not correct by the Discord API standard.
+    '''
     pass
 
-class InvalidEmbedSyntax(Exception):
+class InvalidEmbedSyntax(SyntaxError):
+    '''
+    This exception is raised when the syntax for the embed is not correct by the parser itself.
+    '''
     pass
 
 class CustomEmbed:
@@ -41,20 +47,20 @@ class CustomEmbed:
         self.embed["description"] = description
     
     def URL_attr(self, url):
-        pass
+        self.embed["url"] = url
 
     def TIMESTAMP_attr(self, timestamp_confirm):
         try:
             if int(timestamp_confirm) == 1:
                 self.embed["timestamp"] = datetime.datetime.utcnow()
         except ValueError:
-            raise InvalidEmbedSyntax("`TIMESTAMP` must be 1 or 0")
+            raise InvalidEmbedSyntax("`TIMESTAMP` must be 1 or 0.")
 
     def COLOR_attr(self, color):
         try:
-            color = int(color)
+            color = int(color, base = 16)
         except ValueError:
-            raise InvalidEmbedSyntax("`COLOR` must be in numbers (int).")
+            raise InvalidEmbedSyntax("`COLOR` must be in hex numbers.")
         
         self.embed["color"] = color
     
@@ -65,7 +71,30 @@ class CustomEmbed:
         pass
 
     def THUMBNAIL_attr(self, thumbnail):
-        pass
+        keywords = [
+            "URL",
+            "PROXY_URL",
+            "HEIGHT",
+            "WEIGHT"
+        ]
+        thumbnail = {}
+
+        args = thumbnail.split()
+        i = 0
+        params = ""
+        command = ""
+        while (i < len(args)):
+            if (args[i] in keywords):
+                command = args[i]
+                i += 1
+            else:
+                while ((i < len(args)) and (args[i] not in keywords)):
+                    params += args[i] + " "
+                    i += 1
+                
+                params = params[:-1] # Remove the last space
+
+
 
     def VIDEO_attr(self, video):
         pass
@@ -78,6 +107,10 @@ class CustomEmbed:
             "NAME",
             "ICON_URL"
         ]
+        keycount = {
+            "NAME" : 0,
+            "ICON_URL" : 0
+        }
         author = {}
 
         args = author_info.split()
@@ -95,10 +128,15 @@ class CustomEmbed:
                 
                 params = params[:-1] # Remove the last space
                 if command == "NAME":
-                    if params != "":
-                        author["name"] = params
+                    if keycount["NAME"] == 0:
+                        if params != "":
+                            author["name"] = params
+                        else:
+                            raise InvalidDiscordSyntax("`NAME` attribute in `AUTHOR` is required")
+
+                        keycount["NAME"] = 1
                     else:
-                        raise InvalidDiscordSyntax("`NAME` attribute in `AUTHOR` is required")
+                        raise InvalidDiscordSyntax("`NAME` can only be mentioned once.")
                 if command == "ICON_URL":
                     if params != "":
                         author["icon_url"] = params
@@ -168,6 +206,12 @@ class CustomEmbed:
 
     
 def parser(string):
+    '''
+    Parse the input string and convert it to a dictionary that represents a Discord Embed object.
+
+    Return type: `dict`
+    '''
+
     embed = CustomEmbed()
     args = string.split()
     i = 0
