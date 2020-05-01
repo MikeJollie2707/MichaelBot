@@ -4,6 +4,8 @@ from discord.ext import commands
 import asyncio
 import random
 import datetime
+import aiohttp
+import textwrap
 
 from categories.utilityfun.embedparser import parser
 
@@ -14,6 +16,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.emoji = '😆'
 
     @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def ping(self, ctx):
         '''
         Show the latency of the bot.
@@ -30,6 +33,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(str(format((latency * 1000), '.2f')) + "ms")
 
     @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def dice(self, ctx):
         '''
         Roll a dice for you.
@@ -111,6 +115,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await poll.add_reaction(emojis[i])
 
     @commands.command()
+    @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     async def say(self, ctx, *, content: str):
         '''
         Repeat what you say.
@@ -126,6 +131,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(content)
 
     @commands.command()
+    @commands.bot_has_permissions(manage_messages = True, send_tts_messages = True, send_messages = True)
     async def speak(self, ctx, *, content: str):
         '''
         Make the bot speak!
@@ -140,7 +146,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.message.delete()
         await ctx.send(content, tts = True)
 
-    @commands.command(enabled = True)
+    @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def calc(self, ctx, *, content: str):
         '''
         A mini calculator that calculate almost everything.
@@ -168,6 +175,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.cooldown(1, 5.0, commands.BucketType.user)
+    @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     async def embed_simple(self, ctx, title : str = "", content : str = '', color : str = "", destination : str = ""):
         '''
         Send a simple embed message.
@@ -243,30 +251,74 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         await ctx.send(embed = embed)
 
-    @commands.group()
+    @commands.group(invoke_without_command = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def embed(self, ctx, *, inp : str = ""):
         '''
         Send a full-featured rich embed.
         Note: It is recommended to use `embed help` to know more about how to use this command.
 
         **Usage:** <prefix>**{command_name}** <args>
-        **Example 1:** {prefix}{command_name} TITLE This is the title DESCRIPTION description COLOR 111111
-        *View `embed help` for more examples*
+        *View `embed help` for examples*
 
         **You need:** None.
         **I need:** `Send Messages`.
         '''
         
+        
         if ctx.invoked_subcommand is None:
-            embed = discord.Embed.from_dict(parser(inp))
-            await ctx.send(embed = embed)
+            import json
+            inp = inp.strip("```")
+            print(inp)
+            try:
+                embed = discord.Embed.from_dict(json.loads(inp))
+                await ctx.send(embed = embed)
+            except Exception as e:
+                print(e)
+                await ctx.send("It seems you did something wrong. If you're not using a visualizer, use it (link in `embed help`). Otherwise, ask for support.")
     
     @embed.command()
     async def help(self, ctx):
-        pass
+        text = '''
+        To create a full-featured rich embed, you must use the JSON format to achieve.
+        Take a look at [this awesome page](https://embedbuilder.nadekobot.me/) that visualize the embed and make your life much easier when writing JSON. 
+        Edit the embed like you want to, and copy the JSON on the right, and surround that around codeblock to look easier.
+
+        For example:
+        $embed
+        ```
+        {
+        "title": "Title",
+        "description": "Description",
+        "color": 53380,
+        "fields": [
+            {
+            "name": "Field 1",
+            "value": "Value 1",
+            "inline": true
+            }
+        ]
+        }
+        ```
+
+        Try poking around the visualizer for many other features.
+
+        For those who are hardcore enough to say "Visualizer is for noob", then I welcome you to
+        read [the official definition of an embed](https://discordapp.com/developers/docs/resources/channel#embed-object)
+        and write one for yourself.
+        '''
+
+        await ctx.message.delete()
+        embed = discord.Embed(
+            description = textwrap.dedent(text),
+            color = discord.Color.green(),
+            timestamp = datetime.datetime.utcnow()
+        )
+        await ctx.send(embed = embed)
 
     @commands.command()
     @commands.cooldown(5, 10.0, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages = True)
     async def howgay(self, ctx, *, target: str):
         '''
         An ultimate measurement of gayness.
@@ -294,6 +346,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.cooldown(5, 10.0, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages = True)
     async def how(self, ctx, measure_unit : str, *, target : str):
         '''
         An ultimate measurement to measure everything except gayness.
@@ -312,6 +365,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command(hidden = True)
     @commands.cooldown(1, 120.0, commands.BucketType.user)
+    @commands.bot_has_permissions(send_messages = True)
     async def send(self, ctx, id : int, *, msg : str):
         '''
         Send a message to either a channel or a user that the bot can see.
@@ -339,6 +393,87 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.send("It seems like I cannot send message to this place!")
         else:
             await ctx.send("Message sent!", delete_after = 5)
+
+    @commands.command(hidden = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.member)
+    @commands.bot_has_permissions(send_messages = True)
+    async def konachanloli(self, ctx):
+        '''
+        Send a **safe** picture of loli from konachan**.net**
+        **Disclaimer:** We, the bot developers team, hold **ZERO** responsibilities if FBI visit you.
+
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 3 seconds per 1 use (member)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+        async with ctx.typing():
+            url = None
+            tag_list = []
+            # TODO: Rewrite this into a loop that makes when we have url = None, it'll request another query. And less messy.
+            async with aiohttp.ClientSession() as session:
+                page = random.randint(1, 30)
+                count = random.randint(1, 10)
+                async with session.get("http://konachan.net/post.json?limit=%d&page=%d&tags=loli" % (count, page)) as resp:
+                    if resp.status == 200:
+                        j = await resp.json()
+
+                        def filter(selected_index):
+                            if j[selected_index]["rating"] != "s":
+                                return False
+                            restricted_tags = ["breasts", "nipples", "panties", "bikini"] # Edit this
+                            for tag in restricted_tags:
+                                if tag in j[selected_index]["tags"]:
+                                    print("Index %d has tag %s so it's not safe." % (selected_index, tag))
+                                    print(j[selected_index])
+                                    return False
+
+                        # We append the failed post to this list
+                        failed_index = []
+                        select = random.randint(1, count) - 1
+                        # Well...some posts somehow have the rating not s, so we have to sort that out.
+                        while filter(select) == False:
+                            if select not in failed_index:
+                                failed_index.append(select)
+                            
+                            # Because each index only append once, the len of failed_index will match count-1 (which is the random limit) somehow.
+                            # If it does, that means all posts are not safe (although rarely)
+                            if len(failed_index) >= count - 1:
+                                select = -1
+                                break
+                            while select in failed_index:
+                                select = random.randint(1, count) - 1
+                        
+                        if select != -1:
+                            print("Selected: %d" % select)
+                            print("JSON: ", j[select])
+                            url = j[select]["file_url"]
+                            tag_list = j[select]["tags"].split()
+                        else: # Placeholder for logic understanding
+                            pass
+                    else:
+                        print(resp.status)
+
+            embed = discord.Embed(
+                title = "Loli incoming",
+                description = "Please refrain yourself from getting into prison.",
+                url = url,
+                color = discord.Color.green()
+            )
+            if url is not None:
+                embed.set_image(url = url)
+                embed.set_footer(text = "Click the title for full image.")
+                tag_str = ""
+                for tag in tag_list:
+                    tag_str += f"`{tag}` "
+                embed.add_field(name = "Tags", value = tag_str, inline = False)
+            else:
+                embed.description = "Oops, no loli for you. This is usually due to server ratelimit or the image has been reviewed by the FBI and it did not pass (yes the images are usually reviewed by the FBI before sending)."
+                embed.set_image(url = "https://i.imgflip.com/3ddefb.jpg")
+        
+        await ctx.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(Utility(bot))
