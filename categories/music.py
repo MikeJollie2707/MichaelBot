@@ -402,6 +402,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                         )
 
     @commands.command(aliases = ["join"])
+    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def connect(self, ctx, *, channel : discord.VoiceChannel = None):
         '''
         Connect to a voice channel.
@@ -441,7 +442,8 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.connect(channel.id)
 
     @commands.command(aliases = ['p'])
-    @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
     async def play(self, ctx, *, query : str):
         '''
         Play a song.
@@ -514,6 +516,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             await player.invoke_controller()
 
     @commands.command(aliases = ["np"])
+    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     @commands.cooldown(2, 15, commands.BucketType.user)
     async def now_playing(self, ctx):
         '''
@@ -539,6 +542,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.invoke_controller()
 
     @commands.command()
+    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def pause(self, ctx):
         '''
         Pause the currently playing song.
