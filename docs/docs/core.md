@@ -6,14 +6,28 @@ These are commands that are mostly related to information.
 <!-- omit in toc -->
 ## Table of Contents
 
+- [\_\_init\_\_ [INTERNAL]](#init-internal)
+- [cog_check [INTERNAL]](#cogcheck-internal)
 - [changelog](#changelog)
 - [help](#help)
 - [info](#info)
-- [note [DEPRECATED]](#note-deprecated)
+- [note [DEPRECATED][INCOMPLETE]](#note-deprecated)
 - [prefix [DEPRECATED]](#prefix-deprecated)
 - [profile](#profile)
 - [report](#report)
 - [serverinfo](#serverinfo)
+
+## \_\_init\_\_ [INTERNAL]
+
+*This section is labeled as [INTERNAL], meaning that is is **NOT** a command. It is here only to serve the developers purpose.*
+
+A constructor of the category. This set the `Core` category's emoji as `⚙️`.
+
+## cog_check [INTERNAL]
+
+*This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
+
+A check that apply to all the command in this category. This check will check if `ctx` is in private DM or not, and will raise `NoPrivateMessage()` exception if it is.
 
 ## changelog
 
@@ -92,15 +106,15 @@ info
 
 **Expected Output:** *an embed with information*
 
-## note [DEPRECATED]
+## note [DEPRECATED][INCOMPLETE]
 
-*This command has been labeled as [DEPRECATED], which means it's possible to be removed in the future.*
+*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
 
-*This section is incomplete, will be updated in the future.*
+*This section is labeled as [INCOMPLETE], will be updated in the future.*
 
 ## prefix [DEPRECATED]
 
-*This command has been labeled as [DEPRECATED], which means it's possible to be removed in the future.*
+*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
 
 View and set the prefix for the bot.
 
@@ -147,7 +161,7 @@ async def profile(self, ctx, member: discord.Member = None):
 **Simplified Signature:**
 
 ```
-profile [ID/mention/name/nickname]
+profile [member]
 ```
 
 **Parameter:**
@@ -220,4 +234,4 @@ server-info
 
 **Expected Output:** *an embed with information*
 
-*This document is last updated on April 18th (PT) by MikeJollie#1067*
+*This document is last reviewed on April 23rd (PT) by MikeJollie#1067*

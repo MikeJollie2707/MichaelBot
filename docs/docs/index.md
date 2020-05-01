@@ -1,16 +1,16 @@
+<!-- omit in toc -->
 # Welcome to MichaelBot's documentation
 
 <!-- omit in toc -->
 ## Table of Contents
 
-- [Welcome to MichaelBot's documentation](#welcome-to-michaelbots-documentation)
-  - [Introduction](#introduction)
-  - [Convention](#convention)
-    - [Parameters](#parameters)
-    - [Permissions](#permissions)
-    - [Prefix](#prefix)
-    - [User/Member Concept](#usermember-concept)
-    - [Cooldown](#cooldown)
+- [Introduction](#introduction)
+- [Convention](#convention)
+  - [Parameters](#parameters)
+  - [Permissions](#permissions)
+  - [Prefix](#prefix)
+  - [User/Member Concept](#usermember-concept)
+  - [Cooldown](#cooldown)
 
 ## Introduction
 
@@ -63,3 +63,5 @@ These are the conventions I use throughout this document:
       - Example: If the user `MikeJollie` invoke `embed_simple` n times, **that certain user** can not invoke `embed_simple` again until x seconds are passed.
     - `member`: The cooldown applies to that **certain member**.
       - Example: If the member `MikeJollie` invoke `test` n times, **that certain member** can not invoke `MikeJollie` **in the same server he invoked** again until x seconds are passed. **He can invoke the command in a different server in that duration however**.
+
+*This document is last updated on April 21th (PT) by MikeJollie#1067*
