@@ -182,7 +182,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_permissions(kick_members = True)
     @commands.cooldown(1, 5.0, commands.BucketType.guild)
-    async def mute(self, ctx, id : int, *, reason = None):
+    async def mute(self, ctx, member : discord.Member, *, reason = None):
         pass
 
 def setup(bot):
