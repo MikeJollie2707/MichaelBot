@@ -42,10 +42,6 @@ class Events(commands.Cog):
         print(self.bot.user.name)
         print(self.bot.user.id)
         print("------------")
-        await self.bot.change_presence(
-            status = discord.Status.idle, 
-            activity = discord.Game(name = " with Discord")
-        )
 
     @commands.Cog.listener()
     async def on_connect(self):
