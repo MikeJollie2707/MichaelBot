@@ -25,6 +25,7 @@ class BigHelp(commands.HelpCommand):
     def __init__(self):
         docstring = '''Show help about the bot, a command, or a category.
                        Note: command name and category name is case sensitive; Core is different from core.
+
                        **Usage:** <prefix>**{command_name}** [command/category]
                        **Example 1:** {prefix}{command_name}
                        **Example 2:** {prefix}{command_name} info
@@ -33,13 +34,13 @@ class BigHelp(commands.HelpCommand):
                        You need: None.
                        I need: send_messages.'''
         super().__init__(command_attrs = {
-            'help': docstring,
-            'name': "help-all"
+            "help": docstring,
+            "name": "help-all"
         })
     async def send_bot_help(self, mapping):
         content = discord.Embed(color = discord.Color.green())
         note = '''
-        In the help doc, <argument> is required, [argument] is optional.
+        In the help doc, `<argument>` is required, `[argument]` is optional.
         If an argument has space(s) in it, use "this argument" to make the bot count as one argument.
         If you need help, join the [support server](https://discordapp.com/jeMeyNw).
         '''
@@ -111,8 +112,8 @@ class SmallHelp():
         await paginate.event(self.ctx.bot, self.ctx.channel)
     
     async def send_command_help(self, command):
-        if command.hidden:
-            return
+        #if command.hidden:
+        #    return
         await self.ctx.send(embed = command_help_format(self.ctx, command))
 
         
