@@ -1,4 +1,4 @@
-2020-02-06 22:27:47.793  INFO 25718 --- [main] lavalink.server.Launcher                 : 
+2020-04-07 16:58:56.340  INFO 26782 --- [main] lavalink.server.Launcher                 : 
 
 [32m       .  [31m _                  _ _       _    [32m__ _ _
 [32m      /\\ [31m| | __ ___   ____ _| (_)_ __ | | __[32m\ \ \ \
@@ -16,32 +16,80 @@
 	JVM:            11.0.6
 	Lavaplayer      1.3.32
 
-2020-02-06 22:27:47.970  WARN 25718 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
-2020-02-06 22:27:48.013  INFO 25718 --- [main] lavalink.server.Launcher                 : Starting Launcher on mikengo-HP-EliteDesk-800-G1-USDT with PID 25718 (/media/mikengo/C8D1-0485/Private/DiscordBot/Python/Discord-Bot-Python/Discord/lib/Lavalink3.3/Lavalink.jar started by mikengo in /media/mikengo/C8D1-0485/Private/DiscordBot/Python/Discord-Bot-Python/Discord/lib/Lavalink3.3)
-2020-02-06 22:27:48.014  INFO 25718 --- [main] lavalink.server.Launcher                 : No active profile set, falling back to default profiles: default
-2020-02-06 22:27:49.298  WARN 25718 --- [main] io.undertow.websockets.jsr               : UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used
-2020-02-06 22:27:49.345  INFO 25718 --- [main] io.undertow.servlet                      : Initializing Spring embedded WebApplicationContext
-2020-02-06 22:27:49.345  INFO 25718 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1281 ms
-2020-02-06 22:27:49.887  WARN 25718 --- [main] l.server.config.SentryConfiguration      : Turning off sentry
-2020-02-06 22:27:49.910  INFO 25718 --- [main] l.s.c.AudioSendFactoryConfiguration      : OS: Linux, Arch: amd64
-2020-02-06 22:27:49.913  INFO 25718 --- [main] l.s.c.AudioSendFactoryConfiguration      : JDA-NAS supported system detected. Enabled native audio sending.
-2020-02-06 22:27:49.913  INFO 25718 --- [main] l.s.c.AudioSendFactoryConfiguration      : Setting buffer to 400ms
-2020-02-06 22:27:49.913  INFO 25718 --- [main] l.s.c.AudioSendFactoryConfiguration      : Setting playlist load limit to 6
-2020-02-06 22:27:50.379  INFO 25718 --- [main] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
-2020-02-06 22:27:50.762  INFO 25718 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2020-02-06 22:27:51.145  INFO 25718 --- [main] org.xnio                                 : XNIO version 3.3.8.Final
-2020-02-06 22:27:51.156  INFO 25718 --- [main] org.xnio.nio                             : XNIO NIO Implementation Version 3.3.8.Final
-2020-02-06 22:27:51.275  INFO 25718 --- [main] o.s.b.w.e.u.UndertowServletWebServer     : Undertow started on port(s) 2333 (http) with context path ''
-2020-02-06 22:27:51.280  INFO 25718 --- [main] lavalink.server.Launcher                 : Started Launcher in 4.0 seconds (JVM running for 4.679)
-2020-02-06 22:28:01.953  INFO 25718 --- [XNIO-1 task-1] io.undertow.servlet                      : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2020-02-06 22:28:01.954  INFO 25718 --- [XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2020-02-06 22:28:01.964  INFO 25718 --- [XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 10 ms
-2020-02-06 22:28:01.986  INFO 25718 --- [XNIO-1 task-1] l.server.io.HandshakeInterceptorImpl     : Incoming connection from /127.0.0.1:40460
-2020-02-06 22:28:02.039  INFO 25718 --- [XNIO-1 task-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
-2020-02-06 22:28:02.112  INFO 25718 --- [XNIO-1 task-1] lavalink.server.io.SocketServer          : Connection successfully established from /127.0.0.1:40460
-2020-02-06 22:28:25.950  INFO 25718 --- [XNIO-1 I/O-4] lavalink.server.io.SocketServer          : Connection closed from /127.0.0.1:40460 -- CloseStatus[code=1006, reason=]
-2020-02-06 22:28:25.950  INFO 25718 --- [XNIO-1 I/O-4] lavalink.server.io.SocketContext         : Shutting down 0 playing players.
-2020-02-06 22:28:25.950  INFO 25718 --- [XNIO-1 I/O-4] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
-2020-02-06 22:28:30.091  INFO 25718 --- [Thread-1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
-2020-02-06 22:28:30.092  INFO 25718 --- [Thread-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
-2020-02-06 22:28:30.096  INFO 25718 --- [Thread-1] io.undertow.servlet                      : Destroying Spring FrameworkServlet 'dispatcherServlet'
+2020-04-07 16:58:56.540  WARN 26782 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2020-04-07 16:58:56.546  INFO 26782 --- [main] lavalink.server.Launcher                 : Starting Launcher on mikengo-HP-EliteDesk-800-G1-USDT with PID 26782 (/media/mikengo/C8D1-0485/Private/DiscordBot/Python/MichaelBot/Discord/lib/Lavalink3.3/Lavalink.jar started by mikengo in /media/mikengo/C8D1-0485/Private/DiscordBot/Python/MichaelBot/Discord/lib/Lavalink3.3)
+2020-04-07 16:58:56.547  INFO 26782 --- [main] lavalink.server.Launcher                 : No active profile set, falling back to default profiles: default
+2020-04-07 16:58:58.666  WARN 26782 --- [main] io.undertow.websockets.jsr               : UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used
+2020-04-07 16:58:58.691  INFO 26782 --- [main] io.undertow.servlet                      : Initializing Spring embedded WebApplicationContext
+2020-04-07 16:58:58.691  INFO 26782 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1599 ms
+2020-04-07 16:58:59.164  WARN 26782 --- [main] l.server.config.SentryConfiguration      : Turning off sentry
+2020-04-07 16:58:59.175  INFO 26782 --- [main] l.s.c.AudioSendFactoryConfiguration      : OS: Linux, Arch: amd64
+2020-04-07 16:58:59.175  INFO 26782 --- [main] l.s.c.AudioSendFactoryConfiguration      : JDA-NAS supported system detected. Enabled native audio sending.
+2020-04-07 16:58:59.175  INFO 26782 --- [main] l.s.c.AudioSendFactoryConfiguration      : Setting buffer to 400ms
+2020-04-07 16:58:59.175  INFO 26782 --- [main] l.s.c.AudioSendFactoryConfiguration      : Setting playlist load limit to 6
+2020-04-07 16:58:59.558  INFO 26782 --- [main] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
+2020-04-07 16:58:59.978  INFO 26782 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-04-07 16:59:00.395  INFO 26782 --- [main] org.xnio                                 : XNIO version 3.3.8.Final
+2020-04-07 16:59:00.410  INFO 26782 --- [main] org.xnio.nio                             : XNIO NIO Implementation Version 3.3.8.Final
+2020-04-07 16:59:00.515  INFO 26782 --- [main] o.s.b.w.e.u.UndertowServletWebServer     : Undertow started on port(s) 2333 (http) with context path ''
+2020-04-07 16:59:00.520  INFO 26782 --- [main] lavalink.server.Launcher                 : Started Launcher in 4.883 seconds (JVM running for 5.61)
+2020-04-07 16:59:29.505  INFO 26782 --- [XNIO-1 task-1] io.undertow.servlet                      : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-04-07 16:59:29.517  INFO 26782 --- [XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-04-07 16:59:29.547  INFO 26782 --- [XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 30 ms
+2020-04-07 16:59:29.596  INFO 26782 --- [XNIO-1 task-1] l.server.io.HandshakeInterceptorImpl     : Incoming connection from /127.0.0.1:37010
+2020-04-07 16:59:29.677  INFO 26782 --- [XNIO-1 task-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring enabled, reporting results every 2 minutes.
+2020-04-07 16:59:29.781  INFO 26782 --- [XNIO-1 task-1] lavalink.server.io.SocketServer          : Connection successfully established from /127.0.0.1:37010
+2020-04-07 16:59:32.624  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "equalizer", "guildId": "481628214486368256", "bands": [{"band": 0, "gain": 0.0}, {"band": 1, "gain": 0.0}, {"band": 2, "gain": 0.0}, {"band": 3, "gain": 0.0}, {"band": 4, "gain": 0.0}, {"band": 5, "gain": 0.0}, {"band": 6, "gain": 0.0}, {"band": 7, "gain": 0.0}, {"band": 8, "gain": 0.0}, {"band": 9, "gain": 0.0}, {"band": 10, "gain": 0.0}, {"band": 11, "gain": 0.0}, {"band": 12, "gain": 0.0}, {"band": 13, "gain": 0.0}, {"band": 14, "gain": 0.0}]}
+2020-04-07 16:59:32.637  INFO 26782 --- [XNIO-1 task-2] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-04-07 16:59:32.679  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "481628214486368256", "volume": 100}
+2020-04-07 16:59:32.729  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "481628214486368256", "sessionId": "50123183d14063f7526674b14036d51d", "event": {"token": "c078bad0e599b5e3", "guild_id": "481628214486368256", "endpoint": "us-east365.discord.media:80"}}
+2020-04-07 16:59:33.816  INFO 26782 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: random shit
+2020-04-07 16:59:34.074  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "481628214486368256", "track": "QAAAfgIAFEJydS1SYXk6IFJhbmRvbSBTaGl0ABBUaHJhc2hlck1hZ2F6aW5lAAAAAAACfLgAC2JZOVBLSGNwYXNzAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9Ylk5UEtIY3Bhc3MAB3lvdXR1YmUAAAAAAAAAAA==", "noReplace": false}
+2020-04-07 16:59:44.299  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "stop", "guildId": "481628214486368256"}
+2020-04-07 16:59:44.301  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "destroy", "guildId": "481628214486368256"}
+2020-04-07 17:00:04.107  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "equalizer", "guildId": "481628214486368256", "bands": [{"band": 0, "gain": 0.0}, {"band": 1, "gain": 0.0}, {"band": 2, "gain": 0.0}, {"band": 3, "gain": 0.0}, {"band": 4, "gain": 0.0}, {"band": 5, "gain": 0.0}, {"band": 6, "gain": 0.0}, {"band": 7, "gain": 0.0}, {"band": 8, "gain": 0.0}, {"band": 9, "gain": 0.0}, {"band": 10, "gain": 0.0}, {"band": 11, "gain": 0.0}, {"band": 12, "gain": 0.0}, {"band": 13, "gain": 0.0}, {"band": 14, "gain": 0.0}]}
+2020-04-07 17:00:04.113  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "481628214486368256", "volume": 100}
+2020-04-07 17:00:04.114  INFO 26782 --- [XNIO-1 task-4] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-04-07 17:00:04.235  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "voiceUpdate", "guildId": "481628214486368256", "sessionId": "50123183d14063f7526674b14036d51d", "event": {"token": "d3e67a1c2c2e83dd", "guild_id": "481628214486368256", "endpoint": "us-east365.discord.media:80"}}
+2020-04-07 17:00:05.332  INFO 26782 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: music
+2020-04-07 17:00:05.535  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "481628214486368256", "track": "QAAAwAIAXFRvcCBNdXNpYyAyMDIwIOKcmCBUb3AgNDAgUG9wdWxhciBTb25ncyBQbGF5bGlzdCAyMDIwIOKcmCBCZXN0IEVuZ2xpc2ggTXVzaWMgQ29sbGVjdGlvbiAyMDIwAApUaW1lIE11c2ljAAAAAAA5ngAAC0pwbmY3LWtJalNVAAEAK2h0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9SnBuZjcta0lqU1UAB3lvdXR1YmUAAAAAAAAAAA==", "noReplace": false}
+2020-04-07 17:00:05.813  INFO 26782 --- [XNIO-1 task-6] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-04-07 17:00:06.845  INFO 26782 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded track Renai Circulation「恋愛サーキュレーション」歌ってみた【＊なみりん】
+2020-04-07 17:00:20.165  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "481628214486368256", "volume": 100}
+2020-04-07 17:00:23.189  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "volume", "guildId": "481628214486368256", "volume": 50}
+2020-04-07 17:00:23.213  INFO 26782 --- [lava-daemon-pool-playback-5-thread-1] c.s.l.c.natives.NativeLibraryLoader      : Native library libmpg123-0: loading with filter com.sedmelluq.discord.lavaplayer.natives.ConnectorNativeLibLoader$$Lambda$635/0x00000008007c5040@1f588fae
+2020-04-07 17:00:23.215  INFO 26782 --- [lava-daemon-pool-playback-5-thread-1] c.s.l.c.natives.NativeLibraryLoader      : Native library connector: loading with filter null
+2020-04-07 17:00:23.244  INFO 26782 --- [lava-daemon-pool-playback-5-thread-1] c.s.l.c.natives.NativeLibraryLoader      : Native library connector: successfully loaded.
+2020-04-07 17:00:33.773  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "stop", "guildId": "481628214486368256"}
+2020-04-07 17:00:33.776  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "481628214486368256", "track": "QAAAvgIAXFJlbmFpIENpcmN1bGF0aW9u44CM5oGL5oSb44K144O844Kt44Ol44Os44O844K344On44Oz44CN5q2M44Gj44Gm44G/44Gf44CQ77yK44Gq44G/44KK44KT44CRAAgqbmFtaXJpbgAAAAAAA+QYAAt1S3h5TG1iT2MwUQABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PXVLeHlMbWJPYzBRAAd5b3V0dWJlAAAAAAAAAAA=", "noReplace": false}
+2020-04-07 17:00:34.783  INFO 26782 --- [XNIO-1 task-8] l.server.player.AudioLoaderRestHandler   : GET /loadtracks
+2020-04-07 17:00:35.442  INFO 26782 --- [lava-daemon-pool-info-loader-2-thread-1] lavalink.server.player.AudioLoader       : Loaded playlist Search results for: trời giấu trời mang đi
+2020-04-07 17:00:39.584  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "stop", "guildId": "481628214486368256"}
+2020-04-07 17:00:39.585  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "481628214486368256", "track": "QAAAsgIAREFNRUUgeCBWSVJVU1MgLSBUUuG7nEkgR0nhuqRVIFRS4bucSSBNQU5HIMSQSSB8IE9mZmljaWFsIE11c2ljIFZpZGVvABRTdC4zMTkgRW50ZXJ0YWlubWVudAAAAAAAB/7gAAtZWGtwNzd0Ujl2dwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PVlYa3A3N3RSOXZ3AAd5b3V0dWJlAAAAAAAAAAA=", "noReplace": false}
+2020-04-07 17:09:23.141  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "play", "guildId": "481628214486368256", "track": "QAAAsgIAREFNRUUgeCBWSVJVU1MgLSBUUuG7nEkgR0nhuqRVIFRS4bucSSBNQU5HIMSQSSB8IE9mZmljaWFsIE11c2ljIFZpZGVvABRTdC4zMTkgRW50ZXJ0YWlubWVudAAAAAAAB/7gAAtZWGtwNzd0Ujl2dwABACtodHRwczovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PVlYa3A3N3RSOXZ3AAd5b3V0dWJlAAAAAAAAAAA=", "noReplace": false}
+2020-04-07 17:09:50.372  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "stop", "guildId": "481628214486368256"}
+2020-04-07 17:09:50.374  INFO 26782 --- [XNIO-1 I/O-2] lavalink.server.io.SocketServer          : {"op": "destroy", "guildId": "481628214486368256"}
+2020-04-07 17:09:55.865  INFO 26782 --- [Thread-1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-04-07 17:09:55.868  INFO 26782 --- [Thread-1] c.s.d.l.tools.GarbageCollectionMonitor   : GC monitoring disabled.
+2020-04-07 17:09:55.897  INFO 26782 --- [Thread-1] io.undertow.servlet                      : Destroying Spring FrameworkServlet 'dispatcherServlet'
+2020-04-07 17:09:55.912 ERROR 26782 --- [XNIO-1 I/O-2] org.xnio.listener                        : XNIO001007: A channel event listener threw an exception
+
+java.util.concurrent.RejectedExecutionException: XNIO007007: Thread is terminating
+	at org.xnio.nio.WorkerThread.execute(WorkerThread.java:590) ~[xnio-nio-3.3.8.Final.jar!/:3.3.8.Final]
+	at io.undertow.websockets.jsr.UndertowSession$3.handleEvent(UndertowSession.java:396) ~[undertow-websockets-jsr-2.0.26.Final.jar!/:2.0.26.Final]
+	at io.undertow.websockets.jsr.UndertowSession$3.handleEvent(UndertowSession.java:388) ~[undertow-websockets-jsr-2.0.26.Final.jar!/:2.0.26.Final]
+	at org.xnio.ChannelListeners.invokeChannelListener(ChannelListeners.java:92) ~[xnio-api-3.3.8.Final.jar!/:3.3.8.Final]
+	at io.undertow.server.protocol.framed.AbstractFramedChannel$FrameCloseListener.handleEvent(AbstractFramedChannel.java:1063) ~[undertow-core-2.0.26.Final.jar!/:2.0.26.Final]
+	at io.undertow.server.protocol.framed.AbstractFramedChannel$FrameCloseListener.handleEvent(AbstractFramedChannel.java:978) ~[undertow-core-2.0.26.Final.jar!/:2.0.26.Final]
+	at org.xnio.ChannelListeners.invokeChannelListener(ChannelListeners.java:92) ~[xnio-api-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.conduits.WriteReadyHandler$ChannelListenerHandler.terminated(WriteReadyHandler.java:70) ~[xnio-api-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.nio.NioSocketConduit.writeTerminated(NioSocketConduit.java:234) ~[xnio-nio-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.nio.NioSocketConduit.terminateWrites(NioSocketConduit.java:223) ~[xnio-nio-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.nio.NioSocketConduit.truncateWrites(NioSocketConduit.java:228) ~[xnio-nio-3.3.8.Final.jar!/:3.3.8.Final]
+	at io.undertow.conduits.IdleTimeoutConduit.truncateWrites(IdleTimeoutConduit.java:387) ~[undertow-core-2.0.26.Final.jar!/:2.0.26.Final]
+	at org.xnio.conduits.ConduitStreamSinkChannel.close(ConduitStreamSinkChannel.java:186) ~[xnio-api-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.IoUtils.safeClose(IoUtils.java:134) ~[xnio-api-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.conduits.WriteReadyHandler$ChannelListenerHandler.forceTermination(WriteReadyHandler.java:57) ~[xnio-api-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.nio.NioSocketConduit.forceTermination(NioSocketConduit.java:107) ~[xnio-nio-3.3.8.Final.jar!/:3.3.8.Final]
+	at org.xnio.nio.WorkerThread.run(WorkerThread.java:494) ~[xnio-nio-3.3.8.Final.jar!/:3.3.8.Final]
+
