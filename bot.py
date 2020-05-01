@@ -57,7 +57,12 @@ if __name__ == "__main__":
     if TOKEN is None or prefix is None:
         print("Unable to load token and prefix.")
     else:
-        bot = commands.Bot(command_prefix = commands.when_mentioned_or(prefix), description = description)
+        bot = commands.Bot(
+            command_prefix = commands.when_mentioned_or(prefix), 
+            description = description,
+            status = discord.Status.online,
+            activity = discord.Game(name = "Linux")
+        )
 
         try:
             for filename in sorted(os.listdir('./categories')):
