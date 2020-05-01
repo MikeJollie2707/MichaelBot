@@ -25,6 +25,18 @@ import gconfig
 # Embed.footer as the executor.
 # Optional (Embed.thumbnail) as the target.
 
+def striplist(array):
+    '''
+    Turn the list of objects into a string.
+    '''
+
+    st = str(array)
+
+    st = st.replace('[', "")
+    st = st.replace(']', "")
+    st = st.replace("'", "")
+
+    return st
 
 class Logging(commands.Cog):
     '''Commands related to logging actions in server.'''
@@ -32,6 +44,8 @@ class Logging(commands.Cog):
         self.bot = bot
         self.log_channel = 649111117204815883
         self.emoji = '📝'
+
+        # Color specification:
         # Moderation action = Black
         # Warn / Mute = Red
         # Change (server change, message change, member change, etc.) = Yellow
@@ -121,7 +135,7 @@ class Logging(commands.Cog):
         if role_permissions == "stream":
             return "Go Live"
     
-    def channel_dpyperms_to_dperms(self, channel_permissions):
+    def channel_dpyperms_to_dperms(self, channel_permissions : str):
         if channel_permissions == "create_instant_invite":
             return "Create Invite"
         if channel_permissions == "manage_channels":
@@ -165,19 +179,6 @@ class Logging(commands.Cog):
             return "Priority Speaker"
         if channel_permissions == "stream":
             return "Go Live"
-    
-    def striplist(self, array):
-        '''
-        Turn the list of objects into a string.
-        '''
-
-        st = str(array)
-
-        st = st.replace('[', "")
-        st = st.replace(']', "")
-        st = st.replace("'", "")
-
-        return st
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -349,6 +350,12 @@ class Logging(commands.Cog):
                                 ''' % (content_message, after.author.mention, after.channel.mention)
                 log_color = self.color_change
                 log_time = after.edited_at
+
+                # When posting a link, the message will be internally edited to have the embed of the link
+                # which trigger this event, but doesn't change the edited_at attr in Message.
+                # So we need to check if that's the case, and if it is, we don't log.
+                if log_time is None:
+                    return
 
                 embed = discord.Embed(
                     title = log_title, 
@@ -660,7 +667,7 @@ class Logging(commands.Cog):
                         log_content = f'''
                                         **Member:** {after.mention}
                                         **Member Name:** {after}
-                                        **Role added:** {self.striplist(role_change)}
+                                        **Role added:** {striplist(role_change)}
                                         ----------------------------
                                         **Added by:** {executor.mention}
                                         '''
@@ -1120,9 +1127,9 @@ class Logging(commands.Cog):
                             # TODO: Change the process to local functions cuz it's repetitive af
 
                             # Remove the [] and ' in the list...
-                            granted_message = self.striplist(granted)
-                            neutralized_message = self.striplist(neutralized)
-                            denied_message = self.striplist(denied)
+                            granted_message = striplist(granted)
+                            neutralized_message = striplist(neutralized)
+                            denied_message = striplist(denied)
                             
                             if granted_message == "":
                                 pass
@@ -1555,8 +1562,8 @@ class Logging(commands.Cog):
                     if len(granted) == 0 and len(denied) == 0:
                         return
                     
-                    granted_message = self.striplist(granted)
-                    denied_message = self.striplist(denied)
+                    granted_message = striplist(granted)
+                    denied_message = striplist(denied)
 
                     if denied_message != "" and granted_message != "":
                         granted_message += "\n\n"
@@ -1601,13 +1608,14 @@ class Logging(commands.Cog):
             log_title = "Command Raised Error"
             log_content = '''
                             A command raised an error.
-                            Command Signature:
-                            ```%s```
+
+                            Command arguments:
+                            ```%s %s```
                             Message:
                             ```%s```
                             Error:
                             ```%s```
-                            ''' % (ctx.command.signature, ctx.message.content, error)
+                            ''' % (ctx.command.name, ctx.command.signature, ctx.message.content, error)
             log_color = self.color_other
             log_time = datetime.datetime.utcnow()
 
