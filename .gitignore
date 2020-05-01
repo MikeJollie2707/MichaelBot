@@ -1,13 +1,13 @@
 *.env
-./setup/bot1.json
-./setup/botbeta.json
+/setup/bot1.json
+/setup/botbeta.json
 discord.log
 
 __pycache__/
 lib/
-./categories/__pycache__
-./categories/templates/__pycache__
-./categories/utilityfun/__pycache__
+/categories/__pycache__
+/categories/templates/__pycache__
+/categories/utilityfun/__pycache__
 
-./categories/experiment.py
-./categories/utilityfun/embed_test.py
+/categories/experiment.py
+/categories/utilityfun/embed_test.py
