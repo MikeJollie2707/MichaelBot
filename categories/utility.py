@@ -395,6 +395,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.send("Message sent!", delete_after = 5)
 
     @commands.command(hidden = True)
+    @commands.is_nsfw()
     @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.member)
     @commands.bot_has_permissions(send_messages = True)
     async def konachanloli(self, ctx):
