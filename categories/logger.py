@@ -4,11 +4,11 @@ from discord.ext import commands
 import datetime
 import textwrap
 
-import gconfig
+from categories.utilities import methods
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:
-# - log_channel: the channel that's gonna send the embed. Retrieve using gconfig.get_config and config["LOG_CHANNEL"]
+# - log_channel: the channel that's gonna send the embed. Retrieve using methods.get_config and config["LOG_CHANNEL"]
 # - log_title: the log title that's gonna pass in title in discord.Embed
 # - log_content: the log content that's gonna pass in description in discord.Embed
 # - log_color: the color of the embed. It must be self.color_... depend on the current event.
@@ -24,19 +24,6 @@ import gconfig
 # Embed.timestamp as log_time.
 # Embed.footer as the executor.
 # Optional (Embed.thumbnail) as the target.
-
-def striplist(array):
-    '''
-    Turn the list of objects into a string.
-    '''
-
-    st = str(array)
-
-    st = st.replace('[', "")
-    st = st.replace(']', "")
-    st = st.replace("'", "")
-
-    return st
 
 class Logging(commands.Cog):
     '''Commands related to logging actions in server.'''
@@ -62,7 +49,7 @@ class Logging(commands.Cog):
         self.color_other = discord.Color.teal()
 
     def log_check(self, guild):
-        config = gconfig.get_config(guild.id)
+        config = methods.get_config(guild.id)
         if config["ERROR"] == 0 and config["STATUS_LOG"] == 1 and config["LOG_CHANNEL"] != 0:
             return True
         elif config["ERROR"] != 0:
@@ -186,7 +173,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # Then we get the log channel of that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             # Initialize variables according to specification.
@@ -255,22 +242,23 @@ class Logging(commands.Cog):
                                     executor.mention, 
                                     message.channel.id
                                 )
-                embed = discord.Embed(
-                    title = log_title, 
-                    description = textwrap.dedent(log_content), 
-                    color = log_color, 
+                embed = methods.get_default_embed(
+                    title = log_title,
+                    description = log_content,
+                    color = log_color,
                     timestamp = log_time
                 )
-                embed.set_thumbnail(url = message.author.avatar_url)
-                embed.set_author(
+
+                embed.set_thumbnail(
+                    url = message.author.avatar_url
+                ).set_author(
                     name = str(executor), 
                     icon_url = executor.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(executor),
                     icon_url = executor.avatar_url
                 )
-
+                
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener()
@@ -284,7 +272,7 @@ class Logging(commands.Cog):
         else:
             guild = self.bot.get_channel(payload.channel_id).guild
             if self.log_check(guild):
-                config = gconfig.get_config(guild.id)
+                config = methods.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
                 
                 # We're attempting to retrieve the message here...
@@ -309,14 +297,12 @@ class Logging(commands.Cog):
                 log_color = self.color_change
                 log_time = edited_message.edited_at
 
-                embed = discord.Embed(
-                    title = log_title, 
-                    description = textwrap.dedent(log_content), 
+                embed = methods.get_default_embed(
+                    title = log_title,
+                    description = log_content,
                     color = log_color,
                     timestamp = log_time
-                )
-
-                embed.set_thumbnail(
+                ).set_thumbnail(
                     url = edited_message.author.avatar_url
                 )
 
@@ -329,7 +315,7 @@ class Logging(commands.Cog):
             # First we check if the logging feature is enabled in that guild.
             if self.log_check(guild):
                 # We retrieve the logging channel for that guild.
-                config = gconfig.get_config(guild.id)
+                config = methods.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
                 log_title = "Message Edited"
@@ -357,19 +343,17 @@ class Logging(commands.Cog):
                 if log_time is None:
                     return
 
-                embed = discord.Embed(
-                    title = log_title, 
-                    description = textwrap.dedent(log_content), 
-                    color = log_color, 
+                embed = methods.get_default_embed(
+                    title = log_title,
+                    description = log_content,
+                    color = log_color,
                     timestamp = log_time
-                )
-                                    
-                embed.set_thumbnail(url = after.author.avatar_url)
-                embed.set_author(
+                ).set_thumbnail(
+                    url = after.author.avatar_url
+                ).set_author(
                     name = str(after.author), 
                     icon_url = after.author.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(after.author),
                     icon_url = after.author.avatar_url
                 )
@@ -381,7 +365,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "User Banned"
@@ -409,19 +393,17 @@ class Logging(commands.Cog):
                                 **Banned by:** {executor.mention}
                                 '''
 
-                embed = discord.Embed(
-                    title = log_title, 
-                    description = textwrap.dedent(log_content), 
-                    color = log_color, 
+                embed = methods.get_default_embed(
+                    title = log_title,
+                    description = log_content,
+                    color = log_color,
                     timestamp = log_time
-                )
-
-                embed.set_thumbnail(url = user.avatar_url)
-                embed.set_author(
+                ).set_thumbnail(
+                    url = user.avatar_url
+                ).set_author(
                     name = str(executor),
                     icon_url = executor.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(executor),
                     icon_url = executor.avatar_url
                 )
@@ -433,7 +415,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "User Unbanned"
@@ -461,19 +443,17 @@ class Logging(commands.Cog):
                                 **Unbanned by:** {executor.mention}
                                 '''
                 
-                embed = discord.Embed(
+                embed = methods.get_default_embed(
                     title = log_title, 
-                    description = textwrap.dedent(log_content), 
+                    description = log_content, 
                     color = log_color, 
                     timestamp = log_time
-                )
-
-                embed.set_thumbnail(url = user.avatar_url)
-                embed.set_author(
+                ).set_thumbnail(
+                    url = user.avatar_url
+                ).set_author(
                     name = str(executor),
                     icon_url = executor.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(executor),
                     icon_url = executor.avatar_url
                 )
@@ -487,7 +467,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Member Joined"
@@ -508,22 +488,21 @@ class Logging(commands.Cog):
                                 member.created_at.hour % 12,
                                 "0" + str(member.created_at.minute) if member.created_at.minute / 10 < 1 else str(member.created_at.minute),
                                 "AM" if member.created_at.hour / 12 < 1 else "PM"
-                            )
+                            ) # Don't use f-strings here, it's messy.
             log_color = self.color_guild_join_leave
             log_time = datetime.datetime.utcnow()
 
-            embed = discord.Embed(
+            embed = methods.get_default_embed(
                 title = log_title,
-                description = textwrap.dedent(log_content),
+                description = log_content,
                 color = log_color,
                 timestamp = log_time
-            )
-            embed.set_thumbnail(url = member.avatar_url)
-            embed.set_author(
+            ).set_thumbnail(
+                url = member.avatar_url
+            ).set_author(
                 name = str(member),
                 icon_url = member.avatar_url
-            )
-            embed.set_footer(
+            ).set_footer(
                 text = str(member),
                 icon_url = member.avatar_url
             )
@@ -537,7 +516,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -577,18 +556,17 @@ class Logging(commands.Cog):
                                     '''
                     log_color = self.color_moderation
                     
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title, 
-                        description = textwrap.dedent(log_content), 
+                        description = log_content, 
                         color = log_color, 
                         timestamp = log_time
-                    )
-                    embed.set_thumbnail(url = member.avatar_url)
-                    embed.set_author(
+                    ).set_thumbnail(
+                        url = member.avatar_url
+                    ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -606,18 +584,17 @@ class Logging(commands.Cog):
                 log_color = self.color_guild_join_leave
                 log_time = datetime.datetime.utcnow()
 
-                embed = discord.Embed(
+                embed = methods.get_default_embed(
                     title = log_title, 
                     description = log_content, 
                     color = log_color, 
                     timestamp = log_time
-                )
-                embed.set_thumbnail(url = member.avatar_url)
-                embed.set_author(
+                ).set_thumbnail(
+                    url = member.avatar_url
+                ).set_author(
                     name = str(member),
                     icon_url = member.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(member),
                     icon_url = member.avatar_url
                 )
@@ -631,7 +608,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -667,7 +644,7 @@ class Logging(commands.Cog):
                         log_content = f'''
                                         **Member:** {after.mention}
                                         **Member Name:** {after}
-                                        **Role added:** {striplist(role_change)}
+                                        **Role added:** {methods.striplist(role_change)}
                                         ----------------------------
                                         **Added by:** {executor.mention}
                                         '''
@@ -712,19 +689,17 @@ class Logging(commands.Cog):
                                     '''
                 
                 if flag:
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title, 
-                        description = textwrap.dedent(log_content), 
+                        description = log_content, 
                         color = log_color, 
                         timestamp = log_time
-                    )
-
-                    embed.set_thumbnail(url = after.avatar_url)
-                    embed.set_author(
+                    ).set_thumbnail(
+                        url = after.avatar_url
+                    ).set_author(
                         name = str(executor), 
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -738,7 +713,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -775,7 +750,7 @@ class Logging(commands.Cog):
                                         channel.id, 
                                         "Yes" if channel.is_nsfw() else "No", 
                                         channel.position
-                                    )
+                                    ) # Don't f-strings this.
 
                 elif isinstance(channel, discord.VoiceChannel):
                     # We'll probably cover some info about bitrate in the future.
@@ -796,7 +771,7 @@ class Logging(commands.Cog):
 
                                         channel.id, 
                                         channel.position
-                                    )
+                                    ) # Don't f-strings this.
 
                 elif isinstance(channel, discord.CategoryChannel):
                     log_title = "Category Created"
@@ -812,19 +787,17 @@ class Logging(commands.Cog):
 
                                         channel.id, 
                                         channel.position
-                                    )
+                                    ) # Don't f-strings this.
                 
-                embed = discord.Embed(
+                embed = methods.get_default_embed(
                     title = log_title, 
-                    description = textwrap.dedent(log_content), 
+                    description = log_content, 
                     color = log_color,
                     timestamp = log_time
-                )
-                embed.set_author(
+                ).set_author(
                     name = str(executor),
                     icon_url = executor.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(executor),
                     icon_url = executor.avatar_url
                 )
@@ -838,7 +811,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
             
             log_title = ""
@@ -871,7 +844,7 @@ class Logging(commands.Cog):
                                         channel.id, 
                                         "Yes" if channel.is_nsfw() else "No", 
                                         channel.position
-                                    )
+                                    ) # Don't f-strings this.
 
                 elif isinstance(channel, discord.VoiceChannel):
                     log_title = "Voice Channel Deleted"
@@ -889,8 +862,7 @@ class Logging(commands.Cog):
 
                                         channel.id, 
                                         channel.position
-                                    )
-                    log_time = entry.created_at
+                                    ) # Don't f-strings this.
 
                 elif isinstance(channel, discord.CategoryChannel):
                     log_title = "Category Deleted"
@@ -906,11 +878,11 @@ class Logging(commands.Cog):
 
                                         channel.id, 
                                         channel.position
-                                    )
+                                    ) # Don't f-strings this.
                 
-                embed = discord.Embed(
+                embed = methods.get_default_embed(
                     title = log_title, 
-                    description = textwrap.dedent(log_content), 
+                    description = log_content, 
                     color = log_color,
                     timestamp = log_time
                 )
@@ -932,7 +904,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -962,17 +934,15 @@ class Logging(commands.Cog):
                                     '''
                     
                     # Put embed inside here instead of outside because user can change multiple thing before pressing save.
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title, 
-                        description = textwrap.dedent(log_content), 
+                        description = log_content, 
                         color = log_color, 
                         timestamp = log_time
-                    )
-                    embed.set_author(
+                    ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -992,17 +962,15 @@ class Logging(commands.Cog):
                                     **Changed by:** {executor.mention}
                                     '''
                     
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title, 
-                        description = textwrap.dedent(log_content), 
+                        description = log_content, 
                         color = log_color, 
                         timestamp = log_time
-                    )
-                    embed.set_author(
+                    ).set_author(
                         name = str(entry.user),
                         icon_url = entry.user.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(entry.user),
                         icon_url = entry.user.avatar_url
                     )
@@ -1046,17 +1014,15 @@ class Logging(commands.Cog):
                                                 executor.mention
                                             )
                             
-                            embed = discord.Embed(
+                            embed = methods.get_default_embed(
                                 title = log_title, 
-                                description = textwrap.dedent(log_content), 
+                                description = log_content, 
                                 color = log_color, 
                                 timestamp = log_time
-                            )
-                            embed.set_author(
+                            ).set_author(
                                 name = str(executor),
                                 icon_url = executor.avatar_url
-                            )
-                            embed.set_footer(
+                            ).set_footer(
                                 text = str(executor),
                                 icon_url = executor.avatar_url
                             )
@@ -1127,9 +1093,9 @@ class Logging(commands.Cog):
                             # TODO: Change the process to local functions cuz it's repetitive af
 
                             # Remove the [] and ' in the list...
-                            granted_message = striplist(granted)
-                            neutralized_message = striplist(neutralized)
-                            denied_message = striplist(denied)
+                            granted_message = methods.striplist(granted)
+                            neutralized_message = methods.striplist(neutralized)
+                            denied_message = methods.striplist(denied)
                             
                             if granted_message == "":
                                 pass
@@ -1165,18 +1131,15 @@ class Logging(commands.Cog):
                                             **Changed by:** {executor.mention}
                                             '''
                             
-                            embed = discord.Embed(
+                            embed = methods.get_default_embed(
                                 title = log_title,
-                                description = textwrap.dedent(log_content),
+                                description = log_content,
                                 color = log_color,
                                 timestamp = log_time
-                            )
-
-                            embed.set_author(
+                            ).set_author(
                                 name = str(executor),
                                 icon_url = executor.avatar_url
-                            )
-                            embed.set_footer(
+                            ).set_footer(
                                 text = str(executor),
                                 icon_url = executor.avatar_url
                             )
@@ -1199,9 +1162,9 @@ class Logging(commands.Cog):
                                                 executor.mention
                                             )
                             
-                            embed = discord.Embed(
+                            embed = methods.get_default_embed(
                                 title = log_title, 
-                                description = textwrap.dedent(log_content), 
+                                description = log_content, 
                                 color = log_color, 
                                 timestamp = log_time
                             )
@@ -1221,7 +1184,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(after.guild):
             # We retrieve the logging channel for that guild
-            config = gconfig.get_config(after.guild.id)
+            config = methods.get_config(after.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -1255,17 +1218,15 @@ class Logging(commands.Cog):
                                     '''
                 
                 if flag:
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title,
-                        description = textwrap.dedent(log_content),
+                        description = log_content,
                         color = log_color,
                         timestamp = log_time
-                    )
-                    embed.set_author(
+                    ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -1279,7 +1240,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Role Created"
@@ -1377,18 +1338,15 @@ class Logging(commands.Cog):
                                     str(role.color)
                                 )
 
-                embed = discord.Embed(
+                embed = methods.get_default_embed(
                     title = log_title,
-                    description = textwrap.dedent(log_content),
+                    description = log_content,
                     color = log_color,
                     timestamp = log_time
-                )
-
-                embed.set_author(
+                ).set_author(
                     name = str(executor),
                     icon_url = executor.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(executor),
                     icon_url = executor.avatar_url
                 )
@@ -1402,7 +1360,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Role Deleted"
@@ -1431,18 +1389,15 @@ class Logging(commands.Cog):
                                     str(role.color)
                                 )
                 
-                embed = discord.Embed(
+                embed = methods.get_default_embed(
                     title = log_title,
-                    description = textwrap.dedent(log_content),
+                    description = log_content,
                     color = log_color,
                     timestamp = log_time
-                )
-
-                embed.set_author(
+                ).set_author(
                     name = str(executor),
                     icon_url = executor.avatar_url
-                )
-                embed.set_footer(
+                ).set_footer(
                     text = str(executor),
                     icon_url = executor.avatar_url
                 )
@@ -1456,7 +1411,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = gconfig.get_config(guild.id)
+            config = methods.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -1480,18 +1435,15 @@ class Logging(commands.Cog):
                                     **Changed by:** {executor.mention}
                                     '''
                     
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title,
-                        description = textwrap.dedent(log_content),
+                        description = log_content,
                         color = log_color,
                         timestamp = log_time
-                    )
-
-                    embed.set_author(
+                    ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -1507,18 +1459,15 @@ class Logging(commands.Cog):
                                     **Changed by:** {executor.mention}
                                     '''
                     
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title,
-                        description = textwrap.dedent(log_content),
+                        description = log_content,
                         color = log_color,
                         timestamp = log_time
-                    )
-
-                    embed.set_author(
+                    ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -1562,8 +1511,8 @@ class Logging(commands.Cog):
                     if len(granted) == 0 and len(denied) == 0:
                         return
                     
-                    granted_message = striplist(granted)
-                    denied_message = striplist(denied)
+                    granted_message = methods.striplist(granted)
+                    denied_message = methods.striplist(denied)
 
                     if denied_message != "" and granted_message != "":
                         granted_message += "\n\n"
@@ -1578,18 +1527,15 @@ class Logging(commands.Cog):
                                     **Changed by:** {executor.mention}
                                     '''
 
-                    embed = discord.Embed(
+                    embed = methods.get_default_embed(
                         title = log_title,
-                        description = textwrap.dedent(log_content),
+                        description = log_content,
                         color = log_color,
                         timestamp = log_time
-                    )
-
-                    embed.set_author(
+                    ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
-                    )
-                    embed.set_footer(
+                    ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
                     )
@@ -1602,7 +1548,7 @@ class Logging(commands.Cog):
             return
         
         if self.log_check(ctx.guild):
-            config = gconfig.get_config(ctx.guild.id)
+            config = methods.get_config(ctx.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Command Raised Error"
@@ -1619,17 +1565,15 @@ class Logging(commands.Cog):
             log_color = self.color_other
             log_time = datetime.datetime.utcnow()
 
-            embed = discord.Embed(
+            embed = methods.get_default_embed(
                 title = log_title,
-                description = textwrap.dedent(log_content),
+                description = log_content,
                 color = log_color,
                 timestamp = log_time
-            )
-            embed.set_author(
+            ).set_author(
                 name = ctx.author, 
                 icon_url = ctx.author.avatar_url
-            )
-            embed.set_footer(
+            ).set_footer(
                 text = ctx.author, 
                 icon_url = ctx.author.avatar_url
             )
