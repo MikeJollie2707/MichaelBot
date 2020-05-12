@@ -2,7 +2,7 @@
 
 MichaelBot is a bot written in Python using [discord.py](https://github.com/Rapptz/discord.py).
 
-The reason why this bot exist is because...I'm free, and I like to make one.
+The reason why this bot exist is because...it's fun, and I like to make one.
 
 Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
@@ -118,7 +118,7 @@ This project is under the [MIT LICENSE](LICENSE).
 
 You can contribute to this bot via:
 
-- Development: Name your branch `<yourname>-<the objective of the branch>-<maybe with space>`
+- Development: I'm doing this all alone, so if I have 1 or more people, that'd be great help.
 - Testing: use commands, do actions and report via the `report` command.
 
 Any sort of contributions are highly appreciated.
@@ -132,15 +132,14 @@ Any sort of contributions are highly appreciated.
 - [ ] Debug everything.
   - [x] `Core`
   - [x] `Dev`
-  - [ ] `Logger`
+  - [x] `Logger`
   - [x] `Moderation`
   - [ ] `Music`
   - [ ] `Server`
   - [ ] `Utility`
   - [ ] `Events`
-- [x] Find a way to deal with broken embed display on mobile.
 - [ ] Add `Account Age` to `profile`
-- [ ] Update `commandlist.md`.
+- [ ] Update documentation.
 
 ## Acknowledgement
 
