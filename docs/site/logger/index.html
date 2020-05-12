@@ -78,6 +78,59 @@
     <a class="current" href="./">Logging events</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#logging-events">Logging events</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
+        
+            <li><a class="toctree-l4" href="#specification-internal">Specification [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#log_check-internal">log_check [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#role95dpyperms95to95dperms-internal">role_dpyperms_to_dperms [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#channel95dpyperms95to95dperms-internal">channel_dpyperms_to_dperms [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#on95message95delete">on_message_delete</a></li>
+        
+            <li><a class="toctree-l4" href="#on95bulk95message95delete-developing">on_bulk_message_delete [DEVELOPING]</a></li>
+        
+            <li><a class="toctree-l4" href="#on95raw95message95edit">on_raw_message_edit</a></li>
+        
+            <li><a class="toctree-l4" href="#on95message95edit">on_message_edit</a></li>
+        
+            <li><a class="toctree-l4" href="#on95member95ban">on_member_ban</a></li>
+        
+            <li><a class="toctree-l4" href="#on95member95unban">on_member_unban</a></li>
+        
+            <li><a class="toctree-l4" href="#on95member95join">on_member_join</a></li>
+        
+            <li><a class="toctree-l4" href="#on95member95leave">on_member_leave</a></li>
+        
+            <li><a class="toctree-l4" href="#on95member95update">on_member_update</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95channel95create">on_guild_channel_create</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95channel95delete">on_guild_channel_delete</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95channel95update">on_guild_channel_update</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95update">on_guild_update</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95role95create">on_guild_role_create</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95role95delete">on_guild_role_delete</a></li>
+        
+            <li><a class="toctree-l4" href="#on95guild95role95update">on_guild_role_update</a></li>
+        
+            <li><a class="toctree-l4" href="#command_error">command_error</a></li>
+        
+        </ul>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -135,7 +188,340 @@
           <div role="main">
             <div class="section">
               
-                
+                <!-- omit in toc -->
+
+<h1 id="logging-events">Logging events</h1>
+<p>Unlike other categories, this categories only contains logging events for the logging feature of a Discord Bot.</p>
+<p>This category has no commands. If you're looking for setting up a logging channel/welcome channel/..., refers to page <code>Settings</code>.</p>
+<p><em>This section will be reformatted in near future.</em></p>
+<!-- omit in toc -->
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#specification-internal">Specification [INTERNAL]</a></li>
+<li><a href="#init-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#logcheck-internal">log_check [INTERNAL]</a></li>
+<li><a href="#roledpypermstodperms-internal">role_dpyperms_to_dperms [INTERNAL]</a></li>
+<li><a href="#channeldpypermstodperms-internal">channel_dpyperms_to_dperms [INTERNAL]</a></li>
+<li><a href="#onmessagedelete">on_message_delete</a></li>
+<li><a href="#onbulkmessagedelete-developing">on_bulk_message_delete [DEVELOPING]</a></li>
+<li><a href="#onrawmessageedit">on_raw_message_edit</a></li>
+<li><a href="#onmessageedit">on_message_edit</a></li>
+<li><a href="#onmemberban">on_member_ban</a></li>
+<li><a href="#onmemberunban">on_member_unban</a></li>
+<li><a href="#onmemberjoin">on_member_join</a></li>
+<li><a href="#onmemberleave">on_member_leave</a></li>
+<li><a href="#onmemberupdate">on_member_update</a></li>
+<li><a href="#onguildchannelcreate">on_guild_channel_create</a></li>
+<li><a href="#onguildchanneldelete">on_guild_channel_delete</a></li>
+<li><a href="#onguildchannelupdate">on_guild_channel_update</a></li>
+<li><a href="#onguildupdate">on_guild_update</a></li>
+<li><a href="#onguildrolecreate">on_guild_role_create</a></li>
+<li><a href="#onguildroledelete">on_guild_role_delete</a></li>
+<li><a href="#onguildroleupdate">on_guild_role_update</a></li>
+<li><a href="#commanderror">command_error</a></li>
+</ul>
+<h2 id="specification-internal">Specification [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>This is a set of format that the developers must follow while writing events for consistency. Any changes that does not follow this specification will be denied.</p>
+<p><strong>Full Specification:</strong></p>
+<pre><code class="py"># Specification:
+# Every single events here (except raw events) must have the following variables declared at the very first line after checking log:
+# - log_channel: the channel that's gonna send the embed. Retrieve using gconfig.get_config and config[&quot;LOG_CHANNEL&quot;]
+# - log_title: the log title that's gonna pass in title in discord.Embed
+# - log_content: the log content that's gonna pass in description in discord.Embed
+# - log_color: the color of the embed. It must be self.color_... depend on the current event.
+# - log_time: the timestamp of the embed. Typically get from entry.created_at.
+# - Optional(executor): the Member that triggered the event.
+
+# Log embed specification:
+# Every single embed send here (except raw events) must have the following format:
+# Embed.author as the executor.
+# Embed.title as log_title.
+# Embed.description as log_content.
+# Embed.color as log_color.
+# Embed.timestamp as log_time.
+# Embed.footer as the executor.
+# Optional (Embed.thumbnail) as the target.
+
+# Color specification:
+# Moderation action = Black
+# Warn / Mute = Red
+# Change (server change, message change, member change, etc.) = Yellow
+# Delete (delete message, delete role, delete channel, etc.) = Orange
+# Create (create channel, create role, etc.) = Green
+# Join / Leave (server) = Blue
+# Other = Teal
+</code></pre>
+
+<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A constructor of the category. This set the emoji for the category as <code>📝</code>.</p>
+<p>This also defines the fixed colors for each audit log action. Any changes that does not follow this specification will be denied.</p>
+<p><strong>Color Specification:</strong></p>
+<pre><code class="py"># Color specification:
+# Moderation action = Black
+# Warn / Mute = Red
+# Change (server change, message change, member change, etc.) = Yellow
+# Delete (delete message, delete role, delete channel, etc.) = Orange
+# Create (create channel, create role, etc.) = Green
+# Join / Leave (server) = Blue
+# Other = Teal
+self.color_moderation = 0x000000
+self.color_warn_mute = discord.Color.red()
+self.color_change = discord.Color.gold()
+self.color_delete = discord.Color.orange()
+self.color_create = discord.Color.green()
+self.color_guild_join_leave = discord.Color.blue()
+self.color_other = discord.Color.teal()
+</code></pre>
+
+<h2 id="log_check-internal">log_check [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>An internal check if a guild enabled logging feature. It <strong>MUST</strong> be the first thing to check when writing any events.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">def log_check(self, guild):
+</code></pre>
+
+<p><strong>Return:</strong></p>
+<ul>
+<li><code>True</code> if <code>config["ERROR"] == 0</code> and <code>config["STATUS_LOG"] == 1</code> and <code>config["LOG_CHANNEL"] != 0</code></li>
+<li><code>False</code> otherwise.</li>
+</ul>
+<h2 id="role95dpyperms95to95dperms-internal">role_dpyperms_to_dperms [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A utility method to convert a role permission to the text.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">def role_dpyperms_to_dperms(self, role_permissions : str):
+</code></pre>
+
+<p><strong>Return type:</strong> <code>str</code></p>
+<p><strong>Example:</strong> <code>role_dpyperms_to_dperms("manage_guild")</code> -&gt; <code>"Manage Server"</code></p>
+<h2 id="channel95dpyperms95to95dperms-internal">channel_dpyperms_to_dperms [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A utility method to convert a channel permission to the text.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">def channel_dpyperms_to_dperms(self, channel_permissions : str):
+</code></pre>
+
+<p><strong>Return type:</strong> <code>str</code></p>
+<p><strong>Example:</strong> <code>channel_dpyperms_to_dperms("manage_channels")</code> -&gt; <code>"Manage Channels"</code></p>
+<h2 id="on95message95delete">on_message_delete</h2>
+<p>An event that is invoked when a message is deleted <strong>if the message is in cache</strong>. </p>
+<ul>
+<li>If the message isn't in cache, <code>on_raw_message_delete</code> is invoked instead.</li>
+<li>If it is a purge, then <code>on_bulk_message_delete</code> is invoked instead.</li>
+</ul>
+<p>This event falls under <code>delete</code> in <code>AuditLogActionCategory</code>. The color of the embed is orange.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_message_delete(self, message):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>The deletor does not always display correctly (due to Discord limitation).</li>
+</ul>
+<h2 id="on95bulk95message95delete-developing">on_bulk_message_delete [DEVELOPING]</h2>
+<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
+<h2 id="on95raw95message95edit">on_raw_message_edit</h2>
+<p>An event that is invoked when a message is edited <strong>even if the message isn't in cache</strong>.</p>
+<ul>
+<li>If the message is in cache, the event will do nothing and leave the task to <code>on_message_edit</code>.</li>
+</ul>
+<p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_raw_message_edit(self, payload):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>The old content of the message cannot be found.</li>
+<li>There is a rare chance that the new content of the message cannot be found.</li>
+</ul>
+<h2 id="on95message95edit">on_message_edit</h2>
+<p>An event that is invoked when a message is edited <strong>if the message is in cache</strong>.</p>
+<ul>
+<li>If the message isn't in cache, <a href="#onrawmessageedit"><code>on_raw_message_edit</code></a> is invoked instead.</li>
+</ul>
+<p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_message_edit(self, before, after):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Does not log embed editing.</li>
+</ul>
+<h2 id="on95member95ban">on_member_ban</h2>
+<p>An event that is invoked when a user/member is banned.</p>
+<ul>
+<li>The ban action will also invoke <code>on_member_leave</code> if the member is in the guild.</li>
+</ul>
+<p>The color of the embed is black.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_member_ban(self, guild, user):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li><code>None</code></li>
+</ul>
+<h2 id="on95member95unban">on_member_unban</h2>
+<p>An event that is invoked when a user is unbanned.</p>
+<p>The color of the embed is black.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_member_unban(self, guild, user):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li><code>None</code></li>
+</ul>
+<h2 id="on95member95join">on_member_join</h2>
+<p>An event that is invoked when a user join the guild.</p>
+<p>The color of the embed is blue.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_member_join(self, member):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li><code>None</code></li>
+</ul>
+<h2 id="on95member95leave">on_member_leave</h2>
+<p>An event that is invoked when a member leave the guild.</p>
+<ul>
+<li>This event is also invoked when a member is banned/kicked.</li>
+</ul>
+<p>The color of the embed is blue.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_member_remove(self, member):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>When a kicked member rejoin and leave, the member will be logged that the member is kicked twice. (unsure)</li>
+</ul>
+<h2 id="on95member95update">on_member_update</h2>
+<p>An event that is invoked when a member's role changes, a member's status/activity changes, a member's nickname changes or a member is muted/deafened.</p>
+<p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_member_update(self, before, after):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Changes in member's status/activity will not be logged by MichaelBot due to unnecessary spamming.</li>
+<li>Changes in member is muted/deafened is currently not be logged by MichaelBot due to the unnecessary logging.</li>
+</ul>
+<h2 id="on95guild95channel95create">on_guild_channel_create</h2>
+<p>An event that is invoked when a channel in a guild is created.</p>
+<p>This event falls under <code>create</code> in <code>AuditLogActionCategory</code>. The color of the embed is green.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_channel_create(self, channel):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Does not display bitrate information in <code>VoiceChannel</code>.</li>
+</ul>
+<h2 id="on95guild95channel95delete">on_guild_channel_delete</h2>
+<p>An event that is invoked when a channel in a guild is deleted.</p>
+<p>This event falls under <code>delete</code> in <code>AuditLogActionCategory</code>. The color of the embed is orange.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_channel_delete(self, channel):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Does not display bitrate information in <code>VoiceChannel</code>.</li>
+</ul>
+<h2 id="on95guild95channel95update">on_guild_channel_update</h2>
+<p>An event that is invoked when a channel in a guild is edited.</p>
+<p>The edit can be either channel's name, channel's topic, channel's position or channel's permission.</p>
+<p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_channel_update(self, before, after):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Changes in channel's position will not be logged by MichaelBot due to both spamming potential and messy Discord internal channel's position definition.</li>
+</ul>
+<h2 id="on95guild95update">on_guild_update</h2>
+<p>An event that is invoked when the guild itself is edited.</p>
+<p>The edit can be either guild's name, guild's avatar or guild's owner.</p>
+<p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_update(self, before, after):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Does not log changes in guild's avatar yet.</li>
+</ul>
+<h2 id="on95guild95role95create">on_guild_role_create</h2>
+<p>An event that is invoked when a role is created.</p>
+<p>This event falls under <code>create</code> in <code>AuditLogActionCategory</code>. The color of the embed is green.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_role_create(self, role):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Information may be logged incorrectly if the role is created by a bot.</li>
+</ul>
+<h2 id="on95guild95role95delete">on_guild_role_delete</h2>
+<p>An event that is invoked when a role is deleted.</p>
+<p>This event falls under <code>delete</code> in <code>AuditLogActionCategory</code>. The color of the embed is orange.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_role_delete(self, role):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Requires <code>View Audit Log</code> permission.</li>
+</ul>
+<h2 id="on95guild95role95update">on_guild_role_update</h2>
+<p>An event that is invoked when a role is edited.</p>
+<p>The edit can be either role's name changes, role's color changes, role is mentionable changes, role display separately changes or role's permission changes.</p>
+<p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener()
+async def on_guild_role_update(self, before, after):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Changes in mentionable and displaying separately for role will not be logged by MichaelBot due to unnecessary logging.</li>
+</ul>
+<h2 id="command_error">command_error</h2>
+<p>A listener that listen to <code>on_command_error</code> and display the error to the logging channel.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.Cog.listener(&quot;on_command_error&quot;)
+async def command_error(self, ctx, error):
+</code></pre>
+
+<p><strong>Limitation:</strong></p>
+<ul>
+<li>Not user-friendly error message (can't change).</li>
+<li>If the original message has codeblock, the embed will display ugly.</li>
+</ul>
+<p><em>This document is last updated on April 23rd (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>

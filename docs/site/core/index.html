@@ -68,13 +68,17 @@
         
             <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
         
+            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#cog_check-internal">cog_check [INTERNAL]</a></li>
+        
             <li><a class="toctree-l4" href="#changelog">changelog</a></li>
         
             <li><a class="toctree-l4" href="#help">help</a></li>
         
             <li><a class="toctree-l4" href="#info">info</a></li>
         
-            <li><a class="toctree-l4" href="#note-deprecated">note [DEPRECATED]</a></li>
+            <li><a class="toctree-l4" href="#note-deprecatedincomplete">note [DEPRECATED][INCOMPLETE]</a></li>
         
             <li><a class="toctree-l4" href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
         
@@ -168,15 +172,23 @@
 
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
+<li><a href="#init-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#cogcheck-internal">cog_check [INTERNAL]</a></li>
 <li><a href="#changelog">changelog</a></li>
 <li><a href="#help">help</a></li>
 <li><a href="#info">info</a></li>
-<li><a href="#note-deprecated">note [DEPRECATED]</a></li>
+<li><a href="#note-deprecated">note [DEPRECATED][INCOMPLETE]</a></li>
 <li><a href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
 <li><a href="#profile">profile</a></li>
 <li><a href="#report">report</a></li>
 <li><a href="#serverinfo">serverinfo</a></li>
 </ul>
+<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that is is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>⚙️</code>.</p>
+<h2 id="cog_check-internal">cog_check [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A check that apply to all the command in this category. This check will check if <code>ctx</code> is in private DM or not, and will raise <code>NoPrivateMessage()</code> exception if it is.</p>
 <h2 id="changelog">changelog</h2>
 <p>Show the latest 10 changes of the bot.</p>
 <p><strong>Full Signature:</strong></p>
@@ -233,11 +245,11 @@ async def info(self, ctx):
 
 <p><strong>Example:</strong> <code>$info</code></p>
 <p><strong>Expected Output:</strong> <em>an embed with information</em></p>
-<h2 id="note-deprecated">note [DEPRECATED]</h2>
-<p><em>This command has been labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
-<p><em>This section is incomplete, will be updated in the future.</em></p>
+<h2 id="note-deprecatedincomplete">note [DEPRECATED][INCOMPLETE]</h2>
+<p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
+<p><em>This section is labeled as [INCOMPLETE], will be updated in the future.</em></p>
 <h2 id="prefix-deprecated">prefix [DEPRECATED]</h2>
-<p><em>This command has been labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
+<p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
 <p>View and set the prefix for the bot.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command()
@@ -269,7 +281,7 @@ async def profile(self, ctx, member: discord.Member = None):
 </code></pre>
 
 <p><strong>Simplified Signature:</strong></p>
-<pre><code>profile [ID/mention/name/nickname]
+<pre><code>profile [member]
 </code></pre>
 
 <p><strong>Parameter:</strong></p>
@@ -325,7 +337,7 @@ server-info
 
 <p><strong>Example:</strong> <code>$serverinfo</code></p>
 <p><strong>Expected Output:</strong> <em>an embed with information</em></p>
-<p><em>This document is last updated on April 18th (PT) by MikeJollie#1067</em></p>
+<p><em>This document is last reviewed on April 23rd (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>

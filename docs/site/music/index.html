@@ -86,6 +86,21 @@
     <a class="current" href="./">Music</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#music">Music</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
+        
+            <li><a class="toctree-l4" href="#connect">connect</a></li>
+        
+            <li><a class="toctree-l4" href="#play">play</a></li>
+        
+            <li><a class="toctree-l4" href="#now_playing">now_playing</a></li>
+        
+        </ul>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -135,7 +150,78 @@
           <div role="main">
             <div class="section">
               
-                
+                <!-- omit in toc -->
+
+<h1 id="music">Music</h1>
+<p>These are commands that play music in voice channel. It is currently support YouTube, SoundCloud, Twitch, Vimeo and Mixer.</p>
+<p><em>This category is under beta testing, which means it is highly buggy and unstable.</em></p>
+<p><em>This document is missing many functions/methods due to the complexity. It is currently only shows the commands.</em></p>
+<!-- omit in toc -->
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#connect">connect</a></li>
+<li><a href="#play">play</a></li>
+<li><a href="#nowplaying">now_playing</a></li>
+</ul>
+<h2 id="connect">connect</h2>
+<p>Connect to a voice channel. If the channel is not specified, it'll attempt to join the current voice channel you're in.</p>
+<p>This command is implicitly called if the user invoke <a href="#play"><code>play</code></a> without the bot inside a voice channel.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;join&quot;])
+@commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def connect(self, ctx, *, channel : discord.VoiceChannel = None):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>connect [voicechannel]
+join [voicechannel]
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>channel</code>: A Discord voice channel. This can be any of the following form: <code>&lt;ID/name&gt;</code></li>
+</ul>
+<p><strong>Example:</strong> <code>$connect discord-got-talents</code></p>
+<p><strong>Expected Output:</strong> <em>No output</em>.</p>
+<h2 id="play">play</h2>
+<p>Play the audio provided by the query.</p>
+<p>More precisely, it streams the audio, because the bot does not download the video.</p>
+<p>This command implicitly call <a href="#connect"><code>connect</code></a> if the user invoke without the bot insdie a voice channel.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = ['p'])
+@commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+@commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
+async def play(self, ctx, *, query : str):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>play &lt;query&gt;
+p &lt;query&gt;
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>query</code>: The resource to play. This can be any of the following form: <code>&lt;link/name&gt;</code></li>
+</ul>
+<p><strong>Example:</strong> <code>$play You've been gnomed</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with information or reactions</em></p>
+<h2 id="now_playing">now_playing</h2>
+<p>Indicate what song is playing.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;np&quot;])
+@commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+@commands.cooldown(2, 15, commands.BucketType.user)
+async def now_playing(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>now_playing
+np
+</code></pre>
+
+<p><strong>Example:</strong> <code>$np</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with information or reactions</em></p>
               
             </div>
           </div>

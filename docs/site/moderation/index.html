@@ -82,6 +82,27 @@
     <a class="current" href="./">Moderation</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#moderation-commands">Moderation commands</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
+        
+            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#kick">kick</a></li>
+        
+            <li><a class="toctree-l4" href="#ban">ban</a></li>
+        
+            <li><a class="toctree-l4" href="#hackban">hackban</a></li>
+        
+            <li><a class="toctree-l4" href="#unban">unban</a></li>
+        
+            <li><a class="toctree-l4" href="#mute-incomplete-developing">mute [INCOMPLETE] [DEVELOPING]</a></li>
+        
+        </ul>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -135,7 +156,135 @@
           <div role="main">
             <div class="section">
               
-                
+                <!-- omit in toc -->
+
+<h1 id="moderation-commands">Moderation commands</h1>
+<p>These are commands that performs moderating action.</p>
+<!-- omit in toc -->
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#init-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#kick">kick</a></li>
+<li><a href="#ban">ban</a></li>
+<li><a href="#hackban">hackban</a></li>
+<li><a href="#unban">unban</a></li>
+<li><a href="#mute-incomplete-developing">mute [INCOMPLETE] [DEVELOPING]</a></li>
+</ul>
+<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A constructor of this category. This set the <code>Moderation</code> category's emoji as <code>🔨</code>.</p>
+<h2 id="kick">kick</h2>
+<p>Kick a member out of the server.</p>
+<p>Note that the bot's role needs to be higher than the member to kick.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.has_permissions(kick_members = True)
+@commands.bot_has_permissions(kick_members = True, send_messages = True)
+@commands.cooldown(2, 5.0, commands.BucketType.guild)
+async def kick(self, ctx, member : discord.Member, *, reason = None):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>kick &lt;member&gt; [reason]
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>member</code>: A Discord member. It can be any in the following form: <code>[ID/discriminator/mention/name/nickname]</code></li>
+<li><code>reason</code>: The reason for kicking.</li>
+</ul>
+<p><strong>Example:</strong> <code>$kick MikeJollie Being dumb</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with verification</em></p>
+<h2 id="ban">ban</h2>
+<p>Ban a member out of the server.</p>
+<p>Note that the bot's role needs to be higher than the member to ban.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.has_permissions(ban_members = True)
+@commands.bot_has_permissions(ban_members = True, send_messages = True)
+@commands.cooldown(2, 5.0, commands.BucketType.guild)
+async def ban(self, ctx, user : discord.Member, *, reason = None):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>ban &lt;member&gt; [reason]
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>member</code>: A Discord member. It can be any in the following form: <code>[ID/discriminator/mention/name/nickname]</code></li>
+<li><code>reason</code>: The reason for banning.</li>
+</ul>
+<p><strong>Example:</strong> <code>$ban MikeJollie Look at too many lolis</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with verification</em></p>
+<h2 id="hackban">hackban</h2>
+<p>Ban a user out of the server.</p>
+<p>This user does not need to share the server with the bot.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.has_permissions(ban_members = True)
+@commands.bot_has_permissions(ban_members = True)
+@commands.cooldown(2, 5.0, commands.BucketType.guild)
+async def hackban(self, ctx, id : int, *, reason = None):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>hackban &lt;ID&gt; [reason]
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code>: The id of the user.</li>
+<li><code>reason</code>: The reason for banning.</li>
+</ul>
+<p><strong>Example:</strong> <code>$hackban 472832990012243969 Befriend with too many lolis</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with verification</em></p>
+<h2 id="unban">unban</h2>
+<p>Unban a user from the server.</p>
+<p>This user does not need to share the server with the bot.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.has_permissions(ban_members = True)
+@commands.bot_has_permissions(ban_members = True)
+@commands.cooldown(2, 5.0, commands.BucketType.guild)
+async def unban(self, ctx, id : int, *, reason = None):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>unban &lt;ID&gt; [reason]
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code>: The id of the user.</li>
+<li><code>reason</code>: The reason for banning.</li>
+</ul>
+<p><strong>Example:</strong> <code>$unban 472832990012243969 You've been trained by the FBI now</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with verification</em></p>
+<h2 id="mute-incomplete-developing">mute [INCOMPLETE] [DEVELOPING]</h2>
+<p><em>This section is labeled as [INCOMPLETE], will be updated in the future.</em></p>
+<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
+<p>Mute a member from chatting.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(hidden = True, disabled = True)
+@commands.has_permissions(kick_members = True)
+@commands.bot_has_permissions(kick_members = True)
+@commands.cooldown(1, 5.0, commands.BucketType.guild)
+async def mute(self, ctx, member : discord.Member, *, reason = None):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>mute &lt;member&gt; [reason]
+</code></pre>
+
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>member</code>: A Discord member. It can be any in the following form: <code>[ID/discriminator/mention/name/nickname]</code></li>
+<li><code>reason</code>: The reason for muting.</li>
+</ul>
+<p><strong>Example:</strong> <code>$mute MikeJollie Stop saying "Loli is justice"</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with verification</em></p>
               
             </div>
           </div>
