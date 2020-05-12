@@ -57,7 +57,7 @@ class Core(commands.Cog):
             value = textwrap.dedent('''
                     **Language:** Python
                     **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
-                    **Repo:** [404](https://github.com/MikeJollie2707/MichaelBotPy) :warning:
+                    **Repo:** [Click here](https://github.com/MikeJollie2707/MichaelBot)
                     '''), 
             inline = False
         )
@@ -235,6 +235,7 @@ class Core(commands.Cog):
             import os
             os.environ["prefix2"] = new_prefix
 
+    # TODO: Change this to link to the documentation...
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
     async def note(self, ctx):
