@@ -1,13 +1,22 @@
-*.env
-/setup/bot1.json
-/setup/botbeta.json
+.vscode/
+
+# Token
+setup/bot1.json
+setup/botbeta.json
+
+# Spammy debug log
 discord.log
 
+# __pycaches__
 __pycache__/
-lib/
-/categories/__pycache__
-/categories/templates/__pycache__
-/categories/utilityfun/__pycache__
+categories/__pycache__
+categories/templates/__pycache__
+categories/utilityfun/__pycache__
 
-/categories/experiment.py
-/categories/utilityfun/embed_test.py
+# Spammy Lavalink log
+lib/Lavalink3.3/logs
+
+# Deprecated files
+categories/experiment.py
+categories/utilityfun/embed_test.py
+categories/utilityfun/embedparser.py
