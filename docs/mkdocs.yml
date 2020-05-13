@@ -3,15 +3,21 @@ site_name: MichaelBot Documentation
 nav:
   - "Home": index.md
   - "Commands":
-    - "Core": core.md
-    - "Dev": dev.md
-    - "Bot events": events.md
-    - "Experiment": experiment.md
-    - "Logging events": logger.md
-    - "Moderation": moderation.md
-    - "Music": music.md
-    - "Settings": server.md
-    - "Utility": utility.md
+    - "Core": commands/core.md
+    - "Dev": commands/dev.md
+    - "Bot events": commands/events.md
+    - "Experiment": commands/experiment.md
+    - "Logging events": commands/logger.md
+    - "Moderation": commands/moderation.md
+    - "Music": commands/music.md
+    - "Settings": commands/server.md
+    - "Utility": commands/utility.md
+  - "Templates":
+    - "Menu": templates/menu.md
+    - "Paginator": templates/paginator.md
+    - "Help": templateshelp.md
+  - "Utilities":
+    - "Utility methods": utilities/methods.md
 
 theme:
   name: "readthedocs"

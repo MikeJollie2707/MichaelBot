@@ -10,6 +10,7 @@ These are commands that are mostly related to information.
 - [cog_check [INTERNAL]](#cogcheck-internal)
 - [changelog](#changelog)
 - [help](#help)
+- [help-all](#help-all)
 - [info](#info)
 - [note [DEPRECATED][INCOMPLETE]](#note-deprecated)
 - [prefix [DEPRECATED]](#prefix-deprecated)
@@ -84,6 +85,40 @@ help [category/command]
 - Example 1: *an embed with reactions to navigate*
 - Example 2: *an embed with information*
 - Example 3: *an embed with reactions to select*
+
+## help-all
+
+Show help about the bot, a command, or a category.
+
+Note: command name and category name is case sensitive; Core is different from core.
+
+**Full Signature:**
+
+```py
+# Doesn't exist
+```
+
+**Simplified Signature:**
+
+```
+help-all [category/command]
+```
+
+**Parameters:**
+
+- `category/command`: The category's name or the command's name or the command's aliases.
+
+**Examples:**
+
+- **Example 1:** `$help-all Core`
+- **Example 2:** `$help-all info`
+- **Example 3:** `$help-all`
+
+**Expected Output:**
+
+- Example 1: *an embed with information*
+- Example 2: *an embed with information*
+- Example 3: *an embed with information*
 
 ## info
 
@@ -234,4 +269,4 @@ server-info
 
 **Expected Output:** *an embed with information*
 
-*This document is last reviewed on April 23rd (PT) by MikeJollie#1067*
+*This document is last reviewed on May 12th (PT) by MikeJollie#1067*

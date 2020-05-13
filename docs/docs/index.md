@@ -18,6 +18,8 @@ This is the official documentation for MichaelBot. This can be used as a develop
 
 If you want to invite the bot, you won't be able to, yet. You can however, ask `MikeJollie#1067` to invite the bot via [MichaelBot support server](https://discord.gg/jeMeyNw).
 
+The source of the bot is available publicly on [GitHub](https://github.com/MikeJollie2707/MichaelBot).
+
 ## Convention
 
 These are the conventions I use throughout this document:
