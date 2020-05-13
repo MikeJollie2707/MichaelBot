@@ -303,7 +303,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         self.emoji = '🎵'
 
         if not hasattr(bot, "wavelink"):
-            self.bot.wavelink = wavelink.Client(bot)
+            self.bot.wavelink = wavelink.Client(bot = bot)
 
         bot.loop.create_task(self.initiate_nodes())
 
