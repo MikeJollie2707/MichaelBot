@@ -471,7 +471,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     tag_str += f"`{tag}` "
                 embed.add_field(name = "Tags", value = tag_str, inline = False)
             else:
-                embed.description = "Oops, no loli for you. This is usually due to server ratelimit or the image has been reviewed by the FBI and it did not pass (yes the images are usually reviewed by the FBI before sending)."
+                embed.description = "Oops, no loli for you. This is usually due to server ratelimit or \
+                    the image has been reviewed by the FBI and it did not pass (yes the images are usually reviewed by the FBI before sending)."
                 embed.set_image(url = "https://i.imgflip.com/3ddefb.jpg")
         
         await ctx.send(embed = embed)
