@@ -18,6 +18,4 @@ lib/Lavalink3.3/logs
 
 # Deprecated files
 categories/experiment.py
-categories/utilityfun/calc_test.py
-categories/utilityfun/embed_test.py
-categories/utilityfun/embedparser.py
+categories/utilityfun/
