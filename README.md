@@ -6,6 +6,8 @@ The reason why this bot exist is because...it's fun, and I like to make one.
 
 Join the [support server](https://discord.gg/jeMeyNw) to get help.
 
+Alternatively, you may find what you need in the [bot documentation](https://mikejollie2707.github.io/MichaelBot/).
+
 ## Features
 
 - Basic information

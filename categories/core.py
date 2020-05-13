@@ -7,6 +7,7 @@ import textwrap
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.menu import Menu
 from categories.templates.navigate import Pages
+from categories.utilities import methods
 
 class Core(commands.Cog):
     """Commands related to information and bot settings."""
@@ -36,14 +37,13 @@ class Core(commands.Cog):
         **I need:** `Send Messages`.
         '''
 
-        embed = discord.Embed(
+        embed = methods.get_default_embed(
+            author = ctx.author,
             title = self.bot.user.name, 
             description = "A utility bot.", 
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
-        )
-
-        embed.add_field(
+        ).add_field(
             name  = "Team:", 
             value = textwrap.dedent('''
                     **Original Owner + Tester:** <@462726152377860109>
@@ -51,8 +51,7 @@ class Core(commands.Cog):
                     **Lazy Tester:** <@391582107446804485>
                     '''), 
             inline = False
-        )
-        embed.add_field(
+        ).add_field(
             name  = "Bot info:", 
             value = textwrap.dedent('''
                     **Language:** Python
@@ -60,12 +59,19 @@ class Core(commands.Cog):
                     **Repo:** [Click here](https://github.com/MikeJollie2707/MichaelBot)
                     '''), 
             inline = False
+        ).set_author(
+            name = ctx.author.name, 
+            icon_url = ctx.author.avatar_url
+        ).set_thumbnail(
+            url = self.bot.user.avatar_url
         )
+
         current_time = datetime.datetime.utcnow()
         up_time = current_time - self.bot.online_at
         days = up_time.days
         hours = int(up_time.seconds / 3600) # We gotta round here, or else minutes will always be 0.
         minutes = (up_time.seconds / 60) - (hours * 60) # Hour = second / 3600, minute = second / 60 (true minute without converting to hour) - hour * 60 (convert hour to minute) = remain minute
+
         embed.add_field(
             name  = "Host Device:",
             value = textwrap.dedent('''
@@ -75,11 +81,6 @@ class Core(commands.Cog):
                     ''' % (days, hours, minutes)),
             inline = False
         )
-        embed.set_author(
-            name = ctx.author.name, 
-            icon_url = ctx.author.avatar_url
-        )
-        embed.set_thumbnail(url = self.bot.user.avatar_url)
 
         await ctx.send(embed = embed)
 
@@ -105,33 +106,26 @@ class Core(commands.Cog):
         embed = discord.Embed(
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
-        )
-
-        embed.set_author(
+        ).set_author(
             name = member.name, 
             icon_url = member.avatar_url
-        )
-
-        embed.add_field(
+        ).add_field(
             name = "Username:", 
             value = member.name,
             inline = True
-        )
-        embed.add_field(
+        ).add_field(
             name = "Nickname:", 
             value = member.nick if member.nick != None else member.name,
             inline = True
-        )
-        embed.add_field(
+        ).add_field(
             name = "Avatar URL:", 
             value = "[Click here](%s)" % member.avatar_url,
             inline = True
+        ).set_thumbnail(
+            url = member.avatar_url
         )
 
-        embed.set_thumbnail(url = member.avatar_url)
-
-        role_list = ["<@&%d>" % role.id for role in member.roles[::-1]]
-        role_list[-1] = "@everyone"
+        role_list = [role.mention for role in member.roles[::-1]]
         s = " - "
         s = s.join(role_list)
 
