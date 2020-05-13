@@ -3,7 +3,7 @@ from discord.ext import commands
 
 import datetime
 
-import gconfig
+from categories.utilities import methods
 
 class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_parsing": True}):
     '''Commands related to the bot setting in the server.'''
@@ -23,12 +23,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         You need: `Manage Server`.
         I need: `View Audit Log`, `Send Messages`.
         '''
-        config = gconfig.get_config(ctx.guild.id)
+        config = methods.get_config(ctx.guild.id)
         if config["STATUS_LOG"] == 1:
             await ctx.send("Logging is already enabled for this server.")
         else:
             config["STATUS_LOG"] = 1
-            gconfig.save_config(config)
+            methods.save_config(config)
             await ctx.send("Logging is enabled for this server. You should setup a log channel.")
 
     @commands.command(name = "log-setup")
@@ -46,13 +46,13 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         You need: `Manage Server`.
         I need: `View Audit Log`, `Send Messages`.
         '''
-        config = gconfig.get_config(ctx.guild.id)
+        config = methods.get_config(ctx.guild.id)
         if log is None:
             await ctx.send("Current logging channel ID: `%d`" % config["LOG_CHANNEL"])
         else:
             config["STATUS_LOG"] = 1
             config["LOG_CHANNEL"] = log.id
-            gconfig.save_config(config)
+            methods.save_config(config)
             
             embed = discord.Embed(
                 title = "Logging Enabled", 
@@ -79,9 +79,9 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         You need: `Manage Server`.
         I need: `Send Messages`.
         '''
-        config = gconfig.get_config(ctx.guild.id)
+        config = methods.get_config(ctx.guild.id)
         config["STATUS_LOG"] = 0
-        gconfig.save_config(config)
+        methods.save_config(config)
         await ctx.send("Logging is disabled for this server.")
 
     @commands.command(name = "welcome-enable")
@@ -94,12 +94,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         You need: `Manage Server`.
         I need: `Send Messages`.
         '''
-        config = gconfig.get_config(ctx.guild.id)
+        config = methods.get_config(ctx.guild.id)
         if config["STATUS_WELCOME"] == 1:
             await ctx.send("Welcoming system is already enabled for this server.")
         else:
             config["STATUS_WELCOME"] = 1
-            gconfig.save_config(config)
+            methods.save_config(config)
             await ctx.send("Welcoming is enabled for this server. You should setup the welcome channel and message.")
     
     @commands.command(name = "welcome-setup")
@@ -117,7 +117,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         You need: `Manage Server`.
         I need: `Send Messages`.
         '''
-        config = gconfig.get_config(ctx.guild.id)
+        config = methods.get_config(ctx.guild.id)
         if welcome_chan is None:
             await ctx.send("Current welcome channel ID: `%d`"  % config["WELCOME_CHANNEL"])
             await ctx.send("Current welcome message: ", embed = discord.Embed(description = config["WELCOME_TEXT"]))
@@ -130,12 +130,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 welcome_text = "Hello [user.mention]! Welcome to **[guild.name]**! You're the [guild.count]th member in this server! Enjoy the fun!!! :tada:"
 
             config["WELCOME_TEXT"] = welcome_text
-            gconfig.save_config(config)
+            methods.save_config(config)
             await welcome_chan.send("Your welcome message is: %s" % welcome_text)
 
     @commands.Cog.listener("on_member_join")
     async def welcome_new_member(self, member):
-        config = gconfig.get_config(member.guild.id)
+        config = methods.get_config(member.guild.id)
         if config["ERROR"] == 0 and config["STATUS_WELCOME"] == 1 and config["WELCOME_CHANNEL"] != 0:
             welcome_channel = self.bot.get_channel(config["WELCOME_CHANNEL"])
             welcome_text = config["WELCOME_TEXT"]
@@ -158,9 +158,9 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         You need: `Manage Server`.
         I need: `Send Messages`.
         '''
-        config = gconfig.get_config(ctx.guild.id)
+        config = methods.get_config(ctx.guild.id)
         config["STATUS_WELCOME"] = 0
-        gconfig.save_config(config)
+        methods.save_config(config)
         await ctx.send("Welcoming is disabled for this server.")
     
 
