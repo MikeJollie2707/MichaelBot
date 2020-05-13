@@ -28,7 +28,7 @@ def save_config(config) -> None:
         fin = open("./data/" + str(config["GUILD_ID"]) + ".json", 'w')
         json.dump(config, fin, indent = 4)
 
-def get_default_embed(author : discord.User, title : str = "", description : str = "", color : discord.Color = discord.Color.green(), timestamp : datetime.datetime = datetime.datetime.utcnow()) -> discord.Embed:
+def get_default_embed(author : discord.User = None, title : str = "", description : str = "", color : discord.Color = discord.Color.green(), timestamp : datetime.datetime = datetime.datetime.utcnow()) -> discord.Embed:
     """
     Generate a "default" embed with footer and the time.
 
@@ -37,9 +37,9 @@ def get_default_embed(author : discord.User, title : str = "", description : str
     Note that for logging, you should overwrite the footer to something else. It is default to "Requested by "
 
     Parameter:
-    - `author`: a `discord.User` or `discord.Member` to set to the footer.
+    - `author`: optional `discord.User` or `discord.Member` to set to the footer. If not provided, it won't set the footer.
     - `title`: optional title.
-    - `description`: optional description.
+    - `description`: optional description. Internally it'll remove the tabs so no need to pass textwrap.dedent(description).
     - `color`: optional color, default to green.
     - `timestamp`: optional timestamp, default to utcnow().
 
@@ -51,10 +51,12 @@ def get_default_embed(author : discord.User, title : str = "", description : str
             description = textwrap.dedent(description),
             color = color,
             timestamp = timestamp
-        ).set_footer(
-            text = f"Requested by {author.name}",
-            icon_url = author.avatar_url
         )
+        if (author is not None):
+            embed.set_footer(
+                text = f"Requested by {author.name}",
+                icon_url = author.avatar_url
+            )
     except AttributeError as ae:
         print(ae)
         embed = None
