@@ -7,8 +7,6 @@ import datetime
 import aiohttp
 import textwrap
 
-from categories.utilityfun.embedparser import parser
-
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
     def __init__(self, bot):
@@ -162,7 +160,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        from categories.utilityfun.calc import calculate
+        from categories.utilities.methods import calculate
         result = calculate(content)
 
         embed = discord.Embed(color = discord.Color.green())
