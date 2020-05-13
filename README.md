@@ -136,7 +136,7 @@ Any sort of contributions are highly appreciated.
   - [x] `Moderation`
   - [ ] `Music`
   - [ ] `Server`
-  - [ ] `Utility`
+  - [x] `Utility`
   - [ ] `Events`
 - [ ] Add `Account Age` to `profile`
 - [ ] Update documentation.
