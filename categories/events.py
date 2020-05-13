@@ -12,32 +12,6 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        if not hasattr(self.bot, "guild_config"):
-            self.bot.guild_config = {}
-
-        guild_list = self.bot.guilds
-        for guild in guild_list:
-            # guild configuration
-            try:
-                file_name = str(guild.id) + ".json"
-                fin = open("./data/" + file_name, 'r')
-            except FileNotFoundError as fnfe:
-                fout = open("./data/" + file_name, 'w+')
-                default_config = {
-                    "ERROR": 0,
-                    "GUILD_ID": guild.id,
-                    "STATUS_LOG": 0,
-                    "LOG_CHANNEL": 0,
-                    "STATUS_WELCOME": 0,
-                    "WELCOME_CHANNEL": 0,
-                    "WELCOME_TEXT": "",
-                    "STATUS_FILTER": 0,
-                    "FILTER_WORDS": []
-                }
-                json.dump(default_config, fout, indent = 4)
-                print("File %s created." % file_name)
-                fout.close()
-        
         print("Logged in as")
         print(self.bot.user.name)
         print(self.bot.user.id)
