@@ -13,9 +13,9 @@ nav:
     - "Settings": commands/server.md
     - "Utility": commands/utility.md
   - "Templates":
-    - "Menu": templates/menu.md
-    - "Paginator": templates/paginator.md
-    - "Help": templateshelp.md
+    - "Menu": template/menu.md
+    - "Paginator": template/paginator.md
+    - "Help": template/help.md
   - "Utilities":
     - "Utility methods": utilities/methods.md
 
