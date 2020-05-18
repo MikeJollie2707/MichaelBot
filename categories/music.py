@@ -296,7 +296,7 @@ class Player(wavelink.Player):
         return False
 
 
-class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
+class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True, "hidden" : True}):
     '''Commands related to music.'''
     def __init__(self, bot : Union[commands.Bot, commands.AutoShardedBot]):
         self.bot = bot
@@ -402,7 +402,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                         )
 
     @commands.command(aliases = ["join"])
-    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def connect(self, ctx, *, channel : discord.VoiceChannel = None):
         '''
         Connect to a voice channel.
@@ -442,7 +442,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.connect(channel.id)
 
     @commands.command(aliases = ['p'])
-    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
     async def play(self, ctx, *, query : str):
         '''
@@ -516,7 +516,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             await player.invoke_controller()
 
     @commands.command(aliases = ["np"])
-    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     @commands.cooldown(2, 15, commands.BucketType.user)
     async def now_playing(self, ctx):
         '''
@@ -542,7 +542,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.invoke_controller()
 
     @commands.command()
-    @commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def pause(self, ctx):
         '''
         Pause the currently playing song.
@@ -589,6 +589,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.set_pause(True)
 
     @commands.command()
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def resume(self, ctx):
         '''
         Resume the currently paused song.
@@ -632,6 +633,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await player.set_pause(False)
 
     @commands.command()
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def skip(self, ctx):
         '''
         Skip the current song.
@@ -684,6 +686,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
     @commands.command(aliases = ["dc", "disconnect"])
     @commands.cooldown(1, 15, commands.BucketType.guild)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def stop(self, ctx):
         '''
         Stop the player, disconnect and clear the queue.
@@ -729,6 +732,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
     @commands.command(aliases = ["vol"])
     @commands.cooldown(1, 2, commands.BucketType.guild)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def volume(self, ctx, *, value: int):
         '''
         Change the player volume.
@@ -779,6 +783,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def queue(self, ctx):
         '''
         Retrieve a list of currently queued songs.
@@ -817,6 +822,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
     @commands.command(aliases = ["mix"])
     @commands.cooldown(2, 10, commands.BucketType.user)
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def shuffle(self, ctx):
         '''
         Shuffle the current queue.
@@ -867,6 +873,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         player.update = True
 
     @commands.command(aliases = ["loop"])
+    @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def repeat(self, ctx):
         '''
         Repeat the currently playing song.
