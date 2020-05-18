@@ -48,7 +48,6 @@ class Core(commands.Cog):
             value = textwrap.dedent('''
                     **Original Owner + Tester:** <@462726152377860109>
                     **Developer:** <@472832990012243969>
-                    **Lazy Tester:** <@391582107446804485>
                     '''), 
             inline = False
         ).add_field(
@@ -204,7 +203,7 @@ class Core(commands.Cog):
         await ctx.send(embed = embed)
 
     @commands.command()
-    @commands.has_permissions(manage_guild = True)
+    @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
     async def prefix(self, ctx, new_prefix : str = None):
