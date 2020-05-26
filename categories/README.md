@@ -5,8 +5,10 @@ import discord
 from discord.ext import commands
 
 # Import more Python craps here
+import datetime # Must have if you plan to send an embed
 
 # Import your craps here
+from categories.utilities import methods # Must have
 
 class Cog(commands.Cog):
     '''Description of the cog'''
