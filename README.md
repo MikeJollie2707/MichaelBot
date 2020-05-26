@@ -79,7 +79,7 @@ Nevertheless, the step to run this bot is fairly simple:
 git clone https://github.com/MikeJollie2707/MichaelBotPy.git
 ```
 
-- Go into the `setup` directory, create a token `json` file, name it whatever.
+- Go into the `setup` directory, create a token `json` file, name it whatever (with no space).
 
 ``` json
 # Let's say I'm creating a bot.json. Here's what the inside should look like
@@ -106,11 +106,11 @@ git clone https://github.com/MikeJollie2707/MichaelBotPy.git
 - To run the bot, run the file `bot.py`.
 
 ``` terminal
-python3.6 bot.py TheIndexWithoutSpace_in_configjson
+python3 bot.py TheIndexWithoutSpace_in_configjson
+py -3 bot.py TheIndexWithoutSpace_in_configjson
 ```
 
 - To edit categories, look into `categories` folder.
-- Do not alter `data` without reasonable reason to do so.
 
 ## License
 
