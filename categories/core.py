@@ -24,12 +24,13 @@ class Core(commands.Cog):
         else:
             return True
 
-    @commands.command()
+    @commands.command(aliases = ["about"])
     @commands.bot_has_permissions(send_messages = True)
     async def info(self, ctx):
         '''
         Information about the bot.
 
+        **Aliases:** `about`
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
@@ -102,11 +103,12 @@ class Core(commands.Cog):
         else:
             member = member
 
-        embed = discord.Embed(
+        embed = methods.get_default_embed(
+            author = member,
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
         ).set_author(
-            name = member.name, 
+            name = member.name,
             icon_url = member.avatar_url
         ).add_field(
             name = "Username:", 
@@ -124,7 +126,7 @@ class Core(commands.Cog):
             url = member.avatar_url
         )
 
-        role_list = [role.mention for role in member.roles[::-1]]
+        role_list = [methods.mention(role) for role in member.roles[::-1]]
         s = " - "
         s = s.join(role_list)
 
@@ -159,8 +161,8 @@ class Core(commands.Cog):
             value = guild.name
         )
         embed.add_field(
-            name = "Created at (dd/mm/yyyy)", 
-            value = "%s/%s/%s" % (str(guild.created_at.day), str(guild.created_at.month), str(guild.created_at.year))
+            name = "Created on", 
+            value = guild.created_at.strftime("%b %d %Y")
         )
         embed.add_field(
             name = "Owner", 
@@ -197,8 +199,9 @@ class Core(commands.Cog):
                     %d bots,
                     %d humans.
                     ''' % (guild_size, online, bot, guild_size - bot)
+        ).set_footer(
+            text = "Server ID: %s" % str(guild.id)
         )
-        embed.set_footer(text = "Server ID: %s" % str(guild.id))
 
         await ctx.send(embed = embed)
 
@@ -228,7 +231,6 @@ class Core(commands.Cog):
             import os
             os.environ["prefix2"] = new_prefix
 
-    # TODO: Change this to link to the documentation...
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
     async def note(self, ctx):
@@ -242,68 +244,12 @@ class Core(commands.Cog):
         **I need:** `Send Messages`.
         '''
 
-        embed = discord.Embed(
-            title = "Note:", 
-            description = "A help of a command usually consisted of these parts:", 
-            color = discord.Color.green(),
-            timestamp = datetime.datetime.utcnow()
-        )
-        # Title
-        embed.add_field(
-            name =     "**A description**", 
-            value =    "+ Tells what does the command do.", 
-            inline = False
-        )
-        # Note
-        embed.add_field(
-            name =     "**A note**", 
-            value =    "+ Optional, usually it means the command has something special condition.", 
-            inline = False
-        )
-        # Alias
-        embed.add_field(
-            name =     "**Alias(es)**",
-            value =    "+ Optional, it's another name for a command; you can use the alias in place of the main command.",
-            inline = False
-        )
-        # Cooldown
-        embed.add_field(
-            name =     "**Cooldown**", 
-            value = '''
-                        + Optional, tells you the command's interval.
-                        + If it says `(guild)`, it means the command is not available for the entire server in that interval.
-                        + If it says `(user)`, it means the command is not available for the user invoked in that interval.
-                        + If it says `(global)`, it means the command is not available for anywhere that use the bot.
-                    ''',
-            inline = False
-        )
-        # Usage
-        embed.add_field(
-            name =      "**Usage**", 
-            value = '''
-                        + Shows you the syntax of the command.
-                        + [argument] is optional argument, while <argument> is required.
-                        + If one of your arguments has spaces, use "this argument". Ex: `%skick "This is a user" Dumb`.
-                    ''' % ctx.prefix, 
-            inline = False
-        )
-        # Examples
-        embed.add_field(
-            name =     "**Examples**", 
-            value =    "+ Shows some examples to help you understand the syntax.", 
-            inline = False
-        )
-        # Required Permission
-        embed.add_field(
-            name =     "**Your required permissions**", 
-            value =    "+ Shows you permissions you need to execute the command.", 
-            inline = False
-        )
-        # Bot Required Permission
-        embed.add_field(
-            name =     "**My required permissions**", 
-            value =    "+ Shows you permissions the bot need to execute the command.", 
-            inline = False
+        embed = methods.get_default_embed(
+            title = "MichaelBot",
+            url = "https://mikejollie2707.github.io/MichaelBot",
+            description = "Check out the bot documentation's front page: <https://mikejollie2707.github.io/MichaelBot>",
+            timestamp = datetime.datetime.utcnow(),
+            author = ctx.author
         )
 
         await ctx.send(embed = embed)
@@ -387,13 +333,15 @@ class Core(commands.Cog):
         paginator = Pages()
 
         async for message in channel.history(limit = 10):
-            embed = discord.Embed(
+            embed = methods.get_default_embed(
                 description = message.content, 
-                color = discord.Color.green()
+                color = discord.Color.green(),
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
             )
             paginator.add_page(embed)
         
-        await paginator.event(self.bot, ctx.channel, False, ctx.author)
+        await paginator.event(bot = self.bot, channel = ctx.channel, interupt = False, author = ctx.author)
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
