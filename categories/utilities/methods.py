@@ -30,7 +30,7 @@ def save_config(config) -> None:
         fin = open("./data/" + str(config["GUILD_ID"]) + ".json", 'w')
         json.dump(config, fin, indent = 4)
 
-def get_default_embed(author : discord.User = None, title : str = "", description : str = "", color : discord.Color = discord.Color.green(), timestamp : datetime.datetime = datetime.datetime.utcnow()) -> discord.Embed:
+def get_default_embed(timestamp : datetime.datetime, author : discord.User = None, title : str = "", url : str = "", description : str = "", color : discord.Color = discord.Color.green()) -> discord.Embed:
     """
     Generate a "default" embed with footer and the time.
 
@@ -39,17 +39,19 @@ def get_default_embed(author : discord.User = None, title : str = "", descriptio
     Note that for logging, you should overwrite the footer to something else. It is default to "Requested by "
 
     Parameter:
+    - `timestamp`: the timestamp, usually `utcnow()`.
     - `author`: optional `discord.User` or `discord.Member` to set to the footer. If not provided, it won't set the footer.
     - `title`: optional title.
+    - `url`: optional url for the title.
     - `description`: optional description. Internally it'll remove the tabs so no need to pass textwrap.dedent(description).
     - `color`: optional color, default to green.
-    - `timestamp`: optional timestamp, default to utcnow().
 
     Return type: `discord.Embed` or `None` on failure.
     """
     try:
         embed = discord.Embed(
             title = title,
+            url = url,
             description = textwrap.dedent(description),
             color = color,
             timestamp = timestamp
@@ -86,6 +88,19 @@ def striplist(array : list) -> str:
     return st
 
 def calculate(expression : str) -> str:
+    """
+    Calculate a simple mathematical expression.
+
+    This is currently used in `calc` command.
+
+    Parameter:
+    - `expression`: The expression to calculate. Example: `5+5`.
+
+    Return: The result of the expression.
+    - If a `ZeroDivisionError` is raised, it will be "Infinity/Undefined".
+    - If an `Exception` is raised, it will be "Error".
+    """
+
     safe_list = ['acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 
                  'cosh', 'degrees', 'e', 'exp', 'fabs', 'floor', 
                  'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10', 
@@ -101,3 +116,32 @@ def calculate(expression : str) -> str:
     except Exception:
         answer = "Error"
     return answer
+
+def mention(discord_object : discord.Object) -> str:
+    """
+    A utility function that returns a mention string to be used.
+
+    The only reason this function exists is because `discord.Role.mention` being retarded when the role is @everyone.
+    In that case, the function will return directly @everyone, not @@everyone. Otherwise, the function just simply return object.mention.
+
+    Because of this, you can use the default `.mention` unless it's a `discord.Role`.
+
+    Note that if there's a custom role that's literally named `@everyone` then this function will return @everyone, not @@everyone.
+
+    Parameter:
+    - `discord_object`: A Discord Object that is mentionable, including `discord.abc.User`, `discord.abc.GuildChannel` and `discord.Role`.
+
+    Return: The string used to mention the object.
+    - If the parameter's type does not satisfy the above requirements, it returns empty string.
+    """
+    if isinstance(discord_object, discord.abc.User):
+        return discord_object.mention
+    elif isinstance(discord_object, discord.abc.GuildChannel):
+        return discord_object.mention
+    elif isinstance(discord_object, discord.Role):
+        if discord_object.name == "@everyone":
+            return "@everyone"
+        else:
+            return discord_object.mention
+    else:
+        return ""
