@@ -5,7 +5,9 @@ import asyncio
 import datetime
 import textwrap
 
-# Commands for developers to test things and stuffs.
+from categories.utilities import methods
+
+# Commands for developers to test things and stuffs. The format does not need to be formal.
 
 
 def is_dev(ctx):
@@ -30,20 +32,26 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             await ctx.send("This command is reserved for bot developers only!")
 
     @commands.command()
-    @commands.cooldown(1, 5.0, commands.BucketType.default)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
     async def reload(self, ctx, name):
         '''
         Reload a module.
         Useful when you don't want to disconnect the bot but still update your change.
+
         **Usage:** <prefix>**{command_name}** <extension name>
-        **Cooldown:** 5 seconds (global cooldown)
-        **Example:** {prefix}{command_name} categories.templates.navigate
+        **Cooldown:** 5 seconds per use (global cooldown).
+        **Example:** {prefix}{command_name} categories.templates
 
         **You need:** `dev status`.
-        **I need:** `Send Messages`.
+        **I need:** `Send Messages` (optionally).
         '''
+
         self.bot.reload_extension(name)
-        await ctx.send("Reloaded extension " + name)
+
+        try:
+            await ctx.send("Reloaded extension " + name)
+        except:
+            print("Can't send message to %d" % ctx.message.id)
         print("Reloaded extension " + name)
     @reload.error
     async def reload_error(self, ctx, error):
@@ -51,15 +59,44 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             await ctx.send("I cannot find this extension. Check your typo or the repo again.")
     
     @commands.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+    async def reload_all_extension(self, ctx, name):
+        '''
+        Reload all modules.
+        Useful for OCD people (like MikeJollie) because `reload` will mess up the order in `help` and `help-all`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 5 seconds per use (global cooldown).
+        **Example:** {prefix}{command_name}
+
+        **You need:** `dev status`.
+        **I need:** `Send Messages`.
+        '''
+
+        for extension in self.bot.extensions:
+            self.bot.reload_extension(extension)
+        
+        try:
+            await ctx.send("Reloaded all extension")
+        except:
+            print("Can't send message to %d" % ctx.message.id)
+        print("Reloaded all extension")
+    @reload_all_extension.error
+    async def reload_error(self, ctx, error):
+        pass
+    
+    @commands.command()
     async def reset_all_cooldown(self, ctx):
         '''
         Self-explanatory.
+
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
         You need: `dev status`.
         I need: `Send Messages`.
         '''
+
         for command in self.bot.commands:
             if command.is_on_cooldown(ctx):
                 command.reset_cooldown(ctx)
@@ -79,6 +116,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         **You need:** `Owner of the server` OR `dev status`.
         **I need:** `Send Messages`.
         '''
+
         await ctx.send("Are you sure for me to leave this guild?")
         def check(msg):
             return msg.author == ctx.author
@@ -98,7 +136,8 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
                     await ctx.send("Leaving the guild failed. Guess you'll stick with me for a while :smile:")
     
     @commands.command(aliases = ["suggest_response"])
-    @commands.cooldown(1, 60.0, commands.BucketType.default)
+    @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 1, per = 60.0, type = commands.BucketType.default)
     async def report_response(self, ctx, message_ID : int, *, response : str):
         '''
         Response to a report/suggest.
@@ -113,8 +152,8 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         **I need:** `Send Messages`.
         '''
 
-        report_chan = 644339079164723201 # Do not change
-        channel = self.bot.get_channel(report_chan)
+        REPORT_CHAN = 644339079164723201 # Do not change
+        channel = self.bot.get_channel(REPORT_CHAN)
         if channel == None:
             await ctx.send("Seems like I can't find the report channel. You can check again and edit the channel ID.")
             return
@@ -139,7 +178,10 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
                         icon_url = ctx.author.avatar_url
                     )
 
-                    await message.edit(embed = response_embed)
+                    try:
+                        await message.edit(embed = response_embed)
+                    except discord.Forbidden:
+                        print("The bot does not have Manage Messages in report channel.")
 
     @commands.command()
     async def all_guild(self, ctx):
