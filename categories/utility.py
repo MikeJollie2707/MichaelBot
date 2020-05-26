@@ -7,6 +7,8 @@ import datetime
 import aiohttp
 import textwrap
 
+from categories.utilities import methods
+
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
     def __init__(self, bot):
@@ -163,17 +165,19 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         from categories.utilities.methods import calculate
         result = calculate(content)
 
-        embed = discord.Embed(color = discord.Color.green())
-        embed.add_field(
-            name = "**Result:**", 
-            value = result
+        embed = methods.get_default_embed(
+            title = "Result",
+            description = result,
+            timestamp = datetime.datetime.utcnow(),
+            author = ctx.author
         )
 
         await ctx.send(embed = embed)
 
     @commands.command()
-    @commands.cooldown(1, 5.0, commands.BucketType.user)
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    # TODO: finish shortcut
     async def embed_simple(self, ctx, title : str = "", content : str = '', color : str = "", destination : str = ""):
         '''
         Send a simple embed message.
@@ -251,12 +255,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def embed(self, ctx, *, inp : str = ""):
         '''
         Send a full-featured rich embed.
         Note: It is recommended to use `embed help` to know more about how to use this command.
 
         **Usage:** <prefix>**{command_name}** <args>
+        **Cooldown:** 5 seconds per use (user)
         *View `embed help` for examples*
 
         **You need:** None.
@@ -307,16 +313,17 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
 
         await ctx.message.delete()
-        embed = discord.Embed(
-            description = textwrap.dedent(text),
+        embed = methods.get_default_embed(
+            description = text,
             color = discord.Color.green(),
-            timestamp = datetime.datetime.utcnow()
+            timestamp = datetime.datetime.utcnow(),
+            author = ctx.author
         )
         await ctx.send(embed = embed)
 
     @commands.command()
-    @commands.cooldown(5, 10.0, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 5, per = 10.0, type = commands.BucketType.user)
     async def howgay(self, ctx, *, target: str):
         '''
         An ultimate measurement of gayness.
@@ -343,8 +350,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.send(f"{target} is `{percent_gay}%` gay :rainbow_flag:.")
 
     @commands.command()
-    @commands.cooldown(5, 10.0, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 5, per = 10.0, type = commands.BucketType.user)
     async def how(self, ctx, measure_unit : str, *, target : str):
         '''
         An ultimate measurement to measure everything except gayness.
@@ -362,8 +369,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(target + " is `" + str(percent_thing) + "%` " + measure_unit + ".")
 
     @commands.command(hidden = True)
-    @commands.cooldown(1, 120.0, commands.BucketType.user)
     @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 1, per = 120.0, type = commands.BucketType.user)
     async def send(self, ctx, id : int, *, msg : str):
         '''
         Send a message to either a channel or a user that the bot can see.
@@ -394,8 +401,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command(hidden = True)
     @commands.is_nsfw()
-    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.member)
     @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.member)
     async def konachanloli(self, ctx):
         '''
         Send a **safe** picture of loli from konachan**.net**
@@ -412,48 +419,41 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             url = None
             tag_list = []
             # TODO: Rewrite this into a loop that makes when we have url = None, it'll request another query. And less messy.
-            async with aiohttp.ClientSession() as session:
-                page = random.randint(1, 30)
-                count = random.randint(1, 10)
-                async with session.get("http://konachan.net/post.json?limit=%d&page=%d&tags=loli" % (count, page)) as resp:
-                    if resp.status == 200:
-                        j = await resp.json()
+            while url is None:
+                async with aiohttp.ClientSession() as session:
+                    page = random.randint(1, 30)
+                    count = random.randint(1, 10)
+                    async with session.get("http://konachan.net/post.json?limit=%d&page=%d&tags=loli" % (count, page)) as resp:
+                        if resp.status == 200:
+                            j = await resp.json()
 
-                        def filter(selected_index):
-                            if j[selected_index]["rating"] != "s":
-                                return False
-                            restricted_tags = ["breasts", "nipples", "panties", "bikini"] # Edit this
-                            for tag in restricted_tags:
-                                if tag in j[selected_index]["tags"]:
-                                    print("Index %d has tag %s so it's not safe." % (selected_index, tag))
-                                    print(j[selected_index])
+                            def filter(selected_index):
+                                if j[selected_index]["rating"] != "s":
                                     return False
+                                restricted_tags = ["breasts", "nipples", "panties", "bikini"] # Expand this
+                                for tag in restricted_tags:
+                                    if tag in j[selected_index]["tags"]:
+                                        print("Index %d has tag %s so it's not safe." % (selected_index, tag))
+                                        return False
+                                return True
 
-                        # We append the failed post to this list
-                        failed_index = []
-                        select = random.randint(1, count) - 1
-                        # Well...some posts somehow have the rating not s, so we have to sort that out.
-                        while filter(select) == False:
-                            if select not in failed_index:
-                                failed_index.append(select)
+                            # The JSON returned is [{...}, {...}] so we can shuffle it and select index.
+                            random.shuffle(j)
+                            select = -1
+
+                            for entry in range(0, len(j)):
+                                if filter(entry) == True:
+                                    select = entry
                             
-                            # Because each index only append once, the len of failed_index will match count-1 (which is the random limit) somehow.
-                            # If it does, that means all posts are not safe (although rarely)
-                            if len(failed_index) >= count - 1:
-                                select = -1
-                                break
-                            while select in failed_index:
-                                select = random.randint(1, count) - 1
-                        
-                        if select != -1:
-                            print("Selected: %d" % select)
-                            print("JSON: ", j[select])
-                            url = j[select]["file_url"]
-                            tag_list = j[select]["tags"].split()
-                        else: # Placeholder for logic understanding
-                            pass
-                    else:
-                        print(resp.status)
+                            if select != -1:
+                                print("Selected: %d" % select)
+                                print("JSON: ", j[select]["file_url"])
+                                url = j[select]["file_url"]
+                                tag_list = j[select]["tags"].split()
+                            else: # Placeholder for logic understanding
+                                pass
+                        else:
+                            print(resp.status)
 
             embed = discord.Embed(
                 title = "Loli incoming",
@@ -462,8 +462,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 color = discord.Color.green()
             )
             if url is not None:
-                embed.set_image(url = url)
-                embed.set_footer(text = "Click the title for full image.")
+                embed.set_image(
+                    url = url
+                ).set_footer(
+                    text = "Click the title for full image."
+                )
+
                 tag_str = ""
                 for tag in tag_list:
                     tag_str += f"`{tag}` "
