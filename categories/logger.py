@@ -25,6 +25,9 @@ from categories.utilities import methods
 # Embed.footer as the executor.
 # Optional (Embed.thumbnail) as the target.
 
+# People should understand that discord's audit log itself is screwed in many ways (including not logging bot's changing mass permission
+# for example) and so don't expect logging to log 100% correct or even 90% correct.
+
 class Logging(commands.Cog):
     '''Commands related to logging actions in server.'''
     def __init__(self, bot):
@@ -192,9 +195,10 @@ class Logging(commands.Cog):
                 # Because audit log doesn't log message that the author delete himself,
                 # we need to check if the latest message_delete is roughly the same time as the event is fired.
                 # The 60 seconds is relative. Can be changed, but shouldn't lower than 30 seconds.
+                # Can't really do anything here except hardcode.
                 log_time2 = entry.created_at
-                deltatime = log_time2 - log_time
-                if deltatime.seconds > 60 and deltatime.days == 0:
+                deltatime = log_time - log_time2
+                if deltatime.seconds < 30 and deltatime.days == 0:
                     executor = message.author
 
                 # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
@@ -476,18 +480,13 @@ class Logging(commands.Cog):
                             **Member Name:** %s
                             ----------------------------
                             **Member ID:** %d
-                            **Account created on:** %d/%d/%d %d:%s %s (UTC)
+                            **Account created on:** %s (UTC)
                             ''' % (
                                 member.mention,
                                 str(member),
                                 member.id,
 
-                                member.created_at.month,
-                                member.created_at.day,
-                                member.created_at.year,
-                                member.created_at.hour % 12,
-                                "0" + str(member.created_at.minute) if member.created_at.minute / 10 < 1 else str(member.created_at.minute),
-                                "AM" if member.created_at.hour / 12 < 1 else "PM"
+                                member.created_at.strftime("%b %m %Y %I:%M %p"),
                             ) # Don't use f-strings here, it's messy.
             log_color = self.color_guild_join_leave
             log_time = datetime.datetime.utcnow()
@@ -637,7 +636,7 @@ class Logging(commands.Cog):
                     role_change = []
                     if len(old_roles) < len(new_roles):
                         log_title = "Member Role Added"
-                        role_change = [role.mention for role in new_roles if role not in old_roles]
+                        role_change = [methods.mention(role) for role in new_roles if role not in old_roles]
 
                         # The role_change will contain something like this: ["<@&1234>", "<@&2345>", ...]
 
@@ -650,7 +649,7 @@ class Logging(commands.Cog):
                                         '''
                     elif len(old_roles) > len(new_roles):
                         log_title = "Member Role Removed"
-                        role_change = [role.mention for role in old_roles if role not in new_roles]
+                        role_change = [methods.mention(role) for role in old_roles if role not in new_roles]
 
                         log_content = f'''
                                         **Member:** {after.mention}
@@ -1007,7 +1006,7 @@ class Logging(commands.Cog):
                                             **Channel:** %s
                                             **Added by:** %s
                                             ''' % (
-                                                key.mention, 
+                                                methods.mention(key), 
                                                 "Role" if isinstance(key, discord.Role) else "Member", 
 
                                                 after.mention, 
@@ -1155,7 +1154,7 @@ class Logging(commands.Cog):
                                             **Channel:** %s
                                             **Removed by:** %s
                                             ''' % (
-                                                key.mention, 
+                                                methods.mention(key), 
                                                 "Role" if isinstance(key, discord.Role) else "Member", 
 
                                                 after.id, 
@@ -1329,7 +1328,7 @@ class Logging(commands.Cog):
                                 **Is mentionable:** %s
                                 **Color:** %s
                                 ''' % (
-                                    role.mention, 
+                                    methods.mention(role), # It's unlikely for this role to be @everyone but consistency is nice. 
                                     role.name, 
                                     executor.mention, 
                                     str_role_perm,
@@ -1428,7 +1427,7 @@ class Logging(commands.Cog):
                 if before.name != after.name:
                     log_title = "Role Name Changed"
                     log_content = f'''
-                                    **Role:** {after.mention}
+                                    **Role:** {methods.mention(after)}
                                     **Before:** {before.name}
                                     **After:** {after.name}
                                     ----------------------------
@@ -1452,7 +1451,7 @@ class Logging(commands.Cog):
                 if before.color != after.color:
                     log_title = "Role Color Changed"
                     log_content = f'''
-                                    **Role:** {after.mention}
+                                    **Role:** {methods.mention(after)}
                                     **Before:** {before.color}
                                     **After:** {after.color}
                                     ----------------------------
