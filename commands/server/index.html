@@ -90,6 +90,17 @@
     <a class="current" href="./">Settings</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#settings-commands">Settings commands</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
+        
+            <li><a class="toctree-l4" href="#log_enable">log_enable</a></li>
+        
+        </ul>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -165,7 +176,21 @@
           <div role="main">
             <div class="section">
               
-                
+                <h1 id="settings-commands">Settings commands</h1>
+<p>These are commands that focus in providing Quality of Life for the guild. It comes with logging, welcoming, bad words filtering (new), goodbye (new), reaction roles (new), enabling/disabling a command (new).</p>
+<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that is is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>🛠</code>.</p>
+<h2 id="log_enable">log_enable</h2>
+<p>Enable logging in your server.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;log-enable&quot;])
+@commands.has_guild_permissions(manage_guild = True)
+@commands.bot_has_permissions(send_messages = True)
+@commands.bot_has_guild_permissions(view_audit_log = True)
+@commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
+async def log_enable(self, ctx):
+</code></pre>
               
             </div>
           </div>
