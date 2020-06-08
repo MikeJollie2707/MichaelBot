@@ -23,6 +23,68 @@ class Core(commands.Cog):
             raise commands.NoPrivateMessage()
         else:
             return True
+    
+    @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
+    async def changelog(self, ctx):
+        '''
+        Show the latest 10 changes of the bot.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+        '''
+        channel_id = 644393721512722432 # Do not change
+        channel = self.bot.get_channel(channel_id)
+        if channel == None:
+            await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
+            return
+
+        paginator = Pages()
+
+        async for message in channel.history(limit = 10):
+            embed = methods.get_default_embed(
+                description = message.content, 
+                color = discord.Color.green(),
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
+            )
+            paginator.add_page(embed)
+        
+        await paginator.event(bot = self.bot, channel = ctx.channel, interupt = False, author = ctx.author)
+
+    @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
+    async def help(self, ctx, categoryOrcommand = ""):
+        '''
+        Show compact help about a command, or a category.
+        Note: command name and category name is case sensitive; `Core` is different from `core`.
+
+        **Usage:** <prefix>**{command_name}** [command/category]
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} info
+        **Example 3:** {prefix}{command_name} Core
+                       
+        **You need:** None.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+        '''
+
+        help_command = SmallHelp(ctx)
+        
+        if categoryOrcommand == "":
+            await help_command.send_bot_help()
+        else:
+            category = self.bot.get_cog(categoryOrcommand)
+            command = self.bot.get_command(categoryOrcommand)
+
+            if category != None:
+                await help_command.send_cog_help(category)
+            elif command != None:
+                await help_command.send_command_help(command)
+            else:
+                await ctx.send("Command \"%s\" not found." % categoryOrcommand)
 
     @commands.command(aliases = ["about"])
     @commands.bot_has_permissions(send_messages = True)
@@ -86,6 +148,55 @@ class Core(commands.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
+    async def note(self, ctx):
+        '''
+        Provide syntax convention in `help` and `help-all`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+
+        embed = methods.get_default_embed(
+            title = "MichaelBot",
+            url = "https://mikejollie2707.github.io/MichaelBot",
+            description = "Check out the bot documentation's front page: <https://mikejollie2707.github.io/MichaelBot>",
+            timestamp = datetime.datetime.utcnow(),
+            author = ctx.author
+        )
+
+        await ctx.send(embed = embed)
+
+    @commands.command()
+    @commands.has_guild_permissions(manage_guild = True)
+    @commands.bot_has_permissions(send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+    async def prefix(self, ctx, new_prefix : str = None):
+        '''
+        View and set the prefix for the bot.
+
+        **Usage:** <prefix>**{command_name}** [new prefix]
+        **Cooldown:** 5 seconds per 1 use (global).
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} %
+        
+        **You need:** `Manage Server`.
+        **I need:** `Send Messages`.
+        '''
+
+        if new_prefix == None:
+            await ctx.send("Current prefix: " + self.bot.command_prefix)
+        else:
+            self.bot.command_prefix = new_prefix
+            await ctx.send("New prefix: " + self.bot.command_prefix)
+            # Save the prefix
+            import os
+            os.environ["prefix2"] = new_prefix
+
+    @commands.command()
+    @commands.bot_has_permissions(send_messages = True)
     async def profile(self, ctx, member: discord.Member = None):
         '''
         Information about yourself or another __member__.
@@ -133,6 +244,64 @@ class Core(commands.Cog):
         embed.add_field(name = "Roles:", value = s)
 
         await ctx.send(embed = embed)
+
+    @commands.command()
+    @commands.bot_has_permissions(manage_messages = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
+    async def report(self, ctx, *, content : str):
+        '''
+        Report a bug or suggest a feature for the bot.
+        Provide constructive reports and suggestions are appreciated.
+
+        **Usage:** <prefix>**{command_name}** <report/suggest> <content>
+        **Cooldown:** 30 seconds per use (user).
+        **Example 1:** {prefix}{command_name} report This command has a bug.
+        **Example 2:** {prefix}{command_name} suggest This command should be improved.
+
+        **You need:** None.
+        **I need:** `Manage Messages`, `Send Messages`.
+        '''
+
+        report_chan = 644339079164723201 # Do not change
+        channel = ctx.bot.get_channel(report_chan)
+        if channel == None:
+            channel = await ctx.bot.fetch_channel(report_chan)
+            if channel == None:
+                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
+                raise RuntimeError("Cannot find report channel.")
+
+        flag = content.split()[0]
+        if (flag == "report") or (flag == "suggest"):
+            msg = ""
+
+            for i in range(1, len(content.split())):
+                msg += content.split()[i] + ' '
+
+            embed = discord.Embed(
+                title = flag.capitalize(), 
+                description = msg, 
+                color = discord.Color.green(),
+                timestamp = datetime.datetime.utcnow()
+            )
+            embed.set_author(
+                name = ctx.author.name, 
+                icon_url = ctx.author.avatar_url
+            )
+            embed.add_field(
+                name = "Sender ID:",
+                value = ctx.author.id,
+                inline = False
+            )
+
+            try:
+                await channel.send(embed = embed)
+            except discord.Forbidden:
+                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
+                raise discord.Forbidden(message = "Cannot send message in report channel.")
+            else:
+                await ctx.send("Your opinion has been sent.", delete_after = 5)
+        else:
+            await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
 
     @commands.command(aliases = ["server-info"])
     @commands.bot_has_permissions(send_messages = True)
@@ -204,175 +373,6 @@ class Core(commands.Cog):
         )
 
         await ctx.send(embed = embed)
-
-    @commands.command()
-    @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-    async def prefix(self, ctx, new_prefix : str = None):
-        '''
-        View and set the prefix for the bot.
-
-        **Usage:** <prefix>**{command_name}** [new prefix]
-        **Cooldown:** 5 seconds per 1 use (global).
-        **Example 1:** {prefix}{command_name}
-        **Example 2:** {prefix}{command_name} %
-        
-        **You need:** `Manage Server`.
-        **I need:** `Send Messages`.
-        '''
-
-        if new_prefix == None:
-            await ctx.send("Current prefix: " + self.bot.command_prefix)
-        else:
-            self.bot.command_prefix = new_prefix
-            await ctx.send("New prefix: " + self.bot.command_prefix)
-            # Save the prefix
-            import os
-            os.environ["prefix2"] = new_prefix
-
-    @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
-    async def note(self, ctx):
-        '''
-        Provide syntax convention in `help` and `help-all`.
-
-        **Usage:** <prefix>**{command_name}**
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Send Messages`.
-        '''
-
-        embed = methods.get_default_embed(
-            title = "MichaelBot",
-            url = "https://mikejollie2707.github.io/MichaelBot",
-            description = "Check out the bot documentation's front page: <https://mikejollie2707.github.io/MichaelBot>",
-            timestamp = datetime.datetime.utcnow(),
-            author = ctx.author
-        )
-
-        await ctx.send(embed = embed)
-
-    @commands.command()
-    @commands.bot_has_permissions(manage_messages = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-    async def report(self, ctx, *, content : str):
-        '''
-        Report a bug or suggest a feature for the bot.
-        Provide constructive reports and suggestions are appreciated.
-
-        **Usage:** <prefix>**{command_name}** <report/suggest> <content>
-        **Cooldown:** 30 seconds per use (user).
-        **Example 1:** {prefix}{command_name} report This command has a bug.
-        **Example 2:** {prefix}{command_name} suggest This command should be improved.
-
-        **You need:** None.
-        **I need:** `Manage Messages`, `Send Messages`.
-        '''
-
-        report_chan = 644339079164723201 # Do not change
-        channel = ctx.bot.get_channel(report_chan)
-        if channel == None:
-            channel = await ctx.bot.fetch_channel(report_chan)
-            if channel == None:
-                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
-                raise RuntimeError("Cannot find report channel.")
-
-        flag = content.split()[0]
-        if (flag == "report") or (flag == "suggest"):
-            msg = ""
-
-            for i in range(1, len(content.split())):
-                msg += content.split()[i] + ' '
-
-            embed = discord.Embed(
-                title = flag.capitalize(), 
-                description = msg, 
-                color = discord.Color.green(),
-                timestamp = datetime.datetime.utcnow()
-            )
-            embed.set_author(
-                name = ctx.author.name, 
-                icon_url = ctx.author.avatar_url
-            )
-            embed.add_field(
-                name = "Sender ID:",
-                value = ctx.author.id,
-                inline = False
-            )
-
-            try:
-                await channel.send(embed = embed)
-            except discord.Forbidden:
-                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
-                raise discord.Forbidden(message = "Cannot send message in report channel.")
-            else:
-                await ctx.send("Your opinion has been sent.", delete_after = 5)
-        else:
-            await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
-
-    @commands.command()
-    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-    async def changelog(self, ctx):
-        '''
-        Show the latest 10 changes of the bot.
-
-        **Usage:** <prefix>**{command_name}**
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
-        '''
-        channel_id = 644393721512722432 # Do not change
-        channel = self.bot.get_channel(channel_id)
-        if channel == None:
-            await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
-            return
-
-        paginator = Pages()
-
-        async for message in channel.history(limit = 10):
-            embed = methods.get_default_embed(
-                description = message.content, 
-                color = discord.Color.green(),
-                timestamp = datetime.datetime.utcnow(),
-                author = ctx.author
-            )
-            paginator.add_page(embed)
-        
-        await paginator.event(bot = self.bot, channel = ctx.channel, interupt = False, author = ctx.author)
-
-    @commands.command()
-    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-    async def help(self, ctx, categoryOrcommand = ""):
-        '''
-        Show compact help about a command, or a category.
-        Note: command name and category name is case sensitive; `Core` is different from `core`.
-
-        **Usage:** <prefix>**{command_name}** [command/category]
-        **Example 1:** {prefix}{command_name}
-        **Example 2:** {prefix}{command_name} info
-        **Example 3:** {prefix}{command_name} Core
-                       
-        **You need:** None.
-        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
-        '''
-
-        help_command = SmallHelp(ctx)
-        
-        if categoryOrcommand == "":
-            await help_command.send_bot_help()
-        else:
-            category = self.bot.get_cog(categoryOrcommand)
-            command = self.bot.get_command(categoryOrcommand)
-
-            if category != None:
-                await help_command.send_cog_help(category)
-            elif command != None:
-                await help_command.send_command_help(command)
-            else:
-                await ctx.send("Command \"%s\" not found." % categoryOrcommand)
         
 def setup(bot):
     bot.add_cog(Core(bot))
