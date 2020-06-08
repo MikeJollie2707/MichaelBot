@@ -32,75 +32,30 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             await ctx.send("This command is reserved for bot developers only!")
 
     @commands.command()
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-    async def reload(self, ctx, name):
+    @commands.bot_has_permissions(send_messages = True)
+    async def all_guild(self, ctx):
         '''
-        Reload a module.
-        Useful when you don't want to disconnect the bot but still update your change.
-
-        **Usage:** <prefix>**{command_name}** <extension name>
-        **Cooldown:** 5 seconds per use (global cooldown).
-        **Example:** {prefix}{command_name} categories.templates
-
-        **You need:** `dev status`.
-        **I need:** `Send Messages` (optionally).
-        '''
-
-        self.bot.reload_extension(name)
-
-        try:
-            await ctx.send("Reloaded extension " + name)
-        except:
-            print("Can't send message to %d" % ctx.message.id)
-        print("Reloaded extension " + name)
-    @reload.error
-    async def reload_error(self, ctx, error):
-        if isinstance(error, commands.ExtensionNotFound):
-            await ctx.send("I cannot find this extension. Check your typo or the repo again.")
-    
-    @commands.command()
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-    async def reload_all_extension(self, ctx, name):
-        '''
-        Reload all modules.
-        Useful for OCD people (like MikeJollie) because `reload` will mess up the order in `help` and `help-all`.
+        Display all the guilds the bot is currently in.
 
         **Usage:** <prefix>**{command_name}**
-        **Cooldown:** 5 seconds per use (global cooldown).
         **Example:** {prefix}{command_name}
 
         **You need:** `dev status`.
         **I need:** `Send Messages`.
         '''
-
-        for extension in self.bot.extensions:
-            self.bot.reload_extension(extension)
         
-        try:
-            await ctx.send("Reloaded all extension")
-        except:
-            print("Can't send message to %d" % ctx.message.id)
-        print("Reloaded all extension")
-    @reload_all_extension.error
-    async def reload_error(self, ctx, error):
-        pass
-    
-    @commands.command()
-    async def reset_all_cooldown(self, ctx):
-        '''
-        Self-explanatory.
+        embed = discord.Embed(
+            title = "%d Guilds" % len(ctx.bot.guilds),
+            color = discord.Color.green(),
+            datetime = datetime.datetime.utcnow()
+        )
 
-        **Usage:** <prefix>**{command_name}**
-        **Example:** {prefix}{command_name}
+        guilds = ctx.bot.guilds
 
-        You need: `dev status`.
-        I need: `Send Messages`.
-        '''
-
-        for command in self.bot.commands:
-            if command.is_on_cooldown(ctx):
-                command.reset_cooldown(ctx)
-        await ctx.send("All cooldown reseted.")
+        for index in range(0, len(guilds)):
+            embed.add_field(name = f"{index + 1}. {guilds[index].name}", value = f"ID: {guilds[index].id}", inline = False)
+        
+        await ctx.send(embed = embed)
 
     # I'm intending to move this command to a category called "Administrator" or something.
     @commands.command()
@@ -134,6 +89,65 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
                     await ctx.guild.leave()
                 except discord.HTTPException:
                     await ctx.send("Leaving the guild failed. Guess you'll stick with me for a while :smile:")
+
+    @commands.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+    async def reload(self, ctx, name):
+        '''
+        Reload a module.
+        Useful when you don't want to disconnect the bot but still update your change.
+
+        **Usage:** <prefix>**{command_name}** <extension name>
+        **Cooldown:** 5 seconds per use (global cooldown).
+        **Example:** {prefix}{command_name} categories.templates
+
+        **You need:** `dev status`.
+        **I need:** `Send Messages` (optionally).
+        '''
+
+        self.bot.reload_extension(name)
+
+        try:
+            await ctx.send("Reloaded extension " + name)
+        except:
+            print("Can't send message to %d" % ctx.message.id)
+        print("Reloaded extension " + name)
+    @reload.error
+    async def reload_error(self, ctx, error):
+        if isinstance(error, commands.ExtensionNotFound):
+            await ctx.send("I cannot find this extension. Check your typo or the repo again.")
+    
+    @commands.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+    async def reload_all_extension(self, ctx):
+        '''
+        Reload all modules.
+        Useful for OCD people (like MikeJollie) because `reload` will mess up the order in `help` and `help-all`.
+
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 5 seconds per use (global cooldown).
+        **Example:** {prefix}{command_name}
+
+        **You need:** `dev status`.
+        **I need:** `Send Messages`.
+        '''
+
+        extension_list = [] # We can't loop through self.bot.extensions directly because reload_extension will modify the map and raise RunTimeError
+
+        for extension in self.bot.extensions:
+            extension_list.append(extension)
+        
+        for extension_name in extension_list:
+            self.bot.reload_extension(extension_name)
+        
+        try:
+            await ctx.send("Reloaded all extensions.")
+        except:
+            print("Can't send message to %d" % ctx.message.id)
+        print("Reloaded all extension")
+    @reload_all_extension.error
+    async def reload_all_error(self, ctx, error):
+        pass
     
     @commands.command(aliases = ["suggest_response"])
     @commands.bot_has_permissions(send_messages = True)
@@ -184,29 +198,21 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
                         print("The bot does not have Manage Messages in report channel.")
 
     @commands.command()
-    async def all_guild(self, ctx):
+    async def reset_all_cooldown(self, ctx):
         '''
-        Display all the guilds the bot is currently in.
+        Self-explanatory.
 
         **Usage:** <prefix>**{command_name}**
         **Example:** {prefix}{command_name}
 
-        **You need:** `dev status`.
-        **I need:** `Send Messages`.
+        You need: `dev status`.
+        I need: `Send Messages`.
         '''
-        
-        embed = discord.Embed(
-            title = "%d Guilds" % len(ctx.bot.guilds),
-            color = discord.Color.green(),
-            datetime = datetime.datetime.utcnow()
-        )
 
-        guilds = ctx.bot.guilds
-
-        for index in range(0, len(guilds)):
-            embed.add_field(name = f"{index + 1}. {guilds[index].name}", value = f"ID: {guilds[index].id}", inline = False)
-        
-        await ctx.send(embed = embed)
+        for command in self.bot.commands:
+            if command.is_on_cooldown(ctx):
+                command.reset_cooldown(ctx)
+        await ctx.send("All cooldown reseted.")
         
 
 
