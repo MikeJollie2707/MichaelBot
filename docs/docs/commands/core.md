@@ -3,21 +3,6 @@
 
 These are commands that are mostly related to information.
 
-<!-- omit in toc -->
-## Table of Contents
-
-- [\_\_init\_\_ [INTERNAL]](#init-internal)
-- [cog_check [INTERNAL]](#cogcheck-internal)
-- [changelog](#changelog)
-- [help](#help)
-- [help-all](#help-all)
-- [info](#info)
-- [note [DEPRECATED][INCOMPLETE]](#note-deprecated)
-- [prefix [DEPRECATED]](#prefix-deprecated)
-- [profile](#profile)
-- [report](#report)
-- [serverinfo](#serverinfo)
-
 ## \_\_init\_\_ [INTERNAL]
 
 *This section is labeled as [INTERNAL], meaning that is is **NOT** a command. It is here only to serve the developers purpose.*
@@ -127,7 +112,7 @@ Provide information about the bot.
 **Full Signature:**
 
 ```py
-@commands.command()
+@commands.command(aliases = ["about"])
 @commands.bot_has_permissions(send_messages = True)
 async def info(self, ctx):
 ```
@@ -141,11 +126,27 @@ info
 
 **Expected Output:** *an embed with information*
 
-## note [DEPRECATED][INCOMPLETE]
+## note
 
-*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
+Provide syntax convention for `help` and `help-all`. All it does is putting a link to this documentation.
 
-*This section is labeled as [INCOMPLETE], will be updated in the future.*
+**Full Signature:**
+
+```py
+@commands.command()
+@commands.bot_has_permissions(send_messages = True)
+async def note(self, ctx):
+```
+
+**Simplified Signature:**
+
+```
+note
+```
+
+**Example:** `note`
+
+**Expected Output:** *an embed with a link*
 
 ## prefix [DEPRECATED]
 
@@ -157,7 +158,7 @@ View and set the prefix for the bot.
 
 ```py
 @commands.command()
-@commands.has_permissions(manage_guild = True)
+@commands.has_guild_permissions(manage_guild = True)
 @commands.bot_has_permissions(send_messages = True)
 @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
 async def prefix(self, ctx, new_prefix : str = None):
@@ -269,4 +270,4 @@ server-info
 
 **Expected Output:** *an embed with information*
 
-*This document is last reviewed on May 12th (PT) by MikeJollie#1067*
+*This document is last updated on May 26th (PT) by MikeJollie#1067*

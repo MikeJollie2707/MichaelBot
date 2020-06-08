@@ -3,18 +3,6 @@
 
 These are the commands that are only for the bot developers to use ~~to abuse power~~.
 
-<!-- omit in toc -->
-## Table of Contents
-
-- [is_dev [INTERNAL]](#isdev-internal)
-- [\_\_init\_\_ [INTERNAL]](#init-internal)
-- [cog_check [INTERNAL]](#cogcheck-internal)
-- [all_guild](#allguild)
-- [leave_guild](#leaveguild)
-- [reload](#reload)
-- [report_response](#reportresponse)
-- [reset\_all\_cooldown](#resetallcooldown)
-
 ## is_dev [INTERNAL]
 
 *This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
@@ -41,6 +29,7 @@ Display all guilds the bot is in.
 
 ```py
 @commands.command()
+@commands.bot_has_permissions(send_messages = True)
 async def all_guild(self, ctx):
 ```
 
@@ -78,14 +67,14 @@ leave_guild
 
 ## reload
 
-Reload a module. This is extremely useful when you don't want to shut down the bot, but still want the update to arrive.
+Reload a module. This is extremely useful when you don't want to shut down the bot, but still want the update to arrive
 Note that by reloading the module, the categories order in `help` will be changed.
 
 **Full Signature:**
 
 ```py
 @commands.command()
-@commands.cooldown(1, 5.0, commands.BucketType.default)
+@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
 async def reload(self, ctx, name):
 ```
 
@@ -99,6 +88,36 @@ reload <module name>
 
 **Expected Output:** `Reloaded extension categories.dev`
 
+### reload_eh [INTERNAL]
+
+*This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
+
+A local error handler for the `reload` command.
+
+It is currently only response to the `ModuleNotFound` exception.
+
+## reload_all_extension
+
+Reload all modules. Useful for OCD people (like MikeJollie) because `reload` will mess up the order in `help` and `help-all`.
+
+**Full Signature:**
+
+```py
+@commands.command()
+@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+async def reload_all_extension(self, ctx):
+```
+
+**Simplified Signature:**
+
+```
+reload_all_extension
+```
+
+**Example:** `$reload_all_extension`
+
+**Expected Output:** `Reloaded all extensions.`
+
 ## report_response
 
 Response to a report/suggestion. Note that the command will look through the last 100 messages in the report channel in the support server.
@@ -109,7 +128,8 @@ It is recommended not to use this more than once on the same report/suggestion.
 
 ```py
 @commands.command(aliases = ["suggest_response"])
-@commands.cooldown(1, 60.0, commands.BucketType.default)
+@commands.bot_has_permissions(send_messages = True)
+@commands.cooldown(rate = 1, per = 60.0, type = commands.BucketType.default)
 async def report_response(self, ctx, message_ID : int, *, response : str):
 ```
 
@@ -150,4 +170,4 @@ reset_all_cooldown
 
 **Expected Output:** `All cooldown reseted.`
 
-*This document is last updated on April 23rd (PT) by MikeJollie#1067*
+*This document is last updated on May 26th (PT) by MikeJollie#1067*

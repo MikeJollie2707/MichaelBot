@@ -3,52 +3,11 @@
 
 These are commands that performs moderating action.
 
-<!-- omit in toc -->
-## Table of Contents
-
-- [\_\_init\_\_ [INTERNAL]](#init-internal)
-- [kick](#kick)
-- [ban](#ban)
-- [hackban](#hackban)
-- [unban](#unban)
-- [mute [INCOMPLETE] [DEVELOPING]](#mute-incomplete-developing)
-
 ## \_\_init\_\_ [INTERNAL]
 
 *This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
 
 A constructor of this category. This set the `Moderation` category's emoji as `🔨`.
-
-## kick
-
-Kick a member out of the server.
-
-Note that the bot's role needs to be higher than the member to kick.
-
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.has_permissions(kick_members = True)
-@commands.bot_has_permissions(kick_members = True, send_messages = True)
-@commands.cooldown(2, 5.0, commands.BucketType.guild)
-async def kick(self, ctx, member : discord.Member, *, reason = None):
-```
-
-**Simplified Signature:**
-
-```
-kick <member> [reason]
-```
-
-**Parameters:**
-
-- `member`: A Discord member. It can be any in the following form: `[ID/discriminator/mention/name/nickname]`
-- `reason`: The reason for kicking.
-
-**Example:** `$kick MikeJollie Being dumb`
-
-**Expected Output:** *an embed with verification*
 
 ## ban
 
@@ -60,9 +19,10 @@ Note that the bot's role needs to be higher than the member to ban.
 
 ```py
 @commands.command()
-@commands.has_permissions(ban_members = True)
-@commands.bot_has_permissions(ban_members = True, send_messages = True)
-@commands.cooldown(2, 5.0, commands.BucketType.guild)
+@commands.has_guild_permissions(ban_members = True)
+@commands.bot_has_permissions(send_messages = True)
+@commands.bot_has_guild_permissions(ban_members = True)
+@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
 async def ban(self, ctx, user : discord.Member, *, reason = None):
 ```
 
@@ -81,6 +41,14 @@ ban <member> [reason]
 
 **Expected Output:** *an embed with verification*
 
+### ban_eh [INTERNAL]
+
+*This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
+
+An local error handler for the `ban` command.
+
+It is currently only response to the `BadArgument` exception, which signify the user is not in the guild cache.
+
 ## hackban
 
 Ban a user out of the server.
@@ -91,9 +59,10 @@ This user does not need to share the server with the bot.
 
 ```py
 @commands.command()
-@commands.has_permissions(ban_members = True)
-@commands.bot_has_permissions(ban_members = True)
-@commands.cooldown(2, 5.0, commands.BucketType.guild)
+@commands.has_guild_permissions(ban_members = True)
+@commands.bot_has_permissions(send_messages = True)
+@commands.bot_has_guild_permissions(ban_members = True)
+@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
 async def hackban(self, ctx, id : int, *, reason = None):
 ```
 
@@ -112,36 +81,45 @@ hackban <ID> [reason]
 
 **Expected Output:** *an embed with verification*
 
-## unban
+## kick
 
-Unban a user from the server.
+Kick a member out of the server.
 
-This user does not need to share the server with the bot.
+Note that the bot's role needs to be higher than the member to kick.
 
 **Full Signature:**
 
 ```py
 @commands.command()
-@commands.has_permissions(ban_members = True)
-@commands.bot_has_permissions(ban_members = True)
-@commands.cooldown(2, 5.0, commands.BucketType.guild)
-async def unban(self, ctx, id : int, *, reason = None):
+@commands.has_guild_permissions(kick_members = True)
+@commands.bot_has_permissions(send_messages = True)
+@commands.bot_has_guild_permissions(kick_members = True)
+@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
+async def kick(self, ctx, member : discord.Member, *, reason = None):
 ```
 
 **Simplified Signature:**
 
 ```
-unban <ID> [reason]
+kick <member> [reason]
 ```
 
 **Parameters:**
 
-- `id`: The id of the user.
-- `reason`: The reason for banning.
+- `member`: A Discord member. It can be any in the following form: `[ID/discriminator/mention/name/nickname]`
+- `reason`: The reason for kicking.
 
-**Example:** `$unban 472832990012243969 You've been trained by the FBI now`
+**Example:** `$kick MikeJollie Being dumb`
 
 **Expected Output:** *an embed with verification*
+
+### kick_eh [INTERNAL]
+
+*This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
+
+A local error handler for the `kick` command.
+
+It is currently only response to the `BadArgument` exception, which signify that the member is not in the guild.
 
 ## mute [INCOMPLETE] [DEVELOPING]
 
@@ -154,9 +132,9 @@ Mute a member from chatting.
 **Full Signature:**
 
 ```py
-@commands.command(hidden = True, disabled = True)
+@commands.command(hidden = True, enabled = True)
 @commands.has_permissions(kick_members = True)
-@commands.bot_has_permissions(kick_members = True)
+@commands.bot_has_guild_permissions(kick_members = True)
 @commands.cooldown(1, 5.0, commands.BucketType.guild)
 async def mute(self, ctx, member : discord.Member, *, reason = None):
 ```
@@ -175,3 +153,37 @@ mute <member> [reason]
 **Example:** `$mute MikeJollie Stop saying "Loli is justice"`
 
 **Expected Output:** *an embed with verification*
+
+## unban
+
+Unban a user from the server.
+
+This user does not need to share the server with the bot.
+
+**Full Signature:**
+
+```py
+@commands.command()
+@commands.has_guild_permissions(ban_members = True)
+@commands.bot_has_permissions(send_messages = True)
+@commands.bot_has_guild_permissions(ban_members = True)
+@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
+async def unban(self, ctx, id : int, *, reason = None):
+```
+
+**Simplified Signature:**
+
+```
+unban <ID> [reason]
+```
+
+**Parameters:**
+
+- `id`: The id of the user.
+- `reason`: The reason for banning.
+
+**Example:** `$unban 472832990012243969 You've been trained by the FBI now`
+
+**Expected Output:** *an embed with verification*
+
+*This document is last updated on May 26th (PT) by MikeJollie#1067*
