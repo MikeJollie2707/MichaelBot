@@ -517,7 +517,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True, "hidd
 
     @commands.command(aliases = ["np"])
     @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-    @commands.cooldown(2, 15, commands.BucketType.user)
+    @commands.cooldown(rate = 2, per = 15, type = commands.BucketType.user)
     async def now_playing(self, ctx):
         '''
         Indicate what song is playing.
@@ -685,7 +685,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True, "hidd
         await player.stop()
 
     @commands.command(aliases = ["dc", "disconnect"])
-    @commands.cooldown(1, 15, commands.BucketType.guild)
+    @commands.cooldown(rate = 1, per = 15.0, type = commands.BucketType.guild)
     @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def stop(self, ctx):
         '''
@@ -731,7 +731,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True, "hidd
         await player.disconnect()
 
     @commands.command(aliases = ["vol"])
-    @commands.cooldown(1, 2, commands.BucketType.guild)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
     @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def volume(self, ctx, *, value: int):
         '''
@@ -782,7 +782,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True, "hidd
             await player.invoke_controller()
 
     @commands.command()
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
     @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def queue(self, ctx):
         '''
@@ -821,7 +821,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing": True, "hidd
         await ctx.send(embed = embed)
 
     @commands.command(aliases = ["mix"])
-    @commands.cooldown(2, 10, commands.BucketType.user)
+    @commands.cooldown(rate = 2, per = 10.0, type = commands.BucketType.user)
     @commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
     async def shuffle(self, ctx):
         '''
