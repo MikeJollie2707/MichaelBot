@@ -66,8 +66,6 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
-        
             <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
         
             <li><a class="toctree-l4" href="#cog_check-internal">cog_check [INTERNAL]</a></li>
@@ -80,7 +78,7 @@
         
             <li><a class="toctree-l4" href="#info">info</a></li>
         
-            <li><a class="toctree-l4" href="#note-deprecatedincomplete">note [DEPRECATED][INCOMPLETE]</a></li>
+            <li><a class="toctree-l4" href="#note">note</a></li>
         
             <li><a class="toctree-l4" href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
         
@@ -200,22 +198,6 @@
 
 <h1 id="core-commands">Core commands</h1>
 <p>These are commands that are mostly related to information.</p>
-<!-- omit in toc -->
-
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#init-internal">__init__ [INTERNAL]</a></li>
-<li><a href="#cogcheck-internal">cog_check [INTERNAL]</a></li>
-<li><a href="#changelog">changelog</a></li>
-<li><a href="#help">help</a></li>
-<li><a href="#help-all">help-all</a></li>
-<li><a href="#info">info</a></li>
-<li><a href="#note-deprecated">note [DEPRECATED][INCOMPLETE]</a></li>
-<li><a href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
-<li><a href="#profile">profile</a></li>
-<li><a href="#report">report</a></li>
-<li><a href="#serverinfo">serverinfo</a></li>
-</ul>
 <h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that is is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>⚙️</code>.</p>
@@ -294,7 +276,7 @@ async def help(self, ctx, categoryOrcommand = &quot;&quot;):
 <h2 id="info">info</h2>
 <p>Provide information about the bot.</p>
 <p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command()
+<pre><code class="py">@commands.command(aliases = [&quot;about&quot;])
 @commands.bot_has_permissions(send_messages = True)
 async def info(self, ctx):
 </code></pre>
@@ -305,15 +287,26 @@ async def info(self, ctx):
 
 <p><strong>Example:</strong> <code>$info</code></p>
 <p><strong>Expected Output:</strong> <em>an embed with information</em></p>
-<h2 id="note-deprecatedincomplete">note [DEPRECATED][INCOMPLETE]</h2>
-<p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
-<p><em>This section is labeled as [INCOMPLETE], will be updated in the future.</em></p>
+<h2 id="note">note</h2>
+<p>Provide syntax convention for <code>help</code> and <code>help-all</code>. All it does is putting a link to this documentation.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.bot_has_permissions(send_messages = True)
+async def note(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>note
+</code></pre>
+
+<p><strong>Example:</strong> <code>note</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with a link</em></p>
 <h2 id="prefix-deprecated">prefix [DEPRECATED]</h2>
 <p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
 <p>View and set the prefix for the bot.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command()
-@commands.has_permissions(manage_guild = True)
+@commands.has_guild_permissions(manage_guild = True)
 @commands.bot_has_permissions(send_messages = True)
 @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
 async def prefix(self, ctx, new_prefix : str = None):
@@ -397,7 +390,7 @@ server-info
 
 <p><strong>Example:</strong> <code>$serverinfo</code></p>
 <p><strong>Expected Output:</strong> <em>an embed with information</em></p>
-<p><em>This document is last reviewed on May 12th (PT) by MikeJollie#1067</em></p>
+<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>

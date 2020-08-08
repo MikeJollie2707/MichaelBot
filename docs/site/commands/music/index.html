@@ -86,17 +86,31 @@
     <a class="current" href="./">Music</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#music">Music</a></li>
+    <li class="toctree-l3"><a href="#music-developing">Music [DEVELOPING]</a></li>
     
         <ul>
-        
-            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
         
             <li><a class="toctree-l4" href="#connect">connect</a></li>
         
             <li><a class="toctree-l4" href="#play">play</a></li>
         
             <li><a class="toctree-l4" href="#now_playing">now_playing</a></li>
+        
+            <li><a class="toctree-l4" href="#pause">pause</a></li>
+        
+            <li><a class="toctree-l4" href="#resume">resume</a></li>
+        
+            <li><a class="toctree-l4" href="#skip">skip</a></li>
+        
+            <li><a class="toctree-l4" href="#stop">stop</a></li>
+        
+            <li><a class="toctree-l4" href="#volume">volume</a></li>
+        
+            <li><a class="toctree-l4" href="#queue">queue</a></li>
+        
+            <li><a class="toctree-l4" href="#shuffle">shuffle</a></li>
+        
+            <li><a class="toctree-l4" href="#repeat">repeat</a></li>
         
         </ul>
     
@@ -182,24 +196,16 @@
               
                 <!-- omit in toc -->
 
-<h1 id="music">Music</h1>
-<p>These are commands that play music in voice channel. It is currently support YouTube, SoundCloud, Twitch, Vimeo and Mixer.</p>
-<p><em>This category is under beta testing, which means it is highly buggy and unstable.</em></p>
+<h1 id="music-developing">Music [DEVELOPING]</h1>
+<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
 <p><em>This document is missing many functions/methods due to the complexity. It is currently only shows the commands.</em></p>
-<!-- omit in toc -->
-
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#connect">connect</a></li>
-<li><a href="#play">play</a></li>
-<li><a href="#nowplaying">now_playing</a></li>
-</ul>
+<p>These are commands that play music in voice channel. It is currently support YouTube, SoundCloud, Twitch, Vimeo and Mixer.</p>
 <h2 id="connect">connect</h2>
 <p>Connect to a voice channel. If the channel is not specified, it'll attempt to join the current voice channel you're in.</p>
 <p>This command is implicitly called if the user invoke <a href="#play"><code>play</code></a> without the bot inside a voice channel.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command(aliases = [&quot;join&quot;])
-@commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
 async def connect(self, ctx, *, channel : discord.VoiceChannel = None):
 </code></pre>
 
@@ -220,7 +226,7 @@ join [voicechannel]
 <p>This command implicitly call <a href="#connect"><code>connect</code></a> if the user invoke without the bot insdie a voice channel.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command(aliases = ['p'])
-@commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
 @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
 async def play(self, ctx, *, query : str):
 </code></pre>
@@ -240,8 +246,8 @@ p &lt;query&gt;
 <p>Indicate what song is playing.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command(aliases = [&quot;np&quot;])
-@commands.bot_has_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-@commands.cooldown(2, 15, commands.BucketType.user)
+@commands.bot_has__guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+@commands.cooldown(rate = 2, per = 15.0, type = commands.BucketType.user)
 async def now_playing(self, ctx):
 </code></pre>
 
@@ -252,6 +258,132 @@ np
 
 <p><strong>Example:</strong> <code>$np</code></p>
 <p><strong>Expected Output:</strong> <em>an embed with information or reactions</em></p>
+<h2 id="pause">pause</h2>
+<p>Pause the currently playing song. If there are more than one person in the voice channel, a poll will be created.
+The admin/DJ reaction will cancel the vote and in favor of that person.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def pause(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>pause
+</code></pre>
+
+<p><strong>Example:</strong> <code>$pause</code></p>
+<p><strong>Expected Output:</strong> <em>a vote</em></p>
+<h2 id="resume">resume</h2>
+<p>Resume the currently paused song. If there are more than one person in the voice channel, a poll will be created.
+The admin/DJ reaction will cancel the vote and in favor of that person.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def resume(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>resume
+</code></pre>
+
+<p><strong>Example:</strong> <code>$resume</code></p>
+<p><strong>Expected Output:</strong> <em>a vote</em></p>
+<h2 id="skip">skip</h2>
+<p>Skip the current song. If there are more than one person in the voice channel, a poll will be created.
+The admin/DJ reaction will cancel the vote and in favor of that person.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def skip(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>skip
+</code></pre>
+
+<p><strong>Example:</strong> <code>$skip</code></p>
+<p><strong>Expected Output:</strong> <em>a vote</em></p>
+<h2 id="stop">stop</h2>
+<p>Stop the player, disconnect and clear the queue. If there are more than one person in the voice channel, a poll will be created.
+The admin/DJ reaction will cancel the vote and in favor of that person.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;dc&quot;, &quot;disconnect&quot;])
+@commands.cooldown(rate = 1, per = 15.0, type = commands.BucketType.guild)
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def stop(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>stop
+</code></pre>
+
+<p><strong>Example:</strong> <code>$stop</code></p>
+<p><strong>Expected Output:</strong> `<em>a vote, then the bot disconnects</em></p>
+<h2 id="volume">volume</h2>
+<p>Adjust the player's volume.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;vol&quot;])
+@commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def volume(self, ctx, *, value: int):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>volume &lt;value&gt;
+</code></pre>
+
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>value</code>: The value you want the volume to be at. It is in the range 0 to 1000.</li>
+</ul>
+<p><strong>Example:</strong> <code>$vol 100</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with verification</em></p>
+<h2 id="queue">queue</h2>
+<p>Retrieve a list of current queued songs.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def queue(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>queue
+</code></pre>
+
+<p><strong>Example:</strong> <code>$queue</code></p>
+<p><strong>Expected Output:</strong> <em>an embed with songs</em></p>
+<h2 id="shuffle">shuffle</h2>
+<p>Shuffle the current queue. If there are more than one person in the voice channel, a poll will be created.
+The admin/DJ reaction will cancel the vote and in favor of that person.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;mix&quot;])
+@commands.cooldown(rate = 2, per = 10.0, type = commands.BucketType.user)
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def shuffle(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>shuffle
+</code></pre>
+
+<p><strong>Example:</strong> <code>$shuffle</code></p>
+<p><strong>Expected Output:</strong> <em>a vote</em></p>
+<h2 id="repeat">repeat</h2>
+<p>Repeat the currently played song one more time.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command(aliases = [&quot;loop&quot;])
+@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
+async def repeat(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>repeat
+</code></pre>
+
+<p><strong>Example:</strong> <code>$repeat</code></p>
+<p><strong>Expected Output:</strong> <em>nothing</em></p>
+<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>
