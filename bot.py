@@ -64,9 +64,9 @@ if __name__ == "__main__":
         print("Bot info: ", bot_info)
         print("DB info: ", db_info)
     else:
-        bot = commands.Bot(
-            command_prefix = commands.when_mentioned_or(prefix), 
-            description = description,
+        bot = MichaelBot(
+            command_prefix = commands.when_mentioned_or(bot_info["prefix"]), 
+            description = bot_info.get("description"),
             status = discord.Status.online,
             activity = discord.Game(name = "Linux")
         )
