@@ -213,6 +213,24 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             if command.is_on_cooldown(ctx):
                 command.reset_cooldown(ctx)
         await ctx.send("All cooldown reseted.")
+
+    @commands.command()
+    @commands.is_owner()
+    async def shutdown(self, ctx):
+        '''
+        Disconnect the bot from Discord.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        You need: `bot owner`.
+        I need: `None`.
+        '''
+
+        await ctx.send("Disconnecting...")
+        await self.bot.close()
+
+
         
 
 
