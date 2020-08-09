@@ -17,9 +17,6 @@ def setup(bot_name):
     bot_info = None # A dict
     db_info = None # A dict
 
-    fin = open("./setup/config.json")
-    initial_bot_state = json.load(fin)
-
     try:
         with open("./setup/config.json") as fin:
             bot_info = json.load(fin)[bot_name]
@@ -45,16 +42,11 @@ def setupLogger(enable : bool = True):
 if __name__ == "__main__":
     argc = len(sys.argv)
 
-    bot_info = None
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
         TOKEN, bot_info, db_info = setup(sys.argv[1])
     else:
         print("Too many arguments. The second argument should be the bot's index in 'config.json'.")
-
-    TOKEN = bot_info[0]
-    prefix = bot_info[1]
-    description = bot_info[2]
 
     setupLogger(enable = True)
 
