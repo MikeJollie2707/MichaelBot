@@ -43,7 +43,7 @@ if __name__ == "__main__":
     bot_info = None
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
-        bot_info = setup(sys.argv[1])
+        TOKEN, bot_info, db_info = setup(sys.argv[1])
     else:
         print("Too many arguments. The second argument should be the bot's index in 'config.json'.")
 
@@ -53,8 +53,11 @@ if __name__ == "__main__":
 
     setupLogger(enable = True)
 
-    if TOKEN is None or prefix is None:
-        print("Unable to load token and prefix.")
+    if not any([TOKEN, bot_info, db_info]):
+        print("Unable to load enough information for the bot.")
+        print("Token: ", TOKEN)
+        print("Bot info: ", bot_info)
+        print("DB info: ", db_info)
     else:
         bot = commands.Bot(
             command_prefix = commands.when_mentioned_or(prefix), 
