@@ -9,6 +9,9 @@ import logging
 import json
 import asyncio
 
+class MichaelBot(commands.Bot):
+    pass
+
 def setup(bot_name):
     TOKEN = None # A str
     bot_info = None # A dict
