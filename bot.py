@@ -1,11 +1,13 @@
 import discord
 from discord.ext import commands
+import asyncpg
 
 import os
 import sys
 import traceback
 import logging
 import json
+import asyncio
 
 def setup(bot_name):
     TOKEN = None # A str
