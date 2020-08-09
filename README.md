@@ -82,9 +82,22 @@ git clone https://github.com/MikeJollie2707/MichaelBotPy.git
 - Go into the `setup` directory, create a token `json` file, name it whatever (with no space).
 
 ``` json
-# Let's say I'm creating a bot.json. Here's what the inside should look like
+// Let's say I'm creating a bot.json. Here's what the inside should look like
 {
     "token": "<token here>"
+}
+```
+
+- Also create a db `json` file, again, name it whatever.
+
+```json
+# dbexample.json
+{
+    // All these are required.
+    "host": "localhost, or wherever you host your PostgreSQL",
+    "user": "user name",
+    "database": "name of the db",
+    "password": "password"
 }
 ```
 
@@ -98,7 +111,8 @@ git clone https://github.com/MikeJollie2707/MichaelBotPy.git
         "description": "Optional, but recommended",
 
         "prefix": "Required",
-        "token": "The token file you created (bot.json)"
+        "token": "The token file you created (bot.json)",
+        "db": "The db file you created (dbexample.json)"
     }
 }
 ```
