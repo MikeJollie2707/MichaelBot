@@ -142,7 +142,7 @@ Any sort of contributions are highly appreciated.
 ## TODO
 
 - [ ] Find a database.
-  - [ ] Learn PostgreSQL
+  - [x] Learn PostgreSQL
   - [ ] Split `Logging` into different channels.
   - [ ] Track many stuffs.
 - [ ] Debug everything.
