@@ -8,28 +8,27 @@ import logging
 import json
 
 def setup(bot_name):
-    TOKEN = None
-    prefix = None
-    description = ""
+    TOKEN = None # A str
+    bot_info = None # A dict
+    db_info = None # A dict
 
     fin = open("./setup/config.json")
     initial_bot_state = json.load(fin)
 
     try:
-        fi = open(f"./setup/{initial_bot_state[bot_name]['token']}")
-        bot_config = json.load(fi)
-    except FileNotFoundError:
-        print("Cannot open file containing the token.")
-    except KeyError:
-        print("Bot config is wrong.")
-    except:
-        print(traceback.print_exc())
-    else:
-        TOKEN = bot_config["token"]
-        prefix = initial_bot_state[bot_name]["prefix"]
-        description = initial_bot_state[bot_name]["description"]
+        with open("./setup/config.json") as fin:
+            bot_info = json.load(fin)[bot_name]
+            
+            with open(f"./setup/{bot_info['token']}") as fi:
+                TOKEN = json.load(fi).get("token")
+            with open(f"./setup/{bot_info['db']}") as fi:
+                db_info = json.load(fi)
+    except FileNotFoundError as fnfe:
+        print(fnfe)
+    except KeyError as ke:
+        print(ke)
     
-    return (TOKEN, prefix, description)
+    return (TOKEN, bot_info, db_info)
 
 def setupLogger(enable : bool = True):
     logger = logging.getLogger("discord")
