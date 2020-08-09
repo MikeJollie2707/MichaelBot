@@ -4,6 +4,9 @@
 setup/bot1.json
 setup/botbeta.json
 
+# Database info
+setup/michaeldb.json
+
 # Spammy debug log
 discord.log
 
