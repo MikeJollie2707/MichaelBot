@@ -66,6 +66,19 @@ if __name__ == "__main__":
             activity = discord.Game(name = "Linux")
         )
 
+        if not hasattr(bot, "version"):
+            bot.version = bot_info.get("version")
+        
+        if not hasattr(bot, "pool"):
+            loop = asyncio.get_event_loop()
+            bot.pool = loop.run_until_complete(asyncpg.create_pool(
+                host = db_info["host"],
+                user = db_info["user"],
+                database = db_info["database"],
+                password = db_info["password"]
+            ))
+            # It might throw sth here but too lazy to catch so hey.
+
         try:
             for filename in sorted(os.listdir('./categories')):
                 if filename.endswith('.py'):
