@@ -184,10 +184,11 @@
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#convention">Convention</a></li>
 <li><a href="#parameters">Parameters</a></li>
-<li><a href="#permissions">Permissions</a></li>
 <li><a href="#prefix">Prefix</a></li>
 <li><a href="#usermember-concept">User/Member Concept</a></li>
+<li><a href="#permissions">Permissions</a></li>
 <li><a href="#cooldown">Cooldown</a></li>
+<li><a href="#understanding-commands-signature">Understanding command's signature</a></li>
 </ul>
 <h2 id="introduction">Introduction</h2>
 <p>This is the official documentation for MichaelBot. This can be used as a developer documentation or user documentation.</p>
@@ -196,38 +197,42 @@
 <h2 id="convention">Convention</h2>
 <p>These are the conventions I use throughout this document:</p>
 <h3 id="parameters">Parameters</h3>
+<p>These are the parameter types you will find in <code>help</code> and in <code>Simplified Signature</code> section later.</p>
+<p><code>&lt;parameter&gt;</code>: Required parameter. The bot will <strong>raise error without this parameter</strong>.</p>
+<p><code>[parameter]</code>: Optional parameter. The bot can <strong>still works without this parameter</strong>.</p>
+<p><code>&lt;param1/param2/...&gt;</code> or <code>[param1/param2/...]</code>: You can provide <strong>either</strong> param style. <strong>The accuracy is in descending order</strong>.</p>
 <ul>
-<li><code>&lt;parameter&gt;</code>: Required parameter. The bot will <strong>raise error without this parameter</strong>.</li>
-<li><code>[parameter]</code>: Optional parameter. The bot can <strong>still works without this parameter</strong>.</li>
-<li><code>&lt;param1/param2/...&gt;</code> or <code>[param1/param2/...]</code>: You can provide <strong>either</strong> param style. <strong>The accuracy is in descending order</strong>.</li>
 <li>Example: if it's <code>profile [mention/ID/name/nickname]</code>, means you can, optionally, provide <strong>either the mention, the id or the name/nickname</strong> of the user. Using <code>mention</code> or <code>id</code> will provide <strong>more accuracy</strong> than <code>name/nickname</code>.</li>
-<li>If the parameter has space, use <code>"this is considered a param"</code> to make it a param.</li>
+</ul>
+<p>If the parameter has space, use <code>"double quotes"</code> to make it a param.</p>
+<ul>
 <li>Example: if it's <code>profile [mention/ID/name/nickname]</code> and the <code>name</code> is <code>Hello World</code> then you will use <code>profile "Hello World"</code>. Using <code>profile Hello World</code> will most likely <strong>raise error</strong>.</li>
 </ul>
-<h3 id="permissions">Permissions</h3>
-<ul>
-<li><code>You need</code>: The required permission <strong>you</strong> need to have to execute the command.</li>
-<li><code>I need</code>: The required permission <strong>the bot</strong> need to have to execute the command.</li>
-<li>This document will asssume the bot has <code>Send Messages</code> and <code>Read Messages</code> in the channel you provoke the command.</li>
-</ul>
 <h3 id="prefix">Prefix</h3>
+<p>This document will assume you know <strong>how to provoke a command</strong> using <code>&lt;prefix&gt;&lt;command_name&gt;</code>. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).</p>
 <ul>
-<li>This document will assume you know <strong>how to provoke a command</strong> ~~using <code>&lt;prefix&gt;&lt;command_name&gt;</code>~~. If you don't know the prefix of the bot, use <code>@MichaelBotPy prefix</code> or use the bot's mention as the prefix (not recommended).</li>
-<li>The default prefix is <code>$</code> ~~no it doesn't have $sudo~~.</li>
+<li>The default prefix is <code>$</code> but no it doesn't have $sudo.</li>
 </ul>
 <h3 id="usermember-concept">User/Member Concept</h3>
+<p>User/Member are usually confused terms for a Discord user, but here are the difference.</p>
 <ul>
 <li>When this document refers to <strong>"user"</strong>, it refers to a <strong>Discord user regardless of the server</strong>.</li>
 <li>When this document refers to <strong>"member"</strong>, it refers to a <strong>Discord user in a certain server(s)</strong>.</li>
-<li>The difference will be clarified later on in this document.</li>
-<li>Note that Discord API doesn't allow bot to <strong>get information about a user/member if the bot does not see the user/member</strong>, which means the bot needs to share at least <strong>1</strong> server with the user/member to actually work.</li>
 </ul>
-<h3 id="cooldown">Cooldown</h3>
+<p>Note that Discord API doesn't allow bot to <strong>get information about a user/member if the bot does not see the user/member</strong>, which means the bot needs to share at least <strong>1</strong> server with the user/member to actually work.</p>
+<h3 id="permissions">Permissions</h3>
+<p>The convention for permissions in <code>help</code> is as follow:</p>
 <ul>
-<li>The convention for cooldown syntax in this doc (and <code>help</code>) is <code>x seconds per n use(s) (cooldown type)</code>.</li>
-<li><code>x</code>: The cooldown <strong>duration</strong> before you can use the command.</li>
-<li><code>n</code>: The number of <strong>times</strong> the command is used before invoking the cooldown.</li>
-<li><code>cooldown type</code>: There are usually 4 types of cooldown in this bot:<ul>
+<li><code>You need</code>: The required permission <strong>you</strong> need to have to execute the command.</li>
+<li><code>I need</code>: The required permission <strong>the bot</strong> need to have to execute the command.</li>
+</ul>
+<p>This document will asssume the bot has <code>Send Messages</code> and <code>Read Messages</code> in the channel you provoke the command.</p>
+<h3 id="cooldown">Cooldown</h3>
+<p>The convention for cooldown syntax in <code>help</code> is <code>x seconds per n use(s) (cooldown type)</code>.</p>
+<p><code>x</code>: The cooldown <strong>duration</strong> before you can use the command.</p>
+<p><code>n</code>: The number of <strong>times</strong> the command is used before invoking the cooldown.</p>
+<p><code>cooldown type</code>: There are usually 4 types of cooldown in this bot:</p>
+<ul>
 <li><code>global</code>: The cooldown applies to <strong>every servers</strong> the bot joins.</li>
 <li>Example: If a person invokes <code>prefix</code> n times, <strong>no one</strong> can invoke <code>prefix</code> again until x seconds are passed.</li>
 <li><code>guild</code>: The cooldown applies to <strong>everyone in a certain server</strong>.</li>
@@ -237,9 +242,41 @@
 <li><code>member</code>: The cooldown applies to that <strong>certain member</strong>.</li>
 <li>Example: If the member <code>MikeJollie</code> invoke <code>test</code> n times, <strong>that certain member</strong> can not invoke <code>MikeJollie</code> <strong>in the same server he invoked</strong> again until x seconds are passed. <strong>He can invoke the command in a different server in that duration however</strong>.</li>
 </ul>
-</li>
+<h3 id="understanding-commands-signature">Understanding command's signature</h3>
+<p>If you're not a geek, you can refer to <code>help &lt;command&gt;</code> and read the sections above.</p>
+<p>A typical command's signature is as follow:</p>
+<pre><code class="py">@commands.command(aliases = [&quot;alias1&quot;, &quot;alias2&quot;])
+@commands.has_permissions(manage_messages = True)
+@commands.has_guild_permissions(...)
+@commands.bot_has_permissions(...)
+@commands.bot_has_guild_permissions(...)
+@commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.default)
+async def test(self, ctx, param1, param2 : discord.User, param3 : discord.User = None):
+</code></pre>
+
+<p><strong>The first line</strong>'s significance is the <code>aliases = []</code>. It <strong>tells that the command has the following alias(es)</strong>, which can be used instead of using the command's name.</p>
+<p><strong>The second line</strong> means <strong>the user who invoke the command must have a certain permission at the invoked channel to invoke the command</strong>.</p>
+<ul>
+<li>In this example, the user must have <code>Manage Messages</code> permission in the channel to use the command.</li>
 </ul>
-<p><em>This document is last updated on April 21th (PT) by MikeJollie#1067</em></p>
+<p><strong>The third line</strong> is similar to the second line, except <strong>it consider the guild's permission</strong>.</p>
+<ul>
+<li>For example, a member that is not allowed to add reactions to a certain channel can still invoke the command if the member's roles allowed.</li>
+</ul>
+<p><strong>The fourth line</strong> is the same as the second line except it <strong>checks the bot's permission</strong>.</p>
+<p><strong>The fifth line</strong> is the same as the third line except it <strong>checks the bot's guild permission</strong>.</p>
+<p><strong>The sixth line defines the cooldown for the command</strong>. <code>rate</code> means <code>x</code>, <code>per</code> means <code>n</code> and <code>type</code> means <code>cooldown type</code> in <a href="#cooldown">cooldown</a>.</p>
+<ul>
+<li><code>default</code> is <code>global</code>.</li>
+</ul>
+<p>The last line defines the command with the name <code>test</code>, that accept at max 3 parameters (ignore <code>self</code> and <code>ctx</code>).</p>
+<ul>
+<li>The first argument is <code>param1</code>, and it is required.</li>
+<li>The second argument is <code>param2</code>, and it is required. However, the bot will intepret <code>param2</code> as if it is a <a href="#usermember-concept">User</a>, and so the parameter will accept <code>&lt;ID/discriminator/mention/name/nickname&gt;</code>. If the bot fails to convert to a User, it'll raise error.</li>
+<li>The third argument is <code>param3</code>, and it is optional. It'll do the same thing as <code>param2</code>, but if it doesn't presence, the bot will ignore it.</li>
+<li><code>test hey MikeJollie</code> is valid, <code>test</code> is invalid, <code>test hey MikeJollie Stranger.com</code> is valid, <code>test hey</code> is invalid.</li>
+</ul>
+<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>
@@ -288,5 +325,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2020-05-13 00:25:49
+Build Date UTC : 2020-08-09 01:15:26
 -->

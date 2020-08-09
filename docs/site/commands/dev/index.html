@@ -70,8 +70,6 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
-        
             <li><a class="toctree-l4" href="#is_dev-internal">is_dev [INTERNAL]</a></li>
         
             <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
@@ -83,6 +81,8 @@
             <li><a class="toctree-l4" href="#leave_guild">leave_guild</a></li>
         
             <li><a class="toctree-l4" href="#reload">reload</a></li>
+        
+            <li><a class="toctree-l4" href="#reload_all_extension">reload_all_extension</a></li>
         
             <li><a class="toctree-l4" href="#report_response">report_response</a></li>
         
@@ -194,19 +194,6 @@
 
 <h1 id="dev-commands">Dev commands</h1>
 <p>These are the commands that are only for the bot developers to use ~~to abuse power~~.</p>
-<!-- omit in toc -->
-
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#isdev-internal">is_dev [INTERNAL]</a></li>
-<li><a href="#init-internal">__init__ [INTERNAL]</a></li>
-<li><a href="#cogcheck-internal">cog_check [INTERNAL]</a></li>
-<li><a href="#allguild">all_guild</a></li>
-<li><a href="#leaveguild">leave_guild</a></li>
-<li><a href="#reload">reload</a></li>
-<li><a href="#reportresponse">report_response</a></li>
-<li><a href="#resetallcooldown">reset_all_cooldown</a></li>
-</ul>
 <h2 id="is_dev-internal">is_dev [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
 <p>This is a check to see if the invoker is a developer.</p>
@@ -220,6 +207,7 @@
 <p>Display all guilds the bot is in.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command()
+@commands.bot_has_permissions(send_messages = True)
 async def all_guild(self, ctx):
 </code></pre>
 
@@ -244,11 +232,11 @@ async def leave_guild(self, ctx):
 <p><strong>Example:</strong> <code>$leave_guild</code></p>
 <p><strong>Expected Output:</strong> <em>verification steps</em></p>
 <h2 id="reload">reload</h2>
-<p>Reload a module. This is extremely useful when you don't want to shut down the bot, but still want the update to arrive.
+<p>Reload a module. This is extremely useful when you don't want to shut down the bot, but still want the update to arrive
 Note that by reloading the module, the categories order in <code>help</code> will be changed.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command()
-@commands.cooldown(1, 5.0, commands.BucketType.default)
+@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
 async def reload(self, ctx, name):
 </code></pre>
 
@@ -258,12 +246,31 @@ async def reload(self, ctx, name):
 
 <p><strong>Example:</strong> <code>$reload categories.dev</code></p>
 <p><strong>Expected Output:</strong> <code>Reloaded extension categories.dev</code></p>
+<h3 id="reload_eh-internal">reload_eh [INTERNAL]</h3>
+<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p>A local error handler for the <code>reload</code> command.</p>
+<p>It is currently only response to the <code>ModuleNotFound</code> exception.</p>
+<h2 id="reload_all_extension">reload_all_extension</h2>
+<p>Reload all modules. Useful for OCD people (like MikeJollie) because <code>reload</code> will mess up the order in <code>help</code> and <code>help-all</code>.</p>
+<p><strong>Full Signature:</strong></p>
+<pre><code class="py">@commands.command()
+@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+async def reload_all_extension(self, ctx):
+</code></pre>
+
+<p><strong>Simplified Signature:</strong></p>
+<pre><code>reload_all_extension
+</code></pre>
+
+<p><strong>Example:</strong> <code>$reload_all_extension</code></p>
+<p><strong>Expected Output:</strong> <code>Reloaded all extensions.</code></p>
 <h2 id="report_response">report_response</h2>
 <p>Response to a report/suggestion. Note that the command will look through the last 100 messages in the report channel in the support server.</p>
 <p>It is recommended not to use this more than once on the same report/suggestion.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command(aliases = [&quot;suggest_response&quot;])
-@commands.cooldown(1, 60.0, commands.BucketType.default)
+@commands.bot_has_permissions(send_messages = True)
+@commands.cooldown(rate = 1, per = 60.0, type = commands.BucketType.default)
 async def report_response(self, ctx, message_ID : int, *, response : str):
 </code></pre>
 
@@ -292,7 +299,7 @@ async def reset_all_cooldown(self, ctx):
 
 <p><strong>Example:</strong> <code>$reset_all_cooldown</code></p>
 <p><strong>Expected Output:</strong> <code>All cooldown reseted.</code></p>
-<p><em>This document is last updated on April 23rd (PT) by MikeJollie#1067</em></p>
+<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>
