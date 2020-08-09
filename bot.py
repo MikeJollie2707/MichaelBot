@@ -83,7 +83,7 @@ if __name__ == "__main__":
             for filename in sorted(os.listdir('./categories')):
                 if filename.endswith('.py'):
                     bot.load_extension(f'categories.{filename[:-3]}')
+            
+            bot.run(TOKEN)
         except Exception:
             print(traceback.print_exc())
-        else:
-            bot.run(TOKEN)
