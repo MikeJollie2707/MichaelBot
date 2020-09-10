@@ -100,12 +100,20 @@ class Core(commands.Cog):
         **I need:** `Send Messages`.
         '''
 
+        text = self.bot.description
+        if self.bot.version is not None:
+            text += '\n' + self.bot.version
+        
         embed = methods.get_default_embed(
             author = ctx.author,
             title = self.bot.user.name, 
-            description = "A utility bot.", 
+            description = self.bot.description, 
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
+        ).add_field(
+            name = "Version:",
+            value = self.bot.version if self.bot.version is not None else "1.5.0",
+            inline = False
         ).add_field(
             name  = "Team:", 
             value = textwrap.dedent('''
