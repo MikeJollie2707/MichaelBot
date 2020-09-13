@@ -9,6 +9,19 @@ import logging
 import json
 import asyncio
 
+__discord_extension__ = [
+    "categories.core",
+    "categories.dev",
+    "categories.events",
+    "categories.experiment",
+    "categories.logger",
+    "categories.moderation",
+    "categories.music",
+    "categories.server",
+    "categories.utility",
+    "categories.utilities.method_cog"
+]
+
 class MichaelBot(commands.Bot):
     pass
 
@@ -60,7 +73,7 @@ if __name__ == "__main__":
             command_prefix = commands.when_mentioned_or(bot_info["prefix"]), 
             description = bot_info.get("description"),
             status = discord.Status.online,
-            activity = discord.Game(name = "Linux")
+            activity = discord.Game(name = "Kubuntu")
         )
 
         if not hasattr(bot, "version"):
@@ -77,9 +90,12 @@ if __name__ == "__main__":
             # It might throw sth here but too lazy to catch so hey.
 
         try:
-            for filename in sorted(os.listdir('./categories')):
-                if filename.endswith('.py'):
-                    bot.load_extension(f'categories.{filename[:-3]}')
+            #for filename in sorted(os.listdir('./categories')):
+            #    if filename.endswith('.py'):
+            #        bot.load_extension(f'categories.{filename[:-3]}')
+
+            for extension in sorted(__discord_extension__):
+                bot.load_extension(extension)
             
             bot.run(TOKEN)
         except Exception:
