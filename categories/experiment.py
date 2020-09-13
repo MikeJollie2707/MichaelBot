@@ -38,29 +38,10 @@ class Experiment(commands.Cog):
         await menu.event(self.bot, ctx.channel)
     
     @commands.command(hidden = True)
-    async def testTime(self, ctx):
-        import datetime
-        import pytz.tzinfo
-        embed1 = discord.Embed(title = "Time")
-        embed1.add_field(name = "timestamp", value = "embed1.timestamp")
-        await ctx.send(embed = embed1)
-        time = ctx.message.created_at
-        time2 = time.astimezone()
-        print(time)
-        print(type(time))
-        print(time2)
-        print(time2.tzname())
-        print(datetime.datetime.now())
-        embed2 = discord.Embed(title = "Time2", timestamp = time2)
-        embed2.add_field(name = "timestamp", value = embed2.timestamp)
-        await ctx.send(embed = embed2)
+    async def testCogUtility(self, ctx):
+        from categories.utilities.method_cog import Facility
+        await ctx.send(embed = Facility.get_default_embed())
 
-    @commands.command(hidden = True)
-    async def testTime2(self, ctx):
-        import datetime
-        embed = discord.Embed(title = "Hi")
-        embed.timestamp = ctx.message.created_at
-        await ctx.send(embed = embed)
 
     @commands.command(hidden = True)
     async def testRole(self, ctx):

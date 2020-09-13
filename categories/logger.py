@@ -4,11 +4,11 @@ from discord.ext import commands
 import datetime
 import textwrap
 
-from categories.utilities import methods
+from categories.utilities.method_cog import Facility
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:
-# - log_channel: the channel that's gonna send the embed. Retrieve using methods.get_config and config["LOG_CHANNEL"]
+# - log_channel: the channel that's gonna send the embed. Retrieve using Facility.get_config and config["LOG_CHANNEL"]
 # - log_title: the log title that's gonna pass in title in discord.Embed
 # - log_content: the log content that's gonna pass in description in discord.Embed
 # - log_color: the color of the embed. It must be self.color_... depend on the current event.
@@ -52,7 +52,7 @@ class Logging(commands.Cog):
         self.color_other = discord.Color.teal()
 
     def log_check(self, guild):
-        config = methods.get_config(guild.id)
+        config = Facility.get_config(guild.id)
         if config["ERROR"] == 0 and config["STATUS_LOG"] == 1 and config["LOG_CHANNEL"] != 0:
             return True
         elif config["ERROR"] != 0:
@@ -176,7 +176,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # Then we get the log channel of that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             # Initialize variables according to specification.
@@ -246,7 +246,7 @@ class Logging(commands.Cog):
                                     executor.mention, 
                                     message.channel.id
                                 )
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title,
                     description = log_content,
                     color = log_color,
@@ -276,7 +276,7 @@ class Logging(commands.Cog):
         else:
             guild = self.bot.get_channel(payload.channel_id).guild
             if self.log_check(guild):
-                config = methods.get_config(guild.id)
+                config = Facility.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
                 
                 # We're attempting to retrieve the message here...
@@ -301,7 +301,7 @@ class Logging(commands.Cog):
                 log_color = self.color_change
                 log_time = edited_message.edited_at
 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title,
                     description = log_content,
                     color = log_color,
@@ -319,7 +319,7 @@ class Logging(commands.Cog):
             # First we check if the logging feature is enabled in that guild.
             if self.log_check(guild):
                 # We retrieve the logging channel for that guild.
-                config = methods.get_config(guild.id)
+                config = Facility.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
                 log_title = "Message Edited"
@@ -347,7 +347,7 @@ class Logging(commands.Cog):
                 if log_time is None:
                     return
 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title,
                     description = log_content,
                     color = log_color,
@@ -369,7 +369,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "User Banned"
@@ -397,7 +397,7 @@ class Logging(commands.Cog):
                                 **Banned by:** {executor.mention}
                                 '''
 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title,
                     description = log_content,
                     color = log_color,
@@ -419,7 +419,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "User Unbanned"
@@ -447,7 +447,7 @@ class Logging(commands.Cog):
                                 **Unbanned by:** {executor.mention}
                                 '''
                 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title, 
                     description = log_content, 
                     color = log_color, 
@@ -471,7 +471,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Member Joined"
@@ -491,7 +491,7 @@ class Logging(commands.Cog):
             log_color = self.color_guild_join_leave
             log_time = datetime.datetime.utcnow()
 
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 title = log_title,
                 description = log_content,
                 color = log_color,
@@ -515,7 +515,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -555,7 +555,7 @@ class Logging(commands.Cog):
                                     '''
                     log_color = self.color_moderation
                     
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title, 
                         description = log_content, 
                         color = log_color, 
@@ -583,7 +583,7 @@ class Logging(commands.Cog):
                 log_color = self.color_guild_join_leave
                 log_time = datetime.datetime.utcnow()
 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title, 
                     description = log_content, 
                     color = log_color, 
@@ -607,7 +607,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -636,20 +636,20 @@ class Logging(commands.Cog):
                     role_change = []
                     if len(old_roles) < len(new_roles):
                         log_title = "Member Role Added"
-                        role_change = [methods.mention(role) for role in new_roles if role not in old_roles]
+                        role_change = [Facility.mention(role) for role in new_roles if role not in old_roles]
 
                         # The role_change will contain something like this: ["<@&1234>", "<@&2345>", ...]
 
                         log_content = f'''
                                         **Member:** {after.mention}
                                         **Member Name:** {after}
-                                        **Role added:** {methods.striplist(role_change)}
+                                        **Role added:** {Facility.striplist(role_change)}
                                         ----------------------------
                                         **Added by:** {executor.mention}
                                         '''
                     elif len(old_roles) > len(new_roles):
                         log_title = "Member Role Removed"
-                        role_change = [methods.mention(role) for role in old_roles if role not in new_roles]
+                        role_change = [Facility.mention(role) for role in old_roles if role not in new_roles]
 
                         log_content = f'''
                                         **Member:** {after.mention}
@@ -688,7 +688,7 @@ class Logging(commands.Cog):
                                     '''
                 
                 if flag:
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title, 
                         description = log_content, 
                         color = log_color, 
@@ -712,7 +712,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -788,7 +788,7 @@ class Logging(commands.Cog):
                                         channel.position
                                     ) # Don't f-strings this.
                 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title, 
                     description = log_content, 
                     color = log_color,
@@ -810,7 +810,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
             
             log_title = ""
@@ -879,7 +879,7 @@ class Logging(commands.Cog):
                                         channel.position
                                     ) # Don't f-strings this.
                 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title, 
                     description = log_content, 
                     color = log_color,
@@ -903,7 +903,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -933,7 +933,7 @@ class Logging(commands.Cog):
                                     '''
                     
                     # Put embed inside here instead of outside because user can change multiple thing before pressing save.
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title, 
                         description = log_content, 
                         color = log_color, 
@@ -961,7 +961,7 @@ class Logging(commands.Cog):
                                     **Changed by:** {executor.mention}
                                     '''
                     
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title, 
                         description = log_content, 
                         color = log_color, 
@@ -1006,14 +1006,14 @@ class Logging(commands.Cog):
                                             **Channel:** %s
                                             **Added by:** %s
                                             ''' % (
-                                                methods.mention(key), 
+                                                Facility.mention(key), 
                                                 "Role" if isinstance(key, discord.Role) else "Member", 
 
                                                 after.mention, 
                                                 executor.mention
                                             )
                             
-                            embed = methods.get_default_embed(
+                            embed = Facility.get_default_embed(
                                 title = log_title, 
                                 description = log_content, 
                                 color = log_color, 
@@ -1092,9 +1092,9 @@ class Logging(commands.Cog):
                             # TODO: Change the process to local functions cuz it's repetitive af
 
                             # Remove the [] and ' in the list...
-                            granted_message = methods.striplist(granted)
-                            neutralized_message = methods.striplist(neutralized)
-                            denied_message = methods.striplist(denied)
+                            granted_message = Facility.striplist(granted)
+                            neutralized_message = Facility.striplist(neutralized)
+                            denied_message = Facility.striplist(denied)
                             
                             if granted_message == "":
                                 pass
@@ -1130,7 +1130,7 @@ class Logging(commands.Cog):
                                             **Changed by:** {executor.mention}
                                             '''
                             
-                            embed = methods.get_default_embed(
+                            embed = Facility.get_default_embed(
                                 title = log_title,
                                 description = log_content,
                                 color = log_color,
@@ -1154,14 +1154,14 @@ class Logging(commands.Cog):
                                             **Channel:** %s
                                             **Removed by:** %s
                                             ''' % (
-                                                methods.mention(key), 
+                                                Facility.mention(key), 
                                                 "Role" if isinstance(key, discord.Role) else "Member", 
 
                                                 after.id, 
                                                 executor.mention
                                             )
                             
-                            embed = methods.get_default_embed(
+                            embed = Facility.get_default_embed(
                                 title = log_title, 
                                 description = log_content, 
                                 color = log_color, 
@@ -1183,7 +1183,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(after.guild):
             # We retrieve the logging channel for that guild
-            config = methods.get_config(after.guild.id)
+            config = Facility.get_config(after.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -1217,7 +1217,7 @@ class Logging(commands.Cog):
                                     '''
                 
                 if flag:
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title,
                         description = log_content,
                         color = log_color,
@@ -1239,7 +1239,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Role Created"
@@ -1328,7 +1328,7 @@ class Logging(commands.Cog):
                                 **Is mentionable:** %s
                                 **Color:** %s
                                 ''' % (
-                                    methods.mention(role), # It's unlikely for this role to be @everyone but consistency is nice. 
+                                    Facility.mention(role), # It's unlikely for this role to be @everyone but consistency is nice. 
                                     role.name, 
                                     executor.mention, 
                                     str_role_perm,
@@ -1337,7 +1337,7 @@ class Logging(commands.Cog):
                                     str(role.color)
                                 )
 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title,
                     description = log_content,
                     color = log_color,
@@ -1359,7 +1359,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Role Deleted"
@@ -1388,7 +1388,7 @@ class Logging(commands.Cog):
                                     str(role.color)
                                 )
                 
-                embed = methods.get_default_embed(
+                embed = Facility.get_default_embed(
                     title = log_title,
                     description = log_content,
                     color = log_color,
@@ -1410,7 +1410,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
-            config = methods.get_config(guild.id)
+            config = Facility.get_config(guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -1427,14 +1427,14 @@ class Logging(commands.Cog):
                 if before.name != after.name:
                     log_title = "Role Name Changed"
                     log_content = f'''
-                                    **Role:** {methods.mention(after)}
+                                    **Role:** {Facility.mention(after)}
                                     **Before:** {before.name}
                                     **After:** {after.name}
                                     ----------------------------
                                     **Changed by:** {executor.mention}
                                     '''
                     
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title,
                         description = log_content,
                         color = log_color,
@@ -1451,14 +1451,14 @@ class Logging(commands.Cog):
                 if before.color != after.color:
                     log_title = "Role Color Changed"
                     log_content = f'''
-                                    **Role:** {methods.mention(after)}
+                                    **Role:** {Facility.mention(after)}
                                     **Before:** {before.color}
                                     **After:** {after.color}
                                     ----------------------------
                                     **Changed by:** {executor.mention}
                                     '''
                     
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title,
                         description = log_content,
                         color = log_color,
@@ -1510,8 +1510,8 @@ class Logging(commands.Cog):
                     if len(granted) == 0 and len(denied) == 0:
                         return
                     
-                    granted_message = methods.striplist(granted)
-                    denied_message = methods.striplist(denied)
+                    granted_message = Facility.striplist(granted)
+                    denied_message = Facility.striplist(denied)
 
                     if denied_message != "" and granted_message != "":
                         granted_message += "\n\n"
@@ -1526,7 +1526,7 @@ class Logging(commands.Cog):
                                     **Changed by:** {executor.mention}
                                     '''
 
-                    embed = methods.get_default_embed(
+                    embed = Facility.get_default_embed(
                         title = log_title,
                         description = log_content,
                         color = log_color,
@@ -1547,7 +1547,7 @@ class Logging(commands.Cog):
             return
         
         if self.log_check(ctx.guild):
-            config = methods.get_config(ctx.guild.id)
+            config = Facility.get_config(ctx.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Command Raised Error"
@@ -1564,7 +1564,7 @@ class Logging(commands.Cog):
             log_color = self.color_other
             log_time = datetime.datetime.utcnow()
 
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 title = log_title,
                 description = log_content,
                 color = log_color,
