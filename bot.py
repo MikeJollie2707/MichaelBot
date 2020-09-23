@@ -23,7 +23,12 @@ __discord_extension__ = [
 ]
 
 class MichaelBot(commands.Bot):
-    pass
+    def __init__(self, command_prefix, help_command = None, description = None, **kwargs):
+        super().__init__(command_prefix, help_command, description, **kwargs)
+    
+    def debug(self, message : str):
+        if self.DEBUG:
+            print(message)
 
 def setup(bot_name):
     TOKEN = None # A str
