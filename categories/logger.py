@@ -255,15 +255,17 @@ class Logging(commands.Cog):
                         counter += 1
                     embed_message += "----------------------------\n"
 
-                log_content = '''
-                                %s%s%s**Author:** %s
-                                **Deleted by:** %s
-                                ----------------------------
-                                **Channel:** <#%s>
-                                ''' % (
-                                    content_message,
-                                    attachment_message,
-                                    embed_message,
+                log_content.append(
+                    "%s%s%s" % (content_message, attachment_message, embed_message)
+                ).append(
+                    "**Author:** %s" % Facility.mention(message.author)
+                ).append(
+                    "**Deleted by:** %s" % Facility.mention(executor)
+                ).append(
+                    "----------------------------"
+                ).append(
+                    "**Channel:** %s" % Facility.mention(message.channel)
+                )
 
                                     message.author.mention, 
                                     executor.mention, 
@@ -321,6 +323,11 @@ class Logging(commands.Cog):
                                 **Message URL:** [Click here to jump to the message]({edited_message.jump_url})
                                 **Channel:** {channel.mention if channel is not None else "Channel not found."}
                                 '''
+                log_content = LogContent().append(
+                    "⚠ The original content of the message is not found."
+                ).append(
+                    ""
+                )
                 log_color = self.color_change
                 log_time = edited_message.edited_at
 
@@ -355,12 +362,15 @@ class Logging(commands.Cog):
                 # We don't support edited embed because displaying both dict form is too large.
                 # TODO: Find an alternative for this.
 
-                log_content = '''
-                                %s
-                                **Author:** %s
-                                ----------------------------
-                                **Channel:** %s
-                                ''' % (content_message, after.author.mention, after.channel.mention)
+                log_content = LogContent().append(
+                    content_message
+                ).append(
+                    "**Author:** %s" % Facility.mention(after.author)
+                ).append(
+                    "----------------------------"
+                ).append(
+                    "**Channel:** %s" % Facility.mention(after.channel)
+                )
                 log_color = self.color_change
                 log_time = after.edited_at
 
