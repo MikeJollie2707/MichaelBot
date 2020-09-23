@@ -3,6 +3,7 @@ from discord.ext import commands
 
 import json
 import datetime
+import inspect
 import textwrap
 from math import *
 import ast
@@ -68,17 +69,17 @@ class Facility(commands.Cog):
             answer = "Infinity/Undefined"
         except Exception:
             answer = "Error"
-        return answer
-    
+        return answer  
+
     @classmethod
     def get_default_embed(
         cls, 
-        author : discord.User = None, 
         title : str = "", 
         url : str = "", 
         description : str = "", 
         color : discord.Color = discord.Color.blue(), 
-        timestamp : datetime.datetime = datetime.datetime.utcnow()
+        timestamp : datetime.datetime = datetime.datetime.utcnow(),
+        author : discord.User = None
         ) -> discord.Embed:
         """
         Generate a "default" embed with footer and the time.
@@ -88,11 +89,11 @@ class Facility(commands.Cog):
         Note that for logging, you should overwrite the footer to something else. It is default to "Requested by "
 
         Parameter:
-        - `timestamp`: the timestamp, usually `utcnow()`.
+        - `timestamp`: the timestamp, usually `utcnow()`. The default value is there just to make the parameters look good, you still have to provide it.
         - `author`: optional `discord.User` or `discord.Member` to set to the footer. If not provided, it won't set the footer.
         - `title`: optional title.
         - `url`: optional url for the title.
-        - `description`: optional description. Internally it'll remove the tabs so no need to pass textwrap.dedent(description).
+        - `description`: optional description. Internally it'll remove the tabs so no need to pass inspect.cleandoc(description).
         - `color`: optional color, default to green.
 
         Return type: `discord.Embed` or `None` on failure.
@@ -102,7 +103,7 @@ class Facility(commands.Cog):
             embed = discord.Embed(
                 title = title,
                 url = url,
-                description = textwrap.dedent(description),
+                description = textwrap.dedent(inspect.cleandoc(description)),
                 color = color,
                 timestamp = timestamp
             )
@@ -152,6 +153,8 @@ class Facility(commands.Cog):
         """
         Turn the list of objects into a string.
 
+        What it does is just simply turn the list into a string and strip away `[]` and `'`.
+
         Useful for logging list of permissions.
 
         Parameter: 
@@ -167,6 +170,7 @@ class Facility(commands.Cog):
         st = st.replace("'", "")
 
         return st
+                
 
 def setup(bot):
     bot.add_cog(Facility(bot))
