@@ -7,7 +7,7 @@ import datetime
 import aiohttp
 import textwrap
 
-from categories.utilities import methods
+from categories.utilities.method_cog import Facility
 
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
@@ -31,10 +31,10 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        from categories.utilities.methods import calculate
+        from categories.utilities.method_cog import calculate
         result = calculate(content)
 
-        embed = methods.get_default_embed(
+        embed = Facility.get_default_embed(
             title = "Result",
             description = result,
             timestamp = datetime.datetime.utcnow(),
@@ -118,7 +118,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
 
         await ctx.message.delete()
-        embed = methods.get_default_embed(
+        embed = Facility.get_default_embed(
             description = text,
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow(),
@@ -286,7 +286,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                 restricted_tags = ["breasts", "nipples", "panties", "bikini"] # Expand this
                                 for tag in restricted_tags:
                                     if tag in j[selected_index]["tags"]:
-                                        print("Index %d has tag %s so it's not safe." % (selected_index, tag))
+                                        self.bot.debug("Index %d has tag %s so it's not safe." % (selected_index, tag))
                                         return False
                                 return True
 
@@ -299,8 +299,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                     select = entry
                             
                             if select != -1:
-                                print("Selected: %d" % select)
-                                print("JSON: ", j[select]["file_url"])
+                                self.bot.debug("Selected: %d" % select)
+                                self.bot.debug("JSON: " + j[select]["file_url"])
                                 url = j[select]["file_url"]
                                 tag_list = j[select]["tags"].split()
                             else: # Placeholder for logic understanding

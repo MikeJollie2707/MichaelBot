@@ -7,7 +7,7 @@ import textwrap
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.menu import Menu
 from categories.templates.navigate import Pages
-from categories.utilities import methods
+from categories.utilities.method_cog import Facility
 
 class Core(commands.Cog):
     """Commands related to information and bot settings."""
@@ -45,7 +45,7 @@ class Core(commands.Cog):
         paginator = Pages()
 
         async for message in channel.history(limit = 10):
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 description = message.content, 
                 color = discord.Color.green(),
                 timestamp = datetime.datetime.utcnow(),
@@ -104,7 +104,7 @@ class Core(commands.Cog):
         if self.bot.version is not None:
             text += '\n' + self.bot.version
         
-        embed = methods.get_default_embed(
+        embed = Facility.get_default_embed(
             author = ctx.author,
             title = self.bot.user.name, 
             description = self.bot.description, 
@@ -167,7 +167,7 @@ class Core(commands.Cog):
         **I need:** `Send Messages`.
         '''
 
-        embed = methods.get_default_embed(
+        embed = Facility.get_default_embed(
             title = "MichaelBot",
             url = "https://mikejollie2707.github.io/MichaelBot",
             description = "Check out the bot documentation's front page: <https://mikejollie2707.github.io/MichaelBot>",
@@ -222,7 +222,7 @@ class Core(commands.Cog):
         else:
             member = member
 
-        embed = methods.get_default_embed(
+        embed = Facility.get_default_embed(
             author = member,
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
@@ -245,7 +245,7 @@ class Core(commands.Cog):
             url = member.avatar_url
         )
 
-        role_list = [methods.mention(role) for role in member.roles[::-1]]
+        role_list = [Facility.mention(role) for role in member.roles[::-1]]
         s = " - "
         s = s.join(role_list)
 
@@ -303,9 +303,9 @@ class Core(commands.Cog):
 
             try:
                 await channel.send(embed = embed)
-            except discord.Forbidden:
+            except discord.Forbidden as forbidden:
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
-                raise discord.Forbidden(message = "Cannot send message in report channel.")
+                raise forbidden
             else:
                 await ctx.send("Your opinion has been sent.", delete_after = 5)
         else:

@@ -4,7 +4,7 @@ from discord.ext import commands
 from datetime import datetime
 import textwrap
 
-from categories.utilities import methods
+from categories.utilities.method_cog import Facility
 
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to moderate actions such as kick, ban, etc.'''
@@ -39,7 +39,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         except discord.Forbidden as f:
             await ctx.send("I cannot ban someone that's higher than me!")
         else:
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 title = "Member Banned",
                 description = '''
                         **User `%s` has been banned from this server.** :hammer:
@@ -85,7 +85,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             await ctx.send("I can't ban this person. The most common one would be your id is wrong.")
             return
         else:
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 title = "User Banned",
                 description = '''
                         **User `%d` has been banned from this server.** :hammer:
@@ -129,7 +129,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         except discord.Forbidden as f:
             await ctx.send("I cannot kick someone that's higher than me!")
         else:
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 title = "Member Kicked",
                 description = '''
                         **User `%s` has been kicked out from this server.**
@@ -248,7 +248,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             await ctx.send("The ban hammer is too heavy! Make sure the id is correct, and that the user is already banned.")
             return
         else:
-            embed = methods.get_default_embed(
+            embed = Facility.get_default_embed(
                 title = "Member Unbanned",
                 description = '''
                         **User `%d` has been banned from this server.** :hammer:

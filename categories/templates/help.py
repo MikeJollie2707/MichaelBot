@@ -5,7 +5,7 @@ import datetime
 
 from categories.templates.navigate import Pages
 from categories.templates.menu import Menu
-from categories.utilities import methods
+from categories.utilities.method_cog import Facility
 
 def cog_help_format(ctx, cog):
     # TODO: Might need to format this a bit more pretty.
@@ -17,7 +17,7 @@ def cog_help_format(ctx, cog):
     
     title_str = f"{cog.qualified_name} ({len(cog.get_commands())} commands): "
     
-    content = methods.get_default_embed(
+    content = Facility.get_default_embed(
         title = title_str,
         description = display,
         color = discord.Color.green(),
@@ -28,7 +28,7 @@ def cog_help_format(ctx, cog):
     return content
 
 def command_help_format(ctx, command):
-    content = methods.get_default_embed(
+    content = Facility.get_default_embed(
         title = command.name,
         description = command.help.format(prefix = ctx.prefix, command_name = command.name),
         color = discord.Color.green(),
@@ -59,7 +59,7 @@ class BigHelp(commands.HelpCommand):
         `<argument>` is required, `[argument]` is optional (refer to `note` for more details).
         If you need additional help, join the [support server](https://discordapp.com/jeMeyNw).
         '''
-        content = methods.get_default_embed(
+        content = Facility.get_default_embed(
             title = "Help",
             description = note,
             color = discord.Color.green(),

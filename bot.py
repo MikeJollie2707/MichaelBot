@@ -9,8 +9,26 @@ import logging
 import json
 import asyncio
 
+__discord_extension__ = [
+    "categories.core",
+    "categories.dev",
+    "categories.events",
+    "categories.experiment",
+    "categories.logger",
+    "categories.moderation",
+    "categories.music",
+    "categories.server",
+    "categories.utility",
+    "categories.utilities.method_cog"
+]
+
 class MichaelBot(commands.Bot):
-    pass
+    def __init__(self, command_prefix, help_command = None, description = None, **kwargs):
+        super().__init__(command_prefix, help_command, description, **kwargs)
+    
+    def debug(self, message : str):
+        if self.DEBUG:
+            print(message)
 
 def setup(bot_name):
     TOKEN = None # A str
@@ -42,6 +60,8 @@ def setupLogger(enable : bool = True):
 if __name__ == "__main__":
     argc = len(sys.argv)
 
+    DEBUG = False
+
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
         TOKEN, bot_info, db_info = setup(sys.argv[1])
@@ -60,13 +80,16 @@ if __name__ == "__main__":
             command_prefix = commands.when_mentioned_or(bot_info["prefix"]), 
             description = bot_info.get("description"),
             status = discord.Status.online,
-            activity = discord.Game(name = "Linux")
+            activity = discord.Game(name = "Kubuntu")
         )
 
         if not hasattr(bot, "version"):
             bot.version = bot_info.get("version")
         
-        if not hasattr(bot, "pool"):
+        if not hasattr(bot, "DEBUG"):
+            bot.DEBUG = DEBUG
+        
+        if not hasattr(bot, "pool") and not hasattr(bot, "json"):
             loop = asyncio.get_event_loop()
             bot.pool = loop.run_until_complete(asyncpg.create_pool(
                 host = db_info["host"],
@@ -75,11 +98,11 @@ if __name__ == "__main__":
                 password = db_info["password"]
             ))
             # It might throw sth here but too lazy to catch so hey.
+            bot.json = {}
 
         try:
-            for filename in sorted(os.listdir('./categories')):
-                if filename.endswith('.py'):
-                    bot.load_extension(f'categories.{filename[:-3]}')
+            for extension in sorted(__discord_extension__):
+                bot.load_extension(extension)
             
             bot.run(TOKEN)
         except Exception:
