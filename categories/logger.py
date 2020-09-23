@@ -28,6 +28,29 @@ from categories.utilities.method_cog import Facility
 # People should understand that discord's audit log itself is screwed in many ways (including not logging bot's changing mass permission
 # for example) and so don't expect logging to log 100% correct or even 90% correct.
 
+class LogContent:
+    '''
+    A helper class to attach the log content.
+
+    This is used because both `textwrap.dedent()` and `inspect.cleandoc()` seems to fail to
+    clean up tabs from docstring, so this is preferred.
+    '''
+    def __init__(self, msg = ""):
+        self.content = msg
+    
+    def append(self, content, newl = True):
+        '''
+        Append the `content` to the current content of this class.
+
+        By default, this method will add a newline at the end of `content`.
+
+        This method returns `self` to allow chaining.
+        '''
+        self.content += content
+        if newl:
+            self.content += '\n'
+        return self
+    
 class Logging(commands.Cog):
     '''Commands related to logging actions in server.'''
     def __init__(self, bot):
