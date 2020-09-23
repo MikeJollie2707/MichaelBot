@@ -303,9 +303,9 @@ class Core(commands.Cog):
 
             try:
                 await channel.send(embed = embed)
-            except discord.Forbidden:
+            except discord.Forbidden as forbidden:
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
-                raise discord.Forbidden(message = "Cannot send message in report channel.")
+                raise forbidden
             else:
                 await ctx.send("Your opinion has been sent.", delete_after = 5)
         else:
