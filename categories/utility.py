@@ -286,7 +286,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                 restricted_tags = ["breasts", "nipples", "panties", "bikini"] # Expand this
                                 for tag in restricted_tags:
                                     if tag in j[selected_index]["tags"]:
-                                        print("Index %d has tag %s so it's not safe." % (selected_index, tag))
+                                        self.bot.debug("Index %d has tag %s so it's not safe." % (selected_index, tag))
                                         return False
                                 return True
 
@@ -299,8 +299,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                     select = entry
                             
                             if select != -1:
-                                print("Selected: %d" % select)
-                                print("JSON: ", j[select]["file_url"])
+                                self.bot.debug("Selected: %d" % select)
+                                self.bot.debug("JSON: " + j[select]["file_url"])
                                 url = j[select]["file_url"]
                                 tag_list = j[select]["tags"].split()
                             else: # Placeholder for logic understanding
