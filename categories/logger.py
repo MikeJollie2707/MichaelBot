@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 import datetime
-import textwrap
+import inspect
 
 from categories.utilities.method_cog import Facility
 
@@ -204,7 +204,7 @@ class Logging(commands.Cog):
 
             # Initialize variables according to specification.
             log_title = "Message Deleted"
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_delete
             log_time = None
 
@@ -234,26 +234,26 @@ class Logging(commands.Cog):
                 # Then, for each attachment, we get the proxy URL, and put it to attachment_message.
                 # For embeds, it's relatively easy but messy: we also get the list of embeds through message.embeds
                 # Then we simply display the dict, easy.
-                content_message = f"**Content:** {message.content}\n" if message.content != "" else ""
+                content_message = f"**Content:** {message.content}" if message.content != "" else ""
                 if len(message.attachments) == 0:
                     attachment_message = ""
                 else:
                     counter = 1
-                    attachment_message = "----------------------------\n" if content_message != "" else ""
+                    attachment_message = "\n----------------------------\n" if content_message != "" else ""
                     for attachment in message.attachments:
                         attachment_message += f"**Attachment {counter}**\n[View]({attachment.proxy_url}) (Only available for images)\n"
                         counter += 1
-                    attachment_message += "----------------------------\n"
+                    attachment_message += "----------------------------"
                 if len(message.embeds) == 0:
                     embed_message = ""
                 else:
                     import json # This help formatting the dict better
                     counter = 1
-                    embed_message = "----------------------------\n" if (content_message != "" and attachment_message != "") else ""
+                    embed_message = "\n----------------------------\n" if (content_message != "" and attachment_message != "") else ""
                     for embed in message.embeds:
-                        embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 4))
+                        embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 2))
                         counter += 1
-                    embed_message += "----------------------------\n"
+                    embed_message += "----------------------------"
 
                 log_content.append(
                     "%s%s%s" % (content_message, attachment_message, embed_message)
@@ -267,13 +267,9 @@ class Logging(commands.Cog):
                     "**Channel:** %s" % Facility.mention(message.channel)
                 )
 
-                                    message.author.mention, 
-                                    executor.mention, 
-                                    message.channel.id
-                                )
                 embed = Facility.get_default_embed(
                     title = log_title,
-                    description = log_content,
+                    description = log_content.content,
                     color = log_color,
                     timestamp = log_time
                 )
@@ -308,10 +304,10 @@ class Logging(commands.Cog):
                 try:
                     channel = self.bot.get_channel(payload.channel_id)
                     edited_message = await channel.fetch_message(payload.message_id)
-                except discord.HTTPException:
-                    pass
                 except discord.NotFound:
                     channel = None
+                except discord.HTTPException:
+                    pass
                 
                 log_title = "Message Edited"
                 log_content = f'''
@@ -357,7 +353,7 @@ class Logging(commands.Cog):
                 # Basically, we generally have 3 types of messages: normal text, attachments and embeds.
                 # However, attachments can't be edited, so that's one task down.
                 # For the rest, just do like message_delete.
-                content_message = ("**Content before:** %s\n**Content after:** %s" % (before.content, after.content)) if after.content != "" else ""
+                content_message = "**Content before:** %s\n**Content after:** %s" % (before.content, after.content) if after.content != "" else ""
 
                 # We don't support edited embed because displaying both dict form is too large.
                 # TODO: Find an alternative for this.
@@ -382,7 +378,7 @@ class Logging(commands.Cog):
 
                 embed = Facility.get_default_embed(
                     title = log_title,
-                    description = log_content,
+                    description = log_content.content,
                     color = log_color,
                     timestamp = log_time
                 ).set_thumbnail(
