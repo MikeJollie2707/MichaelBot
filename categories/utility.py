@@ -31,9 +31,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        from categories.utilities.method_cog import calculate
-        result = calculate(content)
-
+        result = Facility.calculate(content)
         embed = Facility.get_default_embed(
             title = "Result",
             description = result,
