@@ -5,7 +5,7 @@ import json
 import datetime
 import inspect
 import textwrap
-from math import *
+from py_expression_eval import Parser
 import ast
 
 class Facility(commands.Cog):
@@ -54,18 +54,12 @@ class Facility(commands.Cog):
         - If an `Exception` is raised, it will be "Error".
         """
 
-        # We're going to do use a 3rd party lib for this. This is just temporary solution.
-        safe_list = ['acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 
-                    'cosh', 'degrees', 'e', 'exp', 'fabs', 'floor', 
-                    'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10', 
-                    'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 
-                    'tan', 'tanh']
-        safe_dict = dict([(k, locals().get(k, None)) for k in safe_list])
-        answer = "" 
+        parser = Parser()
+        answer = 0 
         try:
-            answer = eval(expression, {"__builtins__":None}, safe_dict)
+            answer = parser.parse(expression).evaluate({})
             answer = str(answer)
-        except ZeroDivisionError as zde:
+        except ZeroDivisionError:
             answer = "Infinity/Undefined"
         except Exception:
             answer = "Error"
