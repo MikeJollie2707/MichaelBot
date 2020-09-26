@@ -38,7 +38,7 @@ class LogContent:
     def __init__(self, msg = ""):
         self.content = msg
     
-    def append(self, content, newl = True):
+    def append(self, *contents):
         '''
         Append the `content` to the current content of this class.
 
@@ -46,9 +46,12 @@ class LogContent:
 
         This method returns `self` to allow chaining.
         '''
-        self.content += content
-        if newl:
+
+        for content in contents:
+            self.content += content
+            print(self.content)
             self.content += '\n'
+
         return self
     
 class Logging(commands.Cog):
@@ -254,17 +257,13 @@ class Logging(commands.Cog):
                         embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 2))
                         counter += 1
                     embed_message += "----------------------------"
-
+                
                 log_content.append(
-                    "%s%s%s" % (content_message, attachment_message, embed_message)
-                ).append(
-                    "**Author:** %s" % Facility.mention(message.author)
-                ).append(
-                    "**Deleted by:** %s" % Facility.mention(executor)
-                ).append(
-                    "----------------------------"
-                ).append(
-                    "**Channel:** %s" % Facility.mention(message.channel)
+                    "%s%s%s" % (content_message, attachment_message, embed_message),
+                    "**Author:** %s" % message.author.mention,
+                    "**Deleted by:** %s" % executor.mention,
+                    "----------------------------",
+                    "**Channel:** %s" % message.channel.mention
                 )
 
                 embed = Facility.get_default_embed(
@@ -299,37 +298,36 @@ class Logging(commands.Cog):
             if self.log_check(guild):
                 config = Facility.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+
+                edited_message = None
+                message_channel = None
                 
                 # We're attempting to retrieve the message here...
                 try:
-                    channel = self.bot.get_channel(payload.channel_id)
-                    edited_message = await channel.fetch_message(payload.message_id)
+                    message_channel = self.bot.get_channel(payload.channel_id)
+                    edited_message = await message_channel.fetch_message(payload.message_id)
                 except discord.NotFound:
-                    channel = None
+                    message_channel = None
                 except discord.HTTPException:
                     pass
                 
                 log_title = "Message Edited"
-                log_content = f'''
-                                :warning: The original content of the message is not found.
-                                **Current content:** {edited_message.content}
-                                **Author:** {edited_message.author.mention}
-                                ----------------------------
-                                **Message ID:** {payload.message_id}
-                                **Message URL:** [Click here to jump to the message]({edited_message.jump_url})
-                                **Channel:** {channel.mention if channel is not None else "Channel not found."}
-                                '''
                 log_content = LogContent().append(
-                    "⚠ The original content of the message is not found."
-                ).append(
-                    ""
+                    "⚠ The original content of the message is not found.",
+                    "**Current content:** %s" % edited_message.content,
+                    "**Author:** %s" % edited_message.author.mention,
+                    "----------------------------",
+                    "**Message ID:** %d" % payload.message_id,
+                    "**Message URL:** [Jump to message](%s)" % edited_message.jump_url,
+                    "**Channel:** %s" % message_channel.mention if message_channel is not None else "Channel not found."
                 )
+
                 log_color = self.color_change
                 log_time = edited_message.edited_at
 
                 embed = Facility.get_default_embed(
                     title = log_title,
-                    description = log_content,
+                    description = log_content.content,
                     color = log_color,
                     timestamp = log_time
                 ).set_thumbnail(
@@ -359,13 +357,11 @@ class Logging(commands.Cog):
                 # TODO: Find an alternative for this.
 
                 log_content = LogContent().append(
-                    content_message
-                ).append(
-                    "**Author:** %s" % Facility.mention(after.author)
-                ).append(
-                    "----------------------------"
-                ).append(
-                    "**Channel:** %s" % Facility.mention(after.channel)
+                    content_message,
+                    "**Author:** %s" % after.author.mention,
+                    "----------------------------",
+                    "**Message URL**: [Jump to message](%s)"  % after.jump_url,
+                    "**Channel:** %s" % after.channel.mention
                 )
                 log_color = self.color_change
                 log_time = after.edited_at
@@ -402,7 +398,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "User Banned"
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_moderation
             log_time = None
 
@@ -425,6 +421,14 @@ class Logging(commands.Cog):
                                 ----------------------------
                                 **Banned by:** {executor.mention}
                                 '''
+                
+                log_content.append(
+                    "**User:** %s" % user.mention,
+                    "**User Name:** %s" % user,
+                    "**Reason:** %s" % reason,
+                    "----------------------------",
+                    "**Banned by:** %s" % executor.mention
+                )
 
                 embed = Facility.get_default_embed(
                     title = log_title,
