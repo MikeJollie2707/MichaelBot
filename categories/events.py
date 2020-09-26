@@ -6,6 +6,8 @@ import sys
 import json
 from datetime import datetime
 
+from categories.utilities.db import DB
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -16,6 +18,10 @@ class Events(commands.Cog):
         print(self.bot.user.name)
         print(self.bot.user.id)
         print("------------")
+
+        await DB.init_db(self.bot)
+        if not hasattr(self.bot, "__db__"):
+            self.bot.__db__ = await DB.to_dict(self.bot)
 
     @commands.Cog.listener()
     async def on_connect(self):
