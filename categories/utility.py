@@ -1,4 +1,6 @@
+from aiohttp.http_parser import ChunkState
 import discord
+from discord import user
 from discord.ext import commands
 
 import asyncio
@@ -256,16 +258,25 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.member)
     async def konachan(self, ctx, *, tags : str = ""):
         '''
-        Send a **safe** picture of loli from konachan**.net**
+        Send a **safe** picture from konachan**.net**
         **Disclaimer:** We, the bot developers team, hold **ZERO** responsibilities if FBI visit you.
 
-        **Usage:** <prefix>**{command_name}**
+        This will run a search on `konachan.net` and return an image chosen deemed to be safe.
+
+        - If not provided the tags, it'll search a random image.
+        - If provided with tag(s), it'll search an image having all the tags. The tags **must be exactly the same** as it appears in `konachan.net`. 
+        
+        Visit [this page](https://konachan.net/tag) to see all the tags.
+
+        **Usage:** <prefix>**{command_name}** [exact tags separated by space]
         **Cooldown:** 3 seconds per 1 use (member)
-        **Example:** {prefix}{command_name}
+        **Example 1:** {prefix}{command_name} blush long_hair
+        **Example 2:** {prefix}{command_name}
 
         **You need:** None.
         **I need:** `Send Messages`.
         '''
+
         async with ctx.typing():
             user_tag_str = "+"
             chosen_entry = None
@@ -297,45 +308,39 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                     if tag in entry["tags"]:
                                         self.bot.debug("Index %d has tag %s so it's not safe." % (index, tag))
                                         return False
+                                
                                 return True
-
+                            
                             # The JSON returned is [{...}, {...}] so we can shuffle it and select index.
                             random.shuffle(query)
                             chosen_entry = discord.utils.find(filter, query)
 
-                            for entry in range(0, len(j)):
-                                if filter(entry) == True:
-                                    select = entry
-                            
-                            if select != -1:
-                                self.bot.debug("Selected: %d" % select)
-                                self.bot.debug("JSON: " + j[select]["file_url"])
-                                url = j[select]["file_url"]
-                                tag_list = j[select]["tags"].split()
-                            else: # Placeholder for logic understanding
-                                pass
+                            if chosen_entry is not None:
+                                self.bot.debug("JSON: " + str(chosen_entry))
                         else:
                             print(resp.status)
+                            break
+                self.bot.debug(loop)
 
-            embed = discord.Embed(
-                title = "Loli incoming",
-                description = "Please refrain yourself from getting into prison.",
-                url = url,
-                color = discord.Color.green()
+            embed = Facility.get_default_embed(
+                title = "Image incoming",
+                description = "Rating: **%s**" % chosen_entry["rating"],
+                url = chosen_entry["file_url"],
+                timestamp = datetime.datetime.utcnow(),
             )
-            if url is not None:
+            if chosen_entry["file_url"] is not None:
                 embed.set_image(
-                    url = url
+                    url = chosen_entry["file_url"]
                 ).set_footer(
                     text = "Click the title for full image."
                 )
 
                 tag_str = ""
-                for tag in tag_list:
+                for tag in chosen_entry["tags"].split():
                     tag_str += f"`{tag}` "
                 embed.add_field(name = "Tags", value = tag_str, inline = False)
             else:
-                embed.description = "Oops, no loli for you. This is usually due to server ratelimit or \
+                embed.description = "Oops, no image for you. This is usually due to server ratelimit, no image found or \
                     the image has been reviewed by the FBI and it did not pass (yes the images are usually reviewed by the FBI before sending)."
                 embed.set_image(url = "https://i.imgflip.com/3ddefb.jpg")
         
