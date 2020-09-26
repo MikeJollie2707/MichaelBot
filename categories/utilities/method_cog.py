@@ -71,7 +71,7 @@ class Facility(commands.Cog):
         title : str = "", 
         url : str = "", 
         description : str = "", 
-        color : discord.Color = discord.Color.blue(), 
+        color : discord.Color = discord.Color.green(), 
         timestamp : datetime.datetime = datetime.datetime.utcnow(),
         author : discord.User = None
         ) -> discord.Embed:
