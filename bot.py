@@ -16,7 +16,7 @@ __discord_extension__ = [
     "categories.experiment",
     "categories.logger",
     "categories.moderation",
-    "categories.music",
+    #"categories.music",
     "categories.server",
     "categories.utility",
     "categories.utilities.method_cog"
@@ -25,6 +25,7 @@ __discord_extension__ = [
 class MichaelBot(commands.Bot):
     def __init__(self, command_prefix, help_command = None, description = None, **kwargs):
         super().__init__(command_prefix, help_command, description, **kwargs)
+        
     
     def debug(self, message : str):
         if self.DEBUG:
@@ -60,7 +61,7 @@ def setupLogger(enable : bool = True):
 if __name__ == "__main__":
     argc = len(sys.argv)
 
-    DEBUG = False
+    DEBUG = True
 
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
