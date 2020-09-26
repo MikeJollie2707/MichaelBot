@@ -285,21 +285,23 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     async with session.get("http://konachan.net/post.json?limit=%d&page=%d&tags=%s" % (count, page, user_tag_str)) as resp:
                         if resp.status == 200:
-                            j = await resp.json()
+                            query = await resp.json()
 
-                            def filter(selected_index):
-                                if j[selected_index]["rating"] != "s":
+                            def filter(entry : dict) -> bool:
+                                if entry["rating"] != "s":
                                     return False
-                                restricted_tags = ["breasts", "nipples", "panties", "bikini"] # Expand this
-                                for tag in restricted_tags:
-                                    if tag in j[selected_index]["tags"]:
-                                        self.bot.debug("Index %d has tag %s so it's not safe." % (selected_index, tag))
+                                
+                                RESTRICTED_TAGS = ["breasts", "nipples", "panties", "bikini"] # Expand this
+
+                                for index, tag in enumerate(RESTRICTED_TAGS):
+                                    if tag in entry["tags"]:
+                                        self.bot.debug("Index %d has tag %s so it's not safe." % (index, tag))
                                         return False
                                 return True
 
                             # The JSON returned is [{...}, {...}] so we can shuffle it and select index.
-                            random.shuffle(j)
-                            select = -1
+                            random.shuffle(query)
+                            chosen_entry = discord.utils.find(filter, query)
 
                             for entry in range(0, len(j)):
                                 if filter(entry) == True:
