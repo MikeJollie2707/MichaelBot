@@ -13,7 +13,7 @@ __discord_extension__ = [
     "categories.core",
     "categories.dev",
     "categories.events",
-    "categories.experiment",
+    #"categories.experiment",
     "categories.logger",
     "categories.moderation",
     #"categories.music",
