@@ -120,7 +120,7 @@ class Facility(commands.Cog):
         The only reason this function exists is because `discord.Role.mention` being retarded when the role is @everyone.
         In that case, the function will return directly @everyone, not @@everyone. Otherwise, the function just simply return object.mention.
 
-        Because of this, you can use the default `.mention` unless it's a `discord.Role`.
+        Because of this, you can use the default `.mention` (recommended) unless it's a `discord.Role`.
 
         Note that if there's a custom role that's literally named `@everyone` then this function will return @everyone, not @@everyone.
 
