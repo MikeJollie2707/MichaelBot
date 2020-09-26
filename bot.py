@@ -62,6 +62,7 @@ if __name__ == "__main__":
     argc = len(sys.argv)
 
     DEBUG = True
+    TOKEN = bot_info = db_info = None
 
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
