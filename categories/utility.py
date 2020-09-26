@@ -254,7 +254,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.is_nsfw()
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.member)
-    async def konachanloli(self, ctx):
+    async def konachan(self, ctx, *, tags : str = ""):
         '''
         Send a **safe** picture of loli from konachan**.net**
         **Disclaimer:** We, the bot developers team, hold **ZERO** responsibilities if FBI visit you.
@@ -267,14 +267,23 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
         async with ctx.typing():
-            url = None
-            tag_list = []
-            # TODO: Rewrite this into a loop that makes when we have url = None, it'll request another query. And less messy.
-            while url is None:
+            user_tag_str = "+"
+            chosen_entry = None
+
+            loop = 0
+
+            # Transform user_tag_list into search query.
+            user_tag_str = user_tag_str.join(tags.split())
+
+            while chosen_entry is None:
+                loop += 1
                 async with aiohttp.ClientSession() as session:
-                    page = random.randint(1, 30)
-                    count = random.randint(1, 10)
-                    async with session.get("http://konachan.net/post.json?limit=%d&page=%d&tags=loli" % (count, page)) as resp:
+
+                    # Don't set these two too high, otherwise it'll be significantly slow if query with tags.
+                    page = random.randint(1, 20)
+                    count = random.randint(1, 30)
+                    
+                    async with session.get("http://konachan.net/post.json?limit=%d&page=%d&tags=%s" % (count, page, user_tag_str)) as resp:
                         if resp.status == 200:
                             j = await resp.json()
 
