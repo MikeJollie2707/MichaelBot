@@ -86,6 +86,7 @@ if __name__ == "__main__":
             activity = discord.Game(name = "Kubuntu"),
             members = True # v1.5.0 requires Intent.members to be enabled to use most of member cache.
         )
+        # https://discordpy.readthedocs.io/en/latest/intents.html for intents
 
         if not hasattr(bot, "version"):
             bot.version = bot_info.get("version")
