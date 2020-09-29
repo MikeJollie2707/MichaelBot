@@ -61,7 +61,7 @@ def setupLogger(enable : bool = True):
 if __name__ == "__main__":
     argc = len(sys.argv)
 
-    DEBUG = True
+    DEBUG = False
     TOKEN = bot_info = db_info = None
 
     if (argc == 2):
@@ -78,11 +78,13 @@ if __name__ == "__main__":
         print("Bot info: ", bot_info)
         print("DB info: ", db_info)
     else:
+
         bot = MichaelBot(
             command_prefix = commands.when_mentioned_or(bot_info["prefix"]), 
             description = bot_info.get("description"),
             status = discord.Status.online,
-            activity = discord.Game(name = "Kubuntu")
+            activity = discord.Game(name = "Kubuntu"),
+            members = True # v1.5.0 requires Intent.members to be enabled to use most of member cache.
         )
 
         if not hasattr(bot, "version"):
