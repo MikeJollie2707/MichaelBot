@@ -78,13 +78,14 @@ if __name__ == "__main__":
         print("Bot info: ", bot_info)
         print("DB info: ", db_info)
     else:
-
+        intent = discord.Intents().default()
+        intent.members = True
         bot = MichaelBot(
             command_prefix = commands.when_mentioned_or(bot_info["prefix"]), 
             description = bot_info.get("description"),
             status = discord.Status.online,
             activity = discord.Game(name = "Kubuntu"),
-            members = True # v1.5.0 requires Intent.members to be enabled to use most of member cache.
+            intents = intent # v1.5.0 requires Intent.members to be enabled to use most of member cache.
         )
         # https://discordpy.readthedocs.io/en/latest/intents.html for intents
 
