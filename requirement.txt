@@ -4,7 +4,7 @@ async-timeout==3.0.1
 asyncpg==0.21.0
 attrs==20.2.0
 chardet==3.0.4
-discord.py==1.4.1
+discord.py==1.5.0
 idna==2.10
 isort==5.5.3
 lazy-object-proxy==1.4.3
