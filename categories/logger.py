@@ -1214,7 +1214,7 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_update(self, before, after):
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(after.guild):
+        if self.log_check(after):
             # We retrieve the logging channel for that guild
             config = Facility.get_config(after.guild.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
