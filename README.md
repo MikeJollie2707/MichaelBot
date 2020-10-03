@@ -105,10 +105,12 @@ git clone https://github.com/MikeJollie2707/MichaelBot.git
 
 ``` json
 {
-    "TheIndexWithoutSpace":{
+    "TheIndexWithoutSpace": {
         "name": "Undecided if optional or not",
-        "version": "Optional",
-        "description": "Optional, but recommended",
+        "version": "Required, for now",
+        "description": "Required, for now",
+        "prefix": "Required",
+        "debug": false,
 
         "prefix": "Required",
         "token": "The token file you created (bot.json)",

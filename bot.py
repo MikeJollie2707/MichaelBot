@@ -60,8 +60,7 @@ def setupLogger(enable : bool = True):
 
 if __name__ == "__main__":
     argc = len(sys.argv)
-
-    DEBUG = False
+    
     TOKEN = bot_info = db_info = None
 
     if (argc == 2):
@@ -93,7 +92,7 @@ if __name__ == "__main__":
             bot.version = bot_info.get("version")
         
         if not hasattr(bot, "DEBUG"):
-            bot.DEBUG = DEBUG
+            bot.DEBUG = bot_info.get("debug") if bot_info.get("debug") is not None else False
         
         if not hasattr(bot, "pool") and not hasattr(bot, "json"):
             loop = asyncio.get_event_loop()
