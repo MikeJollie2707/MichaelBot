@@ -99,6 +99,9 @@ class Events(commands.Cog):
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send("I'm missing the following permission(s) to execute this command: " + str(error.missing_perms))
         
+        elif isinstance(error, commands.NSFWChannelRequired):
+            await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
+        
         else:
             error_text = "This command raised the following exception. Please copy and report it to the developer using `report`. Thank you and sorry for this inconvenience."
             error_text += "```%s```" % error
