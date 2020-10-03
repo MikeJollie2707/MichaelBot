@@ -330,7 +330,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                     #        return False
                                     #
                                     #return True
-                                    return True
+                                    return True if img_type.upper() == "ANY" else entry["rating"] == 's'
                                 
                                 random.shuffle(query)
                                 chosen_entry = discord.utils.find(filter, query)
