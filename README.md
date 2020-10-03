@@ -54,7 +54,7 @@ Alternatively, you may find what you need in the [bot documentation](https://mik
 
 ![bug](./img/bug.png)
 
-- And the best thing is...all features are free-guaranteed.
+- And the best thing is...all features are free.
 
   - Features like changing volume in Rythm is absolutely pennyless in this bot (meaning you don't have to pay to use this).
 
@@ -76,13 +76,13 @@ Nevertheless, the step to run this bot is fairly simple:
 - Clone this directory.
 
 ``` git
-git clone https://github.com/MikeJollie2707/MichaelBotPy.git
+git clone https://github.com/MikeJollie2707/MichaelBot.git
 ```
 
 - Go into the `setup` directory, create a token `json` file, name it whatever (with no space).
 
 ``` json
-// Let's say I'm creating a bot.json. Here's what the inside should look like
+// bot.json
 {
     "token": "<token here>"
 }
@@ -91,7 +91,7 @@ git clone https://github.com/MikeJollie2707/MichaelBotPy.git
 - Also create a db `json` file, again, name it whatever.
 
 ```json
-# dbexample.json
+// dbexample.json
 {
     // All these are required.
     "host": "localhost, or wherever you host your PostgreSQL",
@@ -117,14 +117,19 @@ git clone https://github.com/MikeJollie2707/MichaelBotPy.git
 }
 ```
 
+- If you're confused, just go ahead and look at my `setup/config.json`.
+
 - To run the bot, run the file `bot.py`.
 
 ``` terminal
-python3 bot.py TheIndexWithoutSpace_in_configjson
-py -3 bot.py TheIndexWithoutSpace_in_configjson
+# *Nix
+python3 bot.py TheIndexWithoutSpace
+
+# Windows
+py -3 bot.py TheIndexWithoutSpace
 ```
 
-- To edit categories, look into `categories` folder.
+  - If you're on *Nix, you can also mark the `startup.sh` file as executable, edit the absolute path to repo to run it easily using `./startup.sh`.
 
 ## License
 
@@ -134,7 +139,7 @@ This project is under the [MIT LICENSE](LICENSE).
 
 You can contribute to this bot via:
 
-- Development: I'm doing this all alone, so if I have 1 or more people, that'd be great help.
+- Development: I'm doing this all alone, so if I have 1 or 2 more people, that'd be great help.
 - Testing: use commands, do actions and report via the `report` command.
 
 Any sort of contributions are highly appreciated.
@@ -145,6 +150,8 @@ Any sort of contributions are highly appreciated.
   - [x] Learn PostgreSQL
   - [ ] Split `Logging` into different channels.
   - [ ] Track many stuffs.
+  - [ ] Add utility db methods.
+  - [ ] Add basic currency.
 - [ ] Debug everything.
   - [x] `Core`
   - [x] `Dev`
