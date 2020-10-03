@@ -9,6 +9,10 @@ class Currency(commands.Cog):
     
     @commands.command()
     async def daily(self, ctx):
+        # Retrieve user info
+        # Check if his last daily is <24h
+        # If yes then update money and increase streak,
+        # otherwise, reset the streak
         pass
 
     @commands.command()
