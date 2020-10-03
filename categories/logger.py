@@ -49,7 +49,6 @@ class LogContent:
 
         for content in contents:
             self.content += content
-            print(self.content)
             self.content += '\n'
 
         return self
