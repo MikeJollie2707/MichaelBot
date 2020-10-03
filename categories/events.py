@@ -14,14 +14,14 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+        await DB.init_db(self.bot)
+        if not hasattr(self.bot, "__db__"):
+            self.bot.__db__ = await DB.to_dict(self.bot)
+        
         print("Logged in as")
         print(self.bot.user.name)
         print(self.bot.user.id)
         print("------------")
-
-        await DB.init_db(self.bot)
-        if not hasattr(self.bot, "__db__"):
-            self.bot.__db__ = await DB.to_dict(self.bot)
 
     @commands.Cog.listener()
     async def on_connect(self):
@@ -98,7 +98,7 @@ class Events(commands.Cog):
         
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send("I'm missing the following permission(s) to execute this command: " + str(error.missing_perms))
-        
+            
         elif isinstance(error, commands.NSFWChannelRequired):
             await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
         
