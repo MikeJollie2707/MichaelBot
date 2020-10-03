@@ -4,6 +4,8 @@ from discord.ext import commands
 import asyncpg
 from asyncpg import exceptions as pg_exception
 
+import datetime
+
 class DB(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -15,14 +17,17 @@ class DB(commands.Cog):
             async with conn.transaction():
                 await conn.execute('''
                     CREATE TABLE IF NOT EXISTS dGuilds (
-                        guild_id INT8 PRIMARY KEY,
+                        id INT8 PRIMARY KEY,
                         name TEXT NOT NULL
                     );
                 ''')
                 await conn.execute('''
                     CREATE TABLE IF NOT EXISTS dUsers (
-                        user_id INT8 PRIMARY KEY,
-                        name TEXT NOT NULL
+                        id INT8 PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        money INT8,
+                        last_daily TIMESTAMP,
+                        streak_daily INT4
                     );
                 ''')
                 await conn.execute('''
@@ -39,7 +44,6 @@ class DB(commands.Cog):
                     pass
                 for member in guild.members:
                     try:
-                        await cls.insert_user(conn, [(member.id, member.name)])
                         await cls.insert_member(conn, member)
                     except pg_exception.UniqueViolationError:
                         pass
@@ -59,9 +63,15 @@ class DB(commands.Cog):
         - `*args`: This must be a list of tuples.
             + `len(tuple)` must equals to the number of column you want to insert.
         """
+
+        arg_str = "("
+        for j in range(max(*args, key = len)):
+            arg_str += '$' + str(j + 1) + ", "
+        arg_str = arg_str[:-2] + ')'
+
         await conn.executemany('''
-            INSERT INTO %s VALUES ($1, $2)
-        ''' % table_name, *args
+            INSERT INTO %s VALUES %s
+        ''' % (table_name, arg_str), *args
         )
     
     @classmethod
@@ -77,12 +87,13 @@ class DB(commands.Cog):
         - `*args`: This must be a list of tuples.
             + `len(tuple)` must equals to the number of column you want to insert.
         """
+
         await cls.insert_into(conn, "dGuilds", *args)
     
     @classmethod
     async def insert_user(cls, conn, *args):
         """
-        Insert a user data into table `dUsers`.
+        Insert a user data into table `dUsers`. (deprecated)
 
         Parameter:
         - `conn`: The connection you want to do.
@@ -95,36 +106,71 @@ class DB(commands.Cog):
     @classmethod
     async def insert_member(cls, conn, member : discord.Member):
         """
-        Insert a member data into table `dUsers_dGuilds`.
+        Insert a member data into the database.
+
+        Specifically, it adds to `dUsers`, `dUsers_dGuilds`.
 
         Parameter:
         - `conn`: The connection you want to do.
             + It's usually just `pool.acquire()`.
         - `member`: The member.
         """
+
+        member_existed = await cls.find_member(conn, member)
+        if member_existed is None:
+            await cls.insert_into(conn, "dUsers", [
+                (member.id, member.name, 0, None, 0)
+            ])
+        
         await cls.insert_into(conn, "dUsers_dGuilds", [
             (member.id, member.guild.id)
         ])
+    
+    @classmethod
+    async def find_entity(cls, conn, table_name : str, object : discord.Object):
+        pass
+    @classmethod
+    async def find_member(cls, conn, member : discord.Member):
+        """
+        Find a member data in `dUsers`.
+
+        If a member is found, it'll return a `Record` of the member, otherwise it'll return `None`.
+
+        Parameter:
+        - `conn`: The connection you want to do.
+            + It's usually just `pool.acquire()`.
+        - `member`: The member.
+        """
+
+        result = await conn.fetchrow('''
+            SELECT *
+            FROM dUsers
+            WHERE id = %d
+        ''' % member.id)
+
+        return result
+
+
 
     @classmethod
     async def drop_all_table(cls, bot):
         async with bot.pool.acquire() as conn:
             async with conn.transaction():
                 await conn.execute('''
-                    DROP TABLE dUsers, dGuilds, dUsers_dGuilds;
+                    DROP TABLE dUsers, dGuilds, dUsers_dGuilds, dUsersInfo;
                 ''')
 
 
     @classmethod
     async def to_dict(cls, bot) -> dict:
         """
-        Transform the entire database into dictionary format.
+        Transform the entire database into dictionary format. (need update)
 
         It is in the following format:
         `{
             guild_id: [
-                member_id,
-                member_id,
+                member_id1,
+                member_id2,
                 ...
             ]
         }`
