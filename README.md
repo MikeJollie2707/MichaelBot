@@ -42,21 +42,11 @@ Alternatively, you may find what you need in the [bot documentation](https://mik
 
 ![welcome](./img/welcome.png)
 
-- Interactive music menu
-
-![music](./img/music.png)
-
-- Support playlist
-
-![playlist](./img/playlist.png)
-
 - Report and suggest features
 
 ![bug](./img/bug.png)
 
 - And the best thing is...all features are free.
-
-  - Features like changing volume in Rythm is absolutely pennyless in this bot (meaning you don't have to pay to use this).
 
 ## Limitations
 
@@ -93,7 +83,6 @@ git clone https://github.com/MikeJollie2707/MichaelBot.git
 ```json
 // dbexample.json
 {
-    // All these are required.
     "host": "localhost, or wherever you host your PostgreSQL",
     "user": "user name",
     "database": "name of the db",
@@ -112,7 +101,6 @@ git clone https://github.com/MikeJollie2707/MichaelBot.git
         "prefix": "Required",
         "debug": false,
 
-        "prefix": "Required",
         "token": "The token file you created (bot.json)",
         "db": "The db file you created (dbexample.json)"
     }
