@@ -30,8 +30,7 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_disconnect(self):
-        if hasattr(self.bot, "guild_config"):
-            pass
+        print("Bot logged out")
 
     @commands.Cog.listener()
     async def on_message(self, message):
