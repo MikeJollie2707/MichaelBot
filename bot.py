@@ -17,6 +17,7 @@ __discord_extension__ = [
     "categories.logger",
     "categories.moderation",
     #"categories.music",
+    "categories.nsfw",
     "categories.server",
     "categories.utility",
     "categories.utilities.method_cog"
