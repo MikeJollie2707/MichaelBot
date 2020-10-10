@@ -1,6 +1,4 @@
-from aiohttp.http_parser import ChunkState
 import discord
-from discord import user
 from discord.ext import commands
 
 import asyncio
