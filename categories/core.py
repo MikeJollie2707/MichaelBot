@@ -24,7 +24,7 @@ class Core(commands.Cog):
         else:
             return True
     
-    @commands.command()
+    @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
     async def changelog(self, ctx):
         '''
