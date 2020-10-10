@@ -38,6 +38,9 @@ class DB(commands.Cog):
                 ''')
 
             for guild in bot.guilds:
+                # Alternative way: perform an update_guild(), then if the
+                # status is UPDATE 0, meaning it doesn't exist, then insert it.
+                # This will probably make it in a transaction, rather than separate.
                 try:
                     await cls.insert_guild(conn, [(guild.id, guild.name)])
                 except pg_exception.UniqueViolationError:
@@ -65,12 +68,13 @@ class DB(commands.Cog):
         """
 
         arg_str = "("
-        for j in range(max(*args, key = len)):
+        for j in range(len(max(*args, key = len))):
             arg_str += '$' + str(j + 1) + ", "
         arg_str = arg_str[:-2] + ')'
 
         await conn.executemany('''
-            INSERT INTO %s VALUES %s
+            INSERT INTO %s
+            VALUES %s
         ''' % (table_name, arg_str), *args
         )
     
@@ -126,9 +130,6 @@ class DB(commands.Cog):
             (member.id, member.guild.id)
         ])
     
-    @classmethod
-    async def find_entity(cls, conn, table_name : str, object : discord.Object):
-        pass
     @classmethod
     async def find_member(cls, conn, member : discord.Member):
         """
