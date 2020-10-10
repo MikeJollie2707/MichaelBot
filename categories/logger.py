@@ -1215,7 +1215,7 @@ class Logging(commands.Cog):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(after):
             # We retrieve the logging channel for that guild
-            config = Facility.get_config(after.guild.id)
+            config = Facility.get_config(after.id)
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
@@ -1225,7 +1225,7 @@ class Logging(commands.Cog):
 
             executor = None
 
-            async for entry in after.guild.audit_logs(action = discord.AuditLogAction.guild_update, limit = 1):
+            async for entry in after.audit_logs(action = discord.AuditLogAction.guild_update, limit = 1):
                 executor = entry.user
                 log_time = entry.created_at
 
