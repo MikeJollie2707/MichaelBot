@@ -53,7 +53,28 @@ class Core(commands.Cog):
             )
             paginator.add_page(embed)
         
-        await paginator.event(bot = self.bot, channel = ctx.channel, interupt = False, author = ctx.author)
+        await paginator.event(ctx, interupt = False)
+    @changelog.command()
+    async def dev(self, ctx):
+        channel_id = 759288597500788766
+
+        channel = self.bot.get_channel(channel_id)
+        if channel == None:
+            await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
+            return
+
+        paginator = Pages()
+
+        async for message in channel.history(limit = 10):
+            embed = Facility.get_default_embed(
+                description = message.content, 
+                color = discord.Color.green(),
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
+            )
+            paginator.add_page(embed)
+        
+        await paginator.event(ctx, interupt = False)
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
