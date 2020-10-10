@@ -1,16 +1,19 @@
 import discord
+from discord.ext import commands
+
 import asyncio
+import typing
 
 class Menu:
-    def __init__(self, init_page, terminate_emoji, return_emoji):
-        '''
+    def __init__(self, init_page : discord.Embed, terminate_emoji : str, return_emoji : str):
+        """
         Param:
         - `init_page`: The center page.
         - `terminate_emoji`: The stop emoji.
         - `return_emoji`: The return emoji.
         Exception:
         - TypeError: This exception is raised when `init_page` is not a `discord.Embed`.
-        '''
+        """
         self.__pages__ = {} # A dict with the format {emoji: discord.Embed}
         self.__terminator__ = terminate_emoji
         self.__return__ = return_emoji
@@ -20,17 +23,18 @@ class Menu:
         else:
             raise TypeError("'init_page' must be discord.Embed.")
     
-    def add_page(self, emoji, page):
-        '''
-        Add page to the menu.\n
+    def add_page(self, emoji : str, page : discord.Embed):
+        """
+        Add page to the menu.
+
         Param:
         - `emoji`: the emoji you want the page to be reacted.
         - `page`: the page you want to add. It must be a `discord.Embed`.
 
         Exception:
-        - IndexError: This exception is raised when `emoji` is the same as `terminate_emoji` in the constructor.
-        - TypeError: This exception is raised when `page` is not a `discord.Embed`.
-        '''
+        - `IndexError`: When `emoji` is the same as `terminate_emoji` in the constructor.
+        - `TypeError`: When `page` is not a `discord.Embed`.
+        """
         if isinstance(page, discord.Embed):
             if emoji != self.__terminator__:
                 self.__pages__[emoji] = page
@@ -38,29 +42,42 @@ class Menu:
                 raise IndexError("Cannot add page with %s emoji." % emoji)
         else:
             raise TypeError("'page' must be discord.Embed.")
+    def add_pages(self, pages : typing.Dict[str, discord.Embed]):
+        """
+        Add pages to the menu.
 
-    async def event(self, bot, channel, interupt = True, author = None):
-        '''
+        Param:
+        - `pages`: A dictionary in the format Dict[str, discord.Embed].
+
+        Exception:
+        - `IndexError`: When `emoji` is the same as `terminate_emoji` in the constructor.
+        - `TypeError`: When `page` is not a `discord.Embed`.
+        """
+        for page in pages:
+            self.add_page(page["emoji"], page["page"])
+
+    async def event(self, ctx : commands.Context, channel : discord.TextChannel = None, interupt = True):
+        """
         This function is a coroutine.
 
         A function use to interact with the menu.
 
         Param:
-        - `bot`: a `commands.Bot` instance or a `discord.Client` instance.
-        - `channel`: the channel you want to send the menu in.
+        - `ctx`: The context.
+        - `channel`: The channel you want to send the menu in. If none provided, it'll use `ctx.channel`.
         - `interupt`: `False` if you don't want other user to react the menu, `True` otherwise. Default value is `True`.
-        - `author`: the user you want to be the only one to interact the menu. If `interupt` is set to `True`,
-        it'll raise exception if this is set.
         
         Exception:
-        - AttributeError: This exception is raised when either `bot` and/or `channel` is wrong type.
-        - RuntimeError: This exception is raised when `interupt` is `False` and `author` is `None`, or `interupt` is `True`
-        and `author` is not `None`.
-        '''
+        - `AttributeError`: When the parameter(s) is wrong type.
+        - `discord.Forbidden`: When the bot doesn't have permission to send messages/add reactions/read messages history.
+        """
+
+        bot = ctx.bot
+        channel = ctx.channel if channel is None else channel
+        author = ctx.author
+
         if len(self.__pages__) == 0:
             return
-        if (interupt and author is not None) or (interupt == False and author is None):
-            raise RuntimeError("`interupt` and `author` raised error. Please read the description of the function.")
         
         self.__pages__[self.__terminator__] = None
 

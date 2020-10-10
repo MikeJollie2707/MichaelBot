@@ -124,7 +124,7 @@ class SmallHelp():
             if cog_info[category] > 0:
                 menu.add_page(cog[category].emoji, cog_help_format(self.ctx, cog[category]))
         
-        await menu.event(self.ctx.bot, self.ctx.channel, False, self.ctx.author)
+        await menu.event(self.ctx, interupt = False)
     
     async def send_cog_help(self, cog):
         paginate = Pages()
@@ -134,7 +134,7 @@ class SmallHelp():
             page = command_help_format(self.ctx, command)
             paginate.add_page(page)
         
-        await paginate.event(self.ctx.bot, self.ctx.channel)
+        await paginate.event(self.ctx, interupt = False)
     
     async def send_command_help(self, command):
         #if command.hidden:
