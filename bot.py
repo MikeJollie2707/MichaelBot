@@ -24,7 +24,7 @@ __discord_extension__ = [
 ]
 
 class MichaelBot(commands.Bot):
-    def __init__(self, command_prefix, help_command = None, description = None, **kwargs):
+    def __init__(self, command_prefix, help_command = commands.DefaultHelpCommand(), description = None, **kwargs):
         super().__init__(command_prefix, help_command, description, **kwargs)
         
     
