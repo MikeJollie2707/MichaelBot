@@ -18,6 +18,9 @@ def cog_help_format(ctx, cog):
             if command.short_doc is None or command.short_doc == "":
                 short_desc = "*No help provided*"
             
+            display += short_desc + '\n'
+            display += ctx.bot.__divider__
+    
     title_str = f"{cog.qualified_name} ({len(cog.get_commands())} commands): "
     
     content = Facility.get_default_embed(
