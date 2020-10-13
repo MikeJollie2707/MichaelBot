@@ -62,7 +62,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def embed(self, ctx, *, inp : str = ""):
         '''
         Send a full-featured rich embed.
-        Note: It is recommended to use `embed help` to know more about how to use this command.
+        Note: It is recommended to use `embed info` to know more about how to use this command.
 
         **Usage:** <prefix>**{command_name}** <args>
         **Cooldown:** 5 seconds per use (user)
@@ -85,7 +85,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.send("It seems you did something wrong. If you're not using a visualizer, use it (link in `embed help`). Otherwise, ask for support.")
     
     @embed.command()
-    async def help(self, ctx):
+    async def info(self, ctx):
         text = '''
         To create a full-featured rich embed, you must use the JSON format to achieve.
         Take a look at [this awesome page](https://embedbuilder.nadekobot.me/) that visualize the embed and make your life much easier when writing JSON. 
