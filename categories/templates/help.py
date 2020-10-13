@@ -8,8 +8,6 @@ from categories.templates.menu import Menu
 from categories.utilities.method_cog import Facility
 
 def cog_help_format(ctx, cog):
-    # TODO: Might need to format this a bit more pretty.
-
     display = ""
     for command in cog.get_commands():
         if command.hidden != True:
