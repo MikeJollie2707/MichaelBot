@@ -82,6 +82,7 @@ class BigHelp(commands.HelpCommand):
             "help": docstring,
             "name": "help-all"
         })
+    
     async def send_bot_help(self, mapping):
         note = '''
         `<argument>` is required, `[argument]` is optional (refer to `note` for more details).
@@ -95,20 +96,22 @@ class BigHelp(commands.HelpCommand):
             author = self.context.author
         )
 
-        cog = self.context.bot.cogs # List of categories
+        # List of categories.
+        cog = self.context.bot.cogs
         for category in cog:
             num_of_commands = 0
-            context = ""
+            display_str = ""
             commands = cog[category].get_commands() # List of commands in one category
-            for command in commands:
-                if not command.hidden:
-                    context += f"`{command.name}` " # Highlight the commands
-                    num_of_commands += 1
+
+            actual_commands = [f"`{command.name}`" for command in commands if not command.hidden]
+            display_str += ' '.join(actual_commands)
+            num_of_commands = len(actual_commands)
+
             if num_of_commands != 0:
-                embed_name = "%s (%s commands): " % (category, str(num_of_commands))
+                field_name = "%s (%d commands): " % (category, num_of_commands)
                 content.add_field(
-                    name = embed_name, 
-                    value = context, 
+                    name = field_name, 
+                    value = display_str, 
                     inline = False
                 )
 
@@ -116,8 +119,8 @@ class BigHelp(commands.HelpCommand):
 
     async def send_cog_help(self, cog):
         content = cog_help_format(self.context, cog)
-        await self.context.channel.send(embed = content)
-        
+        await self.context.send(embed = content)
+    
     async def send_group_help(self, group):
         content = command_help_format(self.context, group)
         await self.context.send(embed = content)
@@ -131,30 +134,44 @@ class SmallHelp():
         self.ctx = ctx
 
     async def send_bot_help(self):
-        main_page = discord.Embed(color = discord.Color.green())
         note = '''
         Use `%shelp [CommandOrCategory]` to get more info on a command/category.
         If you need help, join the [support server](https://discordapp.com/jeMeyNw).
         ''' % self.ctx.prefix
-        main_page.add_field(name = "Note:", value = note)
 
-        cog = self.ctx.bot.cogs
+        main_page = Facility.get_default_embed(
+            title = "Help",
+            description = note,
+            timestamp = datetime.datetime.utcnow(),
+            author = self.ctx.author
+        )
+
+        #main_page.add_field(name = "Note:", value = note)
+
+        cogs = self.ctx.bot.cogs
+        # dict(category_name, category_actual_size)
         cog_info = {}
-        for category in cog:
+        for category in cogs:
             num_of_commands = 0
-            commands = cog[category].get_commands()
-            for command in commands:
-                if not command.hidden:
-                    num_of_commands += 1
+            commands = cogs[category].get_commands()
+
+            actual_commands = [f"`{command.name}`" for command in commands if not command.hidden]
+            num_of_commands = len(actual_commands)
+            
             if num_of_commands != 0:
-                embed_name = "%s %s (%s commands): " % (cog[category].emoji, category, str(num_of_commands))
-                main_page.add_field(name = embed_name, value = cog[category].description, inline = False)
+                embed_name = "%s %s (%d commands): " % (cogs[category].emoji, category, num_of_commands)
+                main_page.add_field(
+                    name = embed_name, 
+                    value = cogs[category].description if cogs[category].description is not None else "*No description provided*", 
+                    inline = False
+                )
             
             cog_info[category] = num_of_commands
+        
         menu = Menu(main_page, '✖️', '🔼')
-        for category in cog:
+        for category in cogs:
             if cog_info[category] > 0:
-                menu.add_page(cog[category].emoji, cog_help_format(self.ctx, cog[category]))
+                menu.add_page(cogs[category].emoji, cog_help_format(self.ctx, cogs[category]))
         
         await menu.event(self.ctx, interupt = False)
     
@@ -163,14 +180,13 @@ class SmallHelp():
         for command in cog.get_commands():
             if command.hidden:
                 continue
+
             page = command_help_format(self.ctx, command)
             paginate.add_page(page)
         
         await paginate.event(self.ctx, interupt = False)
     
     async def send_command_help(self, command):
-        #if command.hidden:
-        #    return
         await self.ctx.send(embed = command_help_format(self.ctx, command))
 
         
