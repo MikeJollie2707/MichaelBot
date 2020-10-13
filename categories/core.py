@@ -88,7 +88,7 @@ class Core(commands.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-    async def help(self, ctx, categoryOrcommand = ""):
+    async def help(self, ctx, *, categoryOrcommand = ""):
         '''
         Show compact help about a command, or a category.
         Note: command name and category name is case sensitive; `Core` is different from `core`.
