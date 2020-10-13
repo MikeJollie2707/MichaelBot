@@ -91,7 +91,6 @@ if __name__ == "__main__":
 
         if not hasattr(bot, "version"):
             bot.version = bot_info.get("version")
-        
         if not hasattr(bot, "DEBUG"):
             bot.DEBUG = bot_info.get("debug") if bot_info.get("debug") is not None else False
         if not hasattr(bot, "__divider__"):
