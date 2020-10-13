@@ -146,10 +146,12 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                 await ctx.send(embed = embed)
     @konachan.command()
     async def tags(self, ctx):
-        """
+        '''
         Display top 10 popular tags in konachan.
 
         **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 5 seconds per 1 use (member)
+        **Example:** {prefix}{command_name}
 
         """
         async with ctx.typing():
@@ -216,15 +218,48 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def nhentai(self, ctx):
+        '''
+        Search and return a doujin on request.
+        You can read the doujin right here on Discord without opening a private/incognito tab!
+
+        Currently, this command alone does nothing. It must be used using its subcommands.
+        '''
         # Issue: we're using blocking library...
         pass
     @nhentai.command(name = "random")
     async def _random(self, ctx):
-        doujin = hentai.Hentai(hentai.Hentai.get_random_id())
+        '''
+        Search and return a random doujin.
+
+        This will show you an absolute random doujin, whether it's a piece of trash or a masterpiece.
+
+        **Usage:** {prefix}**{command_name}**
+        **Cooldown:** 5 seconds per 1 use (member)
+        **Example:** {prefix}{command_name}
+
+        **You need:** `NSFW Channel`.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+        '''
+
+        doujin = hentai.Hentai(hentai.Utils.get_random_id())
 
         await self.display_hentai(ctx, doujin)
     @nhentai.command()
     async def search(self, ctx, param : typing.Optional[int], *tags):
+        '''
+        Search and return a doujin based on its tag or ID.
+
+        If search based on tags, it'll search based on `Most Popular`.
+
+        **Usage:** {prefix}**{command_name}** <id/tags>
+        **Cooldown:** 5 seconds per 1 use (member)
+        **Example 1:** {prefix}{command_name} 331228
+        **Example 2:** {prefix}{command_name} sole-female sole-male
+
+        **You need:** `NSFW Channel`.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+        '''
+
         if isinstance(param, int):
             doujin = hentai.Hentai(param)
 

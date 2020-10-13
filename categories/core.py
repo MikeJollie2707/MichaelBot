@@ -56,6 +56,16 @@ class Core(commands.Cog):
         await paginator.event(ctx, interupt = False)
     @changelog.command()
     async def dev(self, ctx):
+        '''
+        Show the latest 10 changes of the bot *behind the scene*.
+
+        **Usage:** <prefix>**{command_name}**
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+        '''
+        
         channel_id = 759288597500788766
 
         channel = self.bot.get_channel(channel_id)
