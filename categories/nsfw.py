@@ -145,6 +145,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             
                 await ctx.send(embed = embed)
     @konachan.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def tags(self, ctx):
         '''
         Display top 10 popular tags in konachan.
@@ -153,7 +154,9 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         **Cooldown:** 5 seconds per 1 use (member)
         **Example:** {prefix}{command_name}
 
-        """
+        **You need:** `NSFW Channel`.
+        **I need:** `Send Messages`.
+        '''
         async with ctx.typing():
             SEARCH_ENDPOINT = "https://konachan.com/tag.json"
             query_location = SEARCH_ENDPOINT + "?order=count&limit=10"
