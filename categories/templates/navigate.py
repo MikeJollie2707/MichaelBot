@@ -69,8 +69,8 @@ class Pages:
                 reaction, user = await bot.wait_for("reaction_add", check = reaction_check, timeout = 120.0)
             except asyncio.TimeoutError:
                 self.__current_page__ = -1
-                await message.edit(content = ":clock12:", embed = None)
                 await message.clear_reactions()
+                await message.add_reaction('🕛')
                 break
             else:
                 if interupt:

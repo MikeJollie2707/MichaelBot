@@ -96,8 +96,8 @@ class Menu:
             try:
                 reaction, user = await bot.wait_for("reaction_add", check = reaction_check, timeout = 120.0)
             except asyncio.TimeoutError:
-                await message.edit(content = ":clock12:", embed = None)
                 await message.clear_reactions()
+                await message.add_reaction('🕛')
 
                 break
             else:
