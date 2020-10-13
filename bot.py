@@ -94,6 +94,8 @@ if __name__ == "__main__":
         
         if not hasattr(bot, "DEBUG"):
             bot.DEBUG = bot_info.get("debug") if bot_info.get("debug") is not None else False
+        if not hasattr(bot, "__divider__"):
+            bot.__divider__ = "----------------------------\n"
         
         if not hasattr(bot, "pool") and not hasattr(bot, "json"):
             loop = asyncio.get_event_loop()
