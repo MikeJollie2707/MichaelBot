@@ -35,14 +35,14 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         - If not provided the tags, it'll search a random image.
         - If provided with tag(s), it'll search an image having all the tags. The tags **must be exactly the same** as it appears in `konachan.net`/`konachan.com`. 
         
-        Visit [this page](https://konachan.net/tag) to see all the tags, or you can use `{prefix}konachan tags` to see some popular tags.
+        Visit [this page](https://konachan.net/tag) to see all the tags.
 
         **Usage:** <prefix>**{command_name}** <safe/any> [exact tags separated by space]
         **Cooldown:** 5 seconds per 1 use (member)
         **Example 1:** {prefix}{command_name} safe blush long_hair
         **Example 2:** {prefix}{command_name} any
 
-        **You need:** None.
+        **You need:** `NSFW Channel`.
         **I need:** `Send Messages`.
         '''
 
