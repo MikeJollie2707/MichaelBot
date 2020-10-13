@@ -275,7 +275,8 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             query_str += tag_join
 
             doujin = hentai.Hentai(
-                random.choice(hentai.Hentai.search_by_query(
+                # BUG: If tag doesn't exist, this will return empty, which random.choice() will throw exception.
+                random.choice(hentai.Utils.search_by_query(
                     query_str, sort = hentai.Sort.Popular)
                 )["id"]
             )
