@@ -31,13 +31,35 @@ def cog_help_format(ctx, cog):
     return content
 
 def command_help_format(ctx, command):
+    # Gotta add the supercommand to the command.
+    embed_title = command.full_parent_name + ' ' + command.name
+
     content = Facility.get_default_embed(
-        title = command.name,
-        description = command.help.format(prefix = ctx.prefix, command_name = command.name),
+        title = embed_title,
+        description = "*No help provided*" if command.help is None else
+            command.help.format(
+                prefix = ctx.prefix,
+                command_name = embed_title
+            ),
+        
         color = discord.Color.green(),
         timestamp = datetime.datetime.utcnow(),
         author = ctx.author
     )
+
+    # Handle if it's a Group.
+    # This is also the reason why group_help_format() doesn't exist.
+    if isinstance(command, commands.Group):
+        field_value = ""
+        for subcommand in command.commands:
+            field_value += f"`{subcommand.name}`: {subcommand.short_doc}\n"
+        
+        if len(command.commands) > 0:
+            content.add_field(
+                name = "**Subcommands:**",
+                value = field_value,
+                inline = False
+            )
 
     return content
 
@@ -93,6 +115,10 @@ class BigHelp(commands.HelpCommand):
         content = cog_help_format(self.context, cog)
         await self.context.channel.send(embed = content)
         
+    async def send_group_help(self, group):
+        content = command_help_format(self.context, group)
+        await self.context.send(embed = content)
+
     async def send_command_help(self, command):
         content = command_help_format(self.context, command)
         await self.context.send(embed = content)
