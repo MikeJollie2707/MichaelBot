@@ -216,7 +216,6 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await paginate.event(ctx, interupt = False)
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(send_messages = True)
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def nhentai(self, ctx):
         '''
         Search and return a doujin on request.
@@ -227,6 +226,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         # Issue: we're using blocking library...
         pass
     @nhentai.command(name = "random")
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def _random(self, ctx):
         '''
         Search and return a random doujin.
@@ -245,6 +245,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         await self.display_hentai(ctx, doujin)
     @nhentai.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def search(self, ctx, param : typing.Optional[int], *tags):
         '''
         Search and return a doujin based on its tag or ID.
