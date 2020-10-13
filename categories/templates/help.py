@@ -13,8 +13,11 @@ def cog_help_format(ctx, cog):
     display = ""
     for command in cog.get_commands():
         if command.hidden != True:
-            display += f"`{command.name}`: {command.short_doc}\n-----------------------------------------\n"
-    
+            display += f"`{command.name}`: "
+            short_desc = command.short_doc
+            if command.short_doc is None or command.short_doc == "":
+                short_desc = "*No help provided*"
+            
     title_str = f"{cog.qualified_name} ({len(cog.get_commands())} commands): "
     
     content = Facility.get_default_embed(
