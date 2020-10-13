@@ -4,7 +4,7 @@ from discord.ext import commands
 import traceback
 import sys
 import json
-from datetime import datetime
+from datetime import date, datetime
 
 from categories.utilities.db import DB
 
@@ -30,7 +30,11 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_disconnect(self):
-        print("Bot logged out")
+        print(f"Bot logged out on {datetime.utcnow()}")
+
+    @commands.Cog.listener()
+    async def on_resumed(self):
+        print(f"Bot reconnected on {datetime.utcnow()}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
