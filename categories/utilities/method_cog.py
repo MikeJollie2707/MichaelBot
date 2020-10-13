@@ -148,14 +148,16 @@ class Facility(commands.Cog):
         Turn the list of objects into a string.
 
         What it does is just simply turn the list into a string and strip away `[]` and `'`.
-
-        Useful for logging list of permissions.
+        If the list is empty, it'll return the string "None".
 
         Parameter: 
         - `array`: a list.
 
         Return type: `str`
         """
+
+        if len(array) == 0:
+            return "None"
 
         st = str(array)
 
