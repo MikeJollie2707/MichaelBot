@@ -75,9 +75,10 @@ class BigHelp(commands.HelpCommand):
                        **Example 1:** {prefix}{command_name}
                        **Example 2:** {prefix}{command_name} info
                        **Example 3:** {prefix}{command_name} Core
+                       **Example 4:** {prefix}{command_name} changelog
                        
-                       You need: None.
-                       I need: send_messages.'''
+                       **You need:** None.
+                       **I need:** `Send Messages`.'''
         super().__init__(command_attrs = {
             "help": docstring,
             "name": "help-all"
