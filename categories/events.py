@@ -30,11 +30,11 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_disconnect(self):
-        print(f"Bot logged out on {datetime.utcnow()}")
+        print(f"Bot logged out on {datetime.now()}")
 
     @commands.Cog.listener()
     async def on_resumed(self):
-        print(f"Bot reconnected on {datetime.utcnow()}")
+        print(f"Bot reconnected on {datetime.now()}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
