@@ -61,7 +61,9 @@ Alternatively, you may find what you need in the [bot documentation](https://mik
 
 I would prefer if you don't run the bot yourself. The source here is for educational purpose.
 
-Nevertheless, the step to run this bot is fairly simple:
+Nevertheless, the step to run this bot is here (it's quite complicated):
+
+- You only need: `python3`, `virtualenv`, `git`, all at latest version will be good.
 
 - Clone this directory.
 
@@ -105,21 +107,53 @@ git clone https://github.com/MikeJollie2707/MichaelBot.git
         "db": "The db file you created (dbexample.json)"
     }
 }
+// There's example in setup/config.json in case you're confused.
 ```
 
-- If you're confused, just go ahead and look at my `setup/config.json`.
+- Setup a virtual environment.
+
+``` terminal
+# Linux
+python3 -m pip virtualenv venv
+
+# Windows
+py -3 -m pip virtualenv venv
+```
+
+- Activate the environment.
+
+``` terminal
+# Linux
+source venv/bin/activate
+
+# Windows
+# You don't need to do this
+```
+
+- Install the requirement packages.
+
+``` terminal
+# Linux
+python3 -m pip install -r requirement.txt
+
+# Windows
+py -3 -m pip install -r requirement.txt
+```
 
 - To run the bot, run the file `bot.py`.
 
 ``` terminal
-# *Nix
+# Linux
 python3 bot.py TheIndexWithoutSpace
 
 # Windows
-py -3 bot.py TheIndexWithoutSpace
+# Because somehow py -3 will use the default Python interpreter,
+# so for now I only find this will call the virtual Python interpreter.
+.\venv\Scripts\python.exe bot.py TheIndexWithoutSpace
 ```
 
-  - If you're on *Nix, you can also mark the `startup.sh` file as executable, edit the absolute path to repo to run it easily using `./startup.sh`.
+  - If you're on Linux, you can also mark the `startup.sh` file as executable, edit the absolute path to repo to run it using `./startup.sh`.
+  - (EXPERIMENT) If you're on Windows, you can also use `MichaelBot.ps1`, run it in PowerShell and use `. ".\MichaelBot.ps1"` (haven't really tested this yet, but I did do this on a small python file).
 
 ## License
 
@@ -142,15 +176,6 @@ Any sort of contributions are highly appreciated.
   - [ ] Track many stuffs.
   - [ ] Add utility db methods.
   - [ ] Add basic currency.
-- [ ] Debug everything.
-  - [x] `Core`
-  - [x] `Dev`
-  - [x] `Logger`
-  - [x] `Moderation`
-  - [ ] `Music`
-  - [ ] `Server`
-  - [x] `Utility`
-  - [ ] `Events`
 - [ ] Add `Account Age` to `profile`
 - [ ] Update documentation.
 
