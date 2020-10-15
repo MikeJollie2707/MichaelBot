@@ -153,7 +153,7 @@ python3 bot.py TheIndexWithoutSpace
 ```
 
   - If you're on Linux, you can also mark the `startup.sh` file as executable, edit the absolute path to repo to run it using `./startup.sh`.
-  - (EXPERIMENT) If you're on Windows, you can also use `MichaelBot.ps1`, run it in PowerShell and use `. ".\MichaelBot.ps1"` (haven't really tested this yet, but I did do this on a small python file).
+  - If you're on Windows, you can also use `run.ps1`, edit the bot index, open PowerShell and run `. ".\run.ps1"`
 
 ## License
 
