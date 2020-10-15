@@ -11,6 +11,7 @@ import asyncio
 
 __discord_extension__ = [
     "categories.core",
+    "categories.currency",
     "categories.dev",
     "categories.events",
     #"categories.experiment",
