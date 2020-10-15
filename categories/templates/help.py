@@ -11,13 +11,13 @@ def cog_help_format(ctx, cog):
     display = ""
     for command in cog.get_commands():
         if command.hidden != True:
-            display += f"`{command.name}`: "
+            display += f"`{command.name}`:\n"
             short_desc = command.short_doc
             if command.short_doc is None or command.short_doc == "":
                 short_desc = "*No help provided*"
             
-            display += short_desc + '\n'
-            display += ctx.bot.__divider__
+            display += '- ' + short_desc + '\n\n'
+            #display += ctx.bot.__divider__
     
     title_str = f"{cog.qualified_name} ({len(cog.get_commands())} commands): "
     
@@ -27,7 +27,17 @@ def cog_help_format(ctx, cog):
         color = discord.Color.green(),
         timestamp = datetime.datetime.utcnow(),
         author = ctx.author
+    ).set_thumbnail(
+        url = ctx.bot.user.avatar_url
     )
+
+    #for command in cog.get_commands():
+    #    if not command.hidden:
+    #        content.add_field(
+    #            name = f"{command.name} {command.signature}",
+    #            value = command.short_doc,
+    #            inline = False
+    #        )
 
     return content
 
