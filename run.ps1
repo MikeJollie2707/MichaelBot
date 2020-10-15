@@ -1,3 +1,4 @@
 $VenvPythonPath = ".\venv\Scripts\python.exe"
-$command = "$VenvPythonPath bot.py MichaelBot"
+$BotIndex = "MichaelBot" # Edit this
+$command = "$VenvPythonPath bot.py $BotIndex"
 Invoke-Expression $command
