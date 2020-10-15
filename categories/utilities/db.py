@@ -1,10 +1,11 @@
 import discord
 from discord.ext import commands
 
+import datetime
+import typing
+
 import asyncpg
 from asyncpg import exceptions as pg_exception
-
-import datetime
 
 class DB(commands.Cog):
     def __init__(self, bot):
@@ -25,9 +26,9 @@ class DB(commands.Cog):
                     CREATE TABLE IF NOT EXISTS dUsers (
                         id INT8 PRIMARY KEY,
                         name TEXT NOT NULL,
-                        money INT8,
+                        money INT8 DEFAULT 0,
                         last_daily TIMESTAMP,
-                        streak_daily INT4
+                        streak_daily INT4 DEFAULT 0
                     );
                 ''')
                 await conn.execute('''
@@ -95,19 +96,6 @@ class DB(commands.Cog):
         await cls.insert_into(conn, "dGuilds", *args)
     
     @classmethod
-    async def insert_user(cls, conn, *args):
-        """
-        Insert a user data into table `dUsers`. (deprecated)
-
-        Parameter:
-        - `conn`: The connection you want to do.
-            + It's usually just `pool.acquire()`.
-        - `*args`: This must be a list of tuples.
-            + `len(tuple)` must equals to the number of column you want to insert.
-        """
-        await cls.insert_into(conn, "dUsers", *args)
-    
-    @classmethod
     async def insert_member(cls, conn, member : discord.Member):
         """
         Insert a member data into the database.
@@ -151,7 +139,36 @@ class DB(commands.Cog):
 
         return result
 
+    @classmethod
+    async def update_by_id(cls, conn, table_name : str, *args):
+        arg_str = "("
+        for j in range(len(max(*args, key = len))):
+            arg_str += '$' + str(j + 1) + ", "
+        arg_str = arg_str[:-2] + ')'
 
+        await conn.executemany('''
+            UPDATE %s
+            SET 
+        ''')
+
+    @classmethod
+    async def update_member(cls, conn, member : typing.Union[tuple, dict]):
+        member_tuple = []
+        if isinstance(member, dict):
+            for key in member:
+                member_tuple.append(member[key])
+        else:
+            member_tuple = member
+        
+        member_tuple = tuple(member_tuple)
+
+    @classmethod
+    def record_to_dict(cls, record : asyncpg.Record):
+        result = {}
+        for item in record.items():
+            result[item[0]] = item[1]
+        
+        return result
 
     @classmethod
     async def drop_all_table(cls, bot):
