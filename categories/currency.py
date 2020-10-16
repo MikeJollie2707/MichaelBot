@@ -11,6 +11,7 @@ from categories.utilities.db import DB
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidden" : True}):
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '💲'
     
     @commands.command()
     @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
