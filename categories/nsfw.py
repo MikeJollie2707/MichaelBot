@@ -26,7 +26,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def konachan(self, ctx, img_type : str, *, tags : str = ""):
+    async def konachan(self, ctx, safe__any : str, *, tags : str = ""):
         '''
         Send a picture from konachan API.
 
@@ -37,7 +37,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         
         Visit [this page](https://konachan.net/tag) to see all the tags.
 
-        **Usage:** <prefix>**{command_name}** <safe/any> [exact tags separated by space]
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example 1:** {prefix}{command_name} safe blush long_hair
         **Example 2:** {prefix}{command_name} any
@@ -48,9 +48,9 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         if ctx.invoked_subcommand == None:
             SEARCH_ENDPOINT = "https://konachan.net/post.json"
-            if img_type.upper() != "SAFE" and img_type.upper() != "ANY":
+            if safe__any.upper() != "SAFE" and safe__any.upper() != "ANY":
                 raise commands.BadArgument
-            elif img_type.upper() == "SAFE":
+            elif safe__any.upper() == "SAFE":
                 SEARCH_ENDPOINT = "https://konachan.net/post.json"
             else:
                 SEARCH_ENDPOINT = "https://konachan.com/post.json"
@@ -100,7 +100,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                                     #        return False
                                     #
                                     #return True
-                                    return True if img_type.upper() == "ANY" else entry["rating"] == 's'
+                                    return True if safe__any.upper() == "ANY" else entry["rating"] == 's'
                                 
                                 random.shuffle(query)
                                 chosen_entry = discord.utils.find(filter, query)
@@ -150,7 +150,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         '''
         Display top 10 popular tags in konachan.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example:** {prefix}{command_name}
 
@@ -236,7 +236,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         This will show you an absolute random doujin, whether it's a piece of trash or a masterpiece.
 
-        **Usage:** {prefix}**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example:** {prefix}{command_name}
 
@@ -249,13 +249,13 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         await self.display_hentai(ctx, doujin)
     @nhentai.command()
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def search(self, ctx, param : typing.Optional[int], *tags):
+    async def search(self, ctx, id__tags : typing.Optional[int], *tags):
         '''
         Search and return a doujin based on its tag or ID.
 
         If search based on tags, it'll search based on `Most Popular`.
 
-        **Usage:** {prefix}**{command_name}** <id/tags>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example 1:** {prefix}{command_name} 331228
         **Example 2:** {prefix}{command_name} sole-female sole-male
@@ -264,8 +264,8 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
         '''
 
-        if isinstance(param, int):
-            doujin = hentai.Hentai(param)
+        if isinstance(id__tags, int):
+            doujin = hentai.Hentai(id__tags)
 
             await self.display_hentai(ctx, doujin)
         else:

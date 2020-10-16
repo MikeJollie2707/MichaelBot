@@ -17,12 +17,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
-    async def calc(self, ctx, *, content: str):
+    async def calc(self, ctx, *, expression: str):
         '''
         A mini calculator that calculate almost everything.
         Note: Trignometry functions return radian.
 
-        **Usage:** <prefix>**{command_name}** <expression>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} 1+2
         **Example 2:** {prefix}{command_name} 5*(2 + 3)
         **Example 3:** {prefix}{command_name} sqrt(25)
@@ -31,7 +31,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        result = Facility.calculate(content)
+        result = Facility.calculate(expression)
         embed = Facility.get_default_embed(
             title = "Result",
             description = result,
@@ -47,7 +47,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Roll a dice for you.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -59,12 +59,12 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
-    async def embed(self, ctx, *, inp : str = ""):
+    async def embed(self, ctx, *, args : str = ""):
         '''
         Send a full-featured rich embed.
         Note: It is recommended to use `embed info` to know more about how to use this command.
 
-        **Usage:** <prefix>**{command_name}** <args>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per use (user)
         *View `embed help` for examples*
 
@@ -75,14 +75,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         if ctx.invoked_subcommand is None:
             import json
-            inp = inp.strip("```")
-            print(inp)
+            args = args.strip("```")
+            print(args)
             try:
-                embed = discord.Embed.from_dict(json.loads(inp))
+                embed = discord.Embed.from_dict(json.loads(args))
                 await ctx.send(embed = embed)
             except Exception as e:
                 print(e)
-                await ctx.send("It seems you did something wrong. If you're not using a visualizer, use it (link in `embed help`). Otherwise, ask for support.")
+                await ctx.send("It seems you did something wrong. If you're not using a visualizer, use it (link in `embed info`). Otherwise, ask for support.")
     
     @embed.command()
     async def info(self, ctx):
@@ -133,7 +133,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Send a simple embed message.
         Note: You'll respond to 3 questions to set the embed you want.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per use (user)
         **Example:** {prefix}{command_name}
 
@@ -210,7 +210,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         An ultimate measurement to measure everything except gayness.
 
-        **Usage:** <prefix>**{command_name}** <something to use to rate> <something to rate>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 10 seconds per 5 uses (user)
         **Example 1:** {prefix}{command_name} smart Stranger.com
         **Example 2:** {prefix}{command_name} "stupidly dumb" "Nightmare monsters"
@@ -229,7 +229,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         An ultimate measurement of gayness.
 
-        **Usage:** <prefix>**{command_name}** <anything you want to measure>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 10 seconds per 5 uses (user)
         **Example 1:** {prefix}{command_name} MikeJollie
         **Example 2:** {prefix}{command_name} "iPhone 11"
@@ -256,7 +256,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Show the latency of the bot.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -265,7 +265,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         latency = self.bot.latency
 
-        await ctx.send(str(format((latency * 1000), '.2f')) + "ms")
+        await ctx.send(f"{ctx.author.mention} Pong! :ping_pong: " + str(format((latency * 1000), '.2f')) + "ms")
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
@@ -340,7 +340,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Repeat what you say.
 
-        **Usage:** <prefix>**{command_name}** <message>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name} MikeJollie is gay.
 
         **You need:** None.
@@ -357,7 +357,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Send a message to either a channel or a user that the bot can see.
 
-        **Usage:** <prefix>**{command_name}** <user ID / channel ID> <content>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 120 seconds per use (user)
         **Example 1:** {prefix}{command_name} 577663051722129427 Gay.
         **Example 2:** {prefix}{command_name} 400983101507108876 All of you are gay.
@@ -387,7 +387,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Make the bot speak!
 
-        **Usage:** <prefix>**{command_name}** <message>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name} MikeJollie is gay
 
         **You need:** None.

@@ -37,7 +37,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         '''
         Display all the guilds the bot is currently in.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** `dev status`.
@@ -65,7 +65,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Leave the current guild.
         Note: This does not delete the server's config file yet.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** `Owner of the server` OR `dev status`.
@@ -92,12 +92,12 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
 
     @commands.command()
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-    async def reload(self, ctx, name):
+    async def reload(self, ctx, extension_name):
         '''
         Reload a module.
         Useful when you don't want to disconnect the bot but still update your change.
 
-        **Usage:** <prefix>**{command_name}** <extension name>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per use (global cooldown).
         **Example:** {prefix}{command_name} categories.templates
 
@@ -105,13 +105,13 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         **I need:** `Send Messages` (optionally).
         '''
 
-        self.bot.reload_extension(name)
+        self.bot.reload_extension(extension_name)
 
         try:
-            await ctx.send("Reloaded extension " + name)
+            await ctx.send("Reloaded extension " + extension_name)
         except:
             print("Can't send message to %d" % ctx.message.id)
-        print("Reloaded extension " + name)
+        print("Reloaded extension " + extension_name)
     @reload.error
     async def reload_error(self, ctx, error):
         if isinstance(error, commands.ExtensionNotFound):
@@ -124,7 +124,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Reload all modules.
         Useful for OCD people (like MikeJollie) because `reload` will mess up the order in `help` and `help-all`.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per use (global cooldown).
         **Example:** {prefix}{command_name}
 
@@ -158,7 +158,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Note that the command will look over the last 100 messages in the report channel.
 
         **Aliases:** `suggest_response`
-        **Usage:** <prefix>**{command_name}** <message ID> <response>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 60 seconds per 1 use (global)
         **Examples:** {prefix}{command_name} 670493266629886002 I like this idea, but the library doesn't allow so.
 
@@ -202,7 +202,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         '''
         Self-explanatory.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         You need: `dev status`.
@@ -220,7 +220,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         '''
         Disconnect the bot from Discord.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         You need: `bot owner`.

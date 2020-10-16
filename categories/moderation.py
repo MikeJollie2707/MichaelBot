@@ -63,11 +63,11 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     @commands.bot_has_permissions(send_messages = True)
     @commands.bot_has_guild_permissions(ban_members = True)
     @commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
-    async def hackban(self, ctx, id : int, *, reason = None):
+    async def hackban(self, ctx, user_id : int, *, reason = None):
         '''
         Ban a user __outside__ the server.
 
-        **Usage:** <prefix>**{command_name}** <ID> [reason]
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example:** {prefix}{command_name} 472832990012243969 Develope a bot
 
@@ -232,7 +232,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
         Unban a user.
 
-        **Usage:** <prefix>**{command_name}** <ID> [reason]
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example:** {prefix}{command_name} 472832990012243969 You've redeemed your goodness.
 

@@ -30,7 +30,7 @@ class Core(commands.Cog):
         '''
         Show the latest 10 changes of the bot.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -59,7 +59,7 @@ class Core(commands.Cog):
         '''
         Show the latest 10 changes of the bot *behind the scene*.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -87,35 +87,35 @@ class Core(commands.Cog):
         await paginator.event(ctx, interupt = False)
 
     @commands.command()
-    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-    async def help(self, ctx, *, categoryOrcommand = ""):
+    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, manage_messages = True, send_messages = True)
+    async def help(self, ctx, *, command__category = ""):
         '''
         Show compact help about a command, or a category.
         Note: command name and category name is case sensitive; `Core` is different from `core`.
 
-        **Usage:** <prefix>**{command_name}** [command/category]
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} info
         **Example 3:** {prefix}{command_name} Core
                        
         **You need:** None.
-        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+        **I need:** `Read Message History`, `Add Reactions`, `Manage Messages`, `Send Messages`.
         '''
 
         help_command = SmallHelp(ctx)
         
-        if categoryOrcommand == "":
+        if command__category == "":
             await help_command.send_bot_help()
         else:
-            category = self.bot.get_cog(categoryOrcommand)
-            command = self.bot.get_command(categoryOrcommand)
+            category = self.bot.get_cog(command__category)
+            command = self.bot.get_command(command__category)
 
             if category != None:
                 await help_command.send_cog_help(category)
             elif command != None:
                 await help_command.send_command_help(command)
             else:
-                await ctx.send("Command \"%s\" not found." % categoryOrcommand)
+                await ctx.send("Command \"%s\" not found." % command__category)
 
     @commands.command(aliases = ["about"])
     @commands.bot_has_permissions(send_messages = True)
@@ -124,7 +124,7 @@ class Core(commands.Cog):
         Information about the bot.
 
         **Aliases:** `about`
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -191,7 +191,7 @@ class Core(commands.Cog):
         '''
         Provide syntax convention in `help` and `help-all`.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -216,7 +216,7 @@ class Core(commands.Cog):
         '''
         View and set the prefix for the bot.
 
-        **Usage:** <prefix>**{command_name}** [new prefix]
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 1 use (global).
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} %
@@ -236,11 +236,11 @@ class Core(commands.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
-    async def profile(self, ctx, member: discord.Member = None):
+    async def profile(self, ctx, member : discord.Member = None):
         '''
         Information about yourself or another __member__.
 
-        **Usage:** <prefix>**{command_name}** [ID/mention/name/nickname]
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} MikeJollie
         **Example 2:** {prefix}{command_name}
 
@@ -284,6 +284,7 @@ class Core(commands.Cog):
 
         await ctx.send(embed = embed)
 
+    # TODO: Rewrite this command signature.
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
@@ -349,7 +350,7 @@ class Core(commands.Cog):
         Information about the server that invoke this command.
 
         **Aliases:** `server-info`
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}
 
         **You need:** None.

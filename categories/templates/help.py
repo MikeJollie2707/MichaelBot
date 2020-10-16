@@ -11,7 +11,11 @@ def cog_help_format(ctx, cog):
     display = ""
     for command in cog.get_commands():
         if command.hidden != True:
-            display += f"`{command.name}`:\n"
+            command_title = command.name
+            if command.signature != "":
+                command_title += ' ' + command.signature.replace("__", '/').replace("_", ' ')
+            
+            display += f"`{command_title}`:\n"
             short_desc = command.short_doc
             if command.short_doc is None or command.short_doc == "":
                 short_desc = "*No help provided*"
@@ -43,14 +47,21 @@ def cog_help_format(ctx, cog):
 
 def command_help_format(ctx, command):
     # Gotta add the supercommand to the command.
-    embed_title = command.full_parent_name + ' ' + command.name
+    embed_title = command.full_parent_name + \
+                  ' ' if command.full_parent_name != "" else '' + \
+                  command.name
+    
+
+    command_signature = command.signature
+    command_signature = command_signature.replace('__', '/').replace('_', ' ')
 
     content = Facility.get_default_embed(
         title = embed_title,
         description = "*No help provided*" if command.help is None else
             command.help.format(
                 prefix = ctx.prefix,
-                command_name = embed_title
+                command_name = embed_title,
+                command_signature = command_signature
             ),
         
         color = discord.Color.green(),
