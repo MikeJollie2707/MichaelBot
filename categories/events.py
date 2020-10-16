@@ -6,6 +6,7 @@ import sys
 import json
 from datetime import date, datetime
 
+from categories.utilities.method_cog import Facility
 from categories.utilities.db import DB
 
 class Events(commands.Cog):
@@ -97,10 +98,12 @@ class Events(commands.Cog):
             await ctx.send("Hey there slow down! %0.2f seconds left!" % error.retry_after)
 
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.send("You are missing the following permission(s) to execute this command: " + str(error.missing_perms))
+            missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
+            await ctx.send("You are missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         
         elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send("I'm missing the following permission(s) to execute this command: " + str(error.missing_perms))
+            missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
+            await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
             
         elif isinstance(error, commands.NSFWChannelRequired):
             await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
