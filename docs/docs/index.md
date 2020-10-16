@@ -41,6 +41,8 @@ If the parameter has space, use `"double quotes"` to make it a param.
 
 - Example: if it's `profile [mention/ID/name/nickname]` and the `name` is `Hello World` then you will use `profile "Hello World"`. Using `profile Hello World` will most likely **raise error**.
 
+`<member>` or `<user>` or `<channel>` or `<guild>`: Discord related argument. It is the equivalent of `<ID/discrimination/mention/name/nickname>`.
+
 ### Prefix
 
 This document will assume you know **how to provoke a command** using `<prefix><command_name>`. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).
