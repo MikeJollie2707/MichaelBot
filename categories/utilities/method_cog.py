@@ -175,6 +175,24 @@ class Facility(commands.Cog):
             return "Go Live"  
 
     @classmethod
+    def clean_signature(self, command_signature : str) -> str:
+        """
+        This method automatically convert a command's signature into a more friendly help message
+        display in the `Usage` section.
+        
+        Note that your parameter's variable should be named carefully:
+        - `a_command` will be `a command`
+        - `a__command` will be `a/command`
+
+        Parameter:
+        - `command_signature`: the command's signature.
+        
+        Return type: `str`.
+        """
+
+        return command_signature.replace('__', '/').replace('_', ' ')
+
+    @classmethod
     def get_default_embed(
         cls, 
         title : str = "", 
