@@ -47,10 +47,10 @@ def cog_help_format(ctx, cog):
 
 def command_help_format(ctx, command):
     # Gotta add the supercommand to the command.
-    embed_title = command.full_parent_name + \
-                  ' ' if command.full_parent_name != "" else '' + \
-                  command.name
-    
+    embed_title = command.full_parent_name
+    if command.full_parent_name != "":
+        embed_title += ' '
+    embed_title += command.name
 
     command_signature = command.signature
     command_signature = command_signature.replace('__', '/').replace('_', ' ')
