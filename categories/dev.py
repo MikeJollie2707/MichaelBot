@@ -229,7 +229,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
 
         await ctx.send("Disconnecting...")
         await self.bot.close()
-        print("Bot shutdown from command. You can now close the terminal.")
+        print("Bot shutdown from command.")
 
 
         
