@@ -11,6 +11,12 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '🔨'
+    
+    async def cog_check(self, ctx):
+        if isinstance(ctx.channel, discord.DMChannel):
+            raise commands.NoPrivateMessage()
+        
+        return True
 
     @commands.command()
     @commands.has_guild_permissions(ban_members = True)
