@@ -1,6 +1,18 @@
 <!-- omit in toc -->
 # Moderation commands
 
+<!-- omit in toc -->
+## Table of Contents
+
+- [\_\_init\_\_ [INTERNAL]](#__init__-internal)
+- [ban](#ban)
+  - [ban_eh [INTERNAL]](#ban_eh-internal)
+- [hackban](#hackban)
+- [kick](#kick)
+  - [kick_eh [INTERNAL]](#kick_eh-internal)
+- [mute [INCOMPLETE] [DEVELOPING]](#mute-incomplete-developing)
+- [unban](#unban)
+
 These are commands that performs moderating action.
 
 ## \_\_init\_\_ [INTERNAL]
@@ -45,7 +57,7 @@ ban <member> [reason]
 
 *This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
 
-An local error handler for the `ban` command.
+A local error handler for the `ban` command.
 
 It is currently only response to the `BadArgument` exception, which signify the user is not in the guild cache.
 

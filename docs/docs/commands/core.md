@@ -1,6 +1,21 @@
 <!-- omit in toc -->
 # Core commands
 
+<!-- omit in toc -->
+## Table of Contents
+- [\_\_init\_\_ [INTERNAL]](#__init__-internal)
+- [cog_check [INTERNAL]](#cog_check-internal)
+- [changelog](#changelog)
+  - [changelog dev](#changelog-dev)
+- [help](#help)
+- [help-all](#help-all)
+- [info](#info)
+- [note](#note)
+- [prefix [DEPRECATED]](#prefix-deprecated)
+- [profile](#profile)
+- [report](#report)
+- [serverinfo](#serverinfo)
+
 These are commands that are mostly related to information.
 
 ## \_\_init\_\_ [INTERNAL]
@@ -19,57 +34,48 @@ A check that apply to all the command in this category. This check will check if
 
 Show the latest 10 changes of the bot.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-async def changelog(self, ctx):
-```
-
-**Simplified Signature:**
-
-```
-changelog
-```
+**Usage:** `{prefix}changelog`
 
 **Example:** `$changelog`
 
-**Expected Output:** *an embed with reactions to navigate*
+**You need:** None.
+
+**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+
+***Subcommands:*** [dev](#changelog-dev)
+
+### changelog dev
+
+Show the latest 10 changes of the bot *behind the scene*.
+
+**Usage:** `{prefix}changelog dev`
+
+**Example:** `$changelog dev`
+
+**You need:** None.
+
+**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## help
 
-Show compact help about a command or a category. Note that the command name and category name is case sensitive.
+Show compact help about a command, or a category.
 
-**Full Signature:**
+Note: command name and category name is case sensitive; `Core` is different from `core`.
 
-```py
-@commands.command()
-@commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-async def help(self, ctx, categoryOrcommand = ""):
-```
-
-**Simplified Signature:**
-
-```
-help [category/command]
-```
+**Usage:** `<prefix>help [command/category]`
 
 **Parameters:**
 
-- `category/command`: The category's name or the command's name or the command's aliases.
+- `command/category`: The category's name or the command's name or the command's aliases. This also includes subcommand.
 
 **Examples:**
 
 - **Example 1:** `$help Core`
 - **Example 2:** `$help info`
-- **Example 3:** `$help`
+- **Example 3:** `$help changelog dev`
 
-**Expected Output:**
-
-- Example 1: *an embed with reactions to navigate*
-- Example 2: *an embed with information*
-- Example 3: *an embed with reactions to select*
+**You need:** None.
+**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## help-all
 
@@ -77,17 +83,7 @@ Show help about the bot, a command, or a category.
 
 Note: command name and category name is case sensitive; Core is different from core.
 
-**Full Signature:**
-
-```py
-# Doesn't exist
-```
-
-**Simplified Signature:**
-
-```
-help-all [category/command]
-```
+**Usage:** `<prefix>help-all [command/category]`
 
 **Parameters:**
 
@@ -99,34 +95,25 @@ help-all [category/command]
 - **Example 2:** `$help-all info`
 - **Example 3:** `$help-all`
 
-**Expected Output:**
+**You need:** None.
 
-- Example 1: *an embed with information*
-- Example 2: *an embed with information*
-- Example 3: *an embed with information*
+**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## info
 
 Provide information about the bot.
 
-**Full Signature:**
-
-```py
-@commands.command(aliases = ["about"])
-@commands.bot_has_permissions(send_messages = True)
-async def info(self, ctx):
-```
-
-**Simplified Signature:**
-```
-info
-```
+**Usage:** `<prefix>info`
 
 **Example:** `$info`
 
-**Expected Output:** *an embed with information*
+**You need:** None.
 
-## note
+**The bot need:** `Send Messages`.
+
+## note [DEPRECATED]
+
+*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
 
 Provide syntax convention for `help` and `help-all`. All it does is putting a link to this documentation.
 
@@ -186,19 +173,7 @@ New prefix: !
 
 Provide information about you or another member.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.bot_has_permissions(send_messages = True)
-async def profile(self, ctx, member: discord.Member = None):
-```
-
-**Simplified Signature:**
-
-```
-profile [member]
-```
+**Usage:** `<prefix>profile [member]`
 
 **Parameter:**
 
@@ -206,68 +181,47 @@ profile [member]
   
 **Examples:**
 
-- **Example 1:** `$profile 472832990012243969` (recommended if you turn Developer Mode)
+- **Example 1:** `$profile 472832990012243969` (recommended if you turn Developer Mode on)
 - **Example 2:** `$profile MikeJollie#1067` (recommended for normal uses)
 - **Example 3:** `$profile`
 
-**Expected Output:** *an embed with information*
+**You need:** None.
+
+**The bot need:** `Send Messages`.
 
 ## report
 
 Report a bug or suggest new features for the bot.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.bot_has_permissions(manage_messages = True, send_messages = True)
-@commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-async def report(self, ctx, *, content : str):
-```
-
-**Simplified Signature:**
-
-```
-report <type> <content>
-```
+**Usage:** `<prefix>report <report_type> <content>`
 
 **Parameters:**
 
-- `type`: Either `report` or `suggest`, based on your need. It is recommended to use the correct label for the report/suggestion to be easily viewed.
+- `report_type`: Either `report` or `suggest`, based on your need. It is recommended to use the correct label for the report/suggestion to be easily viewed.
 - `content`: The report/suggestion.
+
+**Cooldown:** 30 seconds per use (user)
 
 **Examples:**
 
 - **Example 1:** `$report report The command xyz raise error (full error here...)`
 - **Example 2:** `$report suggest The command profile should have this feature (feature here...)`
 
-**Expected Output:**
-
-```py
-Your opinion has been sent.
-```
+**You need:** None.
+**The bot need:** `Manage Messages`, `Send Messages`.
 
 ## serverinfo
 
 Provide information about the server that invoke the command.
 
-**Full Signature:**
+**Aliases:** `server-info`
 
-```py
-@commands.command(aliases = ["server-info"])
-@commands.bot_has_permissions(send_messages = True)
-async def serverinfo(self, ctx):
-```
-
-**Simplified Signature:**
-
-```
-serverinfo
-server-info
-```
+**Usage:** `<prefix>serverinfo`
 
 **Example:** `$serverinfo`
 
-**Expected Output:** *an embed with information*
+**You need:** None.
 
-*This document is last updated on May 26th (PT) by MikeJollie#1067*
+**The bot need:** `Send Messages`.
+
+*This document is last updated on Oct 31st (PT) by MikeJollie#1067*

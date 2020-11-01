@@ -1,11 +1,15 @@
 <!-- omit in toc -->
-# Music [DEVELOPING]
+# Music [OUTDATED] [DEPRECATED]
 
-*This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.*
+*This section is labeled as [OUTDATED], will be updated in the future.*
+
+*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
 
 *This document is missing many functions/methods due to the complexity. It is currently only shows the commands.*
 
 These are commands that play music in voice channel. It is currently support YouTube, SoundCloud, Twitch, Vimeo and Mixer.
+
+***Note: This section might be removed in the future. In the mean time, every information below is not correct.***
 
 ## connect
 
@@ -281,4 +285,4 @@ repeat
 
 **Expected Output:** *nothing*
 
-*This document is last updated on May 26th (PT) by MikeJollie#1067*
+*This document is last updated on Oct 31st (PT) by MikeJollie#1067*

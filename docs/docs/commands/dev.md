@@ -3,6 +3,19 @@
 
 These are the commands that are only for the bot developers to use ~~to abuse power~~.
 
+## Table of Contents
+
+- [is_dev [INTERNAL]](#is_dev-internal)
+- [\_\_init\_\_ [INTERNAL]](#__init__-internal)
+- [cog_check [INTERNAL]](#cog_check-internal)
+- [all_guild](#all_guild)
+- [leave_guild](#leave_guild)
+- [reload](#reload)
+  - [reload_eh [INTERNAL]](#reload_eh-internal)
+- [reload_all_extension](#reload_all_extension)
+- [report_response](#report_response)
+- [reset\_all\_cooldown](#reset_all_cooldown)
+
 ## is_dev [INTERNAL]
 
 *This section is labeled as [INTERNAL], meaning that it is **NOT** a command. It is here only to serve the developers purpose.*
@@ -170,4 +183,16 @@ reset_all_cooldown
 
 **Expected Output:** `All cooldown reseted.`
 
-*This document is last updated on May 26th (PT) by MikeJollie#1067*
+## shutdown
+
+Disconnect the bot from Discord.
+
+**Usage:** `<prefix>shutdown`
+
+**Example:** `$cooldown`
+
+**You need:** opted-in dev.
+
+**The bot need:** `Send Messages`.
+
+*This document is last updated on Oct 31st (PT) by MikeJollie#1067*
