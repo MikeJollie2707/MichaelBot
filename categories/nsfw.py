@@ -20,6 +20,8 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     async def cog_check(self, ctx):
         if not ctx.channel.is_nsfw():
             raise commands.NSFWChannelRequired(ctx.channel)
+        elif isinstance(ctx.channel, discord.DMChannel):
+            raise commands.NoPrivateMessage()
         
         return True
 

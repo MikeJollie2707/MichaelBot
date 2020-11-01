@@ -11,6 +11,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         self.bot = bot
         self.emoji = '🛠'
     
+    async def cog_check(self, ctx):
+        if isinstance(ctx.channel, discord.DMChannel):
+            raise commands.NoPrivateMessage()
+        
+        return True
+    
     @commands.command(aliases = ["log-enable"])
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(send_messages = True)
