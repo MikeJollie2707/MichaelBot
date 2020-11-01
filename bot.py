@@ -113,5 +113,13 @@ if __name__ == "__main__":
                 bot.load_extension(extension)
             
             bot.run(TOKEN)
+
+            # Close the pool connection here, just to be safe
+            # but bcuz of async stuffs, I'll have to rewrite quite a bit
+            # and I don't have time rn.
+            # await bot.pool.close()
+
+            print("Bot closed all connection from the pool.")
+            print("Bot disconnected. You can now close the terminal.")
         except Exception:
             print(traceback.print_exc())
