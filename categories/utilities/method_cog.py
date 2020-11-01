@@ -66,7 +66,7 @@ class Facility(commands.Cog):
         return answer
 
     @classmethod
-    def convert_roleperms_dpy_discord(self, role_permissions : str):
+    def convert_roleperms_dpy_discord(self, role_permissions : str) -> str:
         if role_permissions == "administrator":
             return "Administrator"
         if role_permissions == "view_audit_log":
@@ -127,7 +127,7 @@ class Facility(commands.Cog):
             return "Go Live"
     
     @classmethod
-    def convert_channelperms_dpy_discord(self, channel_permissions : str):
+    def convert_channelperms_dpy_discord(self, channel_permissions : str) -> str:
         if channel_permissions == "create_instant_invite":
             return "Create Invite"
         if channel_permissions == "manage_channels":
