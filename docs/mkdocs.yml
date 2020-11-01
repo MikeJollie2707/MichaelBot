@@ -4,6 +4,7 @@ nav:
   - "Home": index.md
   - "Commands":
     - "Core": commands/core.md
+    - "Currency": commands/currency.md
     - "Dev": commands/dev.md
     - "Bot events": commands/events.md
     - "Experiment": commands/experiment.md
@@ -18,6 +19,7 @@ nav:
     - "Help": template/help.md
   - "Utilities":
     - "Utility methods": utilities/methods.md
+    - "Database methods": utilities/db.md
 
 theme:
   name: "readthedocs"
