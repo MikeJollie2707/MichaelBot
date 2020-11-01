@@ -13,9 +13,9 @@ def cog_help_format(ctx, cog):
         if command.hidden != True:
             command_title = command.name
             if command.signature != "":
-                command_title += ' ' + command.signature.replace("__", '/').replace("_", ' ')
+                command_title += ' ' + Facility.clean_signature(command.signature)
             
-            display += f"`{command_title}`:\n"
+            display += f"**{command_title}:**\n"
             short_desc = command.short_doc
             if command.short_doc is None or command.short_doc == "":
                 short_desc = "*No help provided*"
@@ -53,7 +53,7 @@ def command_help_format(ctx, command):
     embed_title += command.name
 
     command_signature = command.signature
-    command_signature = command_signature.replace('__', '/').replace('_', ' ')
+    command_signature = Facility.clean_signature(command.signature)
 
     content = Facility.get_default_embed(
         title = embed_title,
