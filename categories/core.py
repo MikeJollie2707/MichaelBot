@@ -21,8 +21,8 @@ class Core(commands.Cog):
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
-        else:
-            return True
+        
+        return True
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
@@ -97,6 +97,7 @@ class Core(commands.Cog):
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} info
         **Example 3:** {prefix}{command_name} Core
+        **Example 4:** {prefix}{command_name} changelog dev
                        
         **You need:** None.
         **I need:** `Read Message History`, `Add Reactions`, `Manage Messages`, `Send Messages`.
