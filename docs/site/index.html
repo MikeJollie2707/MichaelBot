@@ -7,13 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="None">
   
+  
   <link rel="shortcut icon" href="img/favicon.ico">
-  <title>Home - MichaelBot Documentation</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <title>MichaelBot Documentation</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -24,7 +25,7 @@
   
   <script src="js/jquery-2.1.1.min.js" defer></script>
   <script src="js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -35,6 +36,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href="." class="icon icon-home"> MichaelBot Documentation</a>
         <div role="search">
@@ -45,106 +47,71 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1 current">
-		
-    <a class="current" href=".">Home</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#welcome-to-michaelbots-documentation">Welcome to MichaelBot's documentation</a></li>
-    
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#convention">Convention</a>
         <ul>
-        
-            <li><a class="toctree-l3" href="#table-of-contents">Table of Contents</a></li>
-        
-            <li><a class="toctree-l3" href="#introduction">Introduction</a></li>
-        
-            <li><a class="toctree-l3" href="#convention">Convention</a></li>
-        
+    <li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prefix">Prefix</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usermember-concept">User/Member Concept</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#permissions">Permissions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cooldown">Cooldown</a>
+    </li>
         </ul>
-    
-
+    </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Commands</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="commands/core/">Core</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/dev/">Dev</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/events/">Bot events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/experiment/">Experiment</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/logger/">Logging events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/moderation/">Moderation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/music/">Music</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/server/">Settings</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="commands/utility/">Utility</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Templates</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="template/menu/">Menu</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="template/paginator/">Paginator</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="template/help/">Help</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Utilities</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="utilities/methods/">Utility methods</a>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Commands</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/core/">Core</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/currency/">Currency</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/dev/">Dev</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/events/">Bot events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/experiment/">Experiment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/logger/">Logging events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/moderation/">Moderation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/music/">Music</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/server/">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="commands/utility/">Utility</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Templates</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="template/menu/">Menu</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="template/paginator/">Paginator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="template/help/">Help</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Utilities</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="utilities/methods/">Utility methods</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="utilities/db/">Database methods</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -169,6 +136,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -188,28 +156,26 @@
 <li><a href="#usermember-concept">User/Member Concept</a></li>
 <li><a href="#permissions">Permissions</a></li>
 <li><a href="#cooldown">Cooldown</a></li>
-<li><a href="#understanding-commands-signature">Understanding command's signature</a></li>
 </ul>
 <h2 id="introduction">Introduction</h2>
 <p>This is the official documentation for MichaelBot. This can be used as a developer documentation or user documentation.</p>
 <p>If you want to invite the bot, you won't be able to, yet. You can however, ask <code>MikeJollie#1067</code> to invite the bot via <a href="https://discord.gg/jeMeyNw">MichaelBot support server</a>.</p>
 <p>The source of the bot is available publicly on <a href="https://github.com/MikeJollie2707/MichaelBot">GitHub</a>.</p>
 <h2 id="convention">Convention</h2>
-<p>These are the conventions I use throughout this document:</p>
+<p>The conventions in this document should be relatively straightforward. The conventions uses in <code>help</code> is a bit less clear, due to not having enough spaces.</p>
+<p>These are the conventions I use in the help command:</p>
 <h3 id="parameters">Parameters</h3>
 <p>These are the parameter types you will find in <code>help</code> and in <code>Simplified Signature</code> section later.</p>
 <p><code>&lt;parameter&gt;</code>: Required parameter. The bot will <strong>raise error without this parameter</strong>.</p>
 <p><code>[parameter]</code>: Optional parameter. The bot can <strong>still works without this parameter</strong>.</p>
-<p><code>&lt;param1/param2/...&gt;</code> or <code>[param1/param2/...]</code>: You can provide <strong>either</strong> param style. <strong>The accuracy is in descending order</strong>.</p>
-<ul>
-<li>Example: if it's <code>profile [mention/ID/name/nickname]</code>, means you can, optionally, provide <strong>either the mention, the id or the name/nickname</strong> of the user. Using <code>mention</code> or <code>id</code> will provide <strong>more accuracy</strong> than <code>name/nickname</code>.</li>
-</ul>
+<p><code>&lt;param1/param2/...&gt;</code> or <code>[param1/param2/...]</code>: You can provide <strong>either</strong> param style.</p>
 <p>If the parameter has space, use <code>"double quotes"</code> to make it a param.</p>
 <ul>
-<li>Example: if it's <code>profile [mention/ID/name/nickname]</code> and the <code>name</code> is <code>Hello World</code> then you will use <code>profile "Hello World"</code>. Using <code>profile Hello World</code> will most likely <strong>raise error</strong>.</li>
+<li>Example: if it's <code>profile [mention/ID/name/nickname]</code> and the <code>name</code> is <code>Hello World</code> then you will use <code>profile "Hello World"</code>.</li>
 </ul>
+<p><code>&lt;member&gt;</code> or <code>&lt;user&gt;</code> or <code>&lt;channel&gt;</code> or <code>&lt;guild&gt;</code>: Discord related argument. It is the equivalent of <code>&lt;ID/discrimination/mention/name/nickname&gt;</code>.</p>
 <h3 id="prefix">Prefix</h3>
-<p>This document will assume you know <strong>how to provoke a command</strong> using <code>&lt;prefix&gt;&lt;command_name&gt;</code>. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).</p>
+<p>This document will assume you know <strong>how to use a command</strong> using <code>&lt;prefix&gt;&lt;command_name&gt;</code>. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).</p>
 <ul>
 <li>The default prefix is <code>$</code> but no it doesn't have $sudo.</li>
 </ul>
@@ -226,7 +192,7 @@
 <li><code>You need</code>: The required permission <strong>you</strong> need to have to execute the command.</li>
 <li><code>I need</code>: The required permission <strong>the bot</strong> need to have to execute the command.</li>
 </ul>
-<p>This document will asssume the bot has <code>Send Messages</code> and <code>Read Messages</code> in the channel you provoke the command.</p>
+<p>This document will assume the bot always has <code>Send Messages</code> and <code>Read Messages</code> in the channel you use the command.</p>
 <h3 id="cooldown">Cooldown</h3>
 <p>The convention for cooldown syntax in <code>help</code> is <code>x seconds per n use(s) (cooldown type)</code>.</p>
 <p><code>x</code>: The cooldown <strong>duration</strong> before you can use the command.</p>
@@ -242,41 +208,7 @@
 <li><code>member</code>: The cooldown applies to that <strong>certain member</strong>.</li>
 <li>Example: If the member <code>MikeJollie</code> invoke <code>test</code> n times, <strong>that certain member</strong> can not invoke <code>MikeJollie</code> <strong>in the same server he invoked</strong> again until x seconds are passed. <strong>He can invoke the command in a different server in that duration however</strong>.</li>
 </ul>
-<h3 id="understanding-commands-signature">Understanding command's signature</h3>
-<p>If you're not a geek, you can refer to <code>help &lt;command&gt;</code> and read the sections above.</p>
-<p>A typical command's signature is as follow:</p>
-<pre><code class="py">@commands.command(aliases = [&quot;alias1&quot;, &quot;alias2&quot;])
-@commands.has_permissions(manage_messages = True)
-@commands.has_guild_permissions(...)
-@commands.bot_has_permissions(...)
-@commands.bot_has_guild_permissions(...)
-@commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.default)
-async def test(self, ctx, param1, param2 : discord.User, param3 : discord.User = None):
-</code></pre>
-
-<p><strong>The first line</strong>'s significance is the <code>aliases = []</code>. It <strong>tells that the command has the following alias(es)</strong>, which can be used instead of using the command's name.</p>
-<p><strong>The second line</strong> means <strong>the user who invoke the command must have a certain permission at the invoked channel to invoke the command</strong>.</p>
-<ul>
-<li>In this example, the user must have <code>Manage Messages</code> permission in the channel to use the command.</li>
-</ul>
-<p><strong>The third line</strong> is similar to the second line, except <strong>it consider the guild's permission</strong>.</p>
-<ul>
-<li>For example, a member that is not allowed to add reactions to a certain channel can still invoke the command if the member's roles allowed.</li>
-</ul>
-<p><strong>The fourth line</strong> is the same as the second line except it <strong>checks the bot's permission</strong>.</p>
-<p><strong>The fifth line</strong> is the same as the third line except it <strong>checks the bot's guild permission</strong>.</p>
-<p><strong>The sixth line defines the cooldown for the command</strong>. <code>rate</code> means <code>x</code>, <code>per</code> means <code>n</code> and <code>type</code> means <code>cooldown type</code> in <a href="#cooldown">cooldown</a>.</p>
-<ul>
-<li><code>default</code> is <code>global</code>.</li>
-</ul>
-<p>The last line defines the command with the name <code>test</code>, that accept at max 3 parameters (ignore <code>self</code> and <code>ctx</code>).</p>
-<ul>
-<li>The first argument is <code>param1</code>, and it is required.</li>
-<li>The second argument is <code>param2</code>, and it is required. However, the bot will intepret <code>param2</code> as if it is a <a href="#usermember-concept">User</a>, and so the parameter will accept <code>&lt;ID/discriminator/mention/name/nickname&gt;</code>. If the bot fails to convert to a User, it'll raise error.</li>
-<li>The third argument is <code>param3</code>, and it is optional. It'll do the same thing as <code>param2</code>, but if it doesn't presence, the bot will ignore it.</li>
-<li><code>test hey MikeJollie</code> is valid, <code>test</code> is invalid, <code>test hey MikeJollie Stranger.com</code> is valid, <code>test hey</code> is invalid.</li>
-</ul>
-<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
+<p><em>This document is last updated on Oct 31st (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>
@@ -297,7 +229,7 @@ async def test(self, ctx, param1, param2 : discord.User, param3 : discord.User =
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -307,7 +239,7 @@ async def test(self, ctx, param1, param2 : discord.User, param3 : discord.User =
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
@@ -319,15 +251,16 @@ async def test(self, ctx, param1, param2 : discord.User, param3 : discord.User =
     <script>var base_url = '.';</script>
     <script src="js/theme.js" defer></script>
       <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
 
 <!--
-MkDocs version : 1.0.4
-<<<<<<< HEAD
-Build Date UTC : 2020-06-08 06:23:04
-=======
-Build Date UTC : 2020-08-09 01:15:26
->>>>>>> 059783d3883b92f3d460bb94c90ebb9892117d2d
+MkDocs version : 1.1.2
+Build Date UTC : 2020-11-01 20:27:10.953614+00:00
 -->

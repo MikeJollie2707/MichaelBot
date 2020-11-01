@@ -75,6 +75,7 @@ Note: command name and category name is case sensitive; `Core` is different from
 - **Example 3:** `$help changelog dev`
 
 **You need:** None.
+
 **The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## help-all

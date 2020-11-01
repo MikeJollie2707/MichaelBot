@@ -7,13 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Dev - MichaelBot Documentation</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -24,7 +25,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -35,6 +36,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href="../.." class="icon icon-home"> MichaelBot Documentation</a>
         <div role="search">
@@ -45,118 +47,79 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Commands</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../core/">Core</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Dev</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#dev-commands">Dev commands</a></li>
-    
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Commands</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../core/">Core</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../currency/">Currency</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Dev</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#is_dev-internal">is_dev [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#__init__-internal">__init__ [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cog_check-internal">cog_check [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#all_guild">all_guild</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#leave_guild">leave_guild</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reload">reload</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#is_dev-internal">is_dev [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#cog_check-internal">cog_check [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#all_guild">all_guild</a></li>
-        
-            <li><a class="toctree-l4" href="#leave_guild">leave_guild</a></li>
-        
-            <li><a class="toctree-l4" href="#reload">reload</a></li>
-        
-            <li><a class="toctree-l4" href="#reload_all_extension">reload_all_extension</a></li>
-        
-            <li><a class="toctree-l4" href="#report_response">report_response</a></li>
-        
-            <li><a class="toctree-l4" href="#reset95all95cooldown">reset_all_cooldown</a></li>
-        
+    <li class="toctree-l3"><a class="reference internal" href="#reload_eh-internal">reload_eh [INTERNAL]</a>
+    </li>
         </ul>
-    
-
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reload_all_extension">reload_all_extension</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#report_response">report_response</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reset_all_cooldown">reset_all_cooldown</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#shutdown">shutdown</a>
+    </li>
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../events/">Bot events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../experiment/">Experiment</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../logger/">Logging events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../moderation/">Moderation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../music/">Music</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../server/">Settings</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utility/">Utility</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Templates</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../template/menu/">Menu</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../template/paginator/">Paginator</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../template/help/">Help</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Utilities</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../utilities/methods/">Utility methods</a>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../events/">Bot events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../experiment/">Experiment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../logger/">Logging events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../moderation/">Moderation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../music/">Music</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../server/">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utility/">Utility</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Templates</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/menu/">Menu</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/paginator/">Paginator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/help/">Help</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Utilities</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utilities/methods/">Utility methods</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utilities/db/">Database methods</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -185,6 +148,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -194,14 +158,27 @@
 
 <h1 id="dev-commands">Dev commands</h1>
 <p>These are the commands that are only for the bot developers to use ~~to abuse power~~.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#is_dev-internal">is_dev [INTERNAL]</a></li>
+<li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#cog_check-internal">cog_check [INTERNAL]</a></li>
+<li><a href="#all_guild">all_guild</a></li>
+<li><a href="#leave_guild">leave_guild</a></li>
+<li><a href="#reload">reload</a></li>
+<li><a href="#reload_eh-internal">reload_eh [INTERNAL]</a></li>
+<li><a href="#reload_all_extension">reload_all_extension</a></li>
+<li><a href="#report_response">report_response</a></li>
+<li><a href="#reset_all_cooldown">reset_all_cooldown</a></li>
+</ul>
 <h2 id="is_dev-internal">is_dev [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>This is a check to see if the invoker is a developer.</p>
-<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<h2 id="__init__-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category.</p>
 <h2 id="cog_check-internal">cog_check [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A check that apply to all the command in this category. This check will check if <code>is_dev(ctx.author)</code> and <code>isDM(ctx.channel)</code>, raise <code>CheckFailure()</code> and <code>NoPrivateMessage()</code> respectively.</p>
 <h2 id="all_guild">all_guild</h2>
 <p>Display all guilds the bot is in.</p>
@@ -247,7 +224,7 @@ async def reload(self, ctx, name):
 <p><strong>Example:</strong> <code>$reload categories.dev</code></p>
 <p><strong>Expected Output:</strong> <code>Reloaded extension categories.dev</code></p>
 <h3 id="reload_eh-internal">reload_eh [INTERNAL]</h3>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A local error handler for the <code>reload</code> command.</p>
 <p>It is currently only response to the <code>ModuleNotFound</code> exception.</p>
 <h2 id="reload_all_extension">reload_all_extension</h2>
@@ -286,7 +263,7 @@ suggest_response &lt;messageID&gt; &lt;response&gt;
 </ul>
 <p><strong>Example:</strong> <code>$report_response 649139994270892033 Nah</code></p>
 <p><strong>Expected Output:</strong> <em>embed edited</em></p>
-<h2 id="reset95all95cooldown">reset_all_cooldown</h2>
+<h2 id="reset_all_cooldown">reset_all_cooldown</h2>
 <p>Reset all cooldowns on every commands.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command()
@@ -299,7 +276,13 @@ async def reset_all_cooldown(self, ctx):
 
 <p><strong>Example:</strong> <code>$reset_all_cooldown</code></p>
 <p><strong>Expected Output:</strong> <code>All cooldown reseted.</code></p>
-<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
+<h2 id="shutdown">shutdown</h2>
+<p>Disconnect the bot from Discord.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;shutdown</code></p>
+<p><strong>Example:</strong> <code>$cooldown</code></p>
+<p><strong>You need:</strong> opted-in dev.</p>
+<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
+<p><em>This document is last updated on Oct 31st (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>
@@ -310,7 +293,7 @@ async def reset_all_cooldown(self, ctx):
         <a href="../events/" class="btn btn-neutral float-right" title="Bot events">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../core/" class="btn btn-neutral" title="Core"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../currency/" class="btn btn-neutral" title="Currency"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -322,7 +305,7 @@ async def reset_all_cooldown(self, ctx):
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -332,11 +315,11 @@ async def reset_all_cooldown(self, ctx):
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../core/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../currency/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../events/" style="color: #fcfcfc">Next &raquo;</a></span>
@@ -346,6 +329,11 @@ async def reset_all_cooldown(self, ctx):
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
