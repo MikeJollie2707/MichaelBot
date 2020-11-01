@@ -11,7 +11,6 @@
   - [User/Member Concept](#usermember-concept)
   - [Permissions](#permissions)
   - [Cooldown](#cooldown)
-  - [Understanding command's signature](#understanding-commands-signature)
 
 ## Introduction
 
@@ -23,7 +22,9 @@ The source of the bot is available publicly on [GitHub](https://github.com/MikeJ
 
 ## Convention
 
-These are the conventions I use throughout this document:
+The conventions in this document should be relatively straightforward. The conventions uses in `help` is a bit less clear, due to not having enough spaces.
+
+These are the conventions I use in the help command:
 
 ### Parameters
 
@@ -33,19 +34,17 @@ These are the parameter types you will find in `help` and in `Simplified Signatu
 
 `[parameter]`: Optional parameter. The bot can **still works without this parameter**.
 
-`<param1/param2/...>` or `[param1/param2/...]`: You can provide **either** param style. **The accuracy is in descending order**.
-
-- Example: if it's `profile [mention/ID/name/nickname]`, means you can, optionally, provide **either the mention, the id or the name/nickname** of the user. Using `mention` or `id` will provide **more accuracy** than `name/nickname`.
+`<param1/param2/...>` or `[param1/param2/...]`: You can provide **either** param style.
 
 If the parameter has space, use `"double quotes"` to make it a param.
 
-- Example: if it's `profile [mention/ID/name/nickname]` and the `name` is `Hello World` then you will use `profile "Hello World"`. Using `profile Hello World` will most likely **raise error**.
+- Example: if it's `profile [mention/ID/name/nickname]` and the `name` is `Hello World` then you will use `profile "Hello World"`.
 
 `<member>` or `<user>` or `<channel>` or `<guild>`: Discord related argument. It is the equivalent of `<ID/discrimination/mention/name/nickname>`.
 
 ### Prefix
 
-This document will assume you know **how to provoke a command** using `<prefix><command_name>`. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).
+This document will assume you know **how to use a command** using `<prefix><command_name>`. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).
 
 - The default prefix is `$` but no it doesn't have $sudo.
 
@@ -65,7 +64,7 @@ The convention for permissions in `help` is as follow:
 - `You need`: The required permission **you** need to have to execute the command.
 - `I need`: The required permission **the bot** need to have to execute the command.
 
-This document will asssume the bot has `Send Messages` and `Read Messages` in the channel you provoke the command.
+This document will assume the bot always has `Send Messages` and `Read Messages` in the channel you use the command.
 
 ### Cooldown
 
@@ -86,45 +85,4 @@ The convention for cooldown syntax in `help` is `x seconds per n use(s) (cooldow
 - `member`: The cooldown applies to that **certain member**.
   - Example: If the member `MikeJollie` invoke `test` n times, **that certain member** can not invoke `MikeJollie` **in the same server he invoked** again until x seconds are passed. **He can invoke the command in a different server in that duration however**.
 
-### Understanding command's signature
-
-If you're not a geek, you can refer to `help <command>` and read the sections above.
-
-A typical command's signature is as follow:
-
-```py
-@commands.command(aliases = ["alias1", "alias2"])
-@commands.has_permissions(manage_messages = True)
-@commands.has_guild_permissions(...)
-@commands.bot_has_permissions(...)
-@commands.bot_has_guild_permissions(...)
-@commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.default)
-async def test(self, ctx, param1, param2 : discord.User, param3 : discord.User = None):
-```
-
-**The first line**'s significance is the `aliases = []`. It **tells that the command has the following alias(es)**, which can be used instead of using the command's name.
-
-**The second line** means **the user who invoke the command must have a certain permission at the invoked channel to invoke the command**.
-
-- In this example, the user must have `Manage Messages` permission in the channel to use the command.
-
-**The third line** is similar to the second line, except **it consider the guild's permission**.
-
-- For example, a member that is not allowed to add reactions to a certain channel can still invoke the command if the member's roles allowed.
-
-**The fourth line** is the same as the second line except it **checks the bot's permission**.
-
-**The fifth line** is the same as the third line except it **checks the bot's guild permission**.
-
-**The sixth line defines the cooldown for the command**. `rate` means `x`, `per` means `n` and `type` means `cooldown type` in [cooldown](#cooldown).
-
-- `default` is `global`.
-
-The last line defines the command with the name `test`, that accept at max 3 parameters (ignore `self` and `ctx`).
-
-- The first argument is `param1`, and it is required.
-- The second argument is `param2`, and it is required. However, the bot will intepret `param2` as if it is a [User](#usermember-concept), and so the parameter will accept `<ID/discriminator/mention/name/nickname>`. If the bot fails to convert to a User, it'll raise error.
-- The third argument is `param3`, and it is optional. It'll do the same thing as `param2`, but if it doesn't presence, the bot will ignore it.
-- `test hey MikeJollie` is valid, `test` is invalid, `test hey MikeJollie Stranger.com` is valid, `test hey` is invalid.
-
-*This document is last updated on May 26th (PT) by MikeJollie#1067*
+*This document is last updated on Oct 31st (PT) by MikeJollie#1067*
