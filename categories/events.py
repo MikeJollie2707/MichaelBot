@@ -15,8 +15,8 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        await DB.init_db(self.bot)
         if not hasattr(self.bot, "__db__"):
+            await DB.init_db(self.bot)
             self.bot.__db__ = await DB.to_dict(self.bot)
         
         print("Logged in as")
