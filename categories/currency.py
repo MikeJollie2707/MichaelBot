@@ -16,6 +16,17 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "
     @commands.command()
     @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
     async def daily(self, ctx):
+        '''
+        Get an amount of money every 24h.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 10 seconds per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+
         # Retrieve user info
         # Check if his last daily is <24h
         # If yes then update money and increase streak,
@@ -78,7 +89,19 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "
         pass
 
     @commands.command()
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
     async def balance(self, ctx):
+        '''
+        Display the amount of money you currently have.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 2 seconds per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+        
         member_local_info = {}
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
@@ -86,6 +109,22 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "
                 member_local_info = DB.record_to_dict(member_info)
 
         await ctx.send("You have $%d." % member_local_info["money"])
+    
+    @commands.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
+    async def topmoney(self, ctx, local__global = "local"):
+        '''
+        Show the top 10 users with the most amount of money.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (member)
+        **Example 1:** {prefix}{command_name} global
+        **Example 2:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+        pass
             
 
 def setup(bot):
