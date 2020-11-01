@@ -7,13 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Logging events - MichaelBot Documentation</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -24,7 +25,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -35,6 +36,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href="../.." class="icon icon-home"> MichaelBot Documentation</a>
         <div role="search">
@@ -45,146 +47,99 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Commands</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../core/">Core</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../dev/">Dev</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../events/">Bot events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../experiment/">Experiment</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Logging events</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#logging-events">Logging events</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#table-of-contents">Table of Contents</a></li>
-        
-            <li><a class="toctree-l4" href="#specification-internal">Specification [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#log_check-internal">log_check [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#role95dpyperms95to95dperms-internal">role_dpyperms_to_dperms [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#channel95dpyperms95to95dperms-internal">channel_dpyperms_to_dperms [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#on95message95delete">on_message_delete</a></li>
-        
-            <li><a class="toctree-l4" href="#on95bulk95message95delete-developing">on_bulk_message_delete [DEVELOPING]</a></li>
-        
-            <li><a class="toctree-l4" href="#on95raw95message95edit">on_raw_message_edit</a></li>
-        
-            <li><a class="toctree-l4" href="#on95message95edit">on_message_edit</a></li>
-        
-            <li><a class="toctree-l4" href="#on95member95ban">on_member_ban</a></li>
-        
-            <li><a class="toctree-l4" href="#on95member95unban">on_member_unban</a></li>
-        
-            <li><a class="toctree-l4" href="#on95member95join">on_member_join</a></li>
-        
-            <li><a class="toctree-l4" href="#on95member95leave">on_member_leave</a></li>
-        
-            <li><a class="toctree-l4" href="#on95member95update">on_member_update</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95channel95create">on_guild_channel_create</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95channel95delete">on_guild_channel_delete</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95channel95update">on_guild_channel_update</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95update">on_guild_update</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95role95create">on_guild_role_create</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95role95delete">on_guild_role_delete</a></li>
-        
-            <li><a class="toctree-l4" href="#on95guild95role95update">on_guild_role_update</a></li>
-        
-            <li><a class="toctree-l4" href="#command_error">command_error</a></li>
-        
-        </ul>
-    
-
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Commands</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../core/">Core</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../currency/">Currency</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../dev/">Dev</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../events/">Bot events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../experiment/">Experiment</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Logging events</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#specification-internal">Specification [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#__init__-internal">__init__ [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#log_check-internal">log_check [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#role_dpyperms_to_dperms-internal">role_dpyperms_to_dperms [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#channel_dpyperms_to_dperms-internal">channel_dpyperms_to_dperms [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_message_delete">on_message_delete</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_bulk_message_delete-developing">on_bulk_message_delete [DEVELOPING]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_raw_message_edit">on_raw_message_edit</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_message_edit">on_message_edit</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_member_ban">on_member_ban</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_member_unban">on_member_unban</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_member_join">on_member_join</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_member_leave">on_member_leave</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_member_update">on_member_update</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_channel_create">on_guild_channel_create</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_channel_delete">on_guild_channel_delete</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_channel_update">on_guild_channel_update</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_update">on_guild_update</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_role_create">on_guild_role_create</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_role_delete">on_guild_role_delete</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on_guild_role_update">on_guild_role_update</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#command_error">command_error</a>
+    </li>
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../moderation/">Moderation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../music/">Music</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../server/">Settings</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utility/">Utility</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Templates</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../template/menu/">Menu</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../template/paginator/">Paginator</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../template/help/">Help</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Utilities</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../utilities/methods/">Utility methods</a>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../moderation/">Moderation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../music/">Music</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../server/">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utility/">Utility</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Templates</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/menu/">Menu</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/paginator/">Paginator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/help/">Help</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Utilities</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utilities/methods/">Utility methods</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utilities/db/">Database methods</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -213,6 +168,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -252,7 +208,7 @@
 <li><a href="#commanderror">command_error</a></li>
 </ul>
 <h2 id="specification-internal">Specification [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>This is a set of format that the developers must follow while writing events for consistency. Any changes that does not follow this specification will be denied.</p>
 <p><strong>Full Specification:</strong></p>
 <pre><code class="py"># Specification:
@@ -284,8 +240,8 @@
 # Other = Teal
 </code></pre>
 
-<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<h2 id="__init__-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category. This set the emoji for the category as <code>📝</code>.</p>
 <p>This also defines the fixed colors for each audit log action. Any changes that does not follow this specification will be denied.</p>
 <p><strong>Color Specification:</strong></p>
@@ -307,7 +263,7 @@ self.color_other = discord.Color.teal()
 </code></pre>
 
 <h2 id="log_check-internal">log_check [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>An internal check if a guild enabled logging feature. It <strong>MUST</strong> be the first thing to check when writing any events.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">def log_check(self, guild):
@@ -318,8 +274,8 @@ self.color_other = discord.Color.teal()
 <li><code>True</code> if <code>config["ERROR"] == 0</code> and <code>config["STATUS_LOG"] == 1</code> and <code>config["LOG_CHANNEL"] != 0</code></li>
 <li><code>False</code> otherwise.</li>
 </ul>
-<h2 id="role95dpyperms95to95dperms-internal">role_dpyperms_to_dperms [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<h2 id="role_dpyperms_to_dperms-internal">role_dpyperms_to_dperms [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A utility method to convert a role permission to the text.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">def role_dpyperms_to_dperms(self, role_permissions : str):
@@ -327,8 +283,8 @@ self.color_other = discord.Color.teal()
 
 <p><strong>Return type:</strong> <code>str</code></p>
 <p><strong>Example:</strong> <code>role_dpyperms_to_dperms("manage_guild")</code> -&gt; <code>"Manage Server"</code></p>
-<h2 id="channel95dpyperms95to95dperms-internal">channel_dpyperms_to_dperms [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<h2 id="channel_dpyperms_to_dperms-internal">channel_dpyperms_to_dperms [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A utility method to convert a channel permission to the text.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">def channel_dpyperms_to_dperms(self, channel_permissions : str):
@@ -336,7 +292,7 @@ self.color_other = discord.Color.teal()
 
 <p><strong>Return type:</strong> <code>str</code></p>
 <p><strong>Example:</strong> <code>channel_dpyperms_to_dperms("manage_channels")</code> -&gt; <code>"Manage Channels"</code></p>
-<h2 id="on95message95delete">on_message_delete</h2>
+<h2 id="on_message_delete">on_message_delete</h2>
 <p>An event that is invoked when a message is deleted <strong>if the message is in cache</strong>. </p>
 <ul>
 <li>If the message isn't in cache, <code>on_raw_message_delete</code> is invoked instead.</li>
@@ -352,9 +308,9 @@ async def on_message_delete(self, message):
 <ul>
 <li>The deletor does not always display correctly (due to Discord limitation).</li>
 </ul>
-<h2 id="on95bulk95message95delete-developing">on_bulk_message_delete [DEVELOPING]</h2>
+<h2 id="on_bulk_message_delete-developing">on_bulk_message_delete [DEVELOPING]</h2>
 <p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
-<h2 id="on95raw95message95edit">on_raw_message_edit</h2>
+<h2 id="on_raw_message_edit">on_raw_message_edit</h2>
 <p>An event that is invoked when a message is edited <strong>even if the message isn't in cache</strong>.</p>
 <ul>
 <li>If the message is in cache, the event will do nothing and leave the task to <code>on_message_edit</code>.</li>
@@ -370,7 +326,7 @@ async def on_raw_message_edit(self, payload):
 <li>The old content of the message cannot be found.</li>
 <li>There is a rare chance that the new content of the message cannot be found.</li>
 </ul>
-<h2 id="on95message95edit">on_message_edit</h2>
+<h2 id="on_message_edit">on_message_edit</h2>
 <p>An event that is invoked when a message is edited <strong>if the message is in cache</strong>.</p>
 <ul>
 <li>If the message isn't in cache, <a href="#onrawmessageedit"><code>on_raw_message_edit</code></a> is invoked instead.</li>
@@ -385,7 +341,7 @@ async def on_message_edit(self, before, after):
 <ul>
 <li>Does not log embed editing.</li>
 </ul>
-<h2 id="on95member95ban">on_member_ban</h2>
+<h2 id="on_member_ban">on_member_ban</h2>
 <p>An event that is invoked when a user/member is banned.</p>
 <ul>
 <li>The ban action will also invoke <code>on_member_leave</code> if the member is in the guild.</li>
@@ -400,7 +356,7 @@ async def on_member_ban(self, guild, user):
 <ul>
 <li><code>None</code></li>
 </ul>
-<h2 id="on95member95unban">on_member_unban</h2>
+<h2 id="on_member_unban">on_member_unban</h2>
 <p>An event that is invoked when a user is unbanned.</p>
 <p>The color of the embed is black.</p>
 <p><strong>Full Signature:</strong></p>
@@ -412,7 +368,7 @@ async def on_member_unban(self, guild, user):
 <ul>
 <li><code>None</code></li>
 </ul>
-<h2 id="on95member95join">on_member_join</h2>
+<h2 id="on_member_join">on_member_join</h2>
 <p>An event that is invoked when a user join the guild.</p>
 <p>The color of the embed is blue.</p>
 <p><strong>Full Signature:</strong></p>
@@ -424,7 +380,7 @@ async def on_member_join(self, member):
 <ul>
 <li><code>None</code></li>
 </ul>
-<h2 id="on95member95leave">on_member_leave</h2>
+<h2 id="on_member_leave">on_member_leave</h2>
 <p>An event that is invoked when a member leave the guild.</p>
 <ul>
 <li>This event is also invoked when a member is banned/kicked.</li>
@@ -439,7 +395,7 @@ async def on_member_remove(self, member):
 <ul>
 <li>When a kicked member rejoin and leave, the member will be logged that the member is kicked twice. (unsure)</li>
 </ul>
-<h2 id="on95member95update">on_member_update</h2>
+<h2 id="on_member_update">on_member_update</h2>
 <p>An event that is invoked when a member's role changes, a member's status/activity changes, a member's nickname changes or a member is muted/deafened.</p>
 <p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
 <p><strong>Full Signature:</strong></p>
@@ -452,7 +408,7 @@ async def on_member_update(self, before, after):
 <li>Changes in member's status/activity will not be logged by MichaelBot due to unnecessary spamming.</li>
 <li>Changes in member is muted/deafened is currently not be logged by MichaelBot due to the unnecessary logging.</li>
 </ul>
-<h2 id="on95guild95channel95create">on_guild_channel_create</h2>
+<h2 id="on_guild_channel_create">on_guild_channel_create</h2>
 <p>An event that is invoked when a channel in a guild is created.</p>
 <p>This event falls under <code>create</code> in <code>AuditLogActionCategory</code>. The color of the embed is green.</p>
 <p><strong>Full Signature:</strong></p>
@@ -464,7 +420,7 @@ async def on_guild_channel_create(self, channel):
 <ul>
 <li>Does not display bitrate information in <code>VoiceChannel</code>.</li>
 </ul>
-<h2 id="on95guild95channel95delete">on_guild_channel_delete</h2>
+<h2 id="on_guild_channel_delete">on_guild_channel_delete</h2>
 <p>An event that is invoked when a channel in a guild is deleted.</p>
 <p>This event falls under <code>delete</code> in <code>AuditLogActionCategory</code>. The color of the embed is orange.</p>
 <p><strong>Full Signature:</strong></p>
@@ -476,7 +432,7 @@ async def on_guild_channel_delete(self, channel):
 <ul>
 <li>Does not display bitrate information in <code>VoiceChannel</code>.</li>
 </ul>
-<h2 id="on95guild95channel95update">on_guild_channel_update</h2>
+<h2 id="on_guild_channel_update">on_guild_channel_update</h2>
 <p>An event that is invoked when a channel in a guild is edited.</p>
 <p>The edit can be either channel's name, channel's topic, channel's position or channel's permission.</p>
 <p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
@@ -489,7 +445,7 @@ async def on_guild_channel_update(self, before, after):
 <ul>
 <li>Changes in channel's position will not be logged by MichaelBot due to both spamming potential and messy Discord internal channel's position definition.</li>
 </ul>
-<h2 id="on95guild95update">on_guild_update</h2>
+<h2 id="on_guild_update">on_guild_update</h2>
 <p>An event that is invoked when the guild itself is edited.</p>
 <p>The edit can be either guild's name, guild's avatar or guild's owner.</p>
 <p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
@@ -502,7 +458,7 @@ async def on_guild_update(self, before, after):
 <ul>
 <li>Does not log changes in guild's avatar yet.</li>
 </ul>
-<h2 id="on95guild95role95create">on_guild_role_create</h2>
+<h2 id="on_guild_role_create">on_guild_role_create</h2>
 <p>An event that is invoked when a role is created.</p>
 <p>This event falls under <code>create</code> in <code>AuditLogActionCategory</code>. The color of the embed is green.</p>
 <p><strong>Full Signature:</strong></p>
@@ -514,7 +470,7 @@ async def on_guild_role_create(self, role):
 <ul>
 <li>Information may be logged incorrectly if the role is created by a bot.</li>
 </ul>
-<h2 id="on95guild95role95delete">on_guild_role_delete</h2>
+<h2 id="on_guild_role_delete">on_guild_role_delete</h2>
 <p>An event that is invoked when a role is deleted.</p>
 <p>This event falls under <code>delete</code> in <code>AuditLogActionCategory</code>. The color of the embed is orange.</p>
 <p><strong>Full Signature:</strong></p>
@@ -526,7 +482,7 @@ async def on_guild_role_delete(self, role):
 <ul>
 <li>Requires <code>View Audit Log</code> permission.</li>
 </ul>
-<h2 id="on95guild95role95update">on_guild_role_update</h2>
+<h2 id="on_guild_role_update">on_guild_role_update</h2>
 <p>An event that is invoked when a role is edited.</p>
 <p>The edit can be either role's name changes, role's color changes, role is mentionable changes, role display separately changes or role's permission changes.</p>
 <p>This event falls under <code>update</code> in <code>AuditLogActionCategory</code>. The color of the embed is yellow.</p>
@@ -574,7 +530,7 @@ async def command_error(self, ctx, error):
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -584,7 +540,7 @@ async def command_error(self, ctx, error):
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
@@ -598,6 +554,11 @@ async def command_error(self, ctx, error):
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

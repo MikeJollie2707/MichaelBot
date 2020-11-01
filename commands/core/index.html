@@ -7,13 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
+  
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Core - MichaelBot Documentation</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -24,7 +25,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
@@ -35,6 +36,7 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
         <a href="../.." class="icon icon-home"> MichaelBot Documentation</a>
         <div role="search">
@@ -45,122 +47,81 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Commands</span>
-    <ul class="subnav">
-                <li class=" current">
-                    
-    <a class="current" href="./">Core</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#core-commands">Core commands</a></li>
-    
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Commands</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Core</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#__init__-internal">__init__ [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cog_check-internal">cog_check [INTERNAL]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#changelog">changelog</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#9595init9595-internal">__init__ [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#cog_check-internal">cog_check [INTERNAL]</a></li>
-        
-            <li><a class="toctree-l4" href="#changelog">changelog</a></li>
-        
-            <li><a class="toctree-l4" href="#help">help</a></li>
-        
-            <li><a class="toctree-l4" href="#help-all">help-all</a></li>
-        
-            <li><a class="toctree-l4" href="#info">info</a></li>
-        
-            <li><a class="toctree-l4" href="#note">note</a></li>
-        
-            <li><a class="toctree-l4" href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
-        
-            <li><a class="toctree-l4" href="#profile">profile</a></li>
-        
-            <li><a class="toctree-l4" href="#report">report</a></li>
-        
-            <li><a class="toctree-l4" href="#serverinfo">serverinfo</a></li>
-        
+    <li class="toctree-l3"><a class="reference internal" href="#changelog-dev">changelog dev</a>
+    </li>
         </ul>
-    
-
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#help">help</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#help-all">help-all</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#info">info</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#note-deprecated">note [DEPRECATED]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prefix-deprecated">prefix [DEPRECATED]</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#profile">profile</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#report">report</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#serverinfo">serverinfo</a>
+    </li>
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../dev/">Dev</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../events/">Bot events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../experiment/">Experiment</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../logger/">Logging events</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../moderation/">Moderation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../music/">Music</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../server/">Settings</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utility/">Utility</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Templates</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../template/menu/">Menu</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../template/paginator/">Paginator</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../template/help/">Help</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Utilities</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../utilities/methods/">Utility methods</a>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../currency/">Currency</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../dev/">Dev</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../events/">Bot events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../experiment/">Experiment</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../logger/">Logging events</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../moderation/">Moderation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../music/">Music</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../server/">Settings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utility/">Utility</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Templates</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/menu/">Menu</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/paginator/">Paginator</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../template/help/">Help</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Utilities</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utilities/methods/">Utility methods</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../utilities/db/">Database methods</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -189,6 +150,7 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
@@ -197,66 +159,63 @@
                 <!-- omit in toc -->
 
 <h1 id="core-commands">Core commands</h1>
+<!-- omit in toc -->
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#cog_check-internal">cog_check [INTERNAL]</a></li>
+<li><a href="#changelog">changelog</a></li>
+<li><a href="#changelog-dev">changelog dev</a></li>
+<li><a href="#help">help</a></li>
+<li><a href="#help-all">help-all</a></li>
+<li><a href="#info">info</a></li>
+<li><a href="#note">note</a></li>
+<li><a href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
+<li><a href="#profile">profile</a></li>
+<li><a href="#report">report</a></li>
+<li><a href="#serverinfo">serverinfo</a></li>
+</ul>
 <p>These are commands that are mostly related to information.</p>
-<h2 id="9595init9595-internal">__init__ [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that is is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<h2 id="__init__-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that is is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>⚙️</code>.</p>
 <h2 id="cog_check-internal">cog_check [INTERNAL]</h2>
-<p><em>This section is labeled as [INTERNAL], meaning that it is <strong>NOT</strong> a command. It is here only to serve the developers purpose.</em></p>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A check that apply to all the command in this category. This check will check if <code>ctx</code> is in private DM or not, and will raise <code>NoPrivateMessage()</code> exception if it is.</p>
 <h2 id="changelog">changelog</h2>
 <p>Show the latest 10 changes of the bot.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command()
-@commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-async def changelog(self, ctx):
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>changelog
-</code></pre>
-
+<p><strong>Usage:</strong> <code>{prefix}changelog</code></p>
 <p><strong>Example:</strong> <code>$changelog</code></p>
-<p><strong>Expected Output:</strong> <em>an embed with reactions to navigate</em></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
+<p><strong><em>Subcommands:</em></strong> <a href="#changelog-dev">dev</a></p>
+<h3 id="changelog-dev">changelog dev</h3>
+<p>Show the latest 10 changes of the bot <em>behind the scene</em>.</p>
+<p><strong>Usage:</strong> <code>{prefix}changelog dev</code></p>
+<p><strong>Example:</strong> <code>$changelog dev</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <h2 id="help">help</h2>
-<p>Show compact help about a command or a category. Note that the command name and category name is case sensitive.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command()
-@commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-async def help(self, ctx, categoryOrcommand = &quot;&quot;):
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>help [category/command]
-</code></pre>
-
+<p>Show compact help about a command, or a category.</p>
+<p>Note: command name and category name is case sensitive; <code>Core</code> is different from <code>core</code>.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;help [command/category]</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>category/command</code>: The category's name or the command's name or the command's aliases.</li>
+<li><code>command/category</code>: The category's name or the command's name or the command's aliases. This also includes subcommand.</li>
 </ul>
 <p><strong>Examples:</strong></p>
 <ul>
 <li><strong>Example 1:</strong> <code>$help Core</code></li>
 <li><strong>Example 2:</strong> <code>$help info</code></li>
-<li><strong>Example 3:</strong> <code>$help</code></li>
+<li><strong>Example 3:</strong> <code>$help changelog dev</code></li>
 </ul>
-<p><strong>Expected Output:</strong></p>
-<ul>
-<li>Example 1: <em>an embed with reactions to navigate</em></li>
-<li>Example 2: <em>an embed with information</em></li>
-<li>Example 3: <em>an embed with reactions to select</em></li>
-</ul>
+<p><strong>You need:</strong> None.
+<strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <h2 id="help-all">help-all</h2>
 <p>Show help about the bot, a command, or a category.</p>
 <p>Note: command name and category name is case sensitive; Core is different from core.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py"># Doesn't exist
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>help-all [category/command]
-</code></pre>
-
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;help-all [command/category]</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>category/command</code>: The category's name or the command's name or the command's aliases.</li>
@@ -267,27 +226,16 @@ async def help(self, ctx, categoryOrcommand = &quot;&quot;):
 <li><strong>Example 2:</strong> <code>$help-all info</code></li>
 <li><strong>Example 3:</strong> <code>$help-all</code></li>
 </ul>
-<p><strong>Expected Output:</strong></p>
-<ul>
-<li>Example 1: <em>an embed with information</em></li>
-<li>Example 2: <em>an embed with information</em></li>
-<li>Example 3: <em>an embed with information</em></li>
-</ul>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <h2 id="info">info</h2>
 <p>Provide information about the bot.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command(aliases = [&quot;about&quot;])
-@commands.bot_has_permissions(send_messages = True)
-async def info(self, ctx):
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>info
-</code></pre>
-
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;info</code></p>
 <p><strong>Example:</strong> <code>$info</code></p>
-<p><strong>Expected Output:</strong> <em>an embed with information</em></p>
-<h2 id="note">note</h2>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
+<h2 id="note-deprecated">note [DEPRECATED]</h2>
+<p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
 <p>Provide syntax convention for <code>help</code> and <code>help-all</code>. All it does is putting a link to this documentation.</p>
 <p><strong>Full Signature:</strong></p>
 <pre><code class="py">@commands.command()
@@ -327,70 +275,43 @@ async def prefix(self, ctx, new_prefix : str = None):
 
 <h2 id="profile">profile</h2>
 <p>Provide information about you or another member.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command()
-@commands.bot_has_permissions(send_messages = True)
-async def profile(self, ctx, member: discord.Member = None):
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>profile [member]
-</code></pre>
-
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;profile [member]</code></p>
 <p><strong>Parameter:</strong></p>
 <ul>
 <li><code>member</code>: A Discord member. It can be any in the following form: <code>[ID/discriminator/mention/name/nickname]</code></li>
 </ul>
 <p><strong>Examples:</strong></p>
 <ul>
-<li><strong>Example 1:</strong> <code>$profile 472832990012243969</code> (recommended if you turn Developer Mode)</li>
+<li><strong>Example 1:</strong> <code>$profile 472832990012243969</code> (recommended if you turn Developer Mode on)</li>
 <li><strong>Example 2:</strong> <code>$profile MikeJollie#1067</code> (recommended for normal uses)</li>
 <li><strong>Example 3:</strong> <code>$profile</code></li>
 </ul>
-<p><strong>Expected Output:</strong> <em>an embed with information</em></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
 <h2 id="report">report</h2>
 <p>Report a bug or suggest new features for the bot.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command()
-@commands.bot_has_permissions(manage_messages = True, send_messages = True)
-@commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-async def report(self, ctx, *, content : str):
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>report &lt;type&gt; &lt;content&gt;
-</code></pre>
-
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;report &lt;report_type&gt; &lt;content&gt;</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>type</code>: Either <code>report</code> or <code>suggest</code>, based on your need. It is recommended to use the correct label for the report/suggestion to be easily viewed.</li>
+<li><code>report_type</code>: Either <code>report</code> or <code>suggest</code>, based on your need. It is recommended to use the correct label for the report/suggestion to be easily viewed.</li>
 <li><code>content</code>: The report/suggestion.</li>
 </ul>
+<p><strong>Cooldown:</strong> 30 seconds per use (user)</p>
 <p><strong>Examples:</strong></p>
 <ul>
 <li><strong>Example 1:</strong> <code>$report report The command xyz raise error (full error here...)</code></li>
 <li><strong>Example 2:</strong> <code>$report suggest The command profile should have this feature (feature here...)</code></li>
 </ul>
-<p><strong>Expected Output:</strong></p>
-<pre><code class="py">Your opinion has been sent.
-</code></pre>
-
+<p><strong>You need:</strong> None.
+<strong>The bot need:</strong> <code>Manage Messages</code>, <code>Send Messages</code>.</p>
 <h2 id="serverinfo">serverinfo</h2>
 <p>Provide information about the server that invoke the command.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="py">@commands.command(aliases = [&quot;server-info&quot;])
-@commands.bot_has_permissions(send_messages = True)
-async def serverinfo(self, ctx):
-</code></pre>
-
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>serverinfo
-server-info
-</code></pre>
-
+<p><strong>Aliases:</strong> <code>server-info</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;serverinfo</code></p>
 <p><strong>Example:</strong> <code>$serverinfo</code></p>
-<p><strong>Expected Output:</strong> <em>an embed with information</em></p>
-<p><em>This document is last updated on May 26th (PT) by MikeJollie#1067</em></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
+<p><em>This document is last updated on Oct 31st (PT) by MikeJollie#1067</em></p>
               
             </div>
           </div>
@@ -398,7 +319,7 @@ server-info
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../dev/" class="btn btn-neutral float-right" title="Dev">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../currency/" class="btn btn-neutral float-right" title="Currency">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../.." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -413,7 +334,7 @@ server-info
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -423,20 +344,25 @@ server-info
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
         <span><a href="../.." style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../dev/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../currency/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
