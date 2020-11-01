@@ -289,7 +289,7 @@ class Core(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-    async def report(self, ctx, *, content : str):
+    async def report(self, ctx, report_type : str, *, content : str):
         '''
         Report a bug or suggest a feature for the bot.
         Provide constructive reports and suggestions are appreciated.
@@ -311,7 +311,8 @@ class Core(commands.Cog):
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
                 raise RuntimeError("Cannot find report channel.")
 
-        flag = content.split()[0]
+        #flag = content.split()[0]
+        flag = report_type
         if (flag == "report") or (flag == "suggest"):
             msg = ""
 
