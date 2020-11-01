@@ -289,12 +289,12 @@ class Core(commands.Cog):
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-    async def report(self, ctx, report_type : str, *, content : str):
+    async def report(self, ctx, report__suggest : str, *, content : str):
         '''
         Report a bug or suggest a feature for the bot.
         Provide constructive reports and suggestions are appreciated.
 
-        **Usage:** <prefix>**{command_name}** <report/suggest> <content>
+        **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 30 seconds per use (user).
         **Example 1:** {prefix}{command_name} report This command has a bug.
         **Example 2:** {prefix}{command_name} suggest This command should be improved.
@@ -312,14 +312,15 @@ class Core(commands.Cog):
                 raise RuntimeError("Cannot find report channel.")
 
         #flag = content.split()[0]
-        flag = report_type
+        flag = report__suggest
         if (flag == "report") or (flag == "suggest"):
-            msg = ""
+            msg = " "
 
-            for i in range(1, len(content.split())):
-                msg += content.split()[i] + ' '
+            #for i in range(0, len(content.split())):
+            #    msg += content.split()[i] + ' '
+            msg = msg.join(content.split())
 
-            embed = discord.Embed(
+            embed = Facility.get_default_embed(
                 title = flag.capitalize(), 
                 description = msg, 
                 color = discord.Color.green(),
@@ -341,6 +342,7 @@ class Core(commands.Cog):
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
                 raise forbidden
             else:
+                await ctx.message.delete()
                 await ctx.send("Your opinion has been sent.", delete_after = 5)
         else:
             await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
