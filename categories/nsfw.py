@@ -25,7 +25,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         
         return True
 
-    @commands.group(invoke_without_command = True)
+    @commands.group(invoke_without_command = True, enable = False)
     @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def konachan(self, ctx, safe__any : str, *, tags : str = ""):
@@ -219,7 +219,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             paginate.add_page(embed)
 
         await paginate.event(ctx, interupt = False)
-    @commands.group(invoke_without_command = True)
+    @commands.group(invoke_without_command = True, enable = False)
     @commands.bot_has_permissions(send_messages = True)
     async def nhentai(self, ctx):
         '''
