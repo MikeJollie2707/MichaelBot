@@ -7,6 +7,8 @@ import inspect
 import textwrap
 from py_expression_eval import Parser
 import ast
+import typing
+import numpy
 
 class Facility(commands.Cog):
     def __init__(self, bot):
@@ -270,7 +272,7 @@ class Facility(commands.Cog):
             return ""
     
     @classmethod
-    def striplist(cls, array : list) -> str:
+    def striplist(cls, array : typing.Union[list, numpy.ndarray]) -> str:
         """
         Turn the list of objects into a string.
 
