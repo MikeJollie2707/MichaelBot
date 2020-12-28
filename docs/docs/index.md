@@ -85,8 +85,4 @@ The convention for cooldown syntax in `help` is `x seconds per n use(s) (cooldow
 - `member`: The cooldown applies to that **certain member**.
   - Example: If the member `MikeJollie` invoke `test` n times, **that certain member** can not invoke `MikeJollie` **in the same server he invoked** again until x seconds are passed. **He can invoke the command in a different server in that duration however**.
 
-<<<<<<< HEAD
 *This document is last reviewed on Nov 6th (PT) by MikeJollie#1067*
-=======
-*This document is last reviewed on Nov 6th (PT) by MikeJollie#1067*
->>>>>>> 1e81819134529afbdd2edcb50504f7d9672ce1c1
