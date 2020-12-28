@@ -64,7 +64,7 @@ The convention for permissions in `help` is as follow:
 - `You need`: The required permission **you** need to have to execute the command.
 - `I need`: The required permission **the bot** need to have to execute the command.
 
-This document will assume the bot always has `Send Messages` and `Read Messages` in the channel you use the command.
+I will assume the bot always has `Send Messages` and `Read Messages` in the channel you use the command.
 
 ### Cooldown
 
