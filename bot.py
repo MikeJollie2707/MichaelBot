@@ -15,6 +15,7 @@ __discord_extension__ = [
     "categories.dev",
     "categories.events",
     #"categories.experiment",
+    "categories.game",
     "categories.logger",
     "categories.moderation",
     #"categories.music",
@@ -103,7 +104,8 @@ if __name__ == "__main__":
                 host = db_info["host"],
                 user = db_info["user"],
                 database = db_info["database"],
-                password = db_info["password"]
+                password = db_info["password"],
+                #port = 5432
             ))
             # It might throw sth here but too lazy to catch so hey.
             bot.json = {}
@@ -112,6 +114,7 @@ if __name__ == "__main__":
             for extension in sorted(__discord_extension__):
                 bot.load_extension(extension)
             
+            #bot.__db__ = None # Disable db_init
             bot.run(TOKEN)
 
             # Close the pool connection here, just to be safe
