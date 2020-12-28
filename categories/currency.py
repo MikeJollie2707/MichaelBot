@@ -35,52 +35,42 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "
         member_local_info = {}
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                member_info = await DB.find_member(conn, ctx.author)
-
-                member_local_info = DB.record_to_dict(member_info)
+                member_local_info = DB.record_to_dict(await DB.find_member(conn, ctx.author))
 
                 if member_local_info["last_daily"] is None:
                     member_local_info["last_daily"] = datetime.datetime.utcnow()
-                    await conn.execute('''
-                        UPDATE dUsers
-                        SET last_daily = ($1)
-                        WHERE id = ($2);
-                    ''', datetime.datetime.utcnow(), ctx.author.id)
-                elif datetime.datetime.utcnow() - member_local_info["last_daily"] < datetime.timedelta(seconds = 10.0):
+                elif datetime.datetime.utcnow() - member_local_info["last_daily"] < datetime.timedelta(hours = 24.0):
                     fail = True
                 
                 if not fail:
                     member_local_info["money"] += 100
                     member_local_info["streak_daily"] += 1
-                    #await DB.update_member(conn, confirmation)
-                    await conn.execute('''
-                        UPDATE dUsers
-                        SET money = ($1), streak_daily = ($2)
-                        WHERE id = ($3);
-                    ''', member_local_info["money"], member_local_info["streak_daily"], ctx.author.id)
+                    
+                    await DB.Member.update_money(conn, member_local_info["id"], member_local_info["money"])
+                    await DB.Member.update_streak(conn, member_local_info["id"], member_local_info["streak_daily"])
+                    await DB.Member.update_last_daily(conn, member_local_info["id"], member_local_info["last_daily"])
         if fail:
-            await ctx.send("Please wait longer before you can get daily.")
+            await ctx.send("You still have %s left before you can collect your daily." % str(member_local_info["last_daily"]))
         else:
             await ctx.send("Congrats! You get $100 from your daily. Your streak: %d" % member_local_info["streak_daily"])
             
 
     @commands.command()
-    async def addmoney(self, ctx, amount : int, *, member : discord.Member):
+    async def addmoney(self, ctx, amount : int, *, member : discord.Member = None):
+        if member is None:
+            member = ctx.author
+        
         member_local_info = {}
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                member_info = await DB.find_member(conn, ctx.author)
+                member_info = await DB.find_member(conn, member)
                 member_local_info = DB.record_to_dict(member_info)
 
                 member_local_info["money"] += amount
 
-                await conn.execute('''
-                    UPDATE dUsers
-                    SET money = ($1)
-                    WHERE id = ($2)
-                ''', member_local_info["money"], ctx.author.id)
+                await DB.Member.update_money(conn, member.id, member_local_info["money"])
         
-        await ctx.send("Added $%d to %s." % (amount, ctx.author.name))
+        await ctx.send("Added $%d to %s." % (amount, member.name))
 
                 
     
