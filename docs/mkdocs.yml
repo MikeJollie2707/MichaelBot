@@ -2,6 +2,7 @@ site_name: MichaelBot Documentation
 
 nav:
   - "Home": index.md
+  - "Installation": installation.md
   - "Commands":
     - "Core": commands/core.md
     - "Currency": commands/currency.md
@@ -21,5 +22,5 @@ nav:
     - "Utility methods": utilities/methods.md
     - "Database methods": utilities/db.md
 
-theme:
-  name: "readthedocs"
+#theme:
+#  name: "readthedocs"

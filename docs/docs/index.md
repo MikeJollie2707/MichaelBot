@@ -64,7 +64,7 @@ The convention for permissions in `help` is as follow:
 - `You need`: The required permission **you** need to have to execute the command.
 - `I need`: The required permission **the bot** need to have to execute the command.
 
-This document will assume the bot always has `Send Messages` and `Read Messages` in the channel you use the command.
+I will assume the bot always has `Send Messages` and `Read Messages` in the channel you use the command.
 
 ### Cooldown
 
@@ -85,4 +85,4 @@ The convention for cooldown syntax in `help` is `x seconds per n use(s) (cooldow
 - `member`: The cooldown applies to that **certain member**.
   - Example: If the member `MikeJollie` invoke `test` n times, **that certain member** can not invoke `MikeJollie` **in the same server he invoked** again until x seconds are passed. **He can invoke the command in a different server in that duration however**.
 
-*This document is last updated on Oct 31st (PT) by MikeJollie#1067*
+*This document is last reviewed on Nov 6th (PT) by MikeJollie#1067*
