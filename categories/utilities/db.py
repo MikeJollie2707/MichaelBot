@@ -115,7 +115,7 @@ class DB(commands.Cog):
         - `member`: The member.
         """
 
-        member_existed = await cls.find_member(conn, member)
+        member_existed = await cls.User.find_user(conn, member.id)
         if member_existed is None:
             await cls.insert_into(conn, "dUsers", [
                 (member.id, member.name, True, 0, None, 0)
@@ -124,27 +124,6 @@ class DB(commands.Cog):
         await cls.insert_into(conn, "dUsers_dGuilds", [
             (member.id, member.guild.id, None)
         ])
-    
-    @classmethod
-    async def find_member(cls, conn, member : discord.Member):
-        """
-        Find a member data in `dUsers`.
-
-        If a member is found, it'll return a `Record` of the member, otherwise it'll return `None`.
-
-        Parameter:
-        - `conn`: The connection you want to do.
-            + It's usually just `pool.acquire()`.
-        - `member`: The member.
-        """
-
-        result = await conn.fetchrow('''
-            SELECT *
-            FROM dUsers
-            WHERE id = %d
-        ''' % member.id)
-
-        return result
 
     @classmethod
     async def update_by_id(cls, conn, table_name : str, *args):
@@ -159,7 +138,37 @@ class DB(commands.Cog):
             SET 
         ''')
     
-    class Member:
+    class User:
+        """
+        A User is a global Discord user, which refers to `dUsers` table. A Member is a local Discord user,
+        which refers to `dUsers_dGuilds` table.
+        """
+
+        @classmethod
+        async def insert_user(cls, conn, member : discord.Member):
+            pass
+
+        @classmethod
+        async def find_user(cls, conn, user_id : int):
+            """
+            Find a member data in `dUsers`.
+
+            If a member is found, it'll return a `Record` of the member, otherwise it'll return `None`.
+
+            Parameter:
+            - `conn`: The connection you want to do.
+                + It's usually just `pool.acquire()`.
+            - `member`: The member.
+            """
+
+            result = await conn.fetchrow('''
+                SELECT *
+                FROM dUsers
+                WHERE id = %d
+            ''' % user_id)
+
+            return result
+        
         @classmethod
         async def update_name(cls, conn, id, new_name : str):
             await cls.update_generic(conn, id, "name", new_name)
@@ -170,12 +179,29 @@ class DB(commands.Cog):
             
         @classmethod
         async def update_money(cls, conn, id, new_money : int):
+            # Money can't be lower than 0, for now.
+            if new_money <= 0:
+                new_money = 0
+            
             await cls.update_generic(conn, id, "money", new_money)
         
         @classmethod
         async def add_money(cls, conn, id, amount : int):
-            
-            pass
+            """
+            Add an amount of money to the user.
+            If amount is negative, no changes are made.
+
+            Internally this call `get_money()` and `update_money()`.
+            """
+
+            if amount > 0:
+                money = await cls.get_money(conn, id)
+                await cls.update_money(conn, id, money + amount)
+        
+        @classmethod
+        async def get_money(cls, conn, id):
+            member_info = DB.record_to_dict(await cls.find_user(conn, id))
+            return member_info["money"]
 
         @classmethod
         async def update_last_daily(cls, conn, id, new_last_daily : datetime.datetime):
@@ -208,21 +234,10 @@ class DB(commands.Cog):
         @classmethod
         async def bulk_update(cls, conn, id, new_values : dict):
             """
-            Update all values in one SQL statement.
+            Update all values in one go.
             """
             
-            sql_set_str = ""
-            for key in new_values:
-                # BUG: Have to handle different data types, include datetime.datetime
-                sql_set_str += key + " = " + str(new_values[key]) + ", "
-            sql_set_str = sql_set_str[:-1]
-            print(sql_set_str)
-
-            await conn.execute('''
-                UPDATE dUsers
-                SET %s
-                WHERE id = ($1)
-            ''' % sql_set_str, id)
+            
     
     class Guild:
         pass
