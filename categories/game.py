@@ -5,9 +5,13 @@ from discord.ext import commands
 import random
 import numpy
 
+from categories.utilities.db import DB
+
 class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
+    """Commands related to minigames. Most of these also rewards money."""
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = '🎮'
     
     @commands.command()
     async def minesweeper(self, ctx):
@@ -94,6 +98,28 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             msg += "You lose!"
         
         await ctx.send(msg)
+        
+        reward = amount
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                if "jackpot" in msg:
+                    reward *= 3
+                elif "bomb" in msg:
+                    reward = -(reward * 3)
+                elif "win" in msg:
+                    reward *= 1
+                elif "lose" in msg:
+                    reward = -reward
+                
+                money = await DB.User.get_money(conn, ctx.author.id)
+                await DB.User.update_money(conn, ctx.author.id, money + reward)
+        
+        if "lose" in msg or "bomb" in msg:
+            await ctx.send(f"You lose **${abs(reward)}**.")
+        else:
+            await ctx.send(f"You receive **${abs(reward)}**, and you got to keep the bet amount.")
+
+
         
 def setup(bot):
     bot.add_cog(Game(bot))
