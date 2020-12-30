@@ -22,5 +22,5 @@ nav:
     - "Utility methods": utilities/methods.md
     - "Database methods": utilities/db.md
 
-#theme:
-#  name: "readthedocs"
+theme:
+  name: "material"
