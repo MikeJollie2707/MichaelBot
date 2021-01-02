@@ -7,41 +7,37 @@ import typing
 import asyncpg
 from asyncpg import exceptions as pg_exception
 
-class DB(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-    
-    @classmethod
-    async def init_db(cls, bot):
-        # Create DB if it's not established
-        async with bot.pool.acquire() as conn:
-            async with conn.transaction():
-                await conn.execute('''
-                    CREATE TABLE IF NOT EXISTS dGuilds (
-                        id INT8 PRIMARY KEY,
-                        name TEXT NOT NULL,
-                        is_whitelist BOOL DEFAULT TRUE,
-                        autorole_list INT8[],
-                        customcmd_list TEXT[]
-                    );
-                ''')
-                await conn.execute('''
-                    CREATE TABLE IF NOT EXISTS dUsers (
-                        id INT8 PRIMARY KEY,
-                        name TEXT NOT NULL,
-                        is_whitelist BOOL DEFAULT TRUE,
-                        money INT8 DEFAULT 0,
-                        last_daily TIMESTAMP,
-                        streak_daily INT4 DEFAULT 0
-                    );
-                ''')
-                await conn.execute('''
-                    CREATE TABLE IF NOT EXISTS dUsers_dGuilds (
-                        user_id INT8 NOT NULL,
-                        guild_id INT8 NOT NULL,
-                        tempmute_end TIMESTAMP
-                    );
-                ''')
+async def init_db(bot):
+    # Create DB if it's not established
+    async with bot.pool.acquire() as conn:
+        async with conn.transaction():
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS dGuilds (
+                    id INT8 PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    is_whitelist BOOL DEFAULT TRUE,
+                    autorole_list INT8[],
+                    customcmd_list TEXT[]
+                );
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS dUsers (
+                    id INT8 PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    is_whitelist BOOL DEFAULT TRUE,
+                    money INT8 DEFAULT 0,
+                    last_daily TIMESTAMP,
+                    streak_daily INT4 DEFAULT 0
+                );
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS dUsers_dGuilds (
+                    user_id INT8 NOT NULL REFERENCES dUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                    guild_id INT8 NOT NULL REFERENCES dGuilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                    tempmute_end TIMESTAMP,
+                    PRIMARY KEY (user_id, guild_id)
+                );
+            ''')
 
             for guild in bot.guilds:
                 # Alternative way: perform an update_guild(), then if the
