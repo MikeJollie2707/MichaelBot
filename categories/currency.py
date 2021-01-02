@@ -98,6 +98,19 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if daily_bonus > 0:
                 await ctx.send(f"You also receive **${daily_bonus}** for maintaining your streak.")
             
+    @commands.command()
+    async def work(self, ctx):
+        '''
+        Go to work and earn money.
+
+        *Warning: This is an early stage for several commands. This command will be gone when inventory is implemented.*
+
+        **Usage:** <prefix>**{command_name} {command_signature}
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
 
     @commands.command()
     async def addmoney(self, ctx, amount : int, *, member : discord.Member = None):
