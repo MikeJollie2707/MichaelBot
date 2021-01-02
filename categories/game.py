@@ -5,7 +5,7 @@ from discord.ext import commands
 import random
 import numpy
 
-from categories.utilities.db import DB
+import categories.utilities.db as DB
 
 class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to minigames. Most of these also rewards money."""
