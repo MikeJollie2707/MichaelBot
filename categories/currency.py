@@ -82,9 +82,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     member_local_info["money"] += daily_amount
                     member_local_info["streak_daily"] += 1
                     
-                    await DB.User.update_money(conn, member_local_info["id"], member_local_info["money"])
-                    await DB.User.update_streak(conn, member_local_info["id"], member_local_info["streak_daily"])
-                    await DB.User.update_last_daily(conn, member_local_info["id"], member_local_info["last_daily"])
+                    await DB.User.bulk_update(conn, ctx.author.id, {
+                        "money" : member_local_info["money"],
+                        "streak_daily" : member_local_info["streak_daily"],
+                        "last_daily" : member_local_info["last_daily"]
+                    })
         if too_early:
             await ctx.send("You still have %s left before you can collect your daily." % str(datetime.datetime.utcnow() - member_local_info["last_daily"]))
         else:
