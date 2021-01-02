@@ -144,12 +144,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             member = ctx.author
         
         async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-
-                member_money = await DB.User.get_money(conn, member.id)
-                member_money += amount
-
-                await DB.User.update_money(conn, member.id, member_money)
+            await DB.User.add_money(conn, ctx.author.id, amount)
         
         await ctx.send("Added $%d to %s." % (amount, member.name))
 
