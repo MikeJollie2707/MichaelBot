@@ -113,6 +113,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
+        amount = random.randint(15, 25)        
+        async with self.bot.pool.acquire() as conn:
+            await DB.User.add_money(conn, ctx.author.id, amount)
+        
+        embed = Facility.get_default_embed(
+            description = "You worked and earned $%d." % amount,
+            timestamp = datetime.datetime.utcnow()
+        )
+        await ctx.send(embed = embed)
+
     @commands.command()
     async def addmoney(self, ctx, amount : int, *, member : discord.Member = None):
         '''
