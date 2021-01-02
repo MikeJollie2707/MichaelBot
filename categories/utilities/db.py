@@ -39,20 +39,20 @@ async def init_db(bot):
                 );
             ''')
 
-            for guild in bot.guilds:
-                # Alternative way: perform an update_guild(), then if the
-                # status is UPDATE 0, meaning it doesn't exist, then insert it.
-                # This will probably make it in a transaction, rather than separate.
+        for guild in bot.guilds:
+            # Alternative way: perform an update_guild(), then if the
+            # status is UPDATE 0, meaning it doesn't exist, then insert it.
+            # This will probably make it in a transaction, rather than separate.
+            try:
+                await Guild.insert_guild(conn, guild)
+            except pg_exception.UniqueViolationError:
+                pass
+            for member in guild.members:
                 try:
-                    await cls.insert_guild(conn, [(guild.id, guild.name, None)])
+                    await User.insert_user(conn, member)
                 except pg_exception.UniqueViolationError:
                     pass
-                for member in guild.members:
-                    try:
-                        await cls.insert_member(conn, member)
-                    except pg_exception.UniqueViolationError:
-                        pass
-                        
+                    
                     
 
     @classmethod
