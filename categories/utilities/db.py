@@ -159,6 +159,45 @@ async def update_by_id(conn, table_name : str, *args):
 
             return result
         
+    @classmethod
+    async def insert_user(cls, conn, member : discord.Member):
+        """
+        Insert a default user data into `dUsers`.
+
+        If the user already exist, this method do nothing.
+
+        Parameter:
+        - `conn`: The connection
+            + Usually from `pool.acquire()`.
+        - `member`: A Discord member to insert.
+        """
+
+        member_existed = await cls.find_user(conn, member.id)
+        if member_existed is None:
+            await insert_into(conn, "dUsers", [
+                (member.id, member.name, True, 0, None, 0)
+            ])
+    
+    @classmethod
+    async def update_generic(cls, conn, id : int, col_name : str, new_value):
+        """
+        A generic method to update a column in `dUsers` table.
+        
+        This method's variations `update_...` is recommended. Only use this when there's a new column.
+
+        Parameter:
+        - `conn`: The connection.
+            + Usually from `pool.acquire()`.
+        - `id`: The member id.
+        - `col_name`: The column name in the table. **This must be exactly the same as in the table**.
+        - `new_value`: The new value.
+        """
+        await conn.execute('''
+            UPDATE dUsers
+            SET %s = ($1)
+            WHERE id = ($2);
+        ''' % col_name, new_value, id)
+
         @classmethod
         async def update_name(cls, conn, id, new_name : str):
             await cls.update_generic(conn, id, "name", new_name)
@@ -174,7 +213,48 @@ async def update_by_id(conn, table_name : str, *args):
                 new_money = 0
             
             await cls.update_generic(conn, id, "money", new_money)
+    @classmethod
+    async def update_last_daily(cls, conn, id, new_last_daily : datetime.datetime):
+        await cls.update_generic(conn, id, "last_daily", new_last_daily)
+    @classmethod
+    async def update_streak(cls, conn, id, new_streak : int):
+        await cls.update_generic(conn, id, "streak_daily", new_streak)
         
+    @classmethod
+    async def bulk_update(cls, conn, id, new_values : dict):
+        """
+        Update all values in one SQL statement.
+
+        Parameter:
+        - `conn`: The connection.
+            + Usually from `pool.acquire()`.
+        - `id`: The user's id.
+        - `new_values`: A dict of `{"col_name": value}`.
+            + `col_name` must match the table's column.
+            + Order can be arbitrary.
+        """
+
+        update_str = ""
+        update_arg = []
+        count = 1
+        for column in new_values:
+            update_str += f"{column} = (${count}), "
+            update_arg.append(new_values[column])
+            count += 1
+        update_str = update_str[:-2]
+        print(update_str)
+
+        await conn.execute('''
+            UPDATE dUsers
+            SET %s
+            WHERE id = (%d)
+        ''' % (update_str, id), *update_arg)
+    
+    @classmethod
+    async def get_money(cls, conn, id) -> int:
+        member_info = record_to_dict(await cls.find_user(conn, id))
+        return member_info["money"]
+    
         @classmethod
         async def add_money(cls, conn, id, amount : int):
             """
@@ -187,6 +267,25 @@ async def update_by_id(conn, table_name : str, *args):
             if amount > 0:
                 money = await cls.get_money(conn, id)
                 await cls.update_money(conn, id, money + amount)
+    @classmethod
+    async def remove_money(cls, conn, id, amount : int):
+        """
+        Remove an amount of money from the user.
+        If amount is negative, no changes are made.
+
+        *If the resulting money is less than 0, the money is 0.*
+
+        Internally this call `get_money()` and `update_money()`.
+        """
+        if amount > 0:
+            money = await cls.get_money(conn, id)
+            # No need to check because update_money() checks.
+            await cls.update_money(conn, id, money - amount)
+
+class Guild:
+    """
+    A group of methods dealing specifically with `dGuilds` table.
+    """
         
         @classmethod
         async def get_money(cls, conn, id):
@@ -227,7 +326,13 @@ async def update_by_id(conn, table_name : str, *args):
             Update all values in one go.
             """
             
+    @classmethod
+    async def update_autorole(cls, conn, id : int, new_list : list):
+        await cls.update_generic(conn, id, "autorole_list", new_list)
             
+    @classmethod
+    async def update_customcmd(cls, conn, id : int, new_list : list):
+        pass
     
     class Guild:
         pass
