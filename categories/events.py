@@ -7,7 +7,7 @@ import json
 from datetime import date, datetime
 
 from categories.utilities.method_cog import Facility
-from categories.utilities.db import DB
+import categories.utilities.db as DB
 
 class Events(commands.Cog):
     def __init__(self, bot):
