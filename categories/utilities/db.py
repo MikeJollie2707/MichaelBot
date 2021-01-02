@@ -53,12 +53,9 @@ async def init_db(bot):
                 except pg_exception.UniqueViolationError:
                     pass
                     
-                    
-
-    @classmethod
-    async def insert_into(cls, conn, table_name : str, *args):
-        """
-        Insert values into `table_name`.
+async def insert_into(conn, table_name : str, *args):
+    """
+    Insert values into `table_name`.
 
         Parameter:
         - `conn`: The connection you want to do.
@@ -82,10 +79,9 @@ async def init_db(bot):
         ''' % (table_name, arg_str), *args
         )
     
-    @classmethod
-    async def insert_guild(cls, conn, *args):
-        """
-        Insert a guild data into table `dGuilds`.
+async def insert_guild(conn, *args):
+    """
+    Insert a guild data into table `dGuilds`.
 
         This will be rewritten into the same format as `insert_member`.
 
@@ -98,10 +94,9 @@ async def init_db(bot):
 
         await cls.insert_into(conn, "dGuilds", *args)
     
-    @classmethod
-    async def insert_member(cls, conn, member : discord.Member):
-        """
-        Insert a member data into the database.
+async def insert_member(conn, member : discord.Member):
+    """
+    Insert a member data into the database.
 
         Specifically, it adds to `dUsers`, `dUsers_dGuilds`.
 
@@ -121,13 +116,12 @@ async def init_db(bot):
             (member.id, member.guild.id, None)
         ])
 
-    @classmethod
-    async def update_by_id(cls, conn, table_name : str, *args):
-        # Might remove this method
-        arg_str = "("
-        for j in range(len(max(*args, key = len))):
-            arg_str += '$' + str(j + 1) + ", "
-        arg_str = arg_str[:-2] + ')'
+async def update_by_id(conn, table_name : str, *args):
+    # Might remove this method
+    arg_str = "("
+    for j in range(len(max(*args, key = len))):
+        arg_str += '$' + str(j + 1) + ", "
+    arg_str = arg_str[:-2] + ')'
 
         await conn.executemany('''
             UPDATE %s
@@ -238,16 +232,17 @@ async def init_db(bot):
     class Guild:
         pass
 
-    @classmethod
-    def record_to_dict(cls, record : asyncpg.Record):
-        result = {}
-        if record is None:
-            return None
-        
-        for item in record.items():
-            result[item[0]] = item[1]
-        
-        return result
+    
+
+def record_to_dict(record : asyncpg.Record) -> dict:
+    result = {}
+    if record is None:
+        return None
+    
+    for item in record.items():
+        result[item[0]] = item[1]
+    
+    return result
 
     @classmethod
     async def drop_all_table(cls, bot):
