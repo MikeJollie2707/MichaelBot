@@ -4,9 +4,10 @@ from discord import member
 from discord.ext import commands
 
 import datetime
-import copy
+import random
 
-from categories.utilities.db import DB
+import categories.utilities.db as DB
+from categories.utilities.method_cog import Facility
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""
