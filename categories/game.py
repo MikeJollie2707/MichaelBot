@@ -104,10 +104,12 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             async with conn.transaction():
                 if "jackpot" in msg:
                     reward *= 3
+                    reward += amount
                 elif "bomb" in msg:
                     reward = -(reward * 3)
                 elif "win" in msg:
                     reward *= 1
+                    reward += amount
                 elif "lose" in msg:
                     reward = -reward
                 
