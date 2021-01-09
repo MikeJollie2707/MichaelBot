@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 
 import datetime
-import inspect
+import aiohttp
+from discord.ext.commands.core import is_nsfw # External paste site when embed is too large.
 
 from categories.utilities.method_cog import Facility
 
@@ -53,6 +54,9 @@ class LogContent:
 
         return self
     
+    def __str__(self):
+        return self.content
+    
 class Logging(commands.Cog):
     '''Commands related to logging actions in server.'''
     def __init__(self, bot):
@@ -90,8 +94,8 @@ class Logging(commands.Cog):
             print("Log channel not set.")
             return False
 
-    @commands.Cog.listener()
-    async def on_message_delete(self, message):
+    @commands.Cog.listener("on_message_delete")
+    async def _message_delete(self, message):
         guild = message.guild
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
@@ -118,7 +122,7 @@ class Logging(commands.Cog):
                 # Can't really do anything here except hardcode.
                 log_time2 = entry.created_at
                 deltatime = log_time - log_time2
-                if deltatime.seconds < 30 and deltatime.days == 0:
+                if deltatime.total_seconds() < 30:
                     executor = message.author
 
                 # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
@@ -150,15 +154,33 @@ class Logging(commands.Cog):
                     for embed in message.embeds:
                         embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 2))
                         counter += 1
-                    embed_message += "----------------------------"
+                    embed_message += "\n----------------------------"
                 
-                log_content.append(
-                    "%s%s%s" % (content_message, attachment_message, embed_message),
-                    "**Author:** %s" % message.author.mention,
-                    "**Deleted by:** %s" % executor.mention,
-                    "----------------------------",
-                    "**Channel:** %s" % message.channel.mention
-                )
+                if len(content_message + attachment_message + embed_message) < 2000:
+                    log_content.append(
+                        "%s%s%s" % (content_message, attachment_message, embed_message),
+                        "**Author:** %s" % message.author.mention,
+                        "**Deleted by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**Channel:** %s" % message.channel.mention
+                    )
+                else:
+                    print(content_message + attachment_message + embed_message)
+                    BASE_URL = "https://hastebin.com/"
+                    async with aiohttp.ClientSession() as session:
+                        async with session.post(BASE_URL + "documents", data = content_message + attachment_message + embed_message) as resp:
+                            if resp.status == 200:
+                                result = await resp.json()
+                                key = result["key"]
+
+                                log_content.append(
+                                    "The log content is too long! View the full text here: ",
+                                    f"<{BASE_URL}{key}>",
+                                    "**Author:** %s" % message.author.mention,
+                                    "**Deleted by:** %s" % executor.mention,
+                                    "----------------------------",
+                                    "**Channel:** %s" % message.channel.mention
+                                )
 
                 embed = Facility.get_default_embed(
                     title = log_title,
@@ -183,54 +205,53 @@ class Logging(commands.Cog):
     async def on_bulk_message_delete(self, messages):
         pass
 
-    @commands.Cog.listener()
-    async def on_raw_message_edit(self, payload):
+    @commands.Cog.listener("on_raw_message_edit")
+    async def _raw_message_edit(self, payload):
         if payload.cached_message != None: # on_message_edit
             return
-        else:
-            guild = self.bot.get_channel(payload.channel_id).guild
-            if self.log_check(guild):
-                config = Facility.get_config(guild.id)
-                log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        
+        guild = self.bot.get_channel(payload.channel_id).guild
+        if self.log_check(guild):
+            config = Facility.get_config(guild.id)
+            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
-                edited_message = None
+            edited_message = None
+            message_channel = None
+            
+            # We're attempting to retrieve the message here...
+            try:
+                message_channel = self.bot.get_channel(payload.channel_id)
+                edited_message = await message_channel.fetch_message(payload.message_id)
+            except discord.NotFound:
                 message_channel = None
-                
-                # We're attempting to retrieve the message here...
-                try:
-                    message_channel = self.bot.get_channel(payload.channel_id)
-                    edited_message = await message_channel.fetch_message(payload.message_id)
-                except discord.NotFound:
-                    message_channel = None
-                except discord.HTTPException:
-                    pass
-                
-                log_title = "Message Edited"
-                log_content = LogContent().append(
-                    "⚠ The original content of the message is not found.",
-                    "**Current content:** %s" % edited_message.content,
-                    "**Author:** %s" % edited_message.author.mention,
-                    "----------------------------",
-                    "**Message ID:** %d" % payload.message_id,
-                    "**Message URL:** [Jump to message](%s)" % edited_message.jump_url,
-                    "**Channel:** %s" % message_channel.mention if message_channel is not None else "Channel not found."
-                )
+            except discord.HTTPException:
+                pass
+            
+            log_title = "Message Edited"
+            log_content = LogContent().append(
+                "⚠ The original content of the message is not found.",
+                "**Author:** %s" % edited_message.author.mention,
+                "----------------------------",
+                "**Message URL:** [Jump to message](%s)" % edited_message.jump_url,
+                "**Channel:** %s" % message_channel.mention if message_channel is not None else "Channel not found."
+            )
 
-                log_color = self.color_change
-                log_time = edited_message.edited_at
+            log_color = self.color_change
+            log_time = edited_message.edited_at
 
-                embed = Facility.get_default_embed(
-                    title = log_title,
-                    description = log_content.content,
-                    color = log_color,
-                    timestamp = log_time
-                ).set_thumbnail(
-                    url = edited_message.author.avatar_url
-                )
+            embed = Facility.get_default_embed(
+                title = log_title,
+                description = log_content.content,
+                color = log_color,
+                timestamp = log_time
+            ).set_thumbnail(
+                url = edited_message.author.avatar_url
+            )
 
-                await log_channel.send(embed = embed)
-    @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
+            await log_channel.send(embed = embed)
+    
+    @commands.Cog.listener("on_message_edit")
+    async def _message_edit(self, before, after):
         # We don't log bot messages yet.
         if after.author.bot == False:
             guild = before.guild
@@ -240,23 +261,59 @@ class Logging(commands.Cog):
                 config = Facility.get_config(guild.id)
                 log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
+                BASE_URL = "https://hastebin.com/"
+
                 log_title = "Message Edited"
+                log_content = LogContent()
 
                 # Basically, we generally have 3 types of messages: normal text, attachments and embeds.
                 # However, attachments can't be edited, so that's one task down.
                 # For the rest, just do like message_delete.
                 content_message = "**Content before:** %s\n**Content after:** %s" % (before.content, after.content) if after.content != "" else ""
 
-                # We don't support edited embed because displaying both dict form is too large.
-                # TODO: Find an alternative for this.
+                # Although a normal user can't really edit embed, it's just for fun to support embed editing.
+                # Basically compare two lists of embeds and display if they're different.
+                embed_message = ""
 
-                log_content = LogContent().append(
-                    content_message,
-                    "**Author:** %s" % after.author.mention,
-                    "----------------------------",
-                    "**Message URL**: [Jump to message](%s)"  % after.jump_url,
-                    "**Channel:** %s" % after.channel.mention
-                )
+                if before.embeds != after.embeds:
+                    import json
+                    embed_message = "\n----------------------------\n" if content_message != "" else ""
+                    counter = 1
+                    for embed in before.embeds:
+                        embed_message += "Embed %d before:\n" % counter
+                        embed_message += "```%s```" % json.dumps(embed.to_dict(), indent = 2)
+                        counter += 1
+                    counter = 1
+                    for embed in after.embeds:
+                        embed_message += "Embed %d after:\n" % counter
+                        embed_message += "```%s```" % json.dumps(embed.to_dict(), indent = 2)
+                        counter += 1
+                
+                # Exceed max character check. 1800 to avoid cases when the Author and below part exceed max char limit.
+                if len(content_message + embed_message) < 1800:
+                    log_content.append(
+                        content_message,
+                        "**Author:** %s" % after.author.mention,
+                        "----------------------------",
+                        "**Message URL**: [Jump to message](%s)"  % after.jump_url,
+                        "**Channel:** %s" % after.channel.mention
+                    )
+                else:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.post(BASE_URL + "documents", data = content_message + embed_message) as rsp:
+                            if rsp.status == 200:
+                                result = await rsp.json()
+                                key = result["key"]
+                                log_content.append(
+                                    "The log content is too long! View the full text here: ",
+                                    f"<{BASE_URL}{key}>",
+                                    "**Author:** %s" % after.author.mention,
+                                    "----------------------------",
+                                    "**Message URL**: [Jump to message](%s)" % after.jump_url,
+                                    "**Channel:** %s" % after.channel.mention
+                                )
+
+                
                 log_color = self.color_change
                 log_time = after.edited_at
 
@@ -283,8 +340,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
     
-    @commands.Cog.listener()
-    async def on_member_ban(self, guild, user):
+    @commands.Cog.listener("on_member_ban")
+    async def _member_ban(self, guild, user):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
@@ -308,14 +365,6 @@ class Logging(commands.Cog):
                 executor = entry.user
                 log_time = entry.created_at
                 
-                log_content = f'''
-                                **User:** {user.mention}
-                                **User Name:** {user}
-                                **Reason:** {reason}
-                                ----------------------------
-                                **Banned by:** {executor.mention}
-                                '''
-                
                 log_content.append(
                     "**User:** %s" % user.mention,
                     "**User Name:** %s" % user,
@@ -326,7 +375,7 @@ class Logging(commands.Cog):
 
                 embed = Facility.get_default_embed(
                     title = log_title,
-                    description = log_content,
+                    description = log_content.content,
                     color = log_color,
                     timestamp = log_time
                 ).set_thumbnail(
@@ -341,8 +390,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_member_unban(self, guild, user):
+    @commands.Cog.listener("on_member_unban")
+    async def _member_unban(self, guild, user):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(guild):
             # We retrieve the logging channel for that guild.
@@ -350,7 +399,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "User Unbanned"
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_moderation
             log_time = None
 
@@ -366,17 +415,17 @@ class Logging(commands.Cog):
                 executor = entry.user
                 log_time = entry.created_at
                 
-                log_content = f'''
-                                **User:** {user.mention}
-                                **User Name:** {user}
-                                **Reason:** {reason}
-                                ----------------------------
-                                **Unbanned by:** {executor.mention}
-                                '''
+                log_content.append(
+                    "**User:** %s" % user.mention,
+                    "**User Name:** %s" % user,
+                    "**Reason:** %s" % reason,
+                    "----------------------------",
+                    "**Unbanned by:** %s" % executor.mention
+                )
                 
                 embed = Facility.get_default_embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = log_content.content, 
                     color = log_color, 
                     timestamp = log_time
                 ).set_thumbnail(
@@ -391,8 +440,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
+    @commands.Cog.listener("on_member_join")
+    async def _member_join(self, member):
         guild = member.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -402,25 +451,20 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Member Joined"
-            log_content = '''
-                            **Member:** %s
-                            **Member Name:** %s
-                            ----------------------------
-                            **Member ID:** %d
-                            **Account created on:** %s (UTC)
-                            ''' % (
-                                member.mention,
-                                str(member),
-                                member.id,
+            log_content = LogContent().append(
+                "**Member:** %s" % member.mention,
+                "**Member Name:** %s" % str(member),
+                "----------------------------",
+                "**Member ID:** %d" % member.id,
+                "**Account created on:** %s (UTC)" % member.created_at.strftime("%b %m %Y %I:%M %p")
+            )
 
-                                member.created_at.strftime("%b %m %Y %I:%M %p"),
-                            ) # Don't use f-strings here, it's messy.
             log_color = self.color_guild_join_leave
             log_time = datetime.datetime.utcnow()
 
             embed = Facility.get_default_embed(
                 title = log_title,
-                description = log_content,
+                description = log_content.content,
                 color = log_color,
                 timestamp = log_time
             ).set_thumbnail(
@@ -435,8 +479,8 @@ class Logging(commands.Cog):
 
             await log_channel.send(embed = embed)
     
-    @commands.Cog.listener()
-    async def on_member_remove(self, member):
+    @commands.Cog.listener("on_member_remove")
+    async def _member_remove(self, member):
         guild = member.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -446,7 +490,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = None
             log_time = None
 
@@ -455,9 +499,8 @@ class Logging(commands.Cog):
             
             # When a member is banned/kicked/left by their will, this event will be triggered. 
             # For banning, we already have on_member_ban to deal with.
-            # Now we have to separate whether a member is kicked or left on their own will.
             # The approach is to look at the latest kick log and determine if it's the same user.
-            # Now, this approach has a flaw, and that's when the kicked member rejoin and left, then it'll log that member as kicked twice. (Not tested yet, just by observating the code)
+            # Now, this approach has a flaw, and that's when the kicked member rejoin and left, then it'll log that member as kicked twice.
             # A probably solution for that is to retrieve the time between the on_member_remove, but that's straight up hardcode.
 
             # We retrieve the latest entry.
@@ -473,18 +516,18 @@ class Logging(commands.Cog):
                     log_time = entry.created_at
 
                     log_title = "Member Kicked"
-                    log_content = f'''
-                                    **Member:** {member.mention}
-                                    **Member Name:** {member}
-                                    **Reason:** {reason}
-                                    ----------------------------
-                                    **Kicked by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        f"**Member:** {member.mention}",
+                        f"**Member Name:** {member}",
+                        f"**Reason:** {reason}",
+                        "----------------------------",
+                        f"**Kicked by:** {executor.mention}"
+                    )
                     log_color = self.color_moderation
                     
                     embed = Facility.get_default_embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = log_content.content, 
                         color = log_color, 
                         timestamp = log_time
                     ).set_thumbnail(
@@ -501,18 +544,18 @@ class Logging(commands.Cog):
 
                 # We still want to display the leave message, so we need this.
                 log_title = "Member Left"
-                log_content = f'''
-                                **Member:** {member.mention}
-                                **Member name:** {member}
-                                ----------------------------
-                                **Member ID:** {member.id}
-                                '''
+                log_content.append(
+                    f"**Member:** {member.mention}",
+                    f"**Member Name:** {member}",
+                    "----------------------------",
+                    f"**Member ID:** {member.id}"
+                )
                 log_color = self.color_guild_join_leave
                 log_time = datetime.datetime.utcnow()
 
                 embed = Facility.get_default_embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = log_content.content, 
                     color = log_color, 
                     timestamp = log_time
                 ).set_thumbnail(
@@ -527,8 +570,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_member_update(self, before, after):
+    @commands.Cog.listener("on_member_update")
+    async def _member_update(self, before, after):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -538,7 +581,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_change
             log_time = None
 
@@ -567,24 +610,24 @@ class Logging(commands.Cog):
 
                         # The role_change will contain something like this: ["<@&1234>", "<@&2345>", ...]
 
-                        log_content = f'''
-                                        **Member:** {after.mention}
-                                        **Member Name:** {after}
-                                        **Role added:** {Facility.striplist(role_change)}
-                                        ----------------------------
-                                        **Added by:** {executor.mention}
-                                        '''
+                        log_content.append(
+                            "**Member:** %s" % after.mention,
+                            "**Member Name:** %s" % after,
+                            "**Role added:** %s" % Facility.striplist(role_change),
+                            "----------------------------",
+                            "**Added by:** %s" % executor.mention
+                        )
                     elif len(old_roles) > len(new_roles):
                         log_title = "Member Role Removed"
                         role_change = [Facility.mention(role) for role in old_roles if role not in new_roles]
 
-                        log_content = f'''
-                                        **Member:** {after.mention}
-                                        **Member Name:** {after}
-                                        **Role removed:** {str(role_change).strip("[']")}
-                                        ----------------------------
-                                        **Removed by:** {executor.mention}
-                                        '''
+                        log_content.append(
+                            "**Member:** %s" % after.mention,
+                            "**Member Name:** %s" % after,
+                            "**Role removed:** %s" % Facility.striplist(role_change),
+                            "----------------------------",
+                            "**Removed by:** %s" % executor.mention
+                        )
                     # There was an unknown bug that print an empty embed for no reason.
                     # TODO: Find out what happened.
                     else:
@@ -607,17 +650,17 @@ class Logging(commands.Cog):
                         new_nick = after.name
                     
                     log_title = "Nickname Changed"
-                    log_content = f'''
-                                    **Before:** {old_nick}
-                                    **After:** {new_nick}
-                                    ----------------------------
-                                    **Edited by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        "**Before:** %s" % old_nick,
+                        "**After:** %s" % new_nick,
+                        "----------------------------",
+                        "**Edited by:** %s" % executor.mention 
+                    )
                 
                 if flag:
                     embed = Facility.get_default_embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = log_content.content, 
                         color = log_color, 
                         timestamp = log_time
                     ).set_thumbnail(
@@ -632,8 +675,8 @@ class Logging(commands.Cog):
 
                     await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_guild_channel_create(self, channel):
+    @commands.Cog.listener("on_guild_channel_create")
+    async def _guild_channel_create(self, channel):
         guild = channel.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -643,7 +686,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_create
             log_time = None
 
@@ -658,66 +701,43 @@ class Logging(commands.Cog):
 
                 if isinstance(channel, discord.TextChannel):
                     log_title = "Text Channel Created"
-                    log_content = '''
-                                    **Name:** `%s`
-                                    **Jump to:** %s
-                                    **Category:** `%s`
-                                    **Created by:** %s
-                                    ----------------------------
-                                    **ID:** %d
-                                    **Is NSFW:** %s
-                                    **Position:** %d
-                                    ''' % (
-                                        channel.name,
-                                        channel.mention,
-                                        channel.category.name if channel.category != None else "<None>", 
-                                        executor.mention,
-
-                                        channel.id, 
-                                        "Yes" if channel.is_nsfw() else "No", 
-                                        channel.position
-                                    ) # Don't f-strings this.
+                    log_content.append(
+                        "**Name:** `%s`" % channel.name,
+                        "**Jump to:** %s" % channel.mention,
+                        "**Category:** `%s`" % channel.category.name if channel.category != None else "<None>",
+                        "**Created by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**ID:** %d" % channel.id,
+                        "**Is NSFW:** %s" % "Yes" if channel.is_nsfw() else "No",
+                        "**Position:** %d" % channel.position
+                    )
 
                 elif isinstance(channel, discord.VoiceChannel):
                     # We'll probably cover some info about bitrate in the future.
                     log_title = "Voice Channel Created"
-                    log_content = '''
-                                    **Name:** `%s`
-                                    **Jump to:** %s
-                                    **Category:** `%s`
-                                    **Created by:** %s
-                                    ----------------------------
-                                    **ID:** %d
-                                    **Position:** %d
-                                    ''' % (
-                                        channel.name, 
-                                        channel.mention,
-                                        channel.category.name if channel.category != None else "<None>",
-                                        executor.mention,
-
-                                        channel.id, 
-                                        channel.position
-                                    ) # Don't f-strings this.
+                    log_content.append(
+                        "**Name:** `%s`" % channel.name,
+                        "**Jump to:** %s" % channel.mention,
+                        "**Category:** `%s`" % channel.category.name if channel.category != None else "<None>",
+                        "**Created by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**ID:** %d" % channel.id,
+                        "**Position:** %d" % channel.position
+                    )
 
                 elif isinstance(channel, discord.CategoryChannel):
                     log_title = "Category Created"
-                    log_content = '''
-                                    **Name:** `%s`
-                                    **Created by:** %s
-                                    ----------------------------
-                                    **ID:** %d
-                                    **Position:** %d
-                                    ''' % (
-                                        channel.name, 
-                                        executor.mention, 
-
-                                        channel.id, 
-                                        channel.position
-                                    ) # Don't f-strings this.
+                    log_content.append(
+                        "**Name:** `%s`" % channel.name,
+                        "**Created by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**ID:** %d" % channel.id,
+                        "**Position:** %d" % channel.position
+                    )
                 
                 embed = Facility.get_default_embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = log_content.content, 
                     color = log_color,
                     timestamp = log_time
                 ).set_author(
@@ -730,8 +750,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
     
-    @commands.Cog.listener()
-    async def on_guild_channel_delete(self, channel):
+    @commands.Cog.listener("on_guild_channel_delete")
+    async def _guild_channel_delete(self, channel):
         guild = channel.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -741,7 +761,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
             
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_delete
             log_time = None
 
@@ -754,61 +774,37 @@ class Logging(commands.Cog):
 
                 if isinstance(channel, discord.TextChannel):
                     log_title = "Text Channel Deleted"
-                    log_content = '''
-                                    **Name:** `%s`
-                                    **Category:** `%s`
-                                    **Deleted by:** %s
-                                    ----------------------------
-                                    **ID:** %d
-                                    **Was NSFW:** %s
-                                    **Position:** %d
-                                    ''' % (
-                                        channel.name, 
-                                        channel.category.name if channel.category != None else "<None>", 
-                                        executor.mention,
-
-                                        channel.id, 
-                                        "Yes" if channel.is_nsfw() else "No", 
-                                        channel.position
-                                    ) # Don't f-strings this.
+                    log_content.append(
+                        "**Name:** `%s`" % channel.name,
+                        "**Category:** `%s`" % channel.category.name if channel.category != None else "<None>",
+                        "**Deleted by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**ID:** %d" % channel.id,
+                        "**Was NSFW:** %s" % "Yes" if channel.is_nsfw() else "No"
+                    )
 
                 elif isinstance(channel, discord.VoiceChannel):
                     log_title = "Voice Channel Deleted"
-                    log_content = '''
-                                    **Name:** `%s`
-                                    **Category:** `%s`
-                                    **Deleted by:** %s
-                                    ----------------------------
-                                    **ID:** %d
-                                    **Position:** %d
-                                    ''' % (
-                                        channel.name, 
-                                        channel.category.name if channel.category != None else "<None>",
-                                        executor.mention,
-
-                                        channel.id, 
-                                        channel.position
-                                    ) # Don't f-strings this.
+                    log_content.append(
+                        "**Name:** `%s`" % channel.name,
+                        "**Category:** `%s`" % channel.category.name if channel.category != None else "<None>",
+                        "**Deleted by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**ID:** %d" % channel.id
+                    )
 
                 elif isinstance(channel, discord.CategoryChannel):
                     log_title = "Category Deleted"
-                    log_content = '''
-                                    **Name:** `%s`
-                                    **Deleted by:** %s
-                                    ----------------------------
-                                    **ID:** %d
-                                    **Position:** %d
-                                    ''' % (
-                                        channel.name, 
-                                        executor.mention,
-
-                                        channel.id, 
-                                        channel.position
-                                    ) # Don't f-strings this.
+                    log_content.append(
+                        "**Name:** `%s`" % channel.name,
+                        "**Deleted by:** %s" % executor.mention,
+                        "----------------------------",
+                        "**ID:** %d" % channel.id
+                    )
                 
                 embed = Facility.get_default_embed(
                     title = log_title, 
-                    description = log_content, 
+                    description = log_content.content, 
                     color = log_color,
                     timestamp = log_time
                 )
@@ -823,8 +819,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_guild_channel_update(self, before, after):
+    @commands.Cog.listener("on_guild_channel_update")
+    async def _guild_channel_update(self, before, after):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -834,7 +830,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_change
             log_time = None
 
@@ -850,19 +846,19 @@ class Logging(commands.Cog):
 
                 if before.name != after.name:
                     log_title = "Channel Name Changed"
-                    log_content = f'''
-                                    **Channel:** {after.mention}
-                                    **Before:** {before.name}
-                                    **After:** {after.name}
-                                    ----------------------------
-                                    **Channel ID:** {after.id}
-                                    **Changed by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        f"**Before:** {before.name}",
+                        f"**After:** {after.name}",
+                        "----------------------------",
+                        f"**Jump to:** {after.mention}",
+                        f"**Channel ID:** {after.id}",
+                        f"**Changed by:** {executor.mention}"
+                    )
                     
                     # Put embed inside here instead of outside because user can change multiple thing before pressing save.
                     embed = Facility.get_default_embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = log_content.content, 
                         color = log_color, 
                         timestamp = log_time
                     ).set_author(
@@ -879,18 +875,18 @@ class Logging(commands.Cog):
                     pass
                 if before.topic != after.topic and before.topic != None: # For some reasons, changing the name of a new channel will also call this.
                     log_title = "Channel Topic Changed"
-                    log_content = f'''
-                                    **Channel:** {after.mention}
-                                    **Before:** {before.topic}
-                                    **After:** {after.topic}
-                                    ----------------------------
-                                    **Channel ID:** {after.id}
-                                    **Changed by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        f"**Channel:** {after.mention}",
+                        f"**Before:** {before.topic}",
+                        f"**After:** {after.topic}",
+                        "----------------------------",
+                        f"**Channel ID:** {after.id}",
+                        f"**Changed by:** {executor.mention}"
+                    )
                     
                     embed = Facility.get_default_embed(
                         title = log_title, 
-                        description = log_content, 
+                        description = log_content.content, 
                         color = log_color, 
                         timestamp = log_time
                     ).set_author(
@@ -927,22 +923,16 @@ class Logging(commands.Cog):
                         # If there's a permission added (add permission for a member/role)
                         if key not in before.overwrites:
                             log_title = "Channel Permission Added"
-                            log_content = '''
-                                            **Target:** %s (%s)
-                                            ----------------------------
-                                            **Channel:** %s
-                                            **Added by:** %s
-                                            ''' % (
-                                                Facility.mention(key), 
-                                                "Role" if isinstance(key, discord.Role) else "Member", 
-
-                                                after.mention, 
-                                                executor.mention
-                                            )
+                            log_content.append(
+                                "**Target:** %s (%s)" % (Facility.mention(key), "Role" if isinstance(key, discord.Role) else "Member"),
+                                "----------------------------",
+                                "**Channel:** %s" % after.mention,
+                                "**Added by:** %s" % executor.mention
+                            )
                             
                             embed = Facility.get_default_embed(
                                 title = log_title, 
-                                description = log_content, 
+                                description = log_content.content, 
                                 color = log_color, 
                                 timestamp = log_time
                             ).set_author(
@@ -1047,19 +1037,17 @@ class Logging(commands.Cog):
 
 
                             log_title = "Channel Permission Changed"
-                            log_content = f'''
-                                            **Target:** {key.mention} ({target_type})
-
-                                            {granted_message}{neutralized_message}{denied_message}
-
-                                            ----------------------------
-                                            **Channel:** {after.mention}
-                                            **Changed by:** {executor.mention}
-                                            '''
+                            log_content.append(
+                                "**Target:** %s (%s)" % (Facility.mention(key), target_type),
+                                f"\n{granted_message}{neutralized_message}{denied_message}\n",
+                                "----------------------------",
+                                "**Channel:** %s" % after.mention,
+                                "**Changed by:** %s" % {executor.mention}
+                            )
                             
                             embed = Facility.get_default_embed(
                                 title = log_title,
-                                description = log_content,
+                                description = log_content.content,
                                 color = log_color,
                                 timestamp = log_time
                             ).set_author(
@@ -1075,22 +1063,16 @@ class Logging(commands.Cog):
                     for key in before.overwrites:
                         if key not in after.overwrites:
                             log_title = "Channel Permission Removed"
-                            log_content = '''
-                                            **Target:** %s (%s)
-                                            ----------------------------
-                                            **Channel:** %s
-                                            **Removed by:** %s
-                                            ''' % (
-                                                Facility.mention(key), 
-                                                "Role" if isinstance(key, discord.Role) else "Member", 
-
-                                                after.id, 
-                                                executor.mention
-                                            )
+                            log_content.append(
+                                "**Target:** %s (%s)" % (Facility.mention(key), "Role" if isinstance(key, discord.Role) else "Member"),
+                                "----------------------------",
+                                "**Channel:** %s" % after.mention,
+                                "**Removed by:** %s" % executor.mention
+                            )
                             
                             embed = Facility.get_default_embed(
                                 title = log_title, 
-                                description = log_content, 
+                                description = log_content.content, 
                                 color = log_color, 
                                 timestamp = log_time
                             )
@@ -1105,8 +1087,8 @@ class Logging(commands.Cog):
 
                             await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_guild_update(self, before, after):
+    @commands.Cog.listener("on_guild_update")
+    async def _guild_update(self, before, after):
         # First we check if the logging feature is enabled in that guild.
         if self.log_check(after):
             # We retrieve the logging channel for that guild
@@ -1114,7 +1096,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_change
             log_time = None
 
@@ -1129,12 +1111,12 @@ class Logging(commands.Cog):
                 if hasattr(entry.before, "name") and hasattr(entry.after, "name"):
                     flag = True
                     log_title = "Server Name Changed"
-                    log_content = f'''
-                                    **Before:** {before.name}
-                                    **After:** {after.name}
-                                    ----------------------------
-                                    **Changed by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        f"**Before:** {before.name}",
+                        f"**After:** {after.name}",
+                        "----------------------------",
+                        f"**Changed by:** {executor.mention}"
+                    )
                 elif hasattr(entry.before, "owner") and hasattr(entry.after, "owner"):
                     flag = True
                     log_title = "Server Owner Changed"
@@ -1142,11 +1124,15 @@ class Logging(commands.Cog):
                                     **Before:** {before.owner.mention}
                                     **After:** {after.owner.mention}
                                     '''
+                    log_content.append(
+                        f"**Before:** {before.owner.mention}",
+                        f"**After:** {after.owner.mention}"
+                    )
                 
                 if flag:
                     embed = Facility.get_default_embed(
                         title = log_title,
-                        description = log_content,
+                        description = log_content.content,
                         color = log_color,
                         timestamp = log_time
                     ).set_author(
@@ -1159,8 +1145,8 @@ class Logging(commands.Cog):
 
                     await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_guild_role_create(self, role):
+    @commands.Cog.listener("on_guild_role_create")
+    async def _guild_role_create(self, role):
         guild = role.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1170,7 +1156,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Role Created"
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_create
             log_time = None
 
@@ -1181,92 +1167,145 @@ class Logging(commands.Cog):
                 executor = entry.user
 
                 role_perm = []
+                deny_perm = []
                 
                 # Painful experience :D
                 if role.permissions.administrator:
                     role_perm.append("Administrator")
+                else:
+                    deny_perm.append("Administrator")
                 if role.permissions.view_audit_log:
                     role_perm.append("View Audit Log")
+                else:
+                    deny_perm.append("View Audit Log")
                 if role.permissions.manage_guild:
                     role_perm.append("Manage Server")
+                else:
+                    deny_perm.append("Manage Server")
                 if role.permissions.manage_roles:
                     role_perm.append("Manage Roles")
+                else:
+                    deny_perm.append("Manage Roles")
                 if role.permissions.manage_channels:
                     role_perm.append("Manage Channels")
+                else:
+                    deny_perm.append("Manage Channels")
                 if role.permissions.kick_members:
                     role_perm.append("Kick Members")
+                else:
+                    deny_perm.append("Kick Members")
                 if role.permissions.ban_members:
                     role_perm.append("Ban Members")
+                else:
+                    deny_perm.append("Ban Members")
                 if role.permissions.create_instant_invite:
                     role_perm.append("Create Invite")
+                else:
+                    deny_perm.append("Create Invite")
                 if role.permissions.change_nickname:
                     role_perm.append("Change Nickname")
+                else:
+                    deny_perm.append("Change Nickname")
                 if role.permissions.manage_nicknames:
                     role_perm.append("Manage Nicknames")
+                else:
+                    deny_perm.append("Manage Nicknames")
                 if role.permissions.manage_emojis:
                     role_perm.append("Manage Emojis")
+                else:
+                    deny_perm.append("Manage Emojis")
                 if role.permissions.manage_webhooks:
                     role_perm.append("Manage Webhooks")
+                else:
+                    deny_perm.append("Manage Webhooks")
                 if role.permissions.send_messages:
                     role_perm.append("Send Messages")
+                else:
+                    deny_perm.append("Send Messages")
                 if role.permissions.send_tts_messages:
                     role_perm.append("Send TTS Messages")
+                else:
+                    deny_perm.append("Send TTS Messages")
                 if role.permissions.embed_links:
                     role_perm.append("Embed Links")
+                else:
+                    deny_perm.append("Embed Links")
                 if role.permissions.attach_files:
                     role_perm.append("Attach Files")
+                else:
+                    deny_perm.append("Attach Files")
                 if role.permissions.read_message_history:
                     role_perm.append("Read Message History")
+                else:
+                    deny_perm.append("Read Message History")
                 if role.permissions.mention_everyone:
                     role_perm.append("Mention Everyone")
+                else:
+                    deny_perm.append("Mention Everyone")
                 if role.permissions.external_emojis:
                     role_perm.append("Use External Emojis")
+                else:
+                    deny_perm.append("Use External Emojis")
                 if role.permissions.add_reactions:
                     role_perm.append("Add Reactions")
+                else:
+                    deny_perm.append("Add Reactions")
                 if role.permissions.connect:
                     role_perm.append("Connect")
+                else:
+                    deny_perm.append("Connect")
                 if role.permissions.speak:
                     role_perm.append("Speak")
+                else:
+                    deny_perm.append("Speak")
                 if role.permissions.mute_members:
                     role_perm.append("Mute Members")
+                else:
+                    deny_perm.append("Mute Members")
                 if role.permissions.deafen_members:
                     role_perm.append("Deafen Members")
+                else:
+                    deny_perm.append("Deafen Members")
                 if role.permissions.move_members:
                     role_perm.append("Move Members")
+                else:
+                    deny_perm.append("Move Members")
                 if role.permissions.use_voice_activation:
                     role_perm.append("Use Voice Activity")
+                else:
+                    deny_perm.append("Use Voice Activity")
                 if role.permissions.priority_speaker:
                     role_perm.append("Priority Speaker")
+                else:
+                    deny_perm.append("Priority Speaker")
                 if role.permissions.stream:
                     role_perm.append("Go Live")
+                else:
+                    deny_perm.append("Go Live")
                 
-                str_role_perm = ""
+                granted_perms = ""
                 for perm in role_perm:
-                    str_role_perm += "`%s` " % perm
+                    granted_perms += "`%s` " % perm
+                denied_perms = ""
+                for perm in deny_perm:
+                    denied_perms += "`%s` " % perm
 
                 # TODO: Although this method will bypass user created role, it'll not pass the bot created role, as bot created role can have denied permissions on creation.
-                log_content = '''
-                                **Role:** %s
-                                **Name:** %s
-                                **Created by:** %s
-                                **Granted Permissions:** %s
-                                ----------------------------
-                                **Is separated:** %s
-                                **Is mentionable:** %s
-                                **Color:** %s
-                                ''' % (
-                                    Facility.mention(role), # It's unlikely for this role to be @everyone but consistency is nice. 
-                                    role.name, 
-                                    executor.mention, 
-                                    str_role_perm,
-                                    "Yes" if role.hoist else "No",
-                                    "Yes" if role.mentionable else "No",
-                                    str(role.color)
-                                )
+                log_content.append(
+                    "**Role:** %s" % Facility.mention(role),
+                    "**Name:** %s" % role.name,
+                    "**Created by:** %s" % executor.mention,
+                    "**Granted Permissions:** %s" % granted_perms,
+                    "**Denied Permissions:** %s" % denied_perms,
+                    "----------------------------",
+                    "**Is separated:** %s" % "Yes" if role.hoist else "No",
+                    "**Is mentionable:** %s" % "Yes" if role.mentionable else "No",
+                    "**Color:** %s" % str(role.color)
+                )
 
                 embed = Facility.get_default_embed(
                     title = log_title,
-                    description = log_content,
+                    description = log_content.content,
                     color = log_color,
                     timestamp = log_time
                 ).set_author(
@@ -1279,8 +1318,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
     
-    @commands.Cog.listener()
-    async def on_guild_role_delete(self, role):
+    @commands.Cog.listener("on_guild_role_delete")
+    async def _guild_role_delete(self, role):
         guild = role.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1290,7 +1329,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Role Deleted"
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_delete
             log_time = None
 
@@ -1300,24 +1339,18 @@ class Logging(commands.Cog):
                 log_time = entry.created_at
                 executor = entry.user
             
-                log_content = '''
-                                **Name:** `%s`
-                                **Deleted by:** %s
-                                ----------------------------
-                                **Was separated:** %s
-                                **Was mentionable:** %s
-                                **Color:** %s
-                                ''' % (
-                                    role.name,
-                                    executor.mention,
-                                    "Yes" if role.hoist else "No",
-                                    "Yes" if role.mentionable else "No",
-                                    str(role.color)
-                                )
+                log_content.append(
+                    "**Name:** `%s`" % role.name,
+                    "**Deleted by:** %s" % executor.mention,
+                    "----------------------------",
+                    "**Was separated:** %s" % "Yes" if role.hoist else "No",
+                    "**Was mentionable:** %s" % "Yes" if role.mentionable else "No",
+                    "**Color:** %s" % str(role.color)
+                )
                 
                 embed = Facility.get_default_embed(
                     title = log_title,
-                    description = log_content,
+                    description = log_content.content,
                     color = log_color,
                     timestamp = log_time
                 ).set_author(
@@ -1330,8 +1363,8 @@ class Logging(commands.Cog):
 
                 await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_guild_role_update(self, before, after):
+    @commands.Cog.listener("on_guild_role_update")
+    async def _guild_role_update(self, before, after):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1341,7 +1374,7 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = ""
-            log_content = ""
+            log_content = LogContent()
             log_color = self.color_change
             log_time = None
 
@@ -1353,17 +1386,17 @@ class Logging(commands.Cog):
 
                 if before.name != after.name:
                     log_title = "Role Name Changed"
-                    log_content = f'''
-                                    **Role:** {Facility.mention(after)}
-                                    **Before:** {before.name}
-                                    **After:** {after.name}
-                                    ----------------------------
-                                    **Changed by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        f"**Role:** {Facility.mention(after)}",
+                        f"**Before:** {before.name}",
+                        f"**After:** {after.name}",
+                        "----------------------------",
+                        f"**Changed by:** {executor.mention}"
+                    )
                     
                     embed = Facility.get_default_embed(
                         title = log_title,
-                        description = log_content,
+                        description = log_content.content,
                         color = log_color,
                         timestamp = log_time
                     ).set_author(
@@ -1377,17 +1410,17 @@ class Logging(commands.Cog):
                     await log_channel.send(embed = embed)
                 if before.color != after.color:
                     log_title = "Role Color Changed"
-                    log_content = f'''
-                                    **Role:** {Facility.mention(after)}
-                                    **Before:** {before.color}
-                                    **After:** {after.color}
-                                    ----------------------------
-                                    **Changed by:** {executor.mention}
-                                    '''
+                    log_content.append(
+                        f"**Role:** {Facility.mention(after)}",
+                        f"**Before:** {before.color}",
+                        f"**After:** {after.color}",
+                        "----------------------------",
+                        f"**Changed by:** {executor.mention}"
+                    )
                     
                     embed = Facility.get_default_embed(
                         title = log_title,
-                        description = log_content,
+                        description = log_content.content,
                         color = log_color,
                         timestamp = log_time
                     ).set_author(
@@ -1452,10 +1485,16 @@ class Logging(commands.Cog):
                                     ----------------------------
                                     **Changed by:** {executor.mention}
                                     '''
+                    log_content.append(
+                        f"**Target:** {after.name}\n",
+                        f"{granted_message}{denied_message}\n",
+                        "----------------------------",
+                        f"**Changed by:** {executor.mention}"
+                    )
 
                     embed = Facility.get_default_embed(
                         title = log_title,
-                        description = log_content,
+                        description = log_content.content,
                         color = log_color,
                         timestamp = log_time
                     ).set_author(
@@ -1478,22 +1517,21 @@ class Logging(commands.Cog):
             log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
 
             log_title = "Command Raised Error"
-            log_content = '''
-                            A command raised an error.
-
-                            Command arguments:
-                            ```%s %s```
-                            Message:
-                            ```%s```
-                            Error:
-                            ```%s```
-                            ''' % (ctx.command.name, ctx.command.signature, ctx.message.content, error)
+            log_content = LogContent().append(
+                "A command raised an error.\n",
+                "Command arguments:",
+                "```%s %s```" % (ctx.command.name, ctx.command.signature),
+                "Message:"
+                "```%s```" % ctx.message.content,
+                "Error:",
+                "```%s```" % error
+            )
             log_color = self.color_other
             log_time = datetime.datetime.utcnow()
 
             embed = Facility.get_default_embed(
                 title = log_title,
-                description = log_content,
+                description = log_content.content,
                 color = log_color,
                 timestamp = log_time
             ).set_author(
