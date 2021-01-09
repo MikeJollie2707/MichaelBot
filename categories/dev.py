@@ -6,6 +6,7 @@ import datetime
 import textwrap
 
 from categories.utilities.method_cog import Facility
+import categories.utilities.db as DB
 
 # Commands for developers to test things and stuffs. The format does not need to be formal.
 
@@ -56,6 +57,61 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
             embed.add_field(name = f"{index + 1}. {guilds[index].name}", value = f"ID: {guilds[index].id}", inline = False)
         
         await ctx.send(embed = embed)
+
+    @commands.command()
+    async def addmoney(self, ctx, amount : int, *, member : discord.Member = None):
+        '''
+        Add a certain amount of money to a user or to yourself.
+
+        The limit range is `[1-25]`.
+
+        *Warning: This command is available only in beta. Once the currency is official, this command will
+        no longer available.*
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} 25
+
+        **You need:** None
+        **I need:** `Send Messages`.
+        '''
+
+        if member is None:
+            member = ctx.author
+        
+        async with self.bot.pool.acquire() as conn:
+            await DB.User.add_money(conn, ctx.author.id, amount)
+        
+        await ctx.send("Added $%d to %s." % (amount, member.name))
+
+    @commands.command()
+    async def rmvmoney(self, ctx, amount : int, *, member: discord.Member = None):
+        '''
+        Remove a certain amount of money from a user or from yourself.
+
+        The limit range is `[1-25]`. If the removal cause the target's money to drop below 0, it'll be 0.
+
+        *Warning: This command is available only in beta. Once the currency is official, this command will
+        no longer available.*
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} 25
+
+        **You need:** None
+        **I need:** `Send Messages`.
+        '''
+
+        if member is None:
+            member = ctx.author
+        
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+
+                member_money = await DB.User.get_money(conn, member.id)
+                member_money -= amount
+
+                await DB.User.update_money(conn, member.id, member_money)
+        
+        await ctx.send("Removed $%d from %s." % (amount, member.name))
 
     # I'm intending to move this command to a category called "Administrator" or something.
     @commands.command()
