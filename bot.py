@@ -14,7 +14,7 @@ __discord_extension__ = [
     "categories.currency",
     "categories.dev",
     "categories.events",
-    #"categories.experiment",
+    "categories.experiment",
     "categories.game",
     "categories.logger",
     "categories.moderation",
