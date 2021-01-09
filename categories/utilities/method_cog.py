@@ -209,14 +209,14 @@ class Facility(commands.Cog):
 
         The embed can still be mutated.
 
-        Note that for logging, you should overwrite the footer to something else. It is default to "Requested by "
+        Note that for logging, you should overwrite the footer to something else. It is default to `Requested by `
 
         Parameter:
         - `timestamp`: the timestamp, usually `utcnow()`. The default value is there just to make the parameters look good, you still have to provide it.
         - `author`: optional `discord.User` or `discord.Member` to set to the footer. If not provided, it won't set the footer.
         - `title`: optional title.
         - `url`: optional url for the title.
-        - `description`: optional description. Internally it'll remove the tabs so no need to pass inspect.cleandoc(description).
+        - `description`: optional description. Internally it'll remove the tabs.
         - `color`: optional color, default to green.
 
         Return type: `discord.Embed` or `None` on failure.
