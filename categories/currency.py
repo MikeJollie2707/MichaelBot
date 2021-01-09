@@ -82,6 +82,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     member_local_info["money"] += daily_amount
                     member_local_info["streak_daily"] += 1
+                    member_local_info["last_daily"] = datetime.datetime.utcnow()
                     
                     await DB.User.bulk_update(conn, ctx.author.id, {
                         "money" : member_local_info["money"],
@@ -89,7 +90,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         "last_daily" : member_local_info["last_daily"]
                     })
         if too_early:
-            await ctx.send("You still have %s left before you can collect your daily." % str(datetime.datetime.utcnow() - member_local_info["last_daily"]))
+            remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member_local_info["last_daily"])
+            await ctx.reply(f"You still have {remaining_time} left before you can collect your daily.", mention_author = False)
         else:
             if too_late:
                 await ctx.send("You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(" % old_streak)
