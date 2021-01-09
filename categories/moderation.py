@@ -86,7 +86,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             reason = "`None provided`"
         
         try:
-            await guild.ban(discord.Object(id = id), reason = reason)
+            await guild.ban(discord.Object(id = user_id), reason = reason)
         except discord.HTTPException:
             await ctx.send("I can't ban this person. The most common one would be your id is wrong.")
             return
@@ -96,7 +96,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                 description = '''
                         **User `%d` has been banned from this server.** :hammer:
                         **Reason:** %s
-                ''' % (id, reason),
+                ''' % (user_id, reason),
                 color = 0x000000,
                 timestamp = datetime.utcnow()
             ).set_footer(
@@ -257,7 +257,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             embed = Facility.get_default_embed(
                 title = "Member Unbanned",
                 description = '''
-                        **User `%d` has been banned from this server.** :hammer:
+                        **User `%d` has been unbanned from this server.** :hammer:
                         **Reason:** %s
                 ''' % (id, reason),
                 color = 0x000000,
