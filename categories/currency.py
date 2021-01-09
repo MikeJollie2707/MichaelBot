@@ -93,15 +93,19 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member_local_info["last_daily"])
             await ctx.reply(f"You still have {remaining_time} left before you can collect your daily.", mention_author = False)
         else:
+            msg = ""
             if too_late:
-                await ctx.send("You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(" % old_streak)
+                msg += "You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(\n" % old_streak
             
-            await ctx.send(f":white_check_mark: You got **${daily_amount}** daily money.\nYour streak: `x{member_local_info['streak_daily']}`.")
+            msg += f":white_check_mark: You got **${daily_amount}** daily money.\nYour streak: `x{member_local_info['streak_daily']}`.\n"
             
             if daily_bonus > 0:
-                await ctx.send(f"You also receive **${daily_bonus}** for maintaining your streak.")
+                msg += f"You also receive **${daily_bonus}** for maintaining your streak."
+            
+            await ctx.reply(msg, mention_author = False)
             
     @commands.command()
+    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def work(self, ctx):
         '''
         Go to work and earn money.
@@ -109,6 +113,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         *Warning: This is an early stage for several commands. This command will be gone when inventory is implemented.*
 
         **Usage:** <prefix>**{command_name} {command_signature}
+        **Cooldown:** 5 minutes per 1 use.
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -123,62 +128,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             description = "You worked and earned $%d." % amount,
             timestamp = datetime.datetime.utcnow()
         )
-        await ctx.send(embed = embed)
-
-    @commands.command()
-    async def addmoney(self, ctx, amount : int, *, member : discord.Member = None):
-        '''
-        Add a certain amount of money to a user or to yourself.
-
-        The limit range is `[1-25]`.
-
-        *Warning: This command is available only in beta. Once the currency is official, this command will
-        no longer available.*
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Example:** {prefix}{command_name} 25
-
-        **You need:** None
-        **I need:** `Send Messages`.
-        '''
-
-        if member is None:
-            member = ctx.author
-        
-        async with self.bot.pool.acquire() as conn:
-            await DB.User.add_money(conn, ctx.author.id, amount)
-        
-        await ctx.send("Added $%d to %s." % (amount, member.name))
-
-    @commands.command()
-    async def rmvmoney(self, ctx, amount, *, member: discord.Member = None):
-        '''
-        Remove a certain amount of money from a user or from yourself.
-
-        The limit range is `[1-25]`. If the removal cause the target's money to drop below 0, it'll be 0.
-
-        *Warning: This command is available only in beta. Once the currency is official, this command will
-        no longer available.*
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Example:** {prefix}{command_name} 25
-
-        **You need:** None
-        **I need:** `Send Messages`.
-        '''
-
-        if member is None:
-            member = ctx.author
-        
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-
-                member_money = await DB.User.get_money(conn, member.id)
-                member_money -= amount
-
-                await DB.User.update_money(conn, member.id, member_money)
-        
-        await ctx.send("Removed $%d from %s." % (amount, member.name))
+        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
@@ -199,7 +149,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             async with conn.transaction():
                 member_money = await DB.User.get_money(conn, ctx.author.id)
 
-        await ctx.send("You have $%d." % member_money)
+        await ctx.reply("You have $%d." % member_money, mention_author = False)
     
     @commands.command()
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)

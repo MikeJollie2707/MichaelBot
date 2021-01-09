@@ -42,7 +42,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             reason = "`None provided`"
         try:
             await guild.ban(user, reason = reason)
-        except discord.Forbidden as f:
+        except discord.Forbidden:
             await ctx.send("I cannot ban someone that's higher than me!")
         else:
             embed = Facility.get_default_embed(
@@ -58,7 +58,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                 icon_url = ctx.author.avatar_url
             )
 
-            await ctx.send(embed = embed)
+            await ctx.reply(embed = embed, mention_author = False)
     @ban.error
     async def ban_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
@@ -104,7 +104,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                 icon_url = ctx.author.avatar_url
             )
 
-            await ctx.send(embed = embed)
+            await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.has_guild_permissions(kick_members = True)
@@ -148,7 +148,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                 icon_url = ctx.author.avatar_url
             )
             
-            await ctx.send(embed = embed)
+            await ctx.reply(embed = embed, mention_author = False)
     @kick.error
     async def kick_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
@@ -267,7 +267,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                 icon_url = ctx.author.avatar_url
             )
             
-            await ctx.send(embed = embed)
+            await ctx.reply(embed = embed, mention_author = False)
 
 
 def setup(bot):

@@ -96,8 +96,8 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 msg += "You win!"
         else:
             msg += "You lose!"
-        
-        await ctx.send(msg)
+
+        msg += '\n\n'
         
         reward = amount
         async with self.bot.pool.acquire() as conn:
@@ -117,9 +117,11 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await DB.User.update_money(conn, ctx.author.id, money + reward)
         
         if "lose" in msg or "bomb" in msg:
-            await ctx.send(f"You lose **${abs(reward)}**.")
+            msg += f"Better luck next time :thumbsup:."
         else:
-            await ctx.send(f"You receive **${abs(reward)}**, and you got to keep the bet amount.")
+            msg += f"You receive **${abs(reward)}**, and you got to keep the bet amount :)."
+        
+        await ctx.reply(msg, mention_author = False)
 
 
         

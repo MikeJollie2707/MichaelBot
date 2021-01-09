@@ -184,7 +184,8 @@ class Core(commands.Cog):
             inline = False
         )
 
-        await ctx.send(embed = embed)
+        #await ctx.send(embed = embed)
+        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
@@ -207,7 +208,7 @@ class Core(commands.Cog):
             author = ctx.author
         )
 
-        await ctx.send(embed = embed)
+        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.has_guild_permissions(manage_guild = True)
@@ -283,7 +284,7 @@ class Core(commands.Cog):
 
         embed.add_field(name = "Roles:", value = s)
 
-        await ctx.send(embed = embed)
+        await ctx.reply(embed = embed, mention_author = False)
 
     # TODO: Rewrite this command signature.
     @commands.command()
@@ -416,7 +417,7 @@ class Core(commands.Cog):
             text = "Server ID: %s" % str(guild.id)
         )
 
-        await ctx.send(embed = embed)
+        await ctx.reply(embed = embed, mention_author = False)
         
 def setup(bot):
     bot.add_cog(Core(bot))

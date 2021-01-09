@@ -45,7 +45,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             author = ctx.author
         )
 
-        await ctx.send(embed = embed)
+        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
@@ -60,7 +60,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
 
-        await ctx.send("It's %d :game_die:" % (random.randint(1, 6)))
+        await ctx.reply("It's %d :game_die:" % (random.randint(1, 6)), mention_author = False)
 
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(send_messages = True)
@@ -128,7 +128,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             timestamp = datetime.datetime.utcnow(),
             author = ctx.author
         )
-        await ctx.send(embed = embed)
+        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
@@ -226,7 +226,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
 
         percent_thing = random.randint(0, 100)
-        await ctx.send(target + " is `" + str(percent_thing) + "%` " + measure_unit + ".")
+        await ctx.reply(target + " is `" + str(percent_thing) + "%` " + measure_unit + ".", mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
@@ -252,9 +252,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             percent_gay = random.randint(0, 100)
         
         if percent_gay == 0:
-            await ctx.send(f"Holy moly, the {target} is 100% straight :open_mouth:, zero trace of gayness.")
+            await ctx.reply(f"Holy moly, the {target} is 100% straight :open_mouth:, zero trace of gayness.", mention_author = False)
         else:
-            await ctx.send(f"{target} is `{percent_gay}%` gay :rainbow_flag:.")
+            await ctx.reply(f"{target} is `{percent_gay}%` gay :rainbow_flag:.", mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
@@ -271,7 +271,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         latency = self.bot.latency
 
-        await ctx.send(f"{ctx.author.mention} Pong! :ping_pong: " + str(format((latency * 1000), '.2f')) + "ms")
+        await ctx.reply(f"{ctx.author.mention} Pong! :ping_pong: " + str(format((latency * 1000), '.2f')) + "ms", mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
