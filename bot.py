@@ -62,9 +62,8 @@ def setupLogger(enable : bool = True):
     logger.addHandler(handler)
 
 if __name__ == "__main__":
-    argc = len(sys.argv)
-    
     TOKEN = bot_info = db_info = None
+    argc = len(sys.argv)
 
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
@@ -72,7 +71,7 @@ if __name__ == "__main__":
     else:
         print("Too many arguments. The second argument should be the bot's index in 'config.json'.")
 
-    setupLogger(enable = True)
+    setupLogger(enable = False)
 
     if not any([TOKEN, bot_info, db_info]):
         print("Unable to load enough information for the bot.")
@@ -104,8 +103,7 @@ if __name__ == "__main__":
                 host = db_info["host"],
                 user = db_info["user"],
                 database = db_info["database"],
-                password = db_info["password"],
-                #port = 5432
+                password = db_info["password"]
             ))
             # It might throw sth here but too lazy to catch so hey.
             bot.json = {}
@@ -121,8 +119,8 @@ if __name__ == "__main__":
             # but bcuz of async stuffs, I'll have to rewrite quite a bit
             # and I don't have time rn.
             # await bot.pool.close()
-
-            print("Bot closed all connection from the pool.")
-            print("Bot disconnected. You can now close the terminal.")
         except Exception:
             print(traceback.print_exc())
+        
+        print("Bot closed all connection from the pool.")
+        print("Bot disconnected. You can now close the terminal.")
