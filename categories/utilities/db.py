@@ -11,8 +11,20 @@ async def init_db(bot):
     # Create DB if it's not established
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
+            #await conn.execute('''
+            #    CREATE TABLE IF NOT EXISTS Item (
+            #        id SERIAL PRIMARY KEY,
+            #        name TEXT NOT NULL,
+            #        emoji TEXT NOT NULL
+            #    )
+            #''')
+            #await conn.execute('''
+            #    CREATE TYPE PlayerInventory AS (
+            #        id 
+            #    )
+            #''')
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS dGuilds (
+                CREATE TABLE IF NOT EXISTS DGuilds (
                     id INT8 PRIMARY KEY,
                     name TEXT NOT NULL,
                     is_whitelist BOOL DEFAULT TRUE,
@@ -21,7 +33,7 @@ async def init_db(bot):
                 );
             ''')
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS dUsers (
+                CREATE TABLE IF NOT EXISTS DUsers (
                     id INT8 PRIMARY KEY,
                     name TEXT NOT NULL,
                     is_whitelist BOOL DEFAULT TRUE,
@@ -31,7 +43,7 @@ async def init_db(bot):
                 );
             ''')
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS dUsers_dGuilds (
+                CREATE TABLE IF NOT EXISTS DUsers_DGuilds (
                     user_id INT8 NOT NULL REFERENCES dUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
                     guild_id INT8 NOT NULL REFERENCES dGuilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
                     tempmute_end TIMESTAMP,
@@ -149,7 +161,7 @@ class User:
 
         result = await conn.fetchrow('''
             SELECT *
-            FROM dUsers
+            FROM DUsers
             WHERE id = %d
         ''' % user_id)
 
@@ -158,7 +170,7 @@ class User:
     @classmethod
     async def insert_user(cls, conn, member : discord.Member):
         """
-        Insert a default user data into `dUsers`.
+        Insert a default user data into `DUsers`.
 
         If the user already exist, this method do nothing.
 
@@ -170,14 +182,14 @@ class User:
 
         member_existed = await cls.find_user(conn, member.id)
         if member_existed is None:
-            await insert_into(conn, "dUsers", [
+            await insert_into(conn, "DUsers", [
                 (member.id, member.name, True, 0, None, 0)
             ])
     
     @classmethod
     async def update_generic(cls, conn, id : int, col_name : str, new_value):
         """
-        A generic method to update a column in `dUsers` table.
+        A generic method to update a column in `DUsers` table.
         
         This method's variations `update_...` is recommended. Only use this when there's a new column.
 
@@ -189,7 +201,7 @@ class User:
         - `new_value`: The new value.
         """
         await conn.execute('''
-            UPDATE dUsers
+            UPDATE DUsers
             SET %s = ($1)
             WHERE id = ($2);
         ''' % col_name, new_value, id)
@@ -277,14 +289,14 @@ class User:
 
 class Guild:
     """
-    A group of methods dealing specifically with `dGuilds` table.
+    A group of methods dealing specifically with `DGuilds` table.
     """
 
     @classmethod
     async def find_guild(cls, conn, id : int):
         result = await conn.fetchrow('''
             SELECT *
-            FROM dGuilds
+            FROM DGuilds
             WHERE id = ($1)
         ''', id)
 
@@ -294,14 +306,14 @@ class Guild:
     async def insert_guild(cls, conn, guild : discord.Guild):
         guild_existed = await cls.find_guild(conn, guild.id)
         if guild_existed is None:
-            await insert_into(conn, "dGuilds", [
+            await insert_into(conn, "DGuilds", [
                 (guild.id, guild.name, True, [], [])
             ])
 
     @classmethod
     async def update_generic(cls, conn, id : int, col_name : str, new_value):
         await conn.execute('''
-            UPDATE dGuilds
+            UPDATE DGuilds
             SET %s = ($1)
             WHERE id = ($2);
         ''' % col_name, new_value, id)
