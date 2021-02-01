@@ -28,6 +28,9 @@ __discord_extension__ = [
 class MichaelBot(commands.Bot):
     def __init__(self, command_prefix, help_command = commands.DefaultHelpCommand(), description = None, **kwargs):
         super().__init__(command_prefix, help_command, description, **kwargs)
+
+        self.DEBUG = kwargs.get("allow_debug")
+        self.version = kwargs.get("version")
         
     
     def debug(self, message : str):
@@ -35,24 +38,21 @@ class MichaelBot(commands.Bot):
             print(message)
 
 def setup(bot_name):
-    TOKEN = None # A str
     bot_info = None # A dict
-    db_info = None # A dict
+    secrets = None # A dict
 
     try:
         with open("./setup/config.json") as fin:
             bot_info = json.load(fin)[bot_name]
             
-            with open(f"./setup/{bot_info['token']}") as fi:
-                TOKEN = json.load(fi).get("token")
-            with open(f"./setup/{bot_info['db']}") as fi:
-                db_info = json.load(fi)
+            with open(f"./setup/{bot_info['secret']}") as fi:
+                secrets = json.load(fi)
     except FileNotFoundError as fnfe:
         print(fnfe)
     except KeyError as ke:
         print(ke)
     
-    return (TOKEN, bot_info, db_info)
+    return (bot_info, secrets)
 
 def setupLogger(enable : bool = True):
     logger = logging.getLogger("discord")
@@ -62,22 +62,21 @@ def setupLogger(enable : bool = True):
     logger.addHandler(handler)
 
 if __name__ == "__main__":
-    TOKEN = bot_info = db_info = None
+    bot_info = secrets = None
     argc = len(sys.argv)
 
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
-        TOKEN, bot_info, db_info = setup(sys.argv[1])
+        bot_info, secrets = setup(sys.argv[1])
     else:
         print("Too many arguments. The second argument should be the bot's index in 'config.json'.")
 
     setupLogger(enable = False)
 
-    if not any([TOKEN, bot_info, db_info]):
+    if not any([bot_info, secrets]):
         print("Unable to load enough information for the bot.")
-        print("Token: ", TOKEN)
         print("Bot info: ", bot_info)
-        print("DB info: ", db_info)
+        print("Secret info: ", secrets)
     else:
         intent = discord.Intents().default()
         intent.members = True
@@ -86,24 +85,23 @@ if __name__ == "__main__":
             description = bot_info.get("description"),
             status = discord.Status.online,
             activity = discord.Game(name = "Kubuntu"),
-            intents = intent # v1.5.0 requires Intent.members to be enabled to use most of member cache.
+            intents = intent, # v1.5.0+ requires Intent.members to be enabled to use most of member cache.
+
+            debug = bot_info.get("debug") if bot_info.get("debug") is not None else False,
+            version = bot_info.get("version")
         )
         # https://discordpy.readthedocs.io/en/latest/intents.html for intents
 
-        if not hasattr(bot, "version"):
-            bot.version = bot_info.get("version")
-        if not hasattr(bot, "DEBUG"):
-            bot.DEBUG = bot_info.get("debug") if bot_info.get("debug") is not None else False
         if not hasattr(bot, "__divider__"):
             bot.__divider__ = "----------------------------\n"
         
         if not hasattr(bot, "pool") and not hasattr(bot, "json"):
             loop = asyncio.get_event_loop()
             bot.pool = loop.run_until_complete(asyncpg.create_pool(
-                host = db_info["host"],
-                user = db_info["user"],
-                database = db_info["database"],
-                password = db_info["password"]
+                host = secrets["host"],
+                user = secrets["user"],
+                database = secrets["database"],
+                password = secrets["password"]
             ))
             # It might throw sth here but too lazy to catch so hey.
             bot.json = {}
@@ -113,7 +111,7 @@ if __name__ == "__main__":
                 bot.load_extension(extension)
             
             #bot.__db__ = None # Disable db_init
-            bot.run(TOKEN)
+            bot.run(secrets["token"])
 
             # Close the pool connection here, just to be safe
             # but bcuz of async stuffs, I'll have to rewrite quite a bit
