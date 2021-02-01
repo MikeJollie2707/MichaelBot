@@ -1,21 +1,19 @@
 {
     "MichaelBot": {
         "name": "MichaelBot",
-        "version": "1.5.5",
+        "version": "1.6.0",
         "description": "A utility bot",
         "prefix": "$",
 
-        "token": "bot1.json",
-        "db": "michaeldb.json"
+        "secret": "bot_secret.json"
     },
     "MichaelBeta": {
         "name": "MichaelBeta",
-        "version": "1.5.5",
+        "version": "1.6.0.1",
         "description": "A testing bot for MichaelBot :)",
         "debug": true,
         "prefix": "!",
 
-        "token": "botbeta.json",
-        "db": "michaeldb.json"
+        "secret": "beta_secret.json"
     }
 }
