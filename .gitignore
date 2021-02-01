@@ -7,8 +7,8 @@ MichaelBot.sh
 MichaelBeta.sh
 
 # Token
-setup/bot1.json
-setup/botbeta.json
+setup/bot_secret.json
+setup/beta_secret.json
 
 # Database info
 setup/michaeldb.json
