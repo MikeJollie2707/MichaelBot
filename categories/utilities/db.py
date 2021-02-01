@@ -7,63 +7,23 @@ import typing
 import asyncpg
 from asyncpg import exceptions as pg_exception
 
-async def init_db(bot):
-    # Create DB if it's not established
+async def update_db(bot):
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            #await conn.execute('''
-            #    CREATE TABLE IF NOT EXISTS Item (
-            #        id SERIAL PRIMARY KEY,
-            #        name TEXT NOT NULL,
-            #        emoji TEXT NOT NULL
-            #    )
-            #''')
-            #await conn.execute('''
-            #    CREATE TYPE PlayerInventory AS (
-            #        id 
-            #    )
-            #''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS DGuilds (
-                    id INT8 PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    is_whitelist BOOL DEFAULT TRUE,
-                    autorole_list INT8[],
-                    customcmd_list TEXT[]
-                );
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS DUsers (
-                    id INT8 PRIMARY KEY,
-                    name TEXT NOT NULL,
-                    is_whitelist BOOL DEFAULT TRUE,
-                    money INT8 DEFAULT 0,
-                    last_daily TIMESTAMP,
-                    streak_daily INT4 DEFAULT 0
-                );
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS DUsers_DGuilds (
-                    user_id INT8 NOT NULL REFERENCES dUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                    guild_id INT8 NOT NULL REFERENCES dGuilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                    tempmute_end TIMESTAMP,
-                    PRIMARY KEY (user_id, guild_id)
-                );
-            ''')
-
         for guild in bot.guilds:
             # Alternative way: perform an update_guild(), then if the
             # status is UPDATE 0, meaning it doesn't exist, then insert it.
             # This will probably make it in a transaction, rather than separate.
-            try:
+
+            result = await Guild.find_guild(conn, guild.id)
+            if result is None:
                 await Guild.insert_guild(conn, guild)
-            except pg_exception.UniqueViolationError:
-                pass
+
+            # There might be new member join during this process, so we need to put this outside the if.
             for member in guild.members:
-                try:
+                user_existed = await User.find_user(conn, member.id)
+                if user_existed is None:
                     await User.insert_user(conn, member)
-                except pg_exception.UniqueViolationError:
-                    pass
+                    await Member.insert_member(conn, member)
                     
 async def insert_into(conn, table_name : str, *args):
     """
@@ -90,56 +50,6 @@ async def insert_into(conn, table_name : str, *args):
         VALUES %s
     ''' % (table_name, arg_str), *args
     )
-
-async def insert_guild(conn, *args):
-    """
-    Insert a guild data into table `dGuilds`.
-
-    This will be rewritten into the same format as `insert_member`.
-
-    Parameter:
-    - `conn`: The connection you want to do.
-        + It's usually just `pool.acquire()`.
-    - `*args`: This must be a list of tuples.
-        + `len(tuple)` must equals to the number of column you want to insert.
-    """
-
-    await insert_into(conn, "dGuilds", *args)
-
-async def insert_member(conn, member : discord.Member):
-    """
-    Insert a member data into the database.
-
-    Specifically, it adds to `dUsers`, `dUsers_dGuilds`.
-
-    Parameter:
-    - `conn`: The connection you want to do.
-        + It's usually just `pool.acquire()`.
-    - `member`: The member.
-    """
-
-    member_existed = await User.find_user(conn, member.id)
-    if member_existed is None:
-        await insert_into(conn, "dUsers", [
-            (member.id, member.name, True, 0, None, 0)
-        ])
-    
-        await insert_into(conn, "dUsers_dGuilds", [
-            (member.id, member.guild.id, None)
-        ])
-
-async def update_by_id(conn, table_name : str, *args):
-    # Might remove this method
-    arg_str = "("
-    for j in range(len(max(*args, key = len))):
-        arg_str += '$' + str(j + 1) + ", "
-    arg_str = arg_str[:-2] + ')'
-
-    await conn.executemany('''
-        UPDATE %s
-        SET 
-    ''')
-
 class User:
     """
     A group of methods dealing specifically with `dUsers` table.
@@ -200,7 +110,8 @@ class User:
         - `col_name`: The column name in the table. **This must be exactly the same as in the table**.
         - `new_value`: The new value.
         """
-        await conn.execute('''
+
+        return await conn.execute('''
             UPDATE DUsers
             SET %s = ($1)
             WHERE id = ($2);
@@ -208,23 +119,23 @@ class User:
 
     @classmethod
     async def update_name(cls, conn, id, new_name : str):
-        await cls.update_generic(conn, id, "name", new_name)
+        return await cls.update_generic(conn, id, "name", new_name)
     @classmethod
     async def update_whitelist(cls, conn, id, new_status : bool):
-        await cls.update_generic(conn, id, "is_whitelist", new_status)
+        return await cls.update_generic(conn, id, "is_whitelist", new_status)
     @classmethod
     async def update_money(cls, conn, id, new_money : int):
         # Money can't be lower than 0, for now.
         if new_money <= 0:
             new_money = 0
         
-        await cls.update_generic(conn, id, "money", new_money)
+        return await cls.update_generic(conn, id, "money", new_money)
     @classmethod
     async def update_last_daily(cls, conn, id, new_last_daily : datetime.datetime):
-        await cls.update_generic(conn, id, "last_daily", new_last_daily)
+        return await cls.update_generic(conn, id, "last_daily", new_last_daily)
     @classmethod
     async def update_streak(cls, conn, id, new_streak : int):
-        await cls.update_generic(conn, id, "streak_daily", new_streak)
+        return await cls.update_generic(conn, id, "streak_daily", new_streak)
     
     @classmethod
     async def bulk_update(cls, conn, id, new_values : dict):
@@ -271,7 +182,7 @@ class User:
 
         if amount > 0:
             money = await cls.get_money(conn, id)
-            await cls.update_money(conn, id, money + amount)
+            return await cls.update_money(conn, id, money + amount)
     @classmethod
     async def remove_money(cls, conn, id, amount : int):
         """
@@ -285,7 +196,7 @@ class User:
         if amount > 0:
             money = await cls.get_money(conn, id)
             # No need to check because update_money() checks.
-            await cls.update_money(conn, id, money - amount)
+            return await cls.update_money(conn, id, money - amount)
 
 class Guild:
     """
@@ -307,12 +218,12 @@ class Guild:
         guild_existed = await cls.find_guild(conn, guild.id)
         if guild_existed is None:
             await insert_into(conn, "DGuilds", [
-                (guild.id, guild.name, True, [], [])
+                (guild.id, guild.name, True, '$', [], [])
             ])
 
     @classmethod
     async def update_generic(cls, conn, id : int, col_name : str, new_value):
-        await conn.execute('''
+        return await conn.execute('''
             UPDATE DGuilds
             SET %s = ($1)
             WHERE id = ($2);
@@ -320,22 +231,50 @@ class Guild:
     
     @classmethod
     async def update_name(cls, conn, id : int, new_name : str):
-        await cls.update_generic(conn, id, "name", new_name)
+        return await cls.update_generic(conn, id, "name", new_name)
     
     @classmethod
     async def update_whitelist(cls, conn, id : int, new_status : bool):
-        await cls.update_generic(conn, id, "is_whitelist", new_status)
+        return await cls.update_generic(conn, id, "is_whitelist", new_status)
     
     @classmethod
     async def update_autorole(cls, conn, id : int, new_list : list):
-        await cls.update_generic(conn, id, "autorole_list", new_list)
+        return await cls.update_generic(conn, id, "autorole_list", new_list)
 
     @classmethod
     async def update_customcmd(cls, conn, id : int, new_list : list):
         pass
 
 class Member:
-    pass
+    """
+    A group of methods dealing specifically with `DUsers_DGuilds` table.
+    """
+
+    @classmethod
+    async def find_member(cls, conn, user_id : int, guild_id : int):
+        result = await conn.fetchrow('''
+            SELECT *
+            FROM DUsers_DGuilds
+            WHERE user_id = ($1) AND guild_id = ($2);
+        ''', user_id, guild_id)
+
+        return result
+    
+    @classmethod
+    async def insert_member(cls, conn, member : discord.Member):
+        member_existed = await Member.find_member(conn, member.id, member.guild.id)
+        if member_existed is None:
+            await insert_into(conn, "DUsers_DGuilds", [
+                (member.id, member.guild.id, None)
+            ])
+    
+    @classmethod
+    async def update_generic(cls, conn, ids : typing.Tuple[int], col_name : str, new_value):
+        return await conn.execute('''
+            UPDATE DUsers_DGuilds
+            SET %s = ($1)
+            WHERE user_id = ($2) AND guild_id = ($3);
+        ''' % col_name, new_value, ids[0], ids[1])
     
     
 
