@@ -1298,8 +1298,8 @@ class Logging(commands.Cog):
                     "**Granted Permissions:** %s" % granted_perms,
                     "**Denied Permissions:** %s" % denied_perms,
                     "----------------------------",
-                    "**Is separated:** %s" % "Yes" if role.hoist else "No",
-                    "**Is mentionable:** %s" % "Yes" if role.mentionable else "No",
+                    "**Is separated:** %s" % ("Yes" if role.hoist else "No"),
+                    "**Is mentionable:** %s" % ("Yes" if role.mentionable else "No"),
                     "**Color:** %s" % str(role.color)
                 )
 
@@ -1343,8 +1343,8 @@ class Logging(commands.Cog):
                     "**Name:** `%s`" % role.name,
                     "**Deleted by:** %s" % executor.mention,
                     "----------------------------",
-                    "**Was separated:** %s" % "Yes" if role.hoist else "No",
-                    "**Was mentionable:** %s" % "Yes" if role.mentionable else "No",
+                    "**Was separated:** %s" % ("Yes" if role.hoist else "No"),
+                    "**Was mentionable:** %s" % ("Yes" if role.mentionable else "No"),
                     "**Color:** %s" % str(role.color)
                 )
                 
