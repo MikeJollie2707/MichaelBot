@@ -275,14 +275,17 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             tag_join = joiner.join(tags)
             query_str += tag_join
 
-            doujin = hentai.Hentai(
-                # BUG: If tag doesn't exist, this will return empty, which random.choice() will throw exception.
-                random.choice(hentai.Utils.search_by_query(
-                    query_str, sort = hentai.Sort.Popular)
-                )["id"]
+            doujin = None
+
+            doujin_list = hentai.Utils.search_by_query(
+                query_str, sort = hentai.Sort.Popular
             )
 
-            await self.display_hentai(ctx, doujin)
+            if len(doujin_list) > 0:
+                doujin = random.choice(doujin_list)
+                await self.display_hentai(ctx, doujin)
+            else:
+                await ctx.send("One of the tags doesn't exist. Please check again.")
 
 
 def setup(bot):
