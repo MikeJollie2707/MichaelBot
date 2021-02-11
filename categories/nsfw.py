@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import aiohttp
-from discord.ext.commands.errors import CheckFailure, NSFWChannelRequired
 import hentai
 
 import random
