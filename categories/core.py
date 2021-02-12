@@ -169,17 +169,17 @@ class Core(commands.Cog):
 
         current_time = datetime.datetime.utcnow()
         up_time = current_time - self.bot.online_at
-        days = up_time.days
-        hours = int(up_time.seconds / 3600) # We gotta round here, or else minutes will always be 0.
-        minutes = (up_time.seconds / 60) - (hours * 60) # Hour = second / 3600, minute = second / 60 (true minute without converting to hour) - hour * 60 (convert hour to minute) = remain minute
+        #days = up_time.days
+        #hours = int(up_time.seconds / 3600) # We gotta round here, or else minutes will always be 0.
+        #minutes = (up_time.seconds / 60) - (hours * 60) # Hour = second / 3600, minute = second / 60 (true minute without converting to hour) - hour * 60 (convert hour to minute) = remain minute
 
         embed.add_field(
             name  = "Host Device:",
             value = textwrap.dedent('''
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
                     **Memory:** 15.5 GiB of RAM
-                    **Bot Uptime:** %d day(s) %d hour(s) %d minute(s)
-                    ''' % (days, hours, minutes)),
+                    **Bot Uptime:** %s
+                    ''' % Facility.format_time(up_time)),
             inline = False
         )
 
