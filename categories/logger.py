@@ -1477,14 +1477,6 @@ class Logging(commands.Cog):
                         granted_message += "\n\n"
                     
                     log_title = "Role Permission Changed"
-                    log_content = f'''
-                                    **Target:** {after.name}
-
-                                    {granted_message}{denied_message}
-
-                                    ----------------------------
-                                    **Changed by:** {executor.mention}
-                                    '''
                     log_content.append(
                         f"**Target:** {after.name}\n",
                         f"{granted_message}{denied_message}\n",
