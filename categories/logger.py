@@ -1042,7 +1042,7 @@ class Logging(commands.Cog):
                                 f"\n{granted_message}{neutralized_message}{denied_message}\n",
                                 "----------------------------",
                                 "**Channel:** %s" % after.mention,
-                                "**Changed by:** %s" % {executor.mention}
+                                "**Changed by:** %s" % executor.mention
                             )
                             
                             embed = Facility.get_default_embed(
