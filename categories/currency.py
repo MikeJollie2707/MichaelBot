@@ -16,7 +16,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.emoji = '💰'
     
     @commands.command()
-    #@commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
     async def daily(self, ctx):
         '''
         Get an amount of money every 24h.
@@ -91,7 +90,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     })
         if too_early:
             remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member_local_info["last_daily"])
-            await ctx.reply(f"You still have {remaining_time} left before you can collect your daily.", mention_author = False)
+            remaining_str = Facility.format_time(remaining_time, {"include_seconds" : True, "include_zeroes": False})
+            await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
         else:
             msg = ""
             if too_late:
