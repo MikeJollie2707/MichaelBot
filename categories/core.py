@@ -230,12 +230,12 @@ class Core(commands.Cog):
         async with self.bot.pool.acquire() as conn:
             if new_prefix == None:
                 bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
-                await ctx.reply("Current prefix: " + bot_prefix)
+                await ctx.reply("Current prefix: " + bot_prefix, mention_author = False)
             else:
                 await DB.Guild.update_prefix(conn, ctx.guild.id, new_prefix)
                 # Confirmation
                 bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
-                await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id))
+                await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id), mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)
