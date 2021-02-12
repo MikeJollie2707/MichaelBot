@@ -6,6 +6,9 @@ venv/
 MichaelBot.sh
 MichaelBeta.sh
 
+# Nothing to see here
+note
+
 # Token
 setup/bot_secret.json
 setup/beta_secret.json
