@@ -5,7 +5,6 @@ import datetime
 import textwrap
 
 from categories.templates.help import BigHelp, SmallHelp
-from categories.templates.menu import Menu
 from categories.templates.navigate import Pages
 from categories.utilities.method_cog import Facility
 
