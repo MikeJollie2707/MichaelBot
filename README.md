@@ -82,12 +82,12 @@ Any sort of contributions are highly appreciated.
   - [x] Learn PostgreSQL
   - [ ] Split `Logging` into different channels.
   - [ ] Track many stuffs.
-  - [ ] Add utility db methods.
-  - [ ] Add basic currency.
+  - [x] Add utility db methods.
+  - [x] Add basic currency.
   - [ ] Add some moderation commands.
   - [ ] Add auto-role.
 - [ ] Add `Account Age` to `profile`
-- [ ] Add game commands.
+- [x] Add game commands.
 - [ ] Update documentation.
 
 ## Resources
