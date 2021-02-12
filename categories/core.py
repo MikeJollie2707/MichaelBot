@@ -7,6 +7,7 @@ import textwrap
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.navigate import Pages
 from categories.utilities.method_cog import Facility
+import categories.utilities.db as DB
 
 class Core(commands.Cog):
     """Commands related to information and bot settings."""
@@ -212,13 +213,13 @@ class Core(commands.Cog):
     @commands.command()
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(send_messages = True)
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
+    @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.guild)
     async def prefix(self, ctx, new_prefix : str = None):
         '''
         View and set the prefix for the bot.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 5 seconds per 1 use (global).
+        **Cooldown:** 10 seconds per 1 use (guild).
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} %
         
@@ -226,14 +227,15 @@ class Core(commands.Cog):
         **I need:** `Send Messages`.
         '''
 
-        if new_prefix == None:
-            await ctx.send("Current prefix: " + self.bot.command_prefix)
-        else:
-            self.bot.command_prefix = new_prefix
-            await ctx.send("New prefix: " + self.bot.command_prefix)
-            # Save the prefix
-            import os
-            os.environ["prefix2"] = new_prefix
+        async with self.bot.pool.acquire() as conn:
+            if new_prefix == None:
+                bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
+                await ctx.reply("Current prefix: " + bot_prefix)
+            else:
+                await DB.Guild.update_prefix(conn, ctx.guild.id, new_prefix)
+                # Confirmation
+                bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
+                await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id))
 
     @commands.command()
     @commands.bot_has_permissions(send_messages = True)

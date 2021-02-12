@@ -238,12 +238,21 @@ class Guild:
         return await cls.update_generic(conn, id, "is_whitelist", new_status)
     
     @classmethod
+    async def update_prefix(cls, conn, id : int, new_prefix : str):
+        await cls.update_generic(conn, id, "prefix", new_prefix)
+
+    @classmethod
     async def update_autorole(cls, conn, id : int, new_list : list):
         return await cls.update_generic(conn, id, "autorole_list", new_list)
 
     @classmethod
     async def update_customcmd(cls, conn, id : int, new_list : list):
         pass
+
+    @classmethod
+    async def get_prefix(cls, conn, id : int):
+        guild_info = record_to_dict(await cls.find_guild(conn, id))
+        return guild_info["prefix"]
 
 class Member:
     """

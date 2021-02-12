@@ -9,6 +9,8 @@ import logging
 import json
 import asyncio
 
+import categories.utilities.db as DB
+
 __discord_extension__ = [
     "categories.core",
     "categories.currency",
@@ -62,6 +64,12 @@ def setupLogger(enable : bool = True):
         handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
         logger.addHandler(handler)
     
+async def get_prefix(bot, message):
+    async with bot.pool.acquire() as conn:
+        prefix = await DB.Guild.get_prefix(conn, message.guild.id)
+    
+    return commands.when_mentioned_or(prefix)(bot, message)
+
 if __name__ == "__main__":
     bot_info = secrets = None
     argc = len(sys.argv)
@@ -82,7 +90,7 @@ if __name__ == "__main__":
         intent = discord.Intents().default()
         intent.members = True
         bot = MichaelBot(
-            command_prefix = commands.when_mentioned_or(bot_info["prefix"]), 
+            command_prefix = get_prefix, 
             description = bot_info.get("description"),
             status = discord.Status.online,
             activity = discord.Game(name = "Kubuntu"),
