@@ -367,11 +367,13 @@ class Facility(commands.Cog):
         if len(array) == 0:
             return "None"
 
-        st = str(array)
+        #st = str(array)
 
-        st = st.replace('[', "")
-        st = st.replace(']', "")
-        st = st.replace("'", "")
+        #st = st.replace('[', "")
+        #st = st.replace(']', "")
+        #st = st.replace("'", "")
+
+        st = ", ".join(array)
 
         return st
                 
