@@ -237,7 +237,7 @@ class Guild:
         guild_existed = await cls.find_guild(conn, guild.id)
         if guild_existed is None:
             await insert_into(conn, "DGuilds", [
-                (guild.id, guild.name, True, '$', [], [])
+                (guild.id, guild.name, True, '$', False, 0)
             ])
 
     @classmethod
