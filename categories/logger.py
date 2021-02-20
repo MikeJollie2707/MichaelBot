@@ -80,14 +80,14 @@ class Logging(commands.Cog):
         self.color_guild_join_leave = discord.Color.blue()
         self.color_other = discord.Color.teal()
 
-    def log_check(self, guild):
-        config = Facility.get_config(guild.id)
-        if config["ERROR"] == 0 and config["STATUS_LOG"] == 1 and config["LOG_CHANNEL"] != 0:
+    async def log_check(self, guild):
+        config = await Facility.get_config(self.bot, guild.id)
+        if config["ERROR"] == 0 and config["enable_log"] and config["log_channel"] != 0:
             return True
         elif config["ERROR"] != 0:
-            print("File not found.")
+            print("Guild not found.")
             return False
-        elif config["STATUS_LOG"] == 0:
+        elif config["enable_log"] == 0:
             print("Logging not enabled.")
             return False
         else:
@@ -98,10 +98,10 @@ class Logging(commands.Cog):
     async def _message_delete(self, message):
         guild = message.guild
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
+        if await self.log_check(guild):
             # Then we get the log channel of that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             # Initialize variables according to specification.
             log_title = "Message Deleted"
@@ -211,9 +211,9 @@ class Logging(commands.Cog):
             return
         
         guild = self.bot.get_channel(payload.channel_id).guild
-        if self.log_check(guild):
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             edited_message = None
             message_channel = None
@@ -256,10 +256,10 @@ class Logging(commands.Cog):
         if after.author.bot == False:
             guild = before.guild
             # First we check if the logging feature is enabled in that guild.
-            if self.log_check(guild):
-                # We retrieve the logging channel for that guild.
-                config = Facility.get_config(guild.id)
-                log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+            if await self.log_check(guild):
+                # Then we get the log channel of that guild.
+                config = await Facility.get_config(self.bot, guild.id)
+                log_channel = self.bot.get_channel(config["log_channel"])
 
                 BASE_URL = "https://hastebin.com/"
 
@@ -343,10 +343,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener("on_member_ban")
     async def _member_ban(self, guild, user):
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = "User Banned"
             log_content = LogContent()
@@ -393,10 +393,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener("on_member_unban")
     async def _member_unban(self, guild, user):
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = "User Unbanned"
             log_content = LogContent()
@@ -445,10 +445,10 @@ class Logging(commands.Cog):
         guild = member.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = "Member Joined"
             log_content = LogContent().append(
@@ -484,10 +484,10 @@ class Logging(commands.Cog):
         guild = member.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = ""
             log_content = LogContent()
@@ -575,10 +575,10 @@ class Logging(commands.Cog):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = ""
             log_content = LogContent()
@@ -679,11 +679,11 @@ class Logging(commands.Cog):
     async def _guild_channel_create(self, channel):
         guild = channel.guild
 
-        # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+       # First we check if the logging feature is enabled in that guild.
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = ""
             log_content = LogContent()
@@ -755,10 +755,10 @@ class Logging(commands.Cog):
         guild = channel.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
             
             log_title = ""
             log_content = LogContent()
@@ -824,10 +824,10 @@ class Logging(commands.Cog):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = ""
             log_content = LogContent()
@@ -1090,10 +1090,10 @@ class Logging(commands.Cog):
     @commands.Cog.listener("on_guild_update")
     async def _guild_update(self, before, after):
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(after):
-            # We retrieve the logging channel for that guild
-            config = Facility.get_config(after.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(after):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, after.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = ""
             log_content = LogContent()
@@ -1150,10 +1150,10 @@ class Logging(commands.Cog):
         guild = role.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = "Role Created"
             log_content = LogContent()
@@ -1323,10 +1323,10 @@ class Logging(commands.Cog):
         guild = role.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = "Role Deleted"
             log_content = LogContent()
@@ -1368,10 +1368,10 @@ class Logging(commands.Cog):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
-        if self.log_check(guild):
-            # We retrieve the logging channel for that guild.
-            config = Facility.get_config(guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        if await self.log_check(guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = ""
             log_content = LogContent()
@@ -1504,9 +1504,11 @@ class Logging(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             return
         
-        if self.log_check(ctx.guild):
-            config = Facility.get_config(ctx.guild.id)
-            log_channel = self.bot.get_channel(config["LOG_CHANNEL"])
+        # First we check if the logging feature is enabled in that guild.
+        if await self.log_check(ctx.guild):
+            # Then we get the log channel of that guild.
+            config = await Facility.get_config(self.bot, ctx.guild.id)
+            log_channel = self.bot.get_channel(config["log_channel"])
 
             log_title = "Command Raised Error"
             log_content = LogContent().append(
