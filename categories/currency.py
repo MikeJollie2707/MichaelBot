@@ -97,6 +97,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if too_late:
                 msg += "You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(\n" % old_streak
             
+            if daily_bonus > 0:
+                msg += f"You received **${daily_bonus}** for maintaining your streak."
+
             msg += f":white_check_mark: You got **${daily_amount}** daily money.\nYour streak: `x{member_local_info['streak_daily']}`.\n"
             
             if daily_bonus > 0:
