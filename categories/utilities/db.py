@@ -59,7 +59,7 @@ class User:
     @classmethod
     async def find_user(cls, conn, user_id : int) -> asyncpg.Record:
         """
-        Find a member data in `dUsers`.
+        Find a member data in `DUsers`.
 
         If a member is found, it'll return a `Record` of the member, otherwise it'll return `None`.
 
