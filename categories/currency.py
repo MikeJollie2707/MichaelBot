@@ -67,7 +67,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         daily_amount = 500
 
                         # This is rounded down to the tenth.
-                        daily_bonus = member_local_info["streak_daily"] / 10 * 10
+                        daily_bonus = int(member_local_info["streak_daily"] / 10) * 10
                     elif member_local_info["streak_daily"] < 500:
                         daily_amount = 1000
                         daily_bonus = member_local_info["streak_daily"]
