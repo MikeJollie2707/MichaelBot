@@ -6,40 +6,62 @@ import datetime
 import inspect
 import textwrap
 from py_expression_eval import Parser
-import ast
 import typing
 import numpy
+
+import categories.utilities.db as DB
 
 class Facility(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @classmethod
-    def get_config(cls, guild_id) -> dict:
+    async def get_config(cls, bot, guild_id) -> dict:
         """
-        Get the configuration for the guild.
-        Note: This function is deprecated and will be removed in near future.
-        """
-        config = {"ERROR": 0, "GUILD_ID": guild_id}
-        file_name = str(guild_id) + ".json"
-        try:
-            fin = open("./data/" + file_name, 'r')
-        except FileNotFoundError:
-            config["ERROR"] = -1
-        else:
-            config = json.load(fin)
+        Return a guild's row as a `dict`.
 
+        It is NOT recommend to add any new keys into the resultant `dict`.
+
+        There is a special key `ERROR` to check if the resultant `dict` is good to use.
+
+        Parameter:
+        - `bot`: A `commands.Bot` instance that has a `pool` attribute.
+        - `guild_id`: The guild's id.
+        """
+
+        config = {}
+        async with bot.pool.acquire() as conn:
+            guild = await DB.Guild.find_guild(conn, guild_id)
+            if guild is not None:
+                config = DB.record_to_dict(guild)
+                config["ERROR"] = 0
+            else:
+                config["ERROR"] = -1
+        
         return config
 
     @classmethod
-    def save_config(cls, config) -> None:
+    async def save_config(cls, bot, config) -> None:
         """
         Save the configuration for the guild.
-        Note: This function is deprecated and will be removed in near future.
+
+        This is an abstract way to modify all columns in `DGuilds` except `id`.
+
+        *This will be removed when `DB.Guild.bulk_update()` is available.*
+        
+        Parameter:
+        - `bot`: A `commands.Bot` instance that has a `pool` attribute.
+        - `config`: A `dict` that is returned previously from `get_config`.
         """
         if isinstance(config, dict):
-            fin = open("./data/" + str(config["GUILD_ID"]) + ".json", 'w')
-            json.dump(config, fin, indent = 4)
+            async with bot.pool.acquire() as conn:
+                guild = DB.record_to_dict(await DB.Guild.find_guild(conn, config["id"]))
+                if guild is not None:
+                    guild_col = [column for column in guild]
+                    for option in config:
+                        # We do NOT want to change the id column, ever.
+                        if (option in guild_col) and (option != "id"):
+                            await DB.Guild.update_generic(conn, config["id"], option, config[option])
 
     @classmethod
     def calculate(cls, expression : str) -> str:
