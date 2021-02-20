@@ -5,7 +5,6 @@ import datetime
 import typing
 
 import asyncpg
-from asyncpg import exceptions as pg_exception
 
 async def update_db(bot):
     async with bot.pool.acquire() as conn:
