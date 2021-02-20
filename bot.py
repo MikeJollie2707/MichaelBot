@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import asyncpg
 
-import os
 import sys
 import traceback
 import logging
@@ -34,12 +33,11 @@ class MichaelBot(commands.Bot):
         self.DEBUG = kwargs.get("allow_debug")
         self.version = kwargs.get("version")
         
-    
     def debug(self, message : str):
         if self.DEBUG:
             print(message)
 
-def setup(bot_name):
+def load_info(bot_name):
     bot_info = None # A dict
     secrets = None # A dict
 
@@ -59,7 +57,7 @@ def setup(bot_name):
 def setupLogger(enable : bool = True):
     if enable:
         logger = logging.getLogger("discord")
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.WARNING)
         handler = logging.FileHandler(filename = "discord.log", encoding = "utf-8", mode = "w")
         handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
         logger.addHandler(handler)
@@ -76,7 +74,7 @@ if __name__ == "__main__":
 
     if (argc == 2):
         # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
-        bot_info, secrets = setup(sys.argv[1])
+        bot_info, secrets = load_info(sys.argv[1])
     else:
         print("Too many arguments. The second argument should be the bot's index in 'config.json'.")
 
@@ -119,7 +117,6 @@ if __name__ == "__main__":
             for extension in sorted(__discord_extension__):
                 bot.load_extension(extension)
             
-            #bot.__db__ = None # Disable db_init
             bot.run(secrets["token"])
 
             # Close the pool connection here, just to be safe
