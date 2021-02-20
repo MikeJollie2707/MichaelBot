@@ -205,6 +205,16 @@ class Guild:
 
     @classmethod
     async def find_guild(cls, conn, id : int):
+        """
+        Find a guild data in `DGuilds`.
+
+        If a guild is found, it'll return a `Record`, otherwise it'll return `None`.
+
+        Parameter:
+        - `conn`: The connection
+            + Usually from `pool.acquire()`
+        - `id`: The guild's id.
+        """
         result = await conn.fetchrow('''
             SELECT *
             FROM DGuilds
@@ -215,6 +225,15 @@ class Guild:
     
     @classmethod
     async def insert_guild(cls, conn, guild : discord.Guild):
+        """
+        Insert a guild into `DGuilds`.
+        If the guild already existed, the method does nothing.
+
+        Parameter:
+        - `conn`: The connection
+            + Usually from `pool.acquire()`.
+        - `guild`: A Discord guild.
+        """
         guild_existed = await cls.find_guild(conn, guild.id)
         if guild_existed is None:
             await insert_into(conn, "DGuilds", [
@@ -223,6 +242,19 @@ class Guild:
 
     @classmethod
     async def update_generic(cls, conn, id : int, col_name : str, new_value):
+        """
+        A generic method to update a column in `DGuilds` table.
+        
+        This method's variations `update_...` is recommended. Only use this when there's a new column.
+
+        Parameter:
+        - `conn`: The connection.
+            + Usually from `pool.acquire()`.
+        - `id`: The member id.
+        - `col_name`: The column name in the table. **This must be exactly the same as in the table**.
+        - `new_value`: The new value.
+        """
+        
         return await conn.execute('''
             UPDATE DGuilds
             SET %s = ($1)
