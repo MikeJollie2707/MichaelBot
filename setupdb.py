@@ -3,7 +3,7 @@ import json
 import asyncio
 import sys
 
-from bot import setup as regular_setup
+from bot import load_info as regular_setup
 
 async def setup(secrets : dict):
     conn = await asyncpg.connect(
@@ -34,8 +34,11 @@ async def setup(secrets : dict):
                 name TEXT NOT NULL,
                 is_whitelist BOOL DEFAULT TRUE,
                 prefix TEXT DEFAULT '$',
-                autorole_list INT8[],
-                customcmd_list TEXT[]
+                enable_log BOOL DEFAULT FALSE,
+                log_channel INT8 NOT NULL DEFAULT 0,
+                enable_welcome BOOL DEFAULT FALSE,
+                welcome_channel INT8 NOT NULL DEFAULT 0,
+                welcome_text TEXT NOT NULL DEFAULT ''
             );
         ''')
         print("Done!")
