@@ -3,16 +3,15 @@
 
 *This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.*
 
-These are commands that involve fake economy.
+These are commands that involve fake economy. All items and currencies are shared across guilds.
 
-<!-- omit in toc -->
+<!-- omit on toc -->
 ## Table of Contents
 
 - [\_\_init\_\_ [INTERNAL]](#__init__-internal)
-- [daily [BETA]](#daily-beta)
-- [addmoney [EXPERIMENT]](#addmoney-experiment)
-- [rmvmoney [DEVELOPING]](#rmvmoney-developing)
-- [balance [BETA]](#balance-beta)
+- [daily](#daily)
+- [balance](#balance)
+- [topmoney [DEVELOPING]](#topmoney-developing)
 
 ## \_\_init\_\_ [INTERNAL]
 
@@ -20,59 +19,21 @@ These are commands that involve fake economy.
 
 A constructor for this category. This set the `Currency` category's emoji is `💲`.
 
-## daily [BETA]
-
-*This section is labeled as [BETA], which means the function/command is currently in beta testing and possibly publicly available.*
+## daily
 
 Get an amount of money every 24h.
 
 **Usage:** `<prefix>daily`
 
-**Cooldown:** 10 seconds per 1 use (user)
+**Cooldown:** 1 day per 1 use (user)
 
 **Example:** `$daily`
 
 **You need:** None.
 
-**The bot need:** `Send Messages`.
+**The bot needs:** `Read Message History`, `Send Messages`.
 
-## addmoney [EXPERIMENT]
-
-*This section is labeled as [EXPERIMENT], which means the function/command is currently in internal testing (alpha) and not publicly available.*
-
-**Usage:** `<prefix>addmoney <amount> <member>`
-
-**Parameter:**
-
-- `amount`: The amount of money you want to add.
-- `member`: The member you want to add the money.
-
-**Example:** `$addmoney 1000 MikeJollie`
-
-**You need:** None, for now.
-
-**The bot need:** `Send Messages`.
-
-## rmvmoney [DEVELOPING]
-
-*This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.*
-
-**Usage:** `<prefix>rmvmoney <amount> <member>`
-
-**Parameter:**
-
-- `amount`: The amount of money you want to remove. If larger than the member's actual money, the money remain will be 0.
-- `member`: The member you want to remove the money.
-
-**Example:** `$rmvmoney 1000 MikeJollie`
-
-**You need:** None, for now.
-
-**The bot need:** `Send Messages`.
-
-## balance [BETA]
-
-*This section is labeled as [BETA], which means the function/command is currently in beta testing and possibly publicly available.*
+## balance
 
 Display the amount of money you currently have.
 
@@ -84,6 +45,44 @@ Display the amount of money you currently have.
 
 **You need:** None.
 
-**The bot need:** `Send Messages`.
+**The bot needs:** `Read Message History`, `Send Messages`.
 
-*This document is last updated on Oct 31st (PT) by MikeJollie#1067*
+## topmoney [DEVELOPING]
+
+*This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.*
+
+Show the top 10 users with the most amount of money.
+
+The default option is `local`.
+
+**Usage:** `<prefix>topmoney [global/local]`
+
+**Parameter:**
+
+- `global/local`: Either `global` (all MichaelBot's users) or `local` (all members in the guild invoked).
+
+**Examples:**
+
+- **Example 1:** `$topmoney global`
+- **Example 2:** `$topmoney`
+
+**You need:** None.
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+## work
+
+Go to work and earn money.
+
+*This command is going to get removed once inventory system is implemented.*
+
+**Usage:** `<prefix>work`
+
+**Cooldown:** 120 seconds per 1 use (user)
+
+**Example:** `$work`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+*This document is last updated on Feb 19th (PT) by MikeJollie#1067*

@@ -10,7 +10,7 @@ Nevertheless, I'll still provide you the installation steps.
 
 - [Prerequisite](#prerequisite)
 - [Steps](#steps)
-  - [Alternative](#alternative)
+    - [Alternative](#alternative)
 
 ## Prerequisite
 
@@ -26,15 +26,12 @@ Clone this directory.
 git clone https://github.com/MikeJollie2707/MichaelBot.git
 ```
 
-Go into folder `setup` and create two `json` files (here I use `bot.json` and `db.json`) (I'm planning to merge these two files into one).
+Go into folder `setup` and create a `json` file (here I use `secret.json`).
 
 ```json
-// bot.json
+// secret.json
 {
-    "token": "bot token"
-}
-// db.json
-{
+    "token": "bot token",
     "host": "localhost or wherever you host PostgreSQL",
     "user": "username",
     "database": "name of the database",
@@ -52,10 +49,9 @@ In `setup`, there should also be a `config.json` file. Open it and fill in neces
         "version": "Required",
         "description": "Required",
         "prefix": "Required",
-        "debug": false, // Optional key.
+        "debug": false, // Optional key. Default to false.
 
-        "token": "bot.json", // The file contain the token
-        "db": "db.json" // The file contain the db info
+        "secret": "secret.json"
     }
 }
 ```
@@ -87,12 +83,8 @@ python3 bot.py BotIndex
 
 ### Alternative
 
-Alternatively, if you don't like typing `python3 bot.py BotIndex` all the time when you want to start the bot, there's a script `startup.sh` (for Linux) and `run.ps1` (for Windows Powershell) to make life a bit easier.
+Alternatively, if you don't like typing `python3 bot.py BotIndex` all the time when you want to start the bot, there's a script `startup.sh` (for Linux) and `run.ps1` (for Windows Powershell) to make life a bit easier. Both of them are currently in `setup` folder, although it might change.
 
 For `startup.sh`, you can edit `MICHAEL_DIR` to your current directory. An absolute path is needed if you plan to put the file to one of the startup application. Mark it executable, and just double click it the next time you want to run. Remember to change the bot index also (I'm planning to make this more obvious).
 
-<<<<<<< HEAD
 For `run.ps1`, just change the `$BotIndex`, and then open Powershell, run the script using `. ".\run.ps1"`
-=======
-For `run.ps1`, just change the `$BotIndex`, and then open Powershell, run the script using `. ".\run.ps1"`
->>>>>>> 1e81819134529afbdd2edcb50504f7d9672ce1c1

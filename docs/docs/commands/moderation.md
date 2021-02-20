@@ -6,10 +6,10 @@
 
 - [\_\_init\_\_ [INTERNAL]](#__init__-internal)
 - [ban](#ban)
-  - [ban_eh [INTERNAL]](#ban_eh-internal)
+    - [ban_eh [INTERNAL]](#ban_eh-internal)
 - [hackban](#hackban)
 - [kick](#kick)
-  - [kick_eh [INTERNAL]](#kick_eh-internal)
+    - [kick_eh [INTERNAL]](#kick_eh-internal)
 - [mute [INCOMPLETE] [DEVELOPING]](#mute-incomplete-developing)
 - [unban](#unban)
 
@@ -23,35 +23,24 @@ A constructor of this category. This set the `Moderation` category's emoji as `ð
 
 ## ban
 
-Ban a member out of the server.
+Ban a member in the server.
 
 Note that the bot's role needs to be higher than the member to ban.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.has_guild_permissions(ban_members = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.bot_has_guild_permissions(ban_members = True)
-@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
-async def ban(self, ctx, user : discord.Member, *, reason = None):
-```
-
-**Simplified Signature:**
-
-```
-ban <member> [reason]
-```
+**Usage:** `<prefix>ban <member> [reason]`
 
 **Parameters:**
 
-- `member`: A Discord member. It can be any in the following form: `[ID/discriminator/mention/name/nickname]`
+- `member`: A Discord member.
 - `reason`: The reason for banning.
 
-**Example:** `$ban MikeJollie Look at too many lolis`
+**Cooldown:** 5 seconds per 2 uses (guild).
 
-**Expected Output:** *an embed with verification*
+**Example:** `$ban MikeJollie Audam-kun`
+
+**You need:** `Ban Members`.
+
+**The bot needs:** `Ban Members`, `Read Message History`, `Send Messages`.
 
 ### ban_eh [INTERNAL]
 
@@ -67,31 +56,20 @@ Ban a user out of the server.
 
 This user does not need to share the server with the bot.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.has_guild_permissions(ban_members = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.bot_has_guild_permissions(ban_members = True)
-@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
-async def hackban(self, ctx, id : int, *, reason = None):
-```
-
-**Simplified Signature:**
-
-```
-hackban <ID> [reason]
-```
+**Usage:** `<prefix>hackban <id> [reason]`
 
 **Parameters:**
 
 - `id`: The id of the user.
 - `reason`: The reason for banning.
 
-**Example:** `$hackban 472832990012243969 Befriend with too many lolis`
+**Cooldown:** 5 seconds per 2 uses (guild).
 
-**Expected Output:** *an embed with verification*
+**Example:** `$hackban 472832990012243969 You have too many lolis`
+
+**You need:** `Ban Members`.
+
+**The bot needs:** `Ban Members`, `Read Message History`, `Send Messages`.
 
 ## kick
 
@@ -99,31 +77,20 @@ Kick a member out of the server.
 
 Note that the bot's role needs to be higher than the member to kick.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.has_guild_permissions(kick_members = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.bot_has_guild_permissions(kick_members = True)
-@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
-async def kick(self, ctx, member : discord.Member, *, reason = None):
-```
-
-**Simplified Signature:**
-
-```
-kick <member> [reason]
-```
+**Usage:** `<prefix>kick <member> [reason]`
 
 **Parameters:**
 
-- `member`: A Discord member. It can be any in the following form: `[ID/discriminator/mention/name/nickname]`
+- `member`: A Discord member.
 - `reason`: The reason for kicking.
+
+**Cooldown:** 5 seconds per 2 uses (guild).
 
 **Example:** `$kick MikeJollie Being dumb`
 
-**Expected Output:** *an embed with verification*
+**You need:** `Kick Members`
+
+**The bot needs:** `Kick Members`, `Read Message History`, `Send Messages`.
 
 ### kick_eh [INTERNAL]
 
@@ -172,30 +139,19 @@ Unban a user from the server.
 
 This user does not need to share the server with the bot.
 
-**Full Signature:**
-
-```py
-@commands.command()
-@commands.has_guild_permissions(ban_members = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.bot_has_guild_permissions(ban_members = True)
-@commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
-async def unban(self, ctx, id : int, *, reason = None):
-```
-
-**Simplified Signature:**
-
-```
-unban <ID> [reason]
-```
+**Usage:** `<prefix>unban <id> [reason]`
 
 **Parameters:**
 
 - `id`: The id of the user.
-- `reason`: The reason for banning.
+- `reason`: The reason for unbanning.
+
+**Cooldown:** 5 seconds per 2 uses (guild).
 
 **Example:** `$unban 472832990012243969 You've been trained by the FBI now`
 
-**Expected Output:** *an embed with verification*
+**You need:** `Ban Members`.
 
-*This document is last updated on May 26th (PT) by MikeJollie#1067*
+**The bot needs:** `Ban Members`, `Read Message History`, `Send Messages`.
+
+*This document is last updated on Feb 19th (PT) by MikeJollie#1067*

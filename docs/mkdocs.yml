@@ -8,10 +8,11 @@ nav:
     - "Currency": commands/currency.md
     - "Dev": commands/dev.md
     - "Bot events": commands/events.md
-    - "Experiment": commands/experiment.md
+    - "Game": commands/game.md
     - "Logging events": commands/logger.md
     - "Moderation": commands/moderation.md
     - "Music": commands/music.md
+    - "NSFW": commands/nsfw.md
     - "Settings": commands/server.md
     - "Utility": commands/utility.md
   - "Templates":
@@ -19,7 +20,7 @@ nav:
     - "Paginator": template/paginator.md
     - "Help": template/help.md
   - "Utilities":
-    - "Utility methods": utilities/methods.md
+    - "Utility methods": utilities/methods_cog.md
     - "Database methods": utilities/db.md
 
 theme:

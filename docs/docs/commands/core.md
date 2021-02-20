@@ -1,22 +1,22 @@
 <!-- omit in toc -->
 # Core commands
 
+These are commands that are mostly related to information.
+
 <!-- omit in toc -->
 ## Table of Contents
 - [\_\_init\_\_ [INTERNAL]](#__init__-internal)
 - [cog_check [INTERNAL]](#cog_check-internal)
 - [changelog](#changelog)
-  - [changelog dev](#changelog-dev)
+    - [changelog dev](#changelog-dev)
 - [help](#help)
 - [help-all](#help-all)
 - [info](#info)
-- [note](#note)
-- [prefix [DEPRECATED]](#prefix-deprecated)
+- [note [DEPRECATED]](#note-deprecated)
+- [prefix](#prefix)
 - [profile](#profile)
 - [report](#report)
 - [serverinfo](#serverinfo)
-
-These are commands that are mostly related to information.
 
 ## \_\_init\_\_ [INTERNAL]
 
@@ -34,13 +34,13 @@ A check that apply to all the command in this category. This check will check if
 
 Show the latest 10 changes of the bot.
 
-**Usage:** `{prefix}changelog`
+**Usage:** `<prefix>changelog`
 
 **Example:** `$changelog`
 
 **You need:** None.
 
-**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+**The bot needs:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ***Subcommands:*** [dev](#changelog-dev)
 
@@ -48,13 +48,13 @@ Show the latest 10 changes of the bot.
 
 Show the latest 10 changes of the bot *behind the scene*.
 
-**Usage:** `{prefix}changelog dev`
+**Usage:** `<prefix>changelog dev`
 
 **Example:** `$changelog dev`
 
 **You need:** None.
 
-**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+**The bot needs:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## help
 
@@ -76,7 +76,7 @@ Note: command name and category name is case sensitive; `Core` is different from
 
 **You need:** None.
 
-**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+**The bot needs:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## help-all
 
@@ -88,7 +88,7 @@ Note: command name and category name is case sensitive; Core is different from c
 
 **Parameters:**
 
-- `category/command`: The category's name or the command's name or the command's aliases.
+- `category/command`: The category's name or the command's name or the command's aliases. This also includes subcommand.
 
 **Examples:**
 
@@ -98,7 +98,7 @@ Note: command name and category name is case sensitive; Core is different from c
 
 **You need:** None.
 
-**The bot need:** `Read Message History`, `Add Reactions`, `Send Messages`.
+**The bot needs:** `Read Message History`, `Add Reactions`, `Send Messages`.
 
 ## info
 
@@ -110,7 +110,7 @@ Provide information about the bot.
 
 **You need:** None.
 
-**The bot need:** `Send Messages`.
+**The bot needs:** `Read Message History`, `Send Messages`.
 
 ## note [DEPRECATED]
 
@@ -136,39 +136,26 @@ note
 
 **Expected Output:** *an embed with a link*
 
-## prefix [DEPRECATED]
-
-*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
+## prefix
 
 View and set the prefix for the bot.
 
-**Full Signature:**
+**Usage:** `<prefix>prefix [new_prefix]`
 
-```py
-@commands.command()
-@commands.has_guild_permissions(manage_guild = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-async def prefix(self, ctx, new_prefix : str = None):
-```
+**Parameter:**
 
-**Simplified Signature:**
+- `new_prefix`: The new prefix. It is recommended to be somewhere 1-5 characters, and not something common like `!`.
 
-```
-prefix [new_prefix]
-```
+**Cooldown:** 10 seconds per 1 use (guild).
 
-**Parameters:**
+**Examples:**
 
-- `new_prefix`: The new prefix for the bot. I recommend to set it 1-4 characters with no spaces.
+- **Example 1:** `$prefix`
+- **Example 2:** `$prefix %`
 
-**Example:** `$prefix !`
+**You need:** `Manage Server`.
 
-**Expected Output:**
-
-```py
-New prefix: !
-```
+**The bot needs:** `Read Message History`, `Send Messages`.
 
 ## profile
 
@@ -178,7 +165,7 @@ Provide information about you or another member.
 
 **Parameter:**
 
-- `member`: A Discord member. It can be any in the following form: `[ID/discriminator/mention/name/nickname]`
+- `member`: A Discord member.
   
 **Examples:**
 
@@ -188,7 +175,7 @@ Provide information about you or another member.
 
 **You need:** None.
 
-**The bot need:** `Send Messages`.
+**The bot needs:** `Send Messages`.
 
 ## report
 
@@ -208,7 +195,8 @@ Report a bug or suggest new features for the bot.
 - **Example 1:** `$report report The command xyz raise error (full error here...)`
 - **Example 2:** `$report suggest The command profile should have this feature (feature here...)`
 
-**You need:** None.
+**You needs:** None.
+
 **The bot need:** `Manage Messages`, `Send Messages`.
 
 ## serverinfo
@@ -223,6 +211,6 @@ Provide information about the server that invoke the command.
 
 **You need:** None.
 
-**The bot need:** `Send Messages`.
+**The bot needs:** `Send Messages`.
 
-*This document is last updated on Oct 31st (PT) by MikeJollie#1067*
+*This document is last updated on Feb 19th (PT) by MikeJollie#1067*
