@@ -242,12 +242,20 @@ class Guild:
         await cls.update_generic(conn, id, "prefix", new_prefix)
 
     @classmethod
-    async def update_autorole(cls, conn, id : int, new_list : list):
-        return await cls.update_generic(conn, id, "autorole_list", new_list)
-
+    async def update_enable_log(cls, conn, id : int, new_status : bool):
+        await cls.update_generic(conn, id, "enable_log", new_status)
+    
     @classmethod
-    async def update_customcmd(cls, conn, id : int, new_list : list):
-        pass
+    async def update_log_channel(cls, conn, id : int, new_channel : int):
+        await cls.update_generic(conn, id, "log_channel", new_channel)
+
+    #@classmethod
+    #async def update_autorole(cls, conn, id : int, new_list : list):
+    #    pass
+
+    #@classmethod
+    #async def update_customcmd(cls, conn, id : int, new_list : list):
+    #    pass
 
     @classmethod
     async def get_prefix(cls, conn, id : int):
