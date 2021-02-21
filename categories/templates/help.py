@@ -56,7 +56,19 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
 
     return content
 
-def command_help_format(ctx, command):
+def command_help_format(ctx : commands.Context, command : commands.Command) -> discord.Embed:
+    """
+    Return an embed that display a command's help.
+
+    - If the command has subcommands, it'll display as a brief section.
+
+    The method is responsible for the display of a command's help.
+
+    **Parameters:**
+
+    - `ctx`: A `commands.Context`.
+    - `command`: A `commands.Command`.
+    """
     # Gotta add the supercommand to the command.
     embed_title = command.full_parent_name
     if command.full_parent_name != "":
