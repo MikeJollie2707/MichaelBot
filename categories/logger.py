@@ -8,7 +8,7 @@ import categories.utilities.facility as Facility
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:
-# - log_channel: the channel that's gonna send the embed. Retrieve using Facility.get_config and config["LOG_CHANNEL"]
+# - log_channel: the channel that's gonna send the embed. Retrieve using Facility.get_config and config["log_channel"]
 # - log_title: the log title that's gonna pass in title in discord.Embed
 # - log_content: the log content that's gonna pass in description in discord.Embed
 # - log_color: the color of the embed. It must be self.color_... depend on the current event.
@@ -200,8 +200,8 @@ class Logging(commands.Cog):
                 
                 await log_channel.send(embed = embed)
 
-    @commands.Cog.listener()
-    async def on_bulk_message_delete(self, messages):
+    @commands.Cog.listener("on_bulk_message_delete")
+    async def _bulk_message_delete(self, messages):
         pass
 
     @commands.Cog.listener("on_raw_message_edit")
