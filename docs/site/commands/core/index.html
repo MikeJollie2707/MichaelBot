@@ -307,8 +307,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prefix-deprecated" class="md-nav__link">
-    prefix [DEPRECATED]
+  <a href="#prefix" class="md-nav__link">
+    prefix
   </a>
   
 </li>
@@ -383,8 +383,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../experiment/" class="md-nav__link">
-      Experiment
+    <a href="../game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -421,6 +421,18 @@
   <li class="md-nav__item">
     <a href="../music/" class="md-nav__link">
       Music
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../nsfw/" class="md-nav__link">
+      NSFW
     </a>
   </li>
 
@@ -480,6 +492,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -494,18 +518,6 @@
   <li class="md-nav__item">
     <a href="../../template/paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../template/help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -541,7 +553,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../utilities/methods/" class="md-nav__link">
+    <a href="../../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -657,8 +669,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prefix-deprecated" class="md-nav__link">
-    prefix [DEPRECATED]
+  <a href="#prefix" class="md-nav__link">
+    prefix
   </a>
   
 </li>
@@ -699,23 +711,25 @@
                 
                 <!-- omit in toc -->
 <h1 id="core-commands">Core commands</h1>
+<p>These are commands that are mostly related to information.</p>
 <!-- omit in toc -->
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
 <li><a href="#cog_check-internal">cog_check [INTERNAL]</a></li>
-<li><a href="#changelog">changelog</a></li>
+<li><a href="#changelog">changelog</a><ul>
 <li><a href="#changelog-dev">changelog dev</a></li>
+</ul>
+</li>
 <li><a href="#help">help</a></li>
 <li><a href="#help-all">help-all</a></li>
 <li><a href="#info">info</a></li>
-<li><a href="#note">note</a></li>
-<li><a href="#prefix-deprecated">prefix [DEPRECATED]</a></li>
+<li><a href="#note-deprecated">note [DEPRECATED]</a></li>
+<li><a href="#prefix">prefix</a></li>
 <li><a href="#profile">profile</a></li>
 <li><a href="#report">report</a></li>
 <li><a href="#serverinfo">serverinfo</a></li>
 </ul>
-<p>These are commands that are mostly related to information.</p>
 <h2 id="__init__-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that is is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>⚙️</code>.</p>
@@ -724,17 +738,17 @@
 <p>A check that apply to all the command in this category. This check will check if <code>ctx</code> is in private DM or not, and will raise <code>NoPrivateMessage()</code> exception if it is.</p>
 <h2 id="changelog">changelog</h2>
 <p>Show the latest 10 changes of the bot.</p>
-<p><strong>Usage:</strong> <code>{prefix}changelog</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;changelog</code></p>
 <p><strong>Example:</strong> <code>$changelog</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <p><strong><em>Subcommands:</em></strong> <a href="#changelog-dev">dev</a></p>
 <h3 id="changelog-dev">changelog dev</h3>
 <p>Show the latest 10 changes of the bot <em>behind the scene</em>.</p>
-<p><strong>Usage:</strong> <code>{prefix}changelog dev</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;changelog dev</code></p>
 <p><strong>Example:</strong> <code>$changelog dev</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <h2 id="help">help</h2>
 <p>Show compact help about a command, or a category.</p>
 <p>Note: command name and category name is case sensitive; <code>Core</code> is different from <code>core</code>.</p>
@@ -750,14 +764,14 @@
 <li><strong>Example 3:</strong> <code>$help changelog dev</code></li>
 </ul>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <h2 id="help-all">help-all</h2>
 <p>Show help about the bot, a command, or a category.</p>
 <p>Note: command name and category name is case sensitive; Core is different from core.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;help-all [command/category]</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>category/command</code>: The category's name or the command's name or the command's aliases.</li>
+<li><code>category/command</code>: The category's name or the command's name or the command's aliases. This also includes subcommand.</li>
 </ul>
 <p><strong>Examples:</strong></p>
 <ul>
@@ -766,13 +780,13 @@
 <li><strong>Example 3:</strong> <code>$help-all</code></li>
 </ul>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Add Reactions</code>, <code>Send Messages</code>.</p>
 <h2 id="info">info</h2>
 <p>Provide information about the bot.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;info</code></p>
 <p><strong>Example:</strong> <code>$info</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="note-deprecated">note [DEPRECATED]</h2>
 <p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
 <p>Provide syntax convention for <code>help</code> and <code>help-all</code>. All it does is putting a link to this documentation.</p>
@@ -786,33 +800,27 @@ async def note(self, ctx):
 </code></pre>
 <p><strong>Example:</strong> <code>note</code></p>
 <p><strong>Expected Output:</strong> <em>an embed with a link</em></p>
-<h2 id="prefix-deprecated">prefix [DEPRECATED]</h2>
-<p><em>This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.</em></p>
+<h2 id="prefix">prefix</h2>
 <p>View and set the prefix for the bot.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command()
-@commands.has_guild_permissions(manage_guild = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-async def prefix(self, ctx, new_prefix : str = None):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>prefix [new_prefix]
-</code></pre>
-<p><strong>Parameters:</strong></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;prefix [new_prefix]</code></p>
+<p><strong>Parameter:</strong></p>
 <ul>
-<li><code>new_prefix</code>: The new prefix for the bot. I recommend to set it 1-4 characters with no spaces.</li>
+<li><code>new_prefix</code>: The new prefix. It is recommended to be somewhere 1-5 characters, and not something common like <code>!</code>.</li>
 </ul>
-<p><strong>Example:</strong> <code>$prefix !</code></p>
-<p><strong>Expected Output:</strong></p>
-<pre><code class="language-py">New prefix: !
-</code></pre>
+<p><strong>Cooldown:</strong> 10 seconds per 1 use (guild).</p>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$prefix</code></li>
+<li><strong>Example 2:</strong> <code>$prefix %</code></li>
+</ul>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="profile">profile</h2>
 <p>Provide information about you or another member.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;profile [member]</code></p>
 <p><strong>Parameter:</strong></p>
 <ul>
-<li><code>member</code>: A Discord member. It can be any in the following form: <code>[ID/discriminator/mention/name/nickname]</code></li>
+<li><code>member</code>: A Discord member.</li>
 </ul>
 <p><strong>Examples:</strong></p>
 <ul>
@@ -821,7 +829,7 @@ async def prefix(self, ctx, new_prefix : str = None):
 <li><strong>Example 3:</strong> <code>$profile</code></li>
 </ul>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Send Messages</code>.</p>
 <h2 id="report">report</h2>
 <p>Report a bug or suggest new features for the bot.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;report &lt;report_type&gt; &lt;content&gt;</code></p>
@@ -836,16 +844,16 @@ async def prefix(self, ctx, new_prefix : str = None):
 <li><strong>Example 1:</strong> <code>$report report The command xyz raise error (full error here...)</code></li>
 <li><strong>Example 2:</strong> <code>$report suggest The command profile should have this feature (feature here...)</code></li>
 </ul>
-<p><strong>You need:</strong> None.
-<strong>The bot need:</strong> <code>Manage Messages</code>, <code>Send Messages</code>.</p>
+<p><strong>You needs:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Manage Messages</code>, <code>Send Messages</code>.</p>
 <h2 id="serverinfo">serverinfo</h2>
 <p>Provide information about the server that invoke the command.</p>
 <p><strong>Aliases:</strong> <code>server-info</code></p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;serverinfo</code></p>
 <p><strong>Example:</strong> <code>$serverinfo</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
-<p><em>This document is last updated on Oct 31st (PT) by MikeJollie#1067</em></p>
+<p><strong>The bot needs:</strong> <code>Send Messages</code>.</p>
+<p><em>This document is last updated on Feb 19th (PT) by MikeJollie#1067</em></p>
                 
               
               

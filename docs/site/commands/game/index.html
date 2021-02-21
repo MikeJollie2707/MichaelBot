@@ -14,7 +14,7 @@
     
     
       
-        <title>Utility methods - MichaelBot Documentation</title>
+        <title>Game - MichaelBot Documentation</title>
       
     
     
@@ -56,6 +56,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#game-commands" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -82,7 +87,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Utility methods
+              Game
             
           </span>
         </div>
@@ -178,10 +183,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     <label class="md-nav__link" for="nav-3">
       Commands
       <span class="md-nav__icon md-icon"></span>
@@ -200,7 +207,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/core/" class="md-nav__link">
+    <a href="../core/" class="md-nav__link">
       Core
     </a>
   </li>
@@ -212,7 +219,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/currency/" class="md-nav__link">
+    <a href="../currency/" class="md-nav__link">
       Currency
     </a>
   </li>
@@ -224,7 +231,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/dev/" class="md-nav__link">
+    <a href="../dev/" class="md-nav__link">
       Dev
     </a>
   </li>
@@ -236,7 +243,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/events/" class="md-nav__link">
+    <a href="../events/" class="md-nav__link">
       Bot events
     </a>
   </li>
@@ -246,11 +253,77 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../../commands/experiment/" class="md-nav__link">
-      Experiment
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Game
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Game
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    Table of Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#__init__-internal" class="md-nav__link">
+    __init__ [INTERNAL]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blackjack-developing" class="md-nav__link">
+    blackjack [DEVELOPING]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minesweeper-developing" class="md-nav__link">
+    minesweeper [DEVELOPING]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slots" class="md-nav__link">
+    slots
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -260,7 +333,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/logger/" class="md-nav__link">
+    <a href="../logger/" class="md-nav__link">
       Logging events
     </a>
   </li>
@@ -272,7 +345,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/moderation/" class="md-nav__link">
+    <a href="../moderation/" class="md-nav__link">
       Moderation
     </a>
   </li>
@@ -284,7 +357,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/music/" class="md-nav__link">
+    <a href="../music/" class="md-nav__link">
       Music
     </a>
   </li>
@@ -296,7 +369,19 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/server/" class="md-nav__link">
+    <a href="../nsfw/" class="md-nav__link">
+      NSFW
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/" class="md-nav__link">
       Settings
     </a>
   </li>
@@ -308,7 +393,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/utility/" class="md-nav__link">
+    <a href="../utility/" class="md-nav__link">
       Utility
     </a>
   </li>
@@ -345,6 +430,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -363,18 +460,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../template/help/" class="md-nav__link">
-      Help
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -384,12 +469,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
     <label class="md-nav__link" for="nav-5">
       Utilities
       <span class="md-nav__icon md-icon"></span>
@@ -406,18 +489,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
-    
   </li>
 
         
@@ -427,7 +503,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../db/" class="md-nav__link">
+    <a href="../../utilities/db/" class="md-nav__link">
       Database methods
     </a>
   </li>
@@ -445,15 +521,100 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    Table of Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#__init__-internal" class="md-nav__link">
+    __init__ [INTERNAL]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blackjack-developing" class="md-nav__link">
+    blackjack [DEVELOPING]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minesweeper-developing" class="md-nav__link">
+    minesweeper [DEVELOPING]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slots" class="md-nav__link">
+    slots
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                  <h1>Utility methods</h1>
-                
-                
+                <!-- omit in toc -->
+<h1 id="game-commands">Game commands</h1>
+<p>These are commands that allows you to play small and simple games. Often they reward with money.</p>
+<!-- omit in toc -->
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#blackjack-developing">blackjack [DEVELOPING]</a></li>
+<li><a href="#minesweeper-developing">minesweeper [DEVELOPING]</a></li>
+<li><a href="#slots">slots</a></li>
+</ul>
+<h2 id="__init__-internal">__init__ [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that is is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
+<p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>🎮</code>.</p>
+<h2 id="blackjack-developing">blackjack [DEVELOPING]</h2>
+<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
+<h2 id="minesweeper-developing">minesweeper [DEVELOPING]</h2>
+<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
+<h2 id="slots">slots</h2>
+<p>Play a slot game! You can win a normal prize, or even a jackpot! However, you can also lose, or even a bigger lose!</p>
+<p><em>Shhh! The average chance of winning is 1/9</em></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;slots [amount]</code></p>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>amount</code>: The amount of money to bet. Default to <code>50</code>. If you win, you won't lose this money.</li>
+</ul>
+<p><strong>Example:</strong> <code>$slots 100</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<p><em>This document is last updated on Feb 20th (PT) by MikeJollie#1067</em></p>
                 
               
               
@@ -472,7 +633,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../../template/help/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../events/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -481,19 +642,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Help
+                Bot events
               </div>
             </div>
           </a>
         
         
-          <a href="../db/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../logger/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Database methods
+                Logging events
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">

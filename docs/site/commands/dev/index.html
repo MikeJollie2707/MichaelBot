@@ -290,8 +290,22 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#addmoney" class="md-nav__link">
+    addmoney
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#all_guild" class="md-nav__link">
     all_guild
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rmvmoney" class="md-nav__link">
+    rmvmoney
   </a>
   
 </li>
@@ -327,6 +341,19 @@
   <a href="#reload_all_extension" class="md-nav__link">
     reload_all_extension
   </a>
+  
+    <nav class="md-nav" aria-label="reload_all_extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reload_all_error-internal" class="md-nav__link">
+    reload_all_error [INTERNAL]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -376,8 +403,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../experiment/" class="md-nav__link">
-      Experiment
+    <a href="../game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -414,6 +441,18 @@
   <li class="md-nav__item">
     <a href="../music/" class="md-nav__link">
       Music
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../nsfw/" class="md-nav__link">
+      NSFW
     </a>
   </li>
 
@@ -473,6 +512,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -487,18 +538,6 @@
   <li class="md-nav__item">
     <a href="../../template/paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../template/help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -534,7 +573,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../utilities/methods/" class="md-nav__link">
+    <a href="../../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -609,8 +648,22 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#addmoney" class="md-nav__link">
+    addmoney
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#all_guild" class="md-nav__link">
     all_guild
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rmvmoney" class="md-nav__link">
+    rmvmoney
   </a>
   
 </li>
@@ -646,6 +699,19 @@
   <a href="#reload_all_extension" class="md-nav__link">
     reload_all_extension
   </a>
+  
+    <nav class="md-nav" aria-label="reload_all_extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reload_all_error-internal" class="md-nav__link">
+    reload_all_error [INTERNAL]
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -686,119 +752,124 @@
                 <!-- omit in toc -->
 <h1 id="dev-commands">Dev commands</h1>
 <p>These are the commands that are only for the bot developers to use ~~to abuse power~~.</p>
+<!-- omit in toc -->
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#is_dev-internal">is_dev [INTERNAL]</a></li>
 <li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
 <li><a href="#cog_check-internal">cog_check [INTERNAL]</a></li>
+<li><a href="#addmoney">addmoney</a></li>
 <li><a href="#all_guild">all_guild</a></li>
+<li><a href="#rmvmoney">rmvmoney</a></li>
 <li><a href="#leave_guild">leave_guild</a></li>
-<li><a href="#reload">reload</a></li>
+<li><a href="#reload">reload</a><ul>
 <li><a href="#reload_eh-internal">reload_eh [INTERNAL]</a></li>
-<li><a href="#reload_all_extension">reload_all_extension</a></li>
+</ul>
+</li>
+<li><a href="#reload_all_extension">reload_all_extension</a><ul>
+<li><a href="#reload_all_error-internal">reload_all_error [INTERNAL]</a></li>
+</ul>
+</li>
 <li><a href="#report_response">report_response</a></li>
 <li><a href="#reset_all_cooldown">reset_all_cooldown</a></li>
+<li><a href="#shutdown">shutdown</a></li>
 </ul>
 <h2 id="is_dev-internal">is_dev [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
-<p>This is a check to see if the invoker is a developer.</p>
+<p>This is a check to see if the invoker is a developer. This applies to every single command in this category, plus any checks that the command might have.</p>
 <h2 id="__init__-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category.</p>
 <h2 id="cog_check-internal">cog_check [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
-<p>A check that apply to all the command in this category. This check will check if <code>is_dev(ctx.author)</code> and <code>isDM(ctx.channel)</code>, raise <code>CheckFailure()</code> and <code>NoPrivateMessage()</code> respectively.</p>
+<p>A check that apply to all the command in this category. This check will check if <code>is_dev(ctx.author)</code> and <code>isDM(ctx.channel)</code>, raising <code>CheckFailure()</code> and <code>NoPrivateMessage()</code> respectively.</p>
+<h2 id="addmoney">addmoney</h2>
+<p>Add an amount of money to a user.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;addmoney &lt;amount&gt; &lt;user&gt;</code></p>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>amount</code>: The amount of money you want to add.</li>
+<li><code>user</code>: The user you want to add the money.</li>
+</ul>
+<p><strong>Example:</strong> <code>$addmoney 1000 MikeJollie</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="all_guild">all_guild</h2>
 <p>Display all guilds the bot is in.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command()
-@commands.bot_has_permissions(send_messages = True)
-async def all_guild(self, ctx):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>all_guild
-</code></pre>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;all_guild</code></p>
 <p><strong>Example:</strong> <code>$all_guild</code></p>
-<p><strong>Expected Output:</strong> <em>an embed with information</em></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="rmvmoney">rmvmoney</h2>
+<p>Remove an amount of money from the user.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;rmvmoney &lt;amount&gt; &lt;user&gt;</code></p>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>amount</code>: The amount of money you want to remove. If larger than the member's actual money, the money remain will be 0.</li>
+<li><code>user</code>: The member you want to remove the money.</li>
+</ul>
+<p><strong>Example:</strong> <code>$rmvmoney 1000 MikeJollie</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot need:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="leave_guild">leave_guild</h2>
 <p>Make the bot leave the current invoked guild (so you can save yourself from clicking the kick button).</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command()
-@commands.is_owner()
-async def leave_guild(self, ctx):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>leave_guild
-</code></pre>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;leave_guild</code></p>
 <p><strong>Example:</strong> <code>$leave_guild</code></p>
-<p><strong>Expected Output:</strong> <em>verification steps</em></p>
+<p><strong>You need:</strong> Owner of the guild.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="reload">reload</h2>
-<p>Reload a module. This is extremely useful when you don't want to shut down the bot, but still want the update to arrive
-Note that by reloading the module, the categories order in <code>help</code> will be changed.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command()
-@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-async def reload(self, ctx, name):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>reload &lt;module name&gt;
-</code></pre>
+<p>Reload a module. This is extremely useful when you don't want to shut down the bot, but still want the update to arrive.</p>
+<p>Note that by reloading the module, the categories order in <code>help</code> will be changed.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;reload &lt;module&gt;</code></p>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>module</code>: The full module name.</li>
+</ul>
+<p><strong>Cooldown:</strong> 5 seconds per 1 use (global)</p>
 <p><strong>Example:</strong> <code>$reload categories.dev</code></p>
-<p><strong>Expected Output:</strong> <code>Reloaded extension categories.dev</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h3 id="reload_eh-internal">reload_eh [INTERNAL]</h3>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A local error handler for the <code>reload</code> command.</p>
 <p>It is currently only response to the <code>ModuleNotFound</code> exception.</p>
 <h2 id="reload_all_extension">reload_all_extension</h2>
 <p>Reload all modules. Useful for OCD people (like MikeJollie) because <code>reload</code> will mess up the order in <code>help</code> and <code>help-all</code>.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command()
-@commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.default)
-async def reload_all_extension(self, ctx):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>reload_all_extension
-</code></pre>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;reload_all_extension</code></p>
+<p><strong>Cooldown:</strong> 5 seconds per 1 use (global)</p>
 <p><strong>Example:</strong> <code>$reload_all_extension</code></p>
-<p><strong>Expected Output:</strong> <code>Reloaded all extensions.</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h3 id="reload_all_error-internal">reload_all_error [INTERNAL]</h3>
+<p>A local error handler for the <code>reload_all_extension</code> command.</p>
+<p>It is currently doing nothing.</p>
 <h2 id="report_response">report_response</h2>
 <p>Response to a report/suggestion. Note that the command will look through the last 100 messages in the report channel in the support server.</p>
 <p>It is recommended not to use this more than once on the same report/suggestion.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command(aliases = [&quot;suggest_response&quot;])
-@commands.bot_has_permissions(send_messages = True)
-@commands.cooldown(rate = 1, per = 60.0, type = commands.BucketType.default)
-async def report_response(self, ctx, message_ID : int, *, response : str):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>report_response &lt;messageID&gt; &lt;response&gt;
-suggest_response &lt;messageID&gt; &lt;response&gt;
-</code></pre>
+<p><strong>Aliases:</strong> <code>suggest_response</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;report_response &lt;message ID&gt; &lt;response&gt;</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>messageID</code>: The message ID of the report.</li>
+<li><code>message ID</code>: The message ID of the report.</li>
 <li><code>response</code>: The response itself.</li>
 </ul>
+<p><strong>Cooldown:</strong> 60 seconds per 1 use (global)</p>
 <p><strong>Example:</strong> <code>$report_response 649139994270892033 Nah</code></p>
-<p><strong>Expected Output:</strong> <em>embed edited</em></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Send Messages</code>.</p>
 <h2 id="reset_all_cooldown">reset_all_cooldown</h2>
 <p>Reset all cooldowns on every commands.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command()
-async def reset_all_cooldown(self, ctx):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>reset_all_cooldown
-</code></pre>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;reset_all_cooldown</code></p>
 <p><strong>Example:</strong> <code>$reset_all_cooldown</code></p>
-<p><strong>Expected Output:</strong> <code>All cooldown reseted.</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Send Messages</code>.</p>
 <h2 id="shutdown">shutdown</h2>
-<p>Disconnect the bot from Discord.</p>
+<p>A formal way to disconnect the bot from Discord.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;shutdown</code></p>
 <p><strong>Example:</strong> <code>$cooldown</code></p>
-<p><strong>You need:</strong> opted-in dev.</p>
+<p><strong>You need:</strong> None.</p>
 <p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
-<p><em>This document is last updated on Oct 31st (PT) by MikeJollie#1067</em></p>
+<p><em>This document is last updated on Feb 19th by MikeJollie#1067</em></p>
                 
               
               

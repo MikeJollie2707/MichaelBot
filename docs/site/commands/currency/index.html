@@ -264,29 +264,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#daily-beta" class="md-nav__link">
-    daily [BETA]
+  <a href="#daily" class="md-nav__link">
+    daily
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#addmoney-experiment" class="md-nav__link">
-    addmoney [EXPERIMENT]
+  <a href="#balance" class="md-nav__link">
+    balance
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#rmvmoney-developing" class="md-nav__link">
-    rmvmoney [DEVELOPING]
+  <a href="#topmoney-developing" class="md-nav__link">
+    topmoney [DEVELOPING]
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#balance-beta" class="md-nav__link">
-    balance [BETA]
+  <a href="#work" class="md-nav__link">
+    work
   </a>
   
 </li>
@@ -328,8 +328,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../experiment/" class="md-nav__link">
-      Experiment
+    <a href="../game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -366,6 +366,18 @@
   <li class="md-nav__item">
     <a href="../music/" class="md-nav__link">
       Music
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../nsfw/" class="md-nav__link">
+      NSFW
     </a>
   </li>
 
@@ -425,6 +437,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -439,18 +463,6 @@
   <li class="md-nav__item">
     <a href="../../template/paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../template/help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -486,7 +498,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../utilities/methods/" class="md-nav__link">
+    <a href="../../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -547,29 +559,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#daily-beta" class="md-nav__link">
-    daily [BETA]
+  <a href="#daily" class="md-nav__link">
+    daily
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#addmoney-experiment" class="md-nav__link">
-    addmoney [EXPERIMENT]
+  <a href="#balance" class="md-nav__link">
+    balance
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#rmvmoney-developing" class="md-nav__link">
-    rmvmoney [DEVELOPING]
+  <a href="#topmoney-developing" class="md-nav__link">
+    topmoney [DEVELOPING]
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#balance-beta" class="md-nav__link">
-    balance [BETA]
+  <a href="#work" class="md-nav__link">
+    work
   </a>
   
 </li>
@@ -590,58 +602,57 @@
                 <!-- omit in toc -->
 <h1 id="currency-commands-developing">Currency commands [DEVELOPING]</h1>
 <p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
-<p>These are commands that involve fake economy.</p>
-<!-- omit in toc -->
+<p>These are commands that involve fake economy. All items and currencies are shared across guilds.</p>
+<!-- omit on toc -->
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
-<li><a href="#daily-beta">daily [BETA]</a></li>
-<li><a href="#addmoney-experiment">addmoney [EXPERIMENT]</a></li>
-<li><a href="#rmvmoney-developing">rmvmoney [DEVELOPING]</a></li>
-<li><a href="#balance-beta">balance [BETA]</a></li>
+<li><a href="#daily">daily</a></li>
+<li><a href="#balance">balance</a></li>
+<li><a href="#topmoney-developing">topmoney [DEVELOPING]</a></li>
 </ul>
 <h2 id="__init__-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor for this category. This set the <code>Currency</code> category's emoji is <code>💲</code>.</p>
-<h2 id="daily-beta">daily [BETA]</h2>
-<p><em>This section is labeled as [BETA], which means the function/command is currently in beta testing and possibly publicly available.</em></p>
+<h2 id="daily">daily</h2>
 <p>Get an amount of money every 24h.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;daily</code></p>
-<p><strong>Cooldown:</strong> 10 seconds per 1 use (user)</p>
+<p><strong>Cooldown:</strong> 1 day per 1 use (user)</p>
 <p><strong>Example:</strong> <code>$daily</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
-<h2 id="addmoney-experiment">addmoney [EXPERIMENT]</h2>
-<p><em>This section is labeled as [EXPERIMENT], which means the function/command is currently in internal testing (alpha) and not publicly available.</em></p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;addmoney &lt;amount&gt; &lt;member&gt;</code></p>
-<p><strong>Parameter:</strong></p>
-<ul>
-<li><code>amount</code>: The amount of money you want to add.</li>
-<li><code>member</code>: The member you want to add the money.</li>
-</ul>
-<p><strong>Example:</strong> <code>$addmoney 1000 MikeJollie</code></p>
-<p><strong>You need:</strong> None, for now.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
-<h2 id="rmvmoney-developing">rmvmoney [DEVELOPING]</h2>
-<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;rmvmoney &lt;amount&gt; &lt;member&gt;</code></p>
-<p><strong>Parameter:</strong></p>
-<ul>
-<li><code>amount</code>: The amount of money you want to remove. If larger than the member's actual money, the money remain will be 0.</li>
-<li><code>member</code>: The member you want to remove the money.</li>
-</ul>
-<p><strong>Example:</strong> <code>$rmvmoney 1000 MikeJollie</code></p>
-<p><strong>You need:</strong> None, for now.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
-<h2 id="balance-beta">balance [BETA]</h2>
-<p><em>This section is labeled as [BETA], which means the function/command is currently in beta testing and possibly publicly available.</em></p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="balance">balance</h2>
 <p>Display the amount of money you currently have.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;balance</code></p>
 <p><strong>Cooldown:</strong> 2 seconds per 1 use (user)</p>
 <p><strong>Example:</strong> <code>$balance</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot need:</strong> <code>Send Messages</code>.</p>
-<p><em>This document is last updated on Oct 31st (PT) by MikeJollie#1067</em></p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="topmoney-developing">topmoney [DEVELOPING]</h2>
+<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
+<p>Show the top 10 users with the most amount of money.</p>
+<p>The default option is <code>local</code>.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;topmoney [global/local]</code></p>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>global/local</code>: Either <code>global</code> (all MichaelBot's users) or <code>local</code> (all members in the guild invoked).</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$topmoney global</code></li>
+<li><strong>Example 2:</strong> <code>$topmoney</code></li>
+</ul>
+<p><strong>You need:</strong> None.
+<strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="work">work</h2>
+<p>Go to work and earn money.</p>
+<p><em>This command is going to get removed once inventory system is implemented.</em></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;work</code></p>
+<p><strong>Cooldown:</strong> 120 seconds per 1 use (user)</p>
+<p><strong>Example:</strong> <code>$work</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<p><em>This document is last updated on Feb 19th (PT) by MikeJollie#1067</em></p>
                 
               
               

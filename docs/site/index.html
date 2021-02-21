@@ -221,15 +221,28 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#prefix" class="md-nav__link">
-    Prefix
+  <a href="#discord-objects" class="md-nav__link">
+    Discord Objects
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Discord Objects">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#usermember-concept" class="md-nav__link">
     User/Member Concept
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix" class="md-nav__link">
+    Prefix
   </a>
   
 </li>
@@ -346,8 +359,8 @@
 
 
   <li class="md-nav__item">
-    <a href="commands/experiment/" class="md-nav__link">
-      Experiment
+    <a href="commands/game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -384,6 +397,18 @@
   <li class="md-nav__item">
     <a href="commands/music/" class="md-nav__link">
       Music
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="commands/nsfw/" class="md-nav__link">
+      NSFW
     </a>
   </li>
 
@@ -443,6 +468,18 @@
 
 
   <li class="md-nav__item">
+    <a href="template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -457,18 +494,6 @@
   <li class="md-nav__item">
     <a href="template/paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="template/help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -504,7 +529,7 @@
 
 
   <li class="md-nav__item">
-    <a href="utilities/methods/" class="md-nav__link">
+    <a href="utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -580,15 +605,28 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#prefix" class="md-nav__link">
-    Prefix
+  <a href="#discord-objects" class="md-nav__link">
+    Discord Objects
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Discord Objects">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#usermember-concept" class="md-nav__link">
     User/Member Concept
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix" class="md-nav__link">
+    Prefix
   </a>
   
 </li>
@@ -631,12 +669,17 @@
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#convention">Convention</a></li>
+<li><a href="#convention">Convention</a><ul>
 <li><a href="#parameters">Parameters</a></li>
-<li><a href="#prefix">Prefix</a></li>
+<li><a href="#discord-objects">Discord Objects</a><ul>
 <li><a href="#usermember-concept">User/Member Concept</a></li>
+</ul>
+</li>
+<li><a href="#prefix">Prefix</a></li>
 <li><a href="#permissions">Permissions</a></li>
 <li><a href="#cooldown">Cooldown</a></li>
+</ul>
+</li>
 </ul>
 <h2 id="introduction">Introduction</h2>
 <p>This is the official documentation for MichaelBot. This can be used as a developer documentation or user documentation.</p>
@@ -646,7 +689,7 @@
 <p>The conventions in this document should be relatively straightforward. The conventions uses in <code>help</code> is a bit less clear, due to not having enough spaces.</p>
 <p>These are the conventions I use in the help command:</p>
 <h3 id="parameters">Parameters</h3>
-<p>These are the parameter types you will find in <code>help</code> and in <code>Simplified Signature</code> section later.</p>
+<p>These are the parameter types you will find in the <code>Usage</code> section.</p>
 <p><code>&lt;parameter&gt;</code>: Required parameter. The bot will <strong>raise error without this parameter</strong>.</p>
 <p><code>[parameter]</code>: Optional parameter. The bot can <strong>still works without this parameter</strong>.</p>
 <p><code>&lt;param1/param2/...&gt;</code> or <code>[param1/param2/...]</code>: You can provide <strong>either</strong> param style.</p>
@@ -654,42 +697,51 @@
 <ul>
 <li>Example: if it's <code>profile [mention/ID/name/nickname]</code> and the <code>name</code> is <code>Hello World</code> then you will use <code>profile "Hello World"</code>.</li>
 </ul>
-<p><code>&lt;member&gt;</code> or <code>&lt;user&gt;</code> or <code>&lt;channel&gt;</code> or <code>&lt;guild&gt;</code>: Discord related argument. It is the equivalent of <code>&lt;ID/discrimination/mention/name/nickname&gt;</code>.</p>
-<h3 id="prefix">Prefix</h3>
-<p>This document will assume you know <strong>how to use a command</strong> using <code>&lt;prefix&gt;&lt;command_name&gt;</code>. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended).</p>
-<ul>
-<li>The default prefix is <code>$</code> but no it doesn't have $sudo.</li>
-</ul>
-<h3 id="usermember-concept">User/Member Concept</h3>
+<h3 id="discord-objects">Discord Objects</h3>
+<p><code>&lt;member&gt;</code> or <code>&lt;user&gt;</code> or <code>&lt;channel&gt;</code> or <code>&lt;guild&gt;</code> are Discord related argument. It is the equivalent of <code>&lt;ID/discrimination/mention/name/nickname&gt;</code>. It is recommended to provide either <code>ID</code> or <code>discrimination</code> (ex: UserName#1234) for absolute accuracy. Providing <code>name</code> or <code>nickname</code> might make the command work not as intended.</p>
+<h4 id="usermember-concept">User/Member Concept</h4>
 <p>User/Member are usually confused terms for a Discord user, but here are the difference.</p>
 <ul>
 <li>When this document refers to <strong>"user"</strong>, it refers to a <strong>Discord user regardless of the server</strong>.</li>
 <li>When this document refers to <strong>"member"</strong>, it refers to a <strong>Discord user in a certain server(s)</strong>.</li>
 </ul>
 <p>Note that Discord API doesn't allow bot to <strong>get information about a user/member if the bot does not see the user/member</strong>, which means the bot needs to share at least <strong>1</strong> server with the user/member to actually work.</p>
+<h3 id="prefix">Prefix</h3>
+<p>This document will assume you know <strong>how to use a command</strong> using <code>&lt;prefix&gt;&lt;command_name&gt;</code>. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended) and invoke the <code>prefix</code> command to view the current prefix for the guild.</p>
+<ul>
+<li>The default prefix is <code>$</code> when the bot joins a guild, but no it doesn't have $sudo.</li>
+</ul>
 <h3 id="permissions">Permissions</h3>
 <p>The convention for permissions in <code>help</code> is as follow:</p>
 <ul>
 <li><code>You need</code>: The required permission <strong>you</strong> need to have to execute the command.</li>
 <li><code>I need</code>: The required permission <strong>the bot</strong> need to have to execute the command.</li>
 </ul>
-<p>I will assume the bot always has <code>Send Messages</code> and <code>Read Messages</code> in the channel you use the command.</p>
+<p>I will assume the bot always has <code>Send Messages</code> and <code>Read Messages</code> in the channel you use the command. Usually, the bot also needs <code>Read Message History</code> for many commands.</p>
 <h3 id="cooldown">Cooldown</h3>
 <p>The convention for cooldown syntax in <code>help</code> is <code>x seconds per n use(s) (cooldown type)</code>.</p>
 <p><code>x</code>: The cooldown <strong>duration</strong> before you can use the command.</p>
 <p><code>n</code>: The number of <strong>times</strong> the command is used before invoking the cooldown.</p>
 <p><code>cooldown type</code>: There are usually 4 types of cooldown in this bot:</p>
 <ul>
-<li><code>global</code>: The cooldown applies to <strong>every servers</strong> the bot joins.</li>
+<li><code>global</code>: The cooldown applies to <strong>every servers</strong> the bot joins.<ul>
 <li>Example: If a person invokes <code>prefix</code> n times, <strong>no one</strong> can invoke <code>prefix</code> again until x seconds are passed.</li>
-<li><code>guild</code>: The cooldown applies to <strong>everyone in a certain server</strong>.</li>
+</ul>
+</li>
+<li><code>guild</code>: The cooldown applies to <strong>everyone in a certain server</strong>.<ul>
 <li>Example: If a person invokes <code>kick</code> n times, <strong>no one in that person's server</strong> can invoke <code>kick</code> again until x seconds are passed.</li>
-<li><code>user</code>: The cooldown applies to that <strong>certain user</strong>.</li>
+</ul>
+</li>
+<li><code>user</code>: The cooldown applies to that <strong>certain user</strong>.<ul>
 <li>Example: If the user <code>MikeJollie</code> invoke <code>embed_simple</code> n times, <strong>that certain user</strong> can not invoke <code>embed_simple</code> again until x seconds are passed.</li>
-<li><code>member</code>: The cooldown applies to that <strong>certain member</strong>.</li>
+</ul>
+</li>
+<li><code>member</code>: The cooldown applies to that <strong>certain member</strong>.<ul>
 <li>Example: If the member <code>MikeJollie</code> invoke <code>test</code> n times, <strong>that certain member</strong> can not invoke <code>MikeJollie</code> <strong>in the same server he invoked</strong> again until x seconds are passed. <strong>He can invoke the command in a different server in that duration however</strong>.</li>
 </ul>
-<p><em>This document is last reviewed on Nov 6th (PT) by MikeJollie#1067</em></p>
+</li>
+</ul>
+<p><em>This document is last edited on Feb 19th (PT) by MikeJollie#1067</em></p>
                 
               
               
