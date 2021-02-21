@@ -26,13 +26,13 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         return True
 
     @commands.group(invoke_without_command = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def konachan(self, ctx, safe__any : str, *, tags : str = ""):
         '''
         Send a picture from konachan API.
 
-        This will run a search on either `konachan.net` (mostly safe images) or `konachan.com` and return an image chosen deemed to be safe.
+        This will run a search on either `konachan.net` (mostly safe images) or `konachan.com` and return an image.
 
         - If not provided the tags, it'll search a random image.
         - If provided with tag(s), it'll search an image having all the tags. The tags **must be exactly the same** as it appears in `konachan.net`/`konachan.com`. 
@@ -145,7 +145,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                         the image has been reviewed by the FBI and it did not pass (yes the images are usually reviewed by the FBI before sending)."
                     embed.set_image(url = "https://i.imgflip.com/3ddefb.jpg")
             
-                await ctx.send(embed = embed)
+                await ctx.reply(embed = embed, mention_author = False)
     @konachan.command()
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def tags(self, ctx):
@@ -176,7 +176,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                             author = ctx.author
                         )
 
-                        await ctx.send(embed = embed)
+                        await ctx.reply(embed = embed, mention_author = False)
 
     async def display_hentai(self, ctx, doujin : hentai.Hentai):
         tag_list = [f"`{tag.name}`" for tag in doujin.tag]
@@ -220,7 +220,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
         await paginate.event(ctx, interupt = False)
     @commands.group(invoke_without_command = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(add_reactions = True, read_message_history = True, send_messages = True)
     async def nhentai(self, ctx):
         '''
         Search and return a doujin on request.

@@ -20,11 +20,11 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         return True
 
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def calc(self, ctx, *, expression: str):
         '''
         A mini calculator that calculate almost everything.
-        Note: Trignometry functions return radian.
+        Note: Trigonometry functions return radian.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} 1+2
@@ -32,7 +32,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 3:** {prefix}{command_name} sqrt(25)
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         result = Facility.calculate(expression)
@@ -46,7 +46,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def dice(self, ctx):
         '''
         Roll a dice for you.
@@ -55,7 +55,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         await ctx.reply("It's %d :game_die:" % (random.randint(1, 6)), mention_author = False)
@@ -208,7 +208,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.send(embed = embed)
     
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 5, per = 10.0, type = commands.BucketType.user)
     async def how(self, ctx, measure_unit : str, *, target : str):
         '''
@@ -220,14 +220,14 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} "stupidly dumb" "Nightmare monsters"
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         percent_thing = random.randint(0, 100)
         await ctx.reply(target + " is `" + str(percent_thing) + "%` " + measure_unit + ".", mention_author = False)
 
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 5, per = 10.0, type = commands.BucketType.user)
     async def howgay(self, ctx, *, target: str):
         '''
@@ -239,7 +239,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} "iPhone 11"
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
         
         if target.upper() == "MIKEJOLLIE":
@@ -255,10 +255,10 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(f"{target} is `{percent_gay}%` gay :rainbow_flag:.", mention_author = False)
 
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def ping(self, ctx):
         '''
-        Show the latency of the bot.
+        Show the latency of the bot. It might take a while to update.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name}

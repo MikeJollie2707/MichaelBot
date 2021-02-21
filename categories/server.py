@@ -20,7 +20,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     
     @commands.command(aliases = ["log-enable"])
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(view_audit_log = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
     async def log_enable(self, ctx):
@@ -32,7 +32,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
-        I need: `View Audit Log`, `Send Messages`.
+        I need: `View Audit Log`, `Read Message History`, `Send Messages`.
         '''
 
         config = await Facility.get_config(self.bot, ctx.guild.id)
@@ -40,14 +40,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             await ctx.reply("Logging is already enabled for this server.", mention_author = False)
         else:
             config["enable_log"] = True
-            async with self.bot.pool.acquire() as conn:
-                async with conn.transaction():
-                    await Facility.save_config(self.bot, config)
+            await Facility.save_config(self.bot, config)
             await ctx.reply("Logging is enabled for this server. You should setup a log channel.", mention_author = False)
 
     @commands.command(aliases = ["log-setup"])
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(view_audit_log = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
     async def log_setup(self, ctx, log : discord.TextChannel = None):
@@ -62,7 +60,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         **Example 3:** {prefix}{command_name}
 
         You need: `Manage Server`.
-        I need: `View Audit Log`, `Send Messages`.
+        I need: `View Audit Log`, `Read Message History`, `Send Messages`.
         '''
 
         config = await Facility.get_config(self.bot, ctx.guild.id)
@@ -95,7 +93,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     
     @commands.command(aliases = ["log-disable"])
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True,send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
     async def log_disable(self, ctx):
         '''
@@ -107,7 +105,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
-        I need: `Send Messages`.
+        I need: `Read Message History`, `Send Messages`.
         '''
 
         config = await Facility.get_config(self.bot, ctx.guild.id)
@@ -118,7 +116,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
 
     @commands.command(aliases = ["welcome-enable"])
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
     async def welcome_enable(self, ctx):
         '''
@@ -127,7 +125,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
-        I need: `Send Messages`.
+        I need: `Read Message History`, `Send Messages`.
         '''
 
         config = await Facility.get_config(self.bot, ctx.guild.id)
@@ -140,7 +138,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     
     @commands.command(aliases = ["welcome-setup"])
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
     async def welcome_setup(self, ctx, welcome_chan : discord.TextChannel = None, *, welcome_text : str = ""):
         '''
@@ -157,7 +155,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         **Example 4:** {prefix}{command_name}
 
         You need: `Manage Server`.
-        I need: `Send Messages`.
+        I need: `Read Message History`, `Send Messages`.
         '''
 
         config = await Facility.get_config(self.bot, ctx.guild.id)
@@ -179,7 +177,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 await ctx.reply(f"I can't send message to {welcome_chan.mention}!", mention_author = False)
             else:
                 config["welcome_channel"] = welcome_chan.id
-                await ctx.reply("Channel %s is now a welcome channel." % welcome_chan.mention)
+                await ctx.reply("Channel %s is now a welcome channel." % welcome_chan.mention, mention_author = False)
 
                 await Facility.save_config(self.bot, config)
 
@@ -202,7 +200,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
 
     @commands.command(aliases = ["welcome-disable"])
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
     async def welcome_disable(self, ctx):
         '''
@@ -214,7 +212,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
-        I need: `Send Messages`.
+        I need: `Read Message History`, `Send Messages`.
         '''
         
         config = await Facility.get_config(self.bot, ctx.guild.id)

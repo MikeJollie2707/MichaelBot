@@ -120,7 +120,7 @@ class Core(commands.Cog):
                 await ctx.send("Command \"%s\" not found." % command__category)
 
     @commands.command(aliases = ["about"])
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def info(self, ctx):
         '''
         Information about the bot.
@@ -130,7 +130,7 @@ class Core(commands.Cog):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         text = self.bot.description
@@ -185,11 +185,10 @@ class Core(commands.Cog):
             inline = False
         )
 
-        #await ctx.send(embed = embed)
         await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def note(self, ctx):
         '''
         Provide syntax convention in `help` and `help-all`.
@@ -198,7 +197,7 @@ class Core(commands.Cog):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         embed = Facility.get_default_embed(
@@ -213,7 +212,7 @@ class Core(commands.Cog):
 
     @commands.command()
     @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.guild)
     async def prefix(self, ctx, new_prefix : str = None):
         '''
@@ -225,7 +224,7 @@ class Core(commands.Cog):
         **Example 2:** {prefix}{command_name} %
         
         **You need:** `Manage Server`.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         async with self.bot.pool.acquire() as conn:
@@ -239,7 +238,7 @@ class Core(commands.Cog):
                 await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id), mention_author = False)
 
     @commands.command()
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def profile(self, ctx, member : discord.Member = None):
         '''
         Information about yourself or another __member__.
@@ -249,7 +248,7 @@ class Core(commands.Cog):
         **Example 2:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         if member == None:
@@ -351,7 +350,7 @@ class Core(commands.Cog):
             await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
 
     @commands.command(aliases = ["server-info"])
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def serverinfo(self, ctx):
         '''
         Information about the server that invoke this command.
@@ -361,7 +360,7 @@ class Core(commands.Cog):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         guild = ctx.guild

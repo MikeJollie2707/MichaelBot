@@ -20,7 +20,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
 
     @commands.command()
     @commands.has_guild_permissions(ban_members = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(ban_members = True)
     @commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
     async def ban(self, ctx, user : discord.Member, *, reason = None):
@@ -33,7 +33,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **Example 2:** {prefix}{command_name} @MikeJollie Stop spamming!
         
         **You need:** `Ban Members`.
-        **I need:** `Ban Members`, `Send Messages`.
+        **I need:** `Ban Members`, `Read Message History`, `Send Messages`.
         '''
 
         guild = ctx.guild
@@ -43,7 +43,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         try:
             await guild.ban(user, reason = reason)
         except discord.Forbidden:
-            await ctx.send("I cannot ban someone that's higher than me!")
+            await ctx.reply("I cannot ban someone that's higher than me!", mention_author = False)
         else:
             embed = Facility.get_default_embed(
                 title = "Member Banned",
@@ -62,11 +62,11 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     @ban.error
     async def ban_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send("I cannot ban someone that's not in the guild normally. I need the power of `%shackban` to ban." % ctx.prefix)
+            await ctx.reply("I cannot ban someone that's not in the guild normally. I need the power of `%shackban` to ban." % ctx.prefix, mention_author = False)
 
     @commands.command()
     @commands.has_guild_permissions(ban_members = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(ban_members = True)
     @commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
     async def hackban(self, ctx, user_id : int, *, reason = None):
@@ -78,7 +78,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **Example:** {prefix}{command_name} 472832990012243969 Develope a bot
 
         **You need:** `Ban Members`.
-        **I need:** `Ban Members`, `Send Messages`.
+        **I need:** `Ban Members`, `Read Message History`, `Send Messages`.
         '''
 
         guild = ctx.guild
@@ -88,7 +88,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         try:
             await guild.ban(discord.Object(id = user_id), reason = reason)
         except discord.HTTPException:
-            await ctx.send("I can't ban this person. The most common one would be your id is wrong.")
+            await ctx.reply("I can't ban this person. The most common one would be your id is wrong.", mention_author = False)
             return
         else:
             embed = Facility.get_default_embed(
@@ -108,7 +108,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
 
     @commands.command()
     @commands.has_guild_permissions(kick_members = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(kick_members = True)
     @commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
     async def kick(self, ctx, member : discord.Member, *, reason = None):
@@ -122,7 +122,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **Example 3:** {prefix}{command_name} 472832990012243969
 
         **You need:** `Kick Members`.
-        **I need:** `Kick Members`, `Send Messages`.
+        **I need:** `Kick Members`, `Read Message History`, `Send Messages`.
         '''
 
         guild = ctx.guild
@@ -132,8 +132,8 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
 
         try:
             await guild.kick(member, reason = reason)
-        except discord.Forbidden as f:
-            await ctx.send("I cannot kick someone that's higher than me!")
+        except discord.Forbidden:
+            await ctx.reply("I cannot kick someone that's higher than me!", mention_author = False)
         else:
             embed = Facility.get_default_embed(
                 title = "Member Kicked",
@@ -152,9 +152,9 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     @kick.error
     async def kick_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            await ctx.send("I cannot kick someone that's not in the guild! If you want someone not to join your guild, use `%shackban`." % ctx.prefix)
+            await ctx.reply("I cannot kick someone that's not in the guild! If you want someone not to join your guild, use `%shackban`." % ctx.prefix, mention_author = False)
     
-    @commands.command(hidden = True, enabled = True)
+    @commands.command(hidden = True, enabled = False)
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_guild_permissions(kick_members = True)
     @commands.cooldown(1, 5.0, commands.BucketType.guild)
@@ -231,7 +231,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
 
     @commands.command()
     @commands.has_guild_permissions(ban_members = True)
-    @commands.bot_has_permissions(send_messages = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(ban_members = True)
     @commands.cooldown(rate = 2, per = 5.0, type = commands.BucketType.guild)
     async def unban(self, ctx, id : int, *, reason = None):
@@ -243,7 +243,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         **Example:** {prefix}{command_name} 472832990012243969 You've redeemed your goodness.
 
         **You need:** `Ban Members`.
-        **I need:** `Ban Members`, `Send Messages`.
+        **I need:** `Ban Members`, `Read Message History`, `Send Messages`.
         '''
 
         guild = ctx.guild
@@ -251,7 +251,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         try:
             await guild.unban(discord.Object(id = id), reason = reason)
         except discord.HTTPException:
-            await ctx.send("The ban hammer is too heavy! Make sure the id is correct, and that the user is already banned.")
+            await ctx.reply("The ban hammer is too heavy! Make sure the id is correct, and that the user is already banned.", mention_author = False)
             return
         else:
             embed = Facility.get_default_embed(

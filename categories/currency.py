@@ -16,6 +16,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.emoji = '💰'
     
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def daily(self, ctx):
         '''
         Get an amount of money every 24h.
@@ -24,7 +25,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         # Retrieve user info
@@ -102,12 +103,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
             msg += f":white_check_mark: You got **${daily_amount}** daily money.\nYour streak: `x{member_local_info['streak_daily']}`.\n"
             
-            if daily_bonus > 0:
-                msg += f"You also receive **${daily_bonus}** for maintaining your streak."
-            
             await ctx.reply(msg, mention_author = False)
             
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def work(self, ctx):
         '''
@@ -120,7 +119,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
 
         amount = random.randint(15, 25)        
@@ -134,6 +133,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
     async def balance(self, ctx):
         '''
@@ -144,7 +144,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
         
         member_money = 0
@@ -154,7 +154,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         await ctx.reply("You have $%d." % member_money, mention_author = False)
     
-    @commands.command()
+    @commands.command(hidden = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def topmoney(self, ctx, local__global = "local"):
         '''
