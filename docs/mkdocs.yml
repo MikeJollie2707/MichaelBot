@@ -16,11 +16,11 @@ nav:
     - "Settings": commands/server.md
     - "Utility": commands/utility.md
   - "Templates":
+    - "Help": template/help.md
     - "Menu": template/menu.md
     - "Paginator": template/paginator.md
-    - "Help": template/help.md
   - "Utilities":
-    - "Utility methods": utilities/methods_cog.md
+    - "Utility methods": utilities/facility.md
     - "Database methods": utilities/db.md
 
 theme:

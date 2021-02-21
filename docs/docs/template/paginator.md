@@ -1,12 +1,17 @@
+<!-- omit in toc -->
 # Pages template
 
 This is a template for a paginator-like control in Discord. It uses reactions to move on to the next or previous pages.
 
 This is used in various commands, notably in `help`, `nhentai`, etc.
 
+<!-- omit in toc -->
 ## Table of Contents
 
-...
+- [Pages](#pages)
+    - [\_\_init\_\_](#__init__)
+    - [add_page](#add_page)
+    - [event](#event)
 
 ## Pages
 
