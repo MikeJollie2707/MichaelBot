@@ -57,7 +57,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#settings-commands-experiment" class="md-skip">
+        <a href="#settings-commands" class="md-skip">
           Skip to content
         </a>
       
@@ -255,8 +255,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../experiment/" class="md-nav__link">
-      Experiment
+    <a href="../game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -301,6 +301,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../nsfw/" class="md-nav__link">
+      NSFW
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -334,6 +346,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    Table of Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#__init__-internal" class="md-nav__link">
     __init__ [INTERNAL]
   </a>
@@ -357,6 +376,34 @@
         <li class="md-nav__item">
   <a href="#log_disable" class="md-nav__link">
     log_disable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_enable" class="md-nav__link">
+    welcome_enable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_setup" class="md-nav__link">
+    welcome_setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_new_member-internal" class="md-nav__link">
+    welcome_new_member [INTERNAL]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_disable" class="md-nav__link">
+    welcome_disable
   </a>
   
 </li>
@@ -411,6 +458,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -425,18 +484,6 @@
   <li class="md-nav__item">
     <a href="../../template/paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../template/help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -472,7 +519,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../utilities/methods/" class="md-nav__link">
+    <a href="../../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -519,6 +566,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    Table of Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#__init__-internal" class="md-nav__link">
     __init__ [INTERNAL]
   </a>
@@ -546,6 +600,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#welcome_enable" class="md-nav__link">
+    welcome_enable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_setup" class="md-nav__link">
+    welcome_setup
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_new_member-internal" class="md-nav__link">
+    welcome_new_member [INTERNAL]
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#welcome_disable" class="md-nav__link">
+    welcome_disable
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -559,69 +641,110 @@
               
                 
                 
-                <h1 id="settings-commands-experiment">Settings commands [EXPERIMENT]</h1>
-<p><em>This section is labeled as [EXPERIMENT], which means the function/command is currently in internal testing (alpha) and not publicly available.</em></p>
+                <!-- omit in toc -->
+<h1 id="settings-commands">Settings commands</h1>
 <p>These are commands that focus in providing Quality of Life for the guild. It comes with logging, welcoming, bad words filtering (new), goodbye (new), reaction roles (new), enabling/disabling a command (new).</p>
+<!-- omit in toc -->
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
+<li><a href="#log_enable">log_enable</a></li>
+<li><a href="#log_setup">log_setup</a></li>
+<li><a href="#log_disable">log_disable</a></li>
+<li><a href="#welcome_enable">welcome_enable</a></li>
+<li><a href="#welcome_setup">welcome_setup</a></li>
+<li><a href="#welcome_new_member-internal">welcome_new_member [INTERNAL]</a></li>
+<li><a href="#welcome_disable">welcome_disable</a></li>
+</ul>
 <h2 id="__init__-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that is is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor of the category. This set the <code>Core</code> category's emoji as <code>🛠</code>.</p>
 <h2 id="log_enable">log_enable</h2>
 <p>Enable logging in your server.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command(aliases = [&quot;log-enable&quot;])
-@commands.has_guild_permissions(manage_guild = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.bot_has_guild_permissions(view_audit_log = True)
-@commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
-async def log_enable(self, ctx):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>log_enable
-log-enable
-</code></pre>
+<p><strong>Aliases:</strong> <code>log-enable</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;log_enable</code></p>
+<p><strong>Cooldown:</strong> 3 seconds per 1 use (guild)</p>
 <p><strong>Example:</strong> <code>$log_enable</code></p>
-<p><strong>Expected Output:</strong> <em>a confirm message</em></p>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>View Audit Log</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="log_setup">log_setup</h2>
-<p>Set the logging channel or view which channel is one.
-This implicitly call <code>log_enable()</code> if you haven't.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command(aliases = [&quot;log-setup&quot;])
-@commands.has_guild_permissions(manage_guild = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.bot_has_guild_permissions(view_audit_log = True)
-@commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
-async def log_setup(self, ctx, log : discord.TextChannel = None):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>log_setup [channel]
-log-setup [channel]
-</code></pre>
+<p>Set the logging channel or view which channel is one.</p>
+<p>This implicitly call <a href="#log_enable"><code>log_enable</code></a> if you haven't.</p>
+<p><strong>Aliases:</strong> <code>log-setup</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;log_setup &lt;channel&gt;</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>channel</code>: The text channel you want the bot to send logs. By default, it's the current channel the command is invoked in.</li>
 </ul>
+<p><strong>Cooldown:</strong> 3 seconds per 1 use (guild)</p>
 <p><strong>Examples:</strong></p>
 <ul>
 <li><strong>Example 1:</strong> <code>$log_setup</code></li>
 <li><strong>Example 2:</strong> <code>$log_setup #mikejollie-is-gay-change-my-mind</code></li>
 </ul>
-<p><strong>Expected Output:</strong> <em>a verification embed at [channel]</em></p>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>View Audit Log</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="log_disable">log_disable</h2>
-<p>Disable logging in your server.</p>
-<p><strong>Full Signature:</strong></p>
-<pre><code class="language-py">@commands.command(aliases = [&quot;log-disable&quot;])
-@commands.has_guild_permissions(manage_guild = True)
-@commands.bot_has_permissions(send_messages = True)
-@commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
-async def log_disable(self, ctx):
-</code></pre>
-<p><strong>Simplified Signature:</strong></p>
-<pre><code>log_disable
-log-disable
-</code></pre>
+<p>Disable logging in your server. This doesn't remove the logging channel.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;log_disable</code></p>
+<p><strong>Cooldown:</strong> 3 seconds per 1 use (guild)</p>
 <p><strong>Example:</strong> <code>$log_disable</code></p>
-<p><strong>Expected Output:</strong> <em>a confirm message</em></p>
-<p><em>This document is last updated on Aug 8th 2020 by MikeJollie#1067</em></p>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages.</code></p>
+<h2 id="welcome_enable">welcome_enable</h2>
+<p>Enable welcoming new members in your server.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;welcome_enable</code></p>
+<p><strong>Cooldown:</strong> 3 seconds per 1 use (guild)</p>
+<p><strong>Example:</strong> <code>$welcome_enable</code></p>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="welcome_setup">welcome_setup</h2>
+<p>Set or view the welcome channel and message in your server.</p>
+<p>This implicitly invoke <a href="#welcome_enable"><code>welcome_enable</code></a> if you haven't.</p>
+<ul>
+<li>If you don't provide a welcome text, it is default to <code>Hello [user.mention]! Welcome to **[guild.name]**! You're the [guild.count]th member in this server! Enjoy the fun!!! :tada:</code>. </li>
+</ul>
+<p><strong>Aliases:</strong> <code>welcome-setup</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;welcome_setup [channel] [welcome text]</code></p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>channel</code>: The channel you want the bot to send welcome message. By default, it is the current channel.</li>
+<li><code>welcome text</code>: A welcome text. If provided, <code>channel</code> must also be provided. By default, the message is <code>Hello [user.mention]! Welcome to **[guild.name]**! You're the [guild.count]th member in this server! Enjoy the fun!!! :tada:</code>.<ul>
+<li>Possible arguments:<ul>
+<li><code>[user.mention]</code>: Mention the new user.</li>
+<li><code>[user.name]</code>: Display the name of the user.</li>
+<li><code>[guild.name]</code>: Display the name of the guild.</li>
+<li><code>[guild.count]</code>: Display the current population of the guild.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Cooldown:</strong> 3 seconds per 1 use (guild)</p>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$welcome-setup 644336991135072261 Welcome [user.mention] to [guild.name]!</code></li>
+<li><strong>Example 2:</strong> <code>$welcome-setup a-random-welcome-channel You are the [guild.count]th member!</code></li>
+<li><strong>Example 3:</strong> <code>$welcome-setup #another-random-channel</code></li>
+<li><strong>Example 4:</strong> <code>$welcome-setup</code></li>
+</ul>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="welcome_new_member-internal">welcome_new_member [INTERNAL]</h2>
+<p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
+<p>A listener to <code>on_member_join()</code> event that is responsible for sending the message to the welcome channel.</p>
+<p><strong>Full signature:</strong></p>
+<pre><code class="language-py">@commands.Cog.listener(&quot;on_member_join&quot;)
+async def welcome_new_member(self, member):
+</code></pre>
+<h2 id="welcome_disable">welcome_disable</h2>
+<p>Disable welcoming in your server. This doesn't remove the welcome channel.</p>
+<p><strong>Aliases:</strong> <code>welcome-disable</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;welcome_disable</code></p>
+<p><strong>Example:</strong> <code>$welcome_disable</code></p>
+<p><strong>You need:</strong> <code>Manage Server</code>.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<p><em>This document is last updated on Feb 20th 2021 by MikeJollie#1067</em></p>
                 
               
               
@@ -640,7 +763,7 @@ log-disable
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../music/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../nsfw/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -649,7 +772,7 @@ log-disable
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Music
+                NSFW
               </div>
             </div>
           </a>

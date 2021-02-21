@@ -318,8 +318,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../commands/experiment/" class="md-nav__link">
-      Experiment
+    <a href="../commands/game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -356,6 +356,18 @@
   <li class="md-nav__item">
     <a href="../commands/music/" class="md-nav__link">
       Music
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../commands/nsfw/" class="md-nav__link">
+      NSFW
     </a>
   </li>
 
@@ -415,6 +427,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../template/help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../template/menu/" class="md-nav__link">
       Menu
     </a>
@@ -429,18 +453,6 @@
   <li class="md-nav__item">
     <a href="../template/paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../template/help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -476,7 +488,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../utilities/methods/" class="md-nav__link">
+    <a href="../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -577,8 +589,10 @@
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#prerequisite">Prerequisite</a></li>
-<li><a href="#steps">Steps</a></li>
+<li><a href="#steps">Steps</a><ul>
 <li><a href="#alternative">Alternative</a></li>
+</ul>
+</li>
 </ul>
 <h2 id="prerequisite">Prerequisite</h2>
 <ul>
@@ -590,13 +604,10 @@
 <p>Clone this directory.</p>
 <pre><code class="language-git">git clone https://github.com/MikeJollie2707/MichaelBot.git
 </code></pre>
-<p>Go into folder <code>setup</code> and create two <code>json</code> files (here I use <code>bot.json</code> and <code>db.json</code>) (I'm planning to merge these two files into one).</p>
-<pre><code class="language-json">// bot.json
+<p>Go into folder <code>setup</code> and create a <code>json</code> file (here I use <code>secret.json</code>).</p>
+<pre><code class="language-json">// secret.json
 {
-    &quot;token&quot;: &quot;bot token&quot;
-}
-// db.json
-{
+    &quot;token&quot;: &quot;bot token&quot;,
     &quot;host&quot;: &quot;localhost or wherever you host PostgreSQL&quot;,
     &quot;user&quot;: &quot;username&quot;,
     &quot;database&quot;: &quot;name of the database&quot;,
@@ -611,10 +622,9 @@
         &quot;version&quot;: &quot;Required&quot;,
         &quot;description&quot;: &quot;Required&quot;,
         &quot;prefix&quot;: &quot;Required&quot;,
-        &quot;debug&quot;: false, // Optional key.
+        &quot;debug&quot;: false, // Optional key. Default to false.
 
-        &quot;token&quot;: &quot;bot.json&quot;, // The file contain the token
-        &quot;db&quot;: &quot;db.json&quot; // The file contain the db info
+        &quot;secret&quot;: &quot;secret.json&quot;
     }
 }
 </code></pre>
@@ -638,27 +648,9 @@ python3 bot.py BotIndex
 .\venv\Scripts\python.exe bot.py BotIndex
 </code></pre>
 <h3 id="alternative">Alternative</h3>
-<p>Alternatively, if you don't like typing <code>python3 bot.py BotIndex</code> all the time when you want to start the bot, there's a script <code>startup.sh</code> (for Linux) and <code>run.ps1</code> (for Windows Powershell) to make life a bit easier.</p>
+<p>Alternatively, if you don't like typing <code>python3 bot.py BotIndex</code> all the time when you want to start the bot, there's a script <code>startup.sh</code> (for Linux) and <code>run.ps1</code> (for Windows Powershell) to make life a bit easier. Both of them are currently in <code>setup</code> folder, although it might change.</p>
 <p>For <code>startup.sh</code>, you can edit <code>MICHAEL_DIR</code> to your current directory. An absolute path is needed if you plan to put the file to one of the startup application. Mark it executable, and just double click it the next time you want to run. Remember to change the bot index also (I'm planning to make this more obvious).</p>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-For <code>run.ps1</code>, just change the <code>$BotIndex</code>, and then open Powershell, run the script using <code>. ".\run.ps1"</code>
-=======
-For <code>run.ps1</code>, just change the <code>$BotIndex</code>, and then open Powershell, run the script using <code>. ".\run.ps1"</code></p>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>1e81819134529afbdd2edcb50504f7d9672ce1c1</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
+<p>For <code>run.ps1</code>, just change the <code>$BotIndex</code>, and then open Powershell, run the script using <code>. ".\run.ps1"</code></p>
                 
               
               

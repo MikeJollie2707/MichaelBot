@@ -56,6 +56,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#menu-template" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -248,8 +253,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../commands/experiment/" class="md-nav__link">
-      Experiment
+    <a href="../../commands/game/" class="md-nav__link">
+      Game
     </a>
   </li>
 
@@ -286,6 +291,18 @@
   <li class="md-nav__item">
     <a href="../../commands/music/" class="md-nav__link">
       Music
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../commands/nsfw/" class="md-nav__link">
+      NSFW
     </a>
   </li>
 
@@ -345,6 +362,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../help/" class="md-nav__link">
+      Help
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -352,10 +381,82 @@
     
     <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Menu
+        <span class="md-nav__icon md-icon"></span>
+      </label>
     
     <a href="./" class="md-nav__link md-nav__link--active">
       Menu
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    Table of Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#menu" class="md-nav__link">
+    Menu
+  </a>
+  
+    <nav class="md-nav" aria-label="Menu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#__init__" class="md-nav__link">
+    __init__
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_page" class="md-nav__link">
+    add_page
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_pages" class="md-nav__link">
+    add_pages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event" class="md-nav__link">
+    event
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -368,18 +469,6 @@
   <li class="md-nav__item">
     <a href="../paginator/" class="md-nav__link">
       Paginator
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../help/" class="md-nav__link">
-      Help
     </a>
   </li>
 
@@ -415,7 +504,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../utilities/methods/" class="md-nav__link">
+    <a href="../../utilities/facility/" class="md-nav__link">
       Utility methods
     </a>
   </li>
@@ -445,15 +534,164 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    Table of Contents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#menu" class="md-nav__link">
+    Menu
+  </a>
+  
+    <nav class="md-nav" aria-label="Menu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#__init__" class="md-nav__link">
+    __init__
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_page" class="md-nav__link">
+    add_page
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_pages" class="md-nav__link">
+    add_pages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event" class="md-nav__link">
+    event
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
                 
-                  <h1>Menu</h1>
-                
-                
+                <!-- omit in toc -->
+<h1 id="menu-template">Menu template</h1>
+<p>This is a template for a menu-like control in Discord. It uses reactions to go into a section.</p>
+<p>This is used in various commands and functions, notably in <code>help</code>.</p>
+<!-- omit in toc -->
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#menu">Menu</a><ul>
+<li><a href="#__init__">__init__</a></li>
+<li><a href="#add_page">add_page</a></li>
+<li><a href="#add_pages">add_pages</a></li>
+<li><a href="#event">event</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="menu">Menu</h2>
+<p>The implementation class for the menu structure.</p>
+<p>Internally, it contains a dictionary in the following format: <code>{'emoji': embed}</code>.</p>
+<h3 id="__init__">__init__</h3>
+<p>The constructor of the class. It sets the starting page, the terminate emoji and the return-to-start-page emoji.</p>
+<p><strong>Full signature:</strong></p>
+<pre><code class="language-py">def __init__(self, init_page : discord.Embed, terminate_emoji : str, return_emoji : str):
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>init_page</code>: The center page.</li>
+<li><code>terminate_emoji</code>: An emoji used to exit the menu.</li>
+<li><code>return_emoji</code>: An emoji used to exit small branch back to the center page.<ul>
+<li>The emoji parameters should NOT be the same (currently no check for this).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Exception:</strong></p>
+<ul>
+<li><code>TypeError</code>: Raises when <code>init_page</code> is not a <code>discord.Embed</code>.</li>
+</ul>
+<h3 id="add_page">add_page</h3>
+<p>Add a page to the menu.</p>
+<p><strong>Full signature:</strong></p>
+<pre><code class="language-py">def add_page(self, emoji : str, page : discord.Embed):
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>emoji</code>: The unique emoji that identifies the page.</li>
+<li><code>page</code>: The page.</li>
+</ul>
+<p><strong>Exceptions:</strong></p>
+<ul>
+<li><code>IndexError</code>: Raises when <code>emoji</code> is the same as the terminate emoji.</li>
+<li><code>TypeError</code>: Raises when <code>page</code> is not a <code>discord.Embed</code>.</li>
+</ul>
+<h3 id="add_pages">add_pages</h3>
+<p>Add multiple pages to the menu.</p>
+<p><strong>Full signature:</strong></p>
+<pre><code class="language-py">def add_pages(self, pages : typing.Dict[str, discord.Embed]):
+</code></pre>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>pages</code>: A <code>dict</code> that has the format <code>{'emoji': page}</code>.</li>
+</ul>
+<p><strong>Exceptions:</strong></p>
+<p><em>See <a href="#add_page">Exceptions</a></em>.</p>
+<h3 id="event">event</h3>
+<p><em>This function is a coroutine.</em></p>
+<p>A function used to interact with the menu.</p>
+<p>This will fire up the menu and manage it until timeout (which is 2 minutes of inactivity).</p>
+<p><strong>Full signature:</strong></p>
+<pre><code class="language-py">async def event(self, ctx : commands.Context, channel : discord.TextChannel = None, interupt = True):
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>ctx</code>: The context.</li>
+<li><code>channel</code>: The channel you want to send the menu in. If none provided, it'll use <code>ctx.channel</code>.</li>
+<li><code>interupt</code>: <code>False</code> if you don't want other user to react the menu, <code>True</code> otherwise. Default value is <code>True</code>, although it is recommended to <code>False</code>.</li>
+</ul>
+<p><strong>Exceptions:</strong></p>
+<ul>
+<li><code>AttributeError</code>: Raises when the parameter(s) is wrong type.</li>
+<li><code>discord.Forbidden</code>: Raises when the bot doesn't have permission to send messages/add reactions/read messages history.</li>
+</ul>
+<p><em>This document is last updated on Feb 20th (PT) by MikeJollie#1067</em></p>
                 
               
               
@@ -472,7 +710,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../../commands/utility/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../help/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -481,7 +719,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Utility
+                Help
               </div>
             </div>
           </a>
