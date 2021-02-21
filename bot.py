@@ -22,8 +22,7 @@ __discord_extension__ = [
     #"categories.music",
     "categories.nsfw",
     "categories.server",
-    "categories.utility",
-    "categories.utilities.method_cog"
+    "categories.utility"
 ]
 
 class MichaelBot(commands.Bot):

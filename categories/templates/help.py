@@ -5,9 +5,20 @@ import datetime
 
 from categories.templates.navigate import Pages
 from categories.templates.menu import Menu
-from categories.utilities.method_cog import Facility
 
-def cog_help_format(ctx, cog):
+import categories.utilities.facility as Facility
+
+def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed:
+    """
+    Return an embed that display a category's help. 
+
+    The method is responsible for the display of a category's help.
+
+    **Parameter:**
+
+    - `ctx`: A `commands.Context`.
+    - `cog`: A `commands.Cog` to display.
+    """
     display = ""
     for command in cog.get_commands():
         if command.hidden != True:
