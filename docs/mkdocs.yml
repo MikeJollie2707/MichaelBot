@@ -23,5 +23,14 @@ nav:
     - "Utility methods": utilities/facility.md
     - "Database methods": utilities/db.md
 
+repo_url: https://github.com/MikeJollie2707/MichaelBot
+repo_name: "MikeJollie2707/MichaelBot"
+
 theme:
   name: "material"
+  palette:
+    scheme: slate
+    primary: teal
+    accent: cyan
+  icon:
+    repo: fontawesome/brands/github
