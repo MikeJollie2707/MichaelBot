@@ -2,10 +2,9 @@ import discord
 from discord.ext import commands
 
 import datetime
-import aiohttp
-from discord.ext.commands.core import is_nsfw # External paste site when embed is too large.
+import aiohttp # External paste site when embed is too large.
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:

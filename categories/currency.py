@@ -7,7 +7,7 @@ import datetime
 import random
 
 import categories.utilities.db as DB
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""

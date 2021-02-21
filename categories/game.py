@@ -1,10 +1,10 @@
-from categories.utilities.method_cog import Facility
 import discord
 from discord.ext import commands
 
 import random
 import numpy
 
+import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 
 class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):

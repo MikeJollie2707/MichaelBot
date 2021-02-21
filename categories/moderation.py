@@ -4,7 +4,7 @@ from discord.ext import commands
 from datetime import datetime
 import textwrap
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to moderate actions such as kick, ban, etc.'''

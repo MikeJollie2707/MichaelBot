@@ -6,7 +6,7 @@ import sys
 import json
 from datetime import date, datetime
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 
 class Events(commands.Cog):

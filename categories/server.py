@@ -3,7 +3,7 @@ from discord.ext import commands
 
 import datetime
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 
 class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_parsing": True}):

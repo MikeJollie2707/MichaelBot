@@ -4,7 +4,7 @@ from discord.ext import commands
 
 import datetime
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 
 # This category is for testing purpose.
 class Experiment(commands.Cog, command_attrs = {"hidden" : True}):

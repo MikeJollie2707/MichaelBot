@@ -6,7 +6,8 @@ import textwrap
 
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.navigate import Pages
-from categories.utilities.method_cog import Facility
+
+import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 
 class Core(commands.Cog):

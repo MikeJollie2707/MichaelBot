@@ -5,7 +5,7 @@ import asyncio
 import datetime
 import textwrap
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 
 # Commands for developers to test things and stuffs. The format does not need to be formal.

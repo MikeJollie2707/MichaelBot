@@ -4,10 +4,8 @@ from discord.ext import commands
 import asyncio
 import random
 import datetime
-import aiohttp
-import textwrap
 
-from categories.utilities.method_cog import Facility
+import categories.utilities.facility as Facility
 
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
