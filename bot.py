@@ -2,11 +2,14 @@ import discord
 from discord.ext import commands
 import asyncpg
 
+# Debug stuffs
 import sys
 import traceback
 import logging
+
 import json
 import asyncio
+import asyncpg.exceptions as pg_exceptions
 
 import categories.utilities.db as DB
 
@@ -29,7 +32,7 @@ class MichaelBot(commands.Bot):
     def __init__(self, command_prefix, help_command = commands.DefaultHelpCommand(), description = None, **kwargs):
         super().__init__(command_prefix, help_command, description, **kwargs)
 
-        self.DEBUG = kwargs.get("allow_debug")
+        self.DEBUG = kwargs.get("debug")
         self.version = kwargs.get("version")
         
     def debug(self, message : str):
@@ -53,13 +56,24 @@ def load_info(bot_name):
     
     return (bot_info, secrets)
 
-def setupLogger(enable : bool = True):
+def setup_logger(enable : bool = True):
     if enable:
         logger = logging.getLogger("discord")
         logger.setLevel(logging.WARNING)
         handler = logging.FileHandler(filename = "discord.log", encoding = "utf-8", mode = "w")
         handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
         logger.addHandler(handler)
+
+def get_info():
+    bot_info = secrets = None
+    argc = len(sys.argv)
+
+    if (argc == 2):
+        bot_info, secrets = load_info(sys.argv[1])
+    else:
+        print("Incorrect amount of arguments. The first argument should be the bot index in 'config.json'")
+    
+    return bot_info, secrets
     
 async def get_prefix(bot, message):
     async with bot.pool.acquire() as conn:
@@ -67,63 +81,63 @@ async def get_prefix(bot, message):
     
     return commands.when_mentioned_or(prefix)(bot, message)
 
-if __name__ == "__main__":
-    bot_info = secrets = None
-    argc = len(sys.argv)
-
-    if (argc == 2):
-        # sys.argv is a list, with the script's name as the first one, and the argument as the second one.
-        bot_info, secrets = load_info(sys.argv[1])
-    else:
-        print("Too many arguments. The second argument should be the bot's index in 'config.json'.")
-
-    setupLogger(enable = False)
-
+async def main():
+    bot_info, secrets = get_info()
+    
     if not any([bot_info, secrets]):
         print("Unable to load enough information for the bot.")
-        print("Bot info: ", bot_info)
-        print("Secret info: ", secrets)
+        print("Bot info:", bot_info)
+        print("Secrets:", secrets)
     else:
+        # v1.5.0+ requires Intent.members to be enabled to use most of member cache.
         intent = discord.Intents().default()
         intent.members = True
+
+        description = bot_info.get("description") if bot_info.get("description") is not None else "`None`"
+        debug = bot_info.get("debug") if bot_info.get("debug") is not None else False
+
         bot = MichaelBot(
             command_prefix = get_prefix, 
-            description = bot_info.get("description"),
+            description = description,
             status = discord.Status.online,
             activity = discord.Game(name = "Kubuntu"),
-            intents = intent, # v1.5.0+ requires Intent.members to be enabled to use most of member cache.
+            intents = intent,
 
-            debug = bot_info.get("debug") if bot_info.get("debug") is not None else False,
+            debug = debug,
             version = bot_info.get("version")
         )
-        # https://discordpy.readthedocs.io/en/latest/intents.html for intents
 
         if not hasattr(bot, "__divider__"):
             bot.__divider__ = "----------------------------\n"
         
-        if not hasattr(bot, "pool") and not hasattr(bot, "json"):
-            loop = asyncio.get_event_loop()
-            bot.pool = loop.run_until_complete(asyncpg.create_pool(
-                host = secrets["host"],
-                user = secrets["user"],
-                database = secrets["database"],
-                password = secrets["password"]
-            ))
-            # It might throw sth here but too lazy to catch so hey.
-            bot.json = {}
+        if not hasattr(bot, "pool"):
+            # Ensure at least the bot has this attr.
+            bot.pool = None
+            try:
+                bot.pool = await asyncpg.create_pool(
+                    dsn = secrets.get("dsn"),
+                    host = secrets.get("host"),
+                    port = secrets.get("port"),
+                    user = secrets.get("user"),
+                    database = secrets.get("database"),
+                    password = secrets.get("password")
+                )
+            except pg_exceptions.InvalidCatalogNameError:
+                print("Can't seems to find the database.")
+            except pg_exceptions.InvalidPasswordError:
+                print("Wrong password or wrong user.")
+        
+        for extension in sorted(__discord_extension__):
+            bot.load_extension(extension)
 
         try:
-            for extension in sorted(__discord_extension__):
-                bot.load_extension(extension)
-            
-            bot.run(secrets["token"])
-
-            # Close the pool connection here, just to be safe
-            # but bcuz of async stuffs, I'll have to rewrite quite a bit
-            # and I don't have time rn.
-            # await bot.pool.close()
+            await bot.start(secrets["token"])
+        except KeyboardInterrupt:
+            await bot.close()
         except Exception:
             print(traceback.print_exc())
-        
-        print("Bot closed all connection from the pool.")
-        print("Bot disconnected. You can now close the terminal.")
+        finally:
+            await bot.pool.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
