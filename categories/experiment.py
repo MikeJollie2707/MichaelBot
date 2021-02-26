@@ -12,63 +12,31 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
         self.bot = bot
     
     @commands.command()
-    async def normal_edited_message(self, ctx):
-        await ctx.message.delete()
-        embed = Facility.get_default_embed(
-            title = "Message Edited",
-            description = '''
-                **Content before:** Hey
-                **Content after:** Heyy
-                **Author:** Non-existent
-                ----------------------------
-                **Message URL:** Jump to message
-                **Channel:** #Ace_Shiro_is_gay
-            ''',
-            timestamp = datetime.datetime.utcnow()
-        ).set_thumbnail(
-            url = ctx.author.avatar_url
-        ).set_author(
-            name = str(ctx.author),
-            icon_url = ctx.author.avatar_url
-        ).set_footer(
-            text = str(ctx.author),
-            icon_url = ctx.author.avatar_url
+    async def create_role(self, ctx):
+        guild = ctx.guild
+        role = await guild.create_role(
+            name = "Eh",
+            permissions = discord.Permissions(
+                send_messages = False,
+                send_tts_messages = False,
+                add_reactions = False,
+                speak = False
+            ),
+            color = discord.Color.red()
         )
-        await ctx.send(embed = embed)
-    
-    @commands.command()
-    async def field_edited_message(self, ctx):
-        await ctx.message.delete()
-        embed = Facility.get_default_embed(
-            title = "Message Edited",
-            description = '''
-                **Content before:** Hey
-                **Content after:** Heyy
-            ''',
-            timestamp = datetime.datetime.utcnow()
-        ).add_field(
-            name = "**Author**",
-            value = "Non-existent",
-            inline = False
-        ).add_field(
-            name = "Message URL:",
-            value = "Jump to message",
-            inline = False
-        ).add_field(
-            name = "**Channel:**",
-            value = "#Ace_Shiro_is_gay",
-            inline = False
-        ).set_thumbnail(
-            url = ctx.author.avatar_url
-        ).set_author(
-            name = str(ctx.author),
-            icon_url = ctx.author.avatar_url
-        ).set_footer(
-            text = str(ctx.author),
-            icon_url = ctx.author.avatar_url
+        #category = discord.utils.find(lambda cat: cat.name == "NSFW", guild.channels)
+        #await category.set_permissions(role,
+        #    send_messages = False,
+        #    send_tts_messages = False,
+        #    add_reactions = False,
+        #    speak = False
+        #)
+        channel = ctx.channel
+        await channel.set_permissions(role,
+            send_messages = False,
+            send_tts_messages = False,
+            add_reactions = False,
         )
-        await ctx.send(embed = embed)
-
     @commands.command()
     async def wake_up_shiro(self, ctx):
         '''
