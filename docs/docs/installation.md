@@ -38,6 +38,7 @@ Go into folder `setup` and create a `json` file (here I use `secret.json`).
 {
     "token": "bot token",
     "host": "localhost or wherever you host PostgreSQL",
+    "port": 5432,
     "user": "username",
     "database": "name of the database",
     "password": "password"
@@ -54,7 +55,7 @@ In `setup`, there should also be a `config.json` file. Open it and fill in neces
         "version": "Required",
         "description": "Required",
         "prefix": "Required",
-        "debug": false, // Optional key. Default to false.
+        "debug": false,
 
         "secret": "secret.json"
     }
@@ -67,7 +68,7 @@ In `setup`, there should also be a `config.json` file. Open it and fill in neces
 
 You need to have a database created already. It's usually hosted on port 5432.
 
-Before running the bot first time, you need to find `./setup/setupdb.py` and run it once so it can create the tables. You only need to do this once, or every time you change the schema.
+Before running the bot first time, you need to find `setupdb.py` and run it once so it can create the tables. You only need to do this once, or every time you change the schema.
 
 ### Install packages
 
