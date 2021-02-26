@@ -4,6 +4,8 @@ from discord.ext import commands
 from datetime import datetime
 import textwrap
 
+from discord.ext.commands.core import command
+
 import categories.utilities.facility as Facility
 
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
@@ -154,7 +156,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         if isinstance(error, commands.BadArgument):
             await ctx.reply("I cannot kick someone that's not in the guild! If you want someone not to join your guild, use `%shackban`." % ctx.prefix, mention_author = False)
     
-    @commands.command(hidden = True, enabled = False)
+    @commands.command(hidden = True, enabled = True)
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_guild_permissions(kick_members = True)
     @commands.cooldown(1, 5.0, commands.BucketType.guild)
@@ -187,47 +189,51 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                 reason = f"Created Muted role for {self.bot.user.name} to use."
             )
 
-            # TODO: overwrites overwrite old permissions.
             failed_channels = []
             for channel in guild.channels:
                 try:
                     if channel.type == discord.ChannelType.category:
-                        await channel.edit(
-                            overwrites = {
-                                member: discord.PermissionOverwrite(
-                                    send_messages = False,
-                                    send_tts_messages = False,
-                                    add_reactions = False,
-                                    speak = False
-                                )
-                            }
+                        await channel.set_permissions(mute_role,
+                            send_messages = False,
+                            send_tts_messages = False,
+                            add_reactions = False,
+                            speak = False
                         )
                     elif channel.type == discord.ChannelType.text:
-                        await channel.edit(
-                            overwrites = {
-                                member: discord.PermissionOverwrite(
-                                    send_messages = False,
-                                    send_tts_messages = False,
-                                    add_reactions = False
-                                )
-                            }
+                        await channel.set_permissions(mute_role,
+                            send_messages = False,
+                            send_tts_messages = False,
+                            add_reactions = False
                         )
                     elif channel.type == discord.ChannelType.voice:
-                        await channel.edit(
-                            overwrites = {
-                                member: discord.PermissionOverwrite(
-                                    speak = False
-                                )
-                            }
+                        await channel.set_permissions(mute_role,
+                            speak = False
                         )
                 except discord.Forbidden:
                     failed_channels.append(channel.name)
 
+            if len(failed_channels) != 0:
+                await ctx.send("Failed channels: %s" % failed_channels)
+
         await member.add_roles(mute_role, reason = f"{member} is muted by {ctx.author} for {reason}.")
-        if len(failed_channels) != 0:
-            await ctx.send("Failed channels: %s" % failed_channels)
+        
+        await ctx.reply(f"{member} is muted by {ctx.author}.", mention_author = False)
 
         # Perform DB actions here
+
+    @commands.command(hidden = True, enabled = True)
+    @commands.has_permissions(kick_members = True)
+    @commands.bot_has_guild_permissions(kick_members = True)
+    @commands.cooldown(1, 5.0, commands.BucketType.guild)
+    async def unmute(self, ctx, member : discord.Member, *, reason = None):
+        for role in member.roles:
+            # Simple implementation for now.
+            if role.name == "Muted":
+                await member.remove_roles(role, reason = f"{member} is unmuted by {ctx.author} for {reason}.")
+                await ctx.reply(f"{member} is unmuted by {ctx.author}.", mention_author = False)
+                return
+        
+        await ctx.reply(f"{member} is not previously muted.", mention_author = False)
 
     @commands.command()
     @commands.has_guild_permissions(ban_members = True)
