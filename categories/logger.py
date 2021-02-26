@@ -820,6 +820,7 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener("on_guild_channel_update")
     async def _guild_channel_update(self, before, after):
+        print("This is activated")
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -983,6 +984,8 @@ class Logging(commands.Cog):
 
                                             granted.append(action)
                                         elif i_after[1] is None:
+                                            print(i_after)
+                                            print(i_before)
                                             action = "`%s`: " % permission
                                             if i_before[1]:
                                                 action += "`Granted -> Neutralized`"
@@ -1007,7 +1010,7 @@ class Logging(commands.Cog):
                             # Visual format...
                             # TODO: Change the process to local functions cuz it's repetitive af
 
-                            # Remove the [] and ' in the list...
+                            # Turn list to string.
                             granted_message = Facility.striplist(granted)
                             neutralized_message = Facility.striplist(neutralized)
                             denied_message = Facility.striplist(denied)
