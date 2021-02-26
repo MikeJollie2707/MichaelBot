@@ -324,7 +324,7 @@ class Member:
             WHERE user_id = ($2) AND guild_id = ($3);
         ''' % col_name, new_value, ids[0], ids[1])
     
-    
+# Currently we still need some sort of function that scan the db periodically for some schedule stuffs. 
 
 def record_to_dict(record : asyncpg.Record) -> dict:
     result = {}
