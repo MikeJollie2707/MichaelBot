@@ -355,7 +355,7 @@ def striplist(array : typing.Union[list, numpy.ndarray]) -> str:
     Turn the list of objects into a string.
 
     What it does is just simply turn the list into a string and strip away `[]` and `'`.
-    If the list is empty, it'll return the string "None".
+    If the list is empty, it'll return the string "".
 
     Parameter: 
     - `array`: a list.
@@ -364,7 +364,7 @@ def striplist(array : typing.Union[list, numpy.ndarray]) -> str:
     """
 
     if len(array) == 0:
-        return "None"
+        return ""
 
     #st = str(array)
 
