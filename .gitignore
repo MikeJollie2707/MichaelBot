@@ -3,8 +3,8 @@ venv/
 
 # Just a homemade script to start the bot on startup. Template is in startup.sh.
 # Just put the script into Autostart or wherever software you want.
-setup/MichaelBot.sh
-setup/MichaelBeta.sh
+MichaelBot.sh
+MichaelBeta.sh
 
 # Nothing to see here
 note

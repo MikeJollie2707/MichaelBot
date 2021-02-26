@@ -7,7 +7,9 @@ from bot import load_info as regular_setup
 
 async def setup(secrets : dict):
     conn = await asyncpg.connect(
+        dsn = secrets["dsn"],
         host = secrets["host"],
+        port = secrets["port"],
         user = secrets["user"],
         password = secrets["password"],
         database = secrets["database"]
