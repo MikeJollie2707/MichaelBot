@@ -24,7 +24,11 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
         if command.hidden != True:
             command_title = command.name
             if command.signature != "":
-                command_title += ' ' + Facility.clean_signature(command.signature)
+                # Purposely hardcoded
+                if command.name != "help-all":
+                    command_title += ' ' + Facility.clean_signature(command.signature)
+                else:
+                    command_title += ' ' + "[command/category]"
             
             display += f"**{command_title}:**\n"
             short_desc = command.short_doc
