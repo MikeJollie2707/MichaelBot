@@ -1,10 +1,12 @@
-import asyncio
 import discord
 from discord.ext import commands
 
 import datetime
+import asyncio
+import asyncpg
 
 import categories.utilities.facility as Facility
+import categories.utilities.db as DB
 
 # This category is for testing purpose.
 class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
