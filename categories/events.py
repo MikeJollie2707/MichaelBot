@@ -4,7 +4,7 @@ from discord.ext import commands
 import traceback
 import sys
 import json
-from datetime import date, datetime
+import datetime
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
@@ -28,15 +28,15 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_connect(self):
         if not hasattr(self.bot, "online_at"):
-            self.bot.online_at = datetime.utcnow()
+            self.bot.online_at = datetime.datetime.utcnow()
     
     @commands.Cog.listener()
     async def on_disconnect(self):
-        print(f"Bot logged out on {datetime.now()}")
+        print(f"Bot logged out on {datetime.datetime.now()}")
 
     @commands.Cog.listener()
     async def on_resumed(self):
-        print(f"Bot reconnected on {datetime.now()}")
+        print(f"Bot reconnected on {datetime.datetime.now()}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -96,7 +96,7 @@ class Events(commands.Cog):
             await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
         
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Hey there slow down! %0.2f seconds left!" % error.retry_after)
+            await ctx.send("Hey there slow down! %s left!" % Facility.format_time(datetime.timedelta(seconds = error.retry_after), {"include_seconds": True, "include_zeroes": False}))
 
         elif isinstance(error, commands.MissingPermissions):
             missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
@@ -128,7 +128,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         if ctx.cog.qualified_name == "Dev":
-            print("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.today())))
+            print("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.datetime.today())))
             print("\n\n")
 
 def setup(bot):
