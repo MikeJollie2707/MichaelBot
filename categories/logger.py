@@ -5,6 +5,7 @@ import datetime
 import aiohttp # External paste site when embed is too large.
 
 import categories.utilities.facility as Facility
+from categories.checks import bot_has_database
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:
@@ -820,7 +821,7 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener("on_guild_channel_update")
     async def _guild_channel_update(self, before, after):
-        print("This is activated")
+        self.bot.debug("This is activated.")
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -841,6 +842,7 @@ class Logging(commands.Cog):
             # We don't support position yet, because it's spammy if you move a channel way up/down. TODO: Find alternatives.
             # Permission is one heck of a problem, and will be explained clearer down below.
             async for entry in guild.audit_logs(action = discord.AuditLogAction.channel_update, limit = 1):
+                self.bot.debug("Bot retrieved channel_update at %s" % datetime.datetime.now())
                 executor = entry.user
                 log_time = entry.created_at
 
@@ -910,6 +912,7 @@ class Logging(commands.Cog):
             # Then we iterate (by iter()) through all the attributes in PermissionOverwrite for before and after
             # If there's sth different, then we log it right away, because a user can edit many permissions before one press "Save Changes".
             async for entry in guild.audit_logs(action = discord.AuditLogAction.overwrite_update, limit = 1):
+                self.bot.debug("Bot retrieved overwrite_update at %s" % datetime.datetime.now())
                 executor = entry.user
                 log_time = entry.created_at
 
