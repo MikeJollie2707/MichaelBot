@@ -9,6 +9,7 @@ from categories.templates.navigate import Pages
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
+from categories.checks import has_database
 
 class Core(commands.Cog):
     """Commands related to information and bot settings."""
@@ -211,6 +212,7 @@ class Core(commands.Cog):
         await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.guild)

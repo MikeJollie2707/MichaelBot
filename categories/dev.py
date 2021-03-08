@@ -7,13 +7,9 @@ import textwrap
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
+from categories.checks import is_dev
 
 # Commands for developers to test things and stuffs. The format does not need to be formal.
-
-
-def is_dev(ctx):
-    return ctx.author.id in [472832990012243969, 462726152377860109, 481934034130174010]
-                            #MikeJollie#1067     Stranger.com#4843   MJ2#8267
 
 class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidden" : True}):
     '''Commands for developers to abuze power'''

@@ -80,18 +80,18 @@ class Logging(commands.Cog):
         self.color_other = discord.Color.teal()
 
     async def log_check(self, guild):
-        config = await Facility.get_config(self.bot, guild.id)
-        if config["ERROR"] == 0 and config["enable_log"] and config["log_channel"] != 0:
-            return True
-        elif config["ERROR"] != 0:
-            print("Guild not found.")
-            return False
-        elif config["enable_log"] == 0:
-            print("Logging not enabled.")
-            return False
-        else:
-            print("Log channel not set.")
-            return False
+        if bot_has_database(self.bot):
+            config = await Facility.get_config(self.bot, guild.id)
+            if config["ERROR"] == 0 and config["enable_log"] and config["log_channel"] != 0:
+                return True
+            elif config["ERROR"] != 0:
+                print("Guild not found.")
+            elif config["enable_log"] == 0:
+                print("Logging not enabled.")
+            else:
+                print("Log channel not set.")
+        
+        return False
 
     @commands.Cog.listener("on_message_delete")
     async def _message_delete(self, message):

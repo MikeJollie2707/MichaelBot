@@ -5,6 +5,7 @@ import datetime
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
+from categories.checks import bot_has_database, has_database
 
 class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_parsing": True}):
     '''Commands related to the bot setting in the server.'''
@@ -19,6 +20,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         return True
     
     @commands.command(aliases = ["log-enable"])
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(view_audit_log = True)
@@ -44,6 +46,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             await ctx.reply("Logging is enabled for this server. You should setup a log channel.", mention_author = False)
 
     @commands.command(aliases = ["log-setup"])
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(view_audit_log = True)
@@ -92,6 +95,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 await ctx.reply("Channel %s is now a logging channel." % log.mention, mention_author = False)
     
     @commands.command(aliases = ["log-disable"])
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True,send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -115,6 +119,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         await ctx.reply("Logging is disabled for this server.", mention_author = False)
 
     @commands.command(aliases = ["welcome-enable"])
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -137,6 +142,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             await ctx.reply("Welcoming is enabled for this server. You should setup the welcome channel and message.", mention_author = False)
     
     @commands.command(aliases = ["welcome-setup"])
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -183,22 +189,24 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
 
     @commands.Cog.listener("on_member_join")
     async def welcome_new_member(self, member):
-        config = await Facility.get_config(self.bot, member.guild.id)
-        if config["ERROR"] == 0 and config["enable_welcome"] == 1 and config["welcome_channel"] != 0:
-            welcome_channel = self.bot.get_channel(config["welcome_channel"])
-            welcome_text = config["welcome_text"]
+        if bot_has_database(self.bot):
+            config = await Facility.get_config(self.bot, member.guild.id)
+            if config["ERROR"] == 0 and config["enable_welcome"] == 1 and config["welcome_channel"] != 0:
+                welcome_channel = self.bot.get_channel(config["welcome_channel"])
+                welcome_text = config["welcome_text"]
 
-            # We don't use f-string here because it'll raise attribute errors which are annoying.
-            welcome_text = welcome_text.replace("[user.mention]", "<@%d>" % member.id)
-            welcome_text = welcome_text.replace("[user.name]", str(member))
-            welcome_text = welcome_text.replace("[guild.name]", str(member.guild))
-            welcome_text = welcome_text.replace("[guild.count]", str(len(member.guild.members)))
+                # We don't use f-string here because it'll raise attribute errors which are annoying.
+                welcome_text = welcome_text.replace("[user.mention]", "<@%d>" % member.id)
+                welcome_text = welcome_text.replace("[user.name]", str(member))
+                welcome_text = welcome_text.replace("[guild.name]", str(member.guild))
+                welcome_text = welcome_text.replace("[guild.count]", str(len(member.guild.members)))
 
-            await welcome_channel.send(welcome_text)
-        else:
-            return
+                await welcome_channel.send(welcome_text)
+            else:
+                return
 
     @commands.command(aliases = ["welcome-disable"])
+    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
