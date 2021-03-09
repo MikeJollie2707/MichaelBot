@@ -3,6 +3,7 @@
         "name": "MichaelBot",
         "version": "1.6.3",
         "description": "A utility bot",
+        "debug": true,
         "prefix": "$",
 
         "secret": "bot_secret.json"
