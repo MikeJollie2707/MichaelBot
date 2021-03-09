@@ -70,11 +70,21 @@ async def setup(secrets : dict):
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS DUsers_Items (
                 user_id INT8 NOT NULL REFERENCES DUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                item_id SERIAL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id INT REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
                 quantity INT4 DEFAULT 0
             );
         ''')
         print("Done!")
+
+        print("Creating DNotify table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DNotify (
+                id SERIAL PRIMARY KEY,
+                user_id INT8 NOT NULL,
+                awake_time TIMESTAMP NOT NULL,
+                message TEXT NOT NULL
+            );
+        ''')
     
     print("Finished setting up tables.")
     await conn.close()

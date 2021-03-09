@@ -1,11 +1,17 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
+import humanize
 
 import asyncio
 import random
 import datetime
 
 import categories.utilities.facility as Facility
+import categories.utilities.db as DB
+from categories.utilities.converters import IntervalConverter
+from categories.utilities.checks import has_database
+
+NOTIFY_INTERVAL = 900
 
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
@@ -18,6 +24,17 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             raise commands.NoPrivateMessage()
         
         return True
+    
+    async def do_notify(self, user, message, when = None, record_id = None):
+        if when is not None:
+            await discord.utils.sleep_until(when)
+        
+        if record_id is not None:
+            await DB.Notify.remove_notify(self.bot, record_id)
+        try:
+            await user.send(message)
+        except discord.Forbidden:
+            self.bot.debug("Can't send reminder to user %d, with name %s." % (user.id, user.name))
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -254,6 +271,60 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         else:
             await ctx.reply(f"{target} is `{percent_gay}%` gay :rainbow_flag:.", mention_author = False)
 
+    @commands.command(aliases = ['remindme', 'timer', 'remind', 'notifyme'])
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    async def notify(self, ctx, time : IntervalConverter, *, message : str):
+        '''
+        Create a timed reminder.
+        After the duration specified, the bot will DM you with the message you provided.
+
+        *The `time` minimum amount is at least 1 minute, and the maximum amount is at most 30 days.*
+
+        **Aliases:** `remindme`, `timer`, `remind`, `notifyme`
+        **Usage:** <prefix>**{command_name}** <time> <message>
+        **Example 1:** {prefix}{command_name} 1d Yo collect your daily!
+        **Example 2:** {prefix}{command_name} "1 day, 2 hours, 5 minutes, 10 seconds" The moment MikeJollie is gay.
+        **Example 3:** {prefix}{command_name} 30d1s Bet you didn't remember setting up this remind.
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        when = datetime.datetime.utcnow() + time
+
+        if time.total_seconds() < 60:
+            await ctx.reply("The interval is too small. Must be at least 1 minute.", mention_author = False)
+        elif time.total_seconds() > 108000:
+            await ctx.reply("The interval is too large. Must be at most 30 days.", mention_author = False)
+        # No need for a db if the duration is short.
+        elif time.total_seconds() < NOTIFY_INTERVAL:
+            self.bot.loop.create_task(self.do_notify(ctx.author, message, when, None))
+        else:
+            await DB.Notify.add_notify(self.bot, ctx.author.id, when, message)
+
+        await ctx.reply(f"I'll remind you about '{message}' in `{humanize.precisedelta(time, format = '%0.0f')}`.", mention_author = False)
+    
+    # Scan every 15 minutes.
+    @tasks.loop(seconds = NOTIFY_INTERVAL)
+    async def scan_DNotify(self):
+        current = datetime.datetime.utcnow()
+        future = datetime.datetime.utcnow() + datetime.timedelta(seconds = NOTIFY_INTERVAL)
+
+        passed = DB.Notify.get_past_notify(self.bot, datetime.datetime.utcnow())
+        upcoming = DB.Notify.get_notify(self.bot, current, future)
+
+        for missed_notify in passed:
+            user = self.bot.get_user(missed_notify["user_id"])
+            self.bot.loop.create_task(self.do_notify(user, missed_notify["message"], None, missed_notify["id"]))
+        
+        for upcoming_notify in upcoming:
+            user = self.bot.get_user(upcoming_notify["user_id"])
+            self.bot.loop.create_task(self.do_notify(user, upcoming_notify["message"], upcoming_notify["awake_time"], upcoming_notify["id"]))
+    @scan_DNotify.before_loop
+    async def before(self):
+        await self.bot.wait_until_ready()
+
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def ping(self, ctx):
@@ -399,7 +470,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
 
         await ctx.message.delete()
-        await ctx.send(content, tts = True)
+        await ctx.send(content, tts = True)        
 
 def setup(bot):
     bot.add_cog(Utility(bot))

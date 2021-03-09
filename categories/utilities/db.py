@@ -326,15 +326,71 @@ class Member:
     
 # Currently we still need some sort of function that scan the db periodically for some schedule stuffs. 
 
-def record_to_dict(record : asyncpg.Record) -> dict:
-    result = {}
-    if record is None:
-        return None
+class Inventory:
+    @classmethod
+    async def get_inventory(cls, conn, user_id : int) -> asyncpg.Record:
+        return await conn.fetch('''
+            SELECT *
+            FROM DUsers_Items
+            WHERE user_id = ($1);
+        ''', user_id)
+    pass
+
+class Items:
+    @classmethod
+    async def create_item(cls, conn):
+        pass
+
+    @classmethod
+    async def remove_item(cls, conn):
+        pass
+
+class Notify:
+    @classmethod
+    async def get_notify(cls, bot, lower_time_limit, upper_time_limit):
+        query = '''
+            SELECT * FROM DNotify
+            WHERE awake_time > ($1) AND awake_time <= ($2);
+        '''
+
+        result = await bot.pool.fetch(query, lower_time_limit, upper_time_limit)
+        
+        if result is None:
+            return []
+        else:
+            return [dict(record) for record in result]
     
-    for item in record.items():
-        result[item[0]] = item[1]
+    @classmethod
+    async def get_past_notify(cls, bot, now):
+        query = '''
+            SELECT * FROM DNotify
+            WHERE awake_time < ($1);
+        '''
+
+        result = await bot.pool.fetch(query, now)
+
+        if result is None:
+            return []
+        else:
+            return [dict(record) for record in result]
     
-    return result
+    @classmethod
+    async def add_notify(cls, bot, user_id : int, when : datetime.datetime, message : str):
+        async with bot.pool.acquire() as conn:
+            query = '''
+            INSERT INTO DNotify (user_id, awake_time, message)
+            VALUES ($1, $2, $3);
+            '''
+            await bot.pool.execute(query, user_id, when, message)
+    
+    @classmethod
+    async def remove_notify(cls, bot, id : int):
+        query = '''
+            DELETE FROM DNotify
+            WHERE id = ($1);
+        '''
+
+        await bot.pool.execute(query, id)
 
 async def to_dict(bot) -> dict:
     """
