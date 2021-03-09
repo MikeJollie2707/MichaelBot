@@ -266,6 +266,9 @@ class Logging(commands.Cog):
                 log_title = "Message Edited"
                 log_content = LogContent()
 
+                self.bot.debug("Content before: %s" % before.content)
+                self.bot.debug("Content after: %s" % after.content)
+
                 # Basically, we generally have 3 types of messages: normal text, attachments and embeds.
                 # However, attachments can't be edited, so that's one task down.
                 # For the rest, just do like message_delete.
