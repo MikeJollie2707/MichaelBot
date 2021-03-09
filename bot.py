@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncpg
+import asyncpg.exceptions as pg_exceptions
 
 # Debug stuffs
 import sys
@@ -9,7 +10,7 @@ import logging
 
 import json
 import asyncio
-import asyncpg.exceptions as pg_exceptions
+import typing # IntelliSense only
 
 import categories.utilities.db as DB
 
@@ -32,8 +33,11 @@ class MichaelBot(commands.Bot):
     def __init__(self, command_prefix, help_command = commands.DefaultHelpCommand(), description = None, **kwargs):
         super().__init__(command_prefix, help_command, description, **kwargs)
 
-        self.DEBUG = kwargs.get("debug")
-        self.version = kwargs.get("version")
+        self.DEBUG : typing.Optional[bool] = kwargs.get("debug")
+        self.version : typing.Optional[str] = kwargs.get("version")
+        self.__divider__ = "----------------------------\n"
+
+        self.pool : typing.Optional[asyncpg.pool.Pool]= None
         
     def debug(self, message : str):
         if self.DEBUG:
@@ -109,28 +113,22 @@ async def main():
             debug = debug,
             version = bot_info.get("version")
         )
-
-        if not hasattr(bot, "__divider__"):
-            bot.__divider__ = "----------------------------\n"
         
-        if not hasattr(bot, "pool"):
-            # Ensure at least the bot has this attr.
-            bot.pool = None
-            try:
-                bot.pool = await asyncpg.create_pool(
-                    dsn = secrets.get("dsn"),
-                    host = secrets.get("host"),
-                    port = secrets.get("port"),
-                    user = secrets.get("user"),
-                    database = secrets.get("database"),
-                    password = secrets.get("password")
-                )
-            except pg_exceptions.InvalidCatalogNameError:
-                print("Can't seems to find the database.")
-            except pg_exceptions.InvalidPasswordError:
-                print("Wrong password or wrong user.")
-            except ConnectionRefusedError:
-                print("Can't connect to database.")
+        try:
+            bot.pool = await asyncpg.create_pool(
+                dsn = secrets.get("dsn"),
+                host = secrets.get("host"),
+                port = secrets.get("port"),
+                user = secrets.get("user"),
+                database = secrets.get("database"),
+                password = secrets.get("password")
+            )
+        except pg_exceptions.InvalidCatalogNameError:
+            print("Can't seems to find the database.")
+        except pg_exceptions.InvalidPasswordError:
+            print("Wrong password or wrong user.")
+        except ConnectionRefusedError:
+            print("Can't connect to database.")
         
         for extension in sorted(__discord_extension__):
             bot.load_extension(extension)
