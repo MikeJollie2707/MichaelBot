@@ -2,6 +2,7 @@ from asyncpg.exceptions import ConfigFileError
 import discord
 from discord import member
 from discord.ext import commands
+import humanize
 
 import datetime
 import random
@@ -93,7 +94,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     })
         if too_early:
             remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member_local_info["last_daily"])
-            remaining_str = Facility.format_time(remaining_time, {"include_seconds" : True, "include_zeroes": False})
+            remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
             await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
         else:
             msg = ""

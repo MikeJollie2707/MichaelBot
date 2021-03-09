@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import humanize
 
 import datetime
 import textwrap
@@ -182,7 +183,8 @@ class Core(commands.Cog):
                     **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
                     **Memory:** 15.5 GiB of RAM
                     **Bot Uptime:** %s
-                    ''' % Facility.format_time(up_time)),
+                    ''' % humanize.precisedelta(up_time, "minutes", format = "%0.0f")
+                ),
             inline = False
         )
 

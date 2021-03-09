@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import humanize
 
 import traceback
 import sys
@@ -96,7 +97,7 @@ class Events(commands.Cog):
             await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
         
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Hey there slow down! %s left!" % Facility.format_time(datetime.timedelta(seconds = error.retry_after), {"include_seconds": True, "include_zeroes": False}))
+            await ctx.send("Hey there slow down! %s left!" % humanize.precisedelta(error.retry_after, "seconds", format = "%0.2f"))
 
         elif isinstance(error, commands.MissingPermissions):
             missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
