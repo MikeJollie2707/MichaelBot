@@ -27,7 +27,7 @@ async def get_config(bot, guild_id) -> dict:
     async with bot.pool.acquire() as conn:
         guild = await DB.Guild.find_guild(conn, guild_id)
         if guild is not None:
-            config = DB.record_to_dict(guild)
+            config = dict(guild)
             config["ERROR"] = 0
         else:
             config["ERROR"] = -1
@@ -48,7 +48,7 @@ async def save_config(bot, config) -> None:
     """
     if isinstance(config, dict):
         async with bot.pool.acquire() as conn:
-            guild = DB.record_to_dict(await DB.Guild.find_guild(conn, config["id"]))
+            guild = dict(await DB.Guild.find_guild(conn, config["id"]))
             if guild is not None:
                 guild_col = [column for column in guild]
                 for option in config:

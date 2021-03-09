@@ -167,7 +167,7 @@ class User:
     
     @classmethod
     async def get_money(cls, conn, id) -> int:
-        member_info = record_to_dict(await cls.find_user(conn, id))
+        member_info = dict(await cls.find_user(conn, id))
         return member_info["money"]
     
     @classmethod
@@ -290,7 +290,7 @@ class Guild:
 
     @classmethod
     async def get_prefix(cls, conn, id : int):
-        guild_info = record_to_dict(await cls.find_guild(conn, id))
+        guild_info = dict(await cls.find_guild(conn, id))
         return guild_info["prefix"]
 
 class Member:

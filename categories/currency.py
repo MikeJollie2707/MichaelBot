@@ -45,7 +45,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                member_local_info = DB.record_to_dict(await DB.User.find_user(conn, ctx.author.id))
+                member_local_info = dict(await DB.User.find_user(conn, ctx.author.id))
 
                 if member_local_info["last_daily"] is None:
                     member_local_info["last_daily"] = datetime.datetime.utcnow()
