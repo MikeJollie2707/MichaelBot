@@ -347,13 +347,13 @@ class Items:
 
 class Notify:
     @classmethod
-    async def get_notify(cls, bot, lower_time_limit, upper_time_limit):
+    async def get_notify(cls, conn, lower_time_limit, upper_time_limit):
         query = '''
             SELECT * FROM DNotify
             WHERE awake_time > ($1) AND awake_time <= ($2);
         '''
 
-        result = await bot.pool.fetch(query, lower_time_limit, upper_time_limit)
+        result = await conn.fetch(query, lower_time_limit, upper_time_limit)
         
         if result is None:
             return []
@@ -361,13 +361,13 @@ class Notify:
             return [dict(record) for record in result]
     
     @classmethod
-    async def get_past_notify(cls, bot, now):
+    async def get_past_notify(cls, conn, now):
         query = '''
             SELECT * FROM DNotify
             WHERE awake_time < ($1);
         '''
 
-        result = await bot.pool.fetch(query, now)
+        result = await conn.fetch(query, now)
 
         if result is None:
             return []
@@ -375,22 +375,21 @@ class Notify:
             return [dict(record) for record in result]
     
     @classmethod
-    async def add_notify(cls, bot, user_id : int, when : datetime.datetime, message : str):
-        async with bot.pool.acquire() as conn:
-            query = '''
-            INSERT INTO DNotify (user_id, awake_time, message)
-            VALUES ($1, $2, $3);
-            '''
-            await bot.pool.execute(query, user_id, when, message)
+    async def add_notify(cls, conn, user_id : int, when : datetime.datetime, message : str):
+        query = '''
+        INSERT INTO DNotify (user_id, awake_time, message)
+        VALUES ($1, $2, $3);
+        '''
+        await conn.execute(query, user_id, when, message)
     
     @classmethod
-    async def remove_notify(cls, bot, id : int):
+    async def remove_notify(cls, conn, id : int):
         query = '''
             DELETE FROM DNotify
             WHERE id = ($1);
         '''
 
-        await bot.pool.execute(query, id)
+        await conn.execute(query, id)
 
 async def to_dict(bot) -> dict:
     """

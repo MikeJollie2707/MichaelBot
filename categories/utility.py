@@ -16,7 +16,7 @@ NOTIFY_INTERVAL = 900
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.Bot = bot
         self.emoji = '😆'
     
     async def cog_check(self, ctx):
@@ -301,7 +301,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         elif time.total_seconds() < NOTIFY_INTERVAL:
             self.bot.loop.create_task(self.do_notify(ctx.author, message, when, None))
         else:
-            await DB.Notify.add_notify(self.bot, ctx.author.id, when, message)
+            async with self.bot.pool.acquire() as conn:
+                await DB.Notify.add_notify(conn, ctx.author.id, when, message)
 
         await ctx.reply(f"I'll remind you about '{message}' in `{humanize.precisedelta(time, format = '%0.0f')}`.", mention_author = False)
     
@@ -311,8 +312,9 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         current = datetime.datetime.utcnow()
         future = datetime.datetime.utcnow() + datetime.timedelta(seconds = NOTIFY_INTERVAL)
 
-        passed = DB.Notify.get_past_notify(self.bot, datetime.datetime.utcnow())
-        upcoming = DB.Notify.get_notify(self.bot, current, future)
+        async with self.bot.pool.acquire() as conn:
+            passed = DB.Notify.get_past_notify(conn, datetime.datetime.utcnow())
+            upcoming = DB.Notify.get_notify(conn, current, future)
 
         for missed_notify in passed:
             user = self.bot.get_user(missed_notify["user_id"])
