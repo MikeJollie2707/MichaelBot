@@ -4,8 +4,6 @@ from discord.ext import commands
 from datetime import datetime
 import textwrap
 
-from discord.ext.commands.core import command
-
 import categories.utilities.facility as Facility
 
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):

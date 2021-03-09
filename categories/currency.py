@@ -1,6 +1,4 @@
-from asyncpg.exceptions import ConfigFileError
 import discord
-from discord import member
 from discord.ext import commands
 import humanize
 
