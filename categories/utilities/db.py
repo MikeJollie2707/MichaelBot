@@ -71,8 +71,8 @@ class User:
         result = await conn.fetchrow('''
             SELECT *
             FROM DUsers
-            WHERE id = %d
-        ''' % user_id)
+            WHERE id = ($1)
+        ''', user_id)
 
         return result
 
