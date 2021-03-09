@@ -76,8 +76,11 @@ def get_info():
     return bot_info, secrets
     
 async def get_prefix(bot, message):
-    async with bot.pool.acquire() as conn:
-        prefix = await DB.Guild.get_prefix(conn, message.guild.id)
+    if bot.pool is not None:
+        async with bot.pool.acquire() as conn:
+            prefix = await DB.Guild.get_prefix(conn, message.guild.id)
+    else:
+        prefix = '$'
     
     return commands.when_mentioned_or(prefix)(bot, message)
 
@@ -126,6 +129,8 @@ async def main():
                 print("Can't seems to find the database.")
             except pg_exceptions.InvalidPasswordError:
                 print("Wrong password or wrong user.")
+            except ConnectionRefusedError:
+                print("Can't connect to database.")
         
         for extension in sorted(__discord_extension__):
             bot.load_extension(extension)
@@ -137,7 +142,8 @@ async def main():
         except Exception:
             print(traceback.print_exc())
         finally:
-            await bot.pool.close()
+            if bot.pool is not None:
+                await bot.pool.close()
 
 if __name__ == "__main__":
     try:

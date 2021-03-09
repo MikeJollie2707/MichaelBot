@@ -9,6 +9,7 @@ import datetime
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
+from categories.utilities.checks import bot_has_database
 
 class Events(commands.Cog):
     def __init__(self, bot):
@@ -19,7 +20,8 @@ class Events(commands.Cog):
         #if not hasattr(self.bot, "__db__"):
         #    await DB.init_db(self.bot)
         #    self.bot.__db__ = await DB.to_dict(self.bot)
-        await DB.update_db(self.bot)
+        if bot_has_database(self.bot):
+            await DB.update_db(self.bot)
         
         print("Logged in as")
         print(self.bot.user.name)
