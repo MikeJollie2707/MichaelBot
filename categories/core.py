@@ -9,7 +9,7 @@ from categories.templates.navigate import Pages
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
-from categories.checks import has_database
+from categories.utilities.checks import has_database
 
 class Core(commands.Cog):
     """Commands related to information and bot settings."""

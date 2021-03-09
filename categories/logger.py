@@ -5,7 +5,7 @@ import datetime
 import aiohttp # External paste site when embed is too large.
 
 import categories.utilities.facility as Facility
-from categories.checks import bot_has_database
+from categories.utilities.checks import bot_has_database
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:

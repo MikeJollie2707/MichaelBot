@@ -6,6 +6,7 @@ import numpy
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
+from categories.utilities.checks import has_database
 
 class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to minigames. Most of these also rewards money."""
@@ -22,6 +23,7 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         pass
 
     @commands.command()
+    @commands.check(has_database)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def slots(self, ctx, amount : int = 50):
         # First, we have this set of items, with some of them repeat.

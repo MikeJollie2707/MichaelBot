@@ -8,6 +8,7 @@ import random
 
 import categories.utilities.db as DB
 import categories.utilities.facility as Facility
+from categories.utilities.checks import has_database
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""
@@ -16,6 +17,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.emoji = '💰'
     
     @commands.command()
+    @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def daily(self, ctx):
         '''
@@ -106,6 +108,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(msg, mention_author = False)
             
     @commands.command()
+    @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def work(self, ctx):
@@ -132,7 +135,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         )
         await ctx.reply(embed = embed, mention_author = False)
 
-    @commands.command()
+    @commands.command(aliases = ['bal'])
+    @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
     async def balance(self, ctx):
@@ -154,7 +158,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         await ctx.reply("You have $%d." % member_money, mention_author = False)
     
-    @commands.command(hidden = True)
+    @commands.command(aliases = ['lb'], hidden = True)
+    @commands.check(has_database)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def topmoney(self, ctx, local__global = "local"):
         '''

@@ -5,7 +5,7 @@ import datetime
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
-from categories.checks import bot_has_database, has_database
+from categories.utilities.checks import bot_has_database, has_database
 
 class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_parsing": True}):
     '''Commands related to the bot setting in the server.'''

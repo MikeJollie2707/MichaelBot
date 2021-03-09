@@ -7,7 +7,7 @@ import textwrap
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
-from categories.checks import is_dev
+from categories.utilities.checks import is_dev
 
 # Commands for developers to test things and stuffs. The format does not need to be formal.
 
