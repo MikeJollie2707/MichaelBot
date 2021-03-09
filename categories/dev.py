@@ -15,6 +15,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
     '''Commands for developers to abuze power'''
     def __init__(self, bot):
         self.bot = bot
+        self.REPORT_CHAN = 644339079164723201
     
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
@@ -108,6 +109,42 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
                 await DB.User.update_money(conn, member.id, member_money)
         
         await ctx.send("Removed $%d from %s." % (amount, member.name))
+
+    @commands.command()
+    @commands.cooldown(rate = 1, per = 3600)
+    async def get_report_type(self, ctx, type : str):
+        channel = self.bot.get_channel(self.REPORT_CHAN)
+        target_emoji = ''
+        if type.upper() == "PENDING":
+            target_emoji = '📌'
+        elif type.upper() == "SEARCHING" or type.upper() == "INVESTIGATING":
+            target_emoji = '🔍'
+        elif type.upper() == "UPVOTE":
+            target_emoji = '👍'
+        
+        messages = []
+
+        async for message in channel.history(oldest_first = True):
+            reactions = message.reactions
+            for reaction in reactions:
+                if reaction.emoji == target_emoji:
+                    messages.append(message)
+        
+        embed = Facility.get_default_embed(
+            title = "All entries that is %s" % type,
+            timestamp = datetime.datetime.utcnow(),
+            author = ctx.author
+        )
+
+        for index, message in enumerate(messages):
+            actual_content = message.embeds[0].description
+            embed.add_field(
+                name = f"Entry #{index + 1}:",
+                value = "[*%s*](%s)" % (actual_content, message.jump_url),
+                inline = False
+            )
+        
+        await ctx.reply(embed = embed, mention_author = False)
 
     # I'm intending to move this command to a category called "Administrator" or something.
     @commands.command()
@@ -218,8 +255,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         **I need:** `Send Messages`.
         '''
 
-        REPORT_CHAN = 644339079164723201 # Do not change
-        channel = self.bot.get_channel(REPORT_CHAN)
+        channel = self.bot.get_channel(self.REPORT_CHAN)
         if channel == None:
             await ctx.send("Seems like I can't find the report channel. You can check again and edit the channel ID.")
             return
