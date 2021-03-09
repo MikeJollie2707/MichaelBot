@@ -4,24 +4,26 @@ import humanize
 
 import datetime
 import textwrap
+import typing # IntelliSense purpose only
 
 from categories.templates.help import BigHelp, SmallHelp
 from categories.templates.navigate import Pages
-
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 from categories.utilities.checks import has_database
 
+from bot import MichaelBot # IntelliSense purpose only
+
 class Core(commands.Cog):
     """Commands related to information and bot settings."""
-    def __init__(self, bot):
+    def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.emoji = '⚙️'
         
         self.bot.help_command = BigHelp()
         self.bot.help_command.cog = self
 
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx : commands.Context):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
         
@@ -29,7 +31,7 @@ class Core(commands.Cog):
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-    async def changelog(self, ctx):
+    async def changelog(self, ctx : commands.Context):
         '''
         Show the latest 10 changes of the bot.
 
@@ -40,7 +42,7 @@ class Core(commands.Cog):
         **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
         '''
         channel_id = 644393721512722432 # Do not change
-        channel = self.bot.get_channel(channel_id)
+        channel : typing.Optional[discord.TextChannel] = self.bot.get_channel(channel_id)
         if channel == None:
             await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
             return
@@ -58,7 +60,7 @@ class Core(commands.Cog):
         
         await paginator.event(ctx, interupt = False)
     @changelog.command()
-    async def dev(self, ctx):
+    async def dev(self, ctx : commands.Context):
         '''
         Show the latest 10 changes of the bot *behind the scene*.
 
@@ -71,7 +73,7 @@ class Core(commands.Cog):
         
         channel_id = 759288597500788766
 
-        channel = self.bot.get_channel(channel_id)
+        channel : typing.Optional[discord.TextChannel] = self.bot.get_channel(channel_id)
         if channel == None:
             await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
             return
@@ -91,7 +93,7 @@ class Core(commands.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, manage_messages = True, send_messages = True)
-    async def help(self, ctx, *, command__category = ""):
+    async def help(self, ctx : commands.Context, *, command__category = ""):
         '''
         Show compact help about a command, or a category.
         Note: command name and category name is case sensitive; `Core` is different from `core`.
@@ -123,7 +125,7 @@ class Core(commands.Cog):
 
     @commands.command(aliases = ["about"])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def info(self, ctx):
+    async def info(self, ctx : commands.Context):
         '''
         Information about the bot.
 
@@ -218,7 +220,7 @@ class Core(commands.Cog):
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.guild)
-    async def prefix(self, ctx, new_prefix : str = None):
+    async def prefix(self, ctx : commands.Context, new_prefix : str = None):
         '''
         View and set the prefix for the bot.
 
@@ -243,7 +245,7 @@ class Core(commands.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def profile(self, ctx, member : discord.Member = None):
+    async def profile(self, ctx : commands.Context, member : discord.Member = None):
         '''
         Information about yourself or another __member__.
 
@@ -255,10 +257,7 @@ class Core(commands.Cog):
         **I need:** `Read Message History`, `Send Messages`.
         '''
 
-        if member == None:
-            member = ctx.author
-        else:
-            member = member
+        member = ctx.author if member is None else member
 
         embed = Facility.get_default_embed(
             author = member,
@@ -291,11 +290,10 @@ class Core(commands.Cog):
 
         await ctx.reply(embed = embed, mention_author = False)
 
-    # TODO: Rewrite this command signature.
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-    async def report(self, ctx, report__suggest : str, *, content : str):
+    async def report(self, ctx : commands.Context, report__suggest : str, *, content : str):
         '''
         Report a bug or suggest a feature for the bot.
         Provide constructive reports and suggestions are appreciated.
@@ -310,20 +308,16 @@ class Core(commands.Cog):
         '''
 
         report_chan = 644339079164723201 # Do not change
-        channel = ctx.bot.get_channel(report_chan)
+        channel : typing.Optional[discord.TextChannel] = self.bot.get_channel(report_chan)
         if channel == None:
-            channel = await ctx.bot.fetch_channel(report_chan)
+            channel = await self.bot.fetch_channel(report_chan)
             if channel == None:
                 await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
                 raise RuntimeError("Cannot find report channel.")
-
-        #flag = content.split()[0]
+        
         flag = report__suggest
-        if (flag == "report") or (flag == "suggest"):
-            msg = " "
-
-            #for i in range(0, len(content.split())):
-            #    msg += content.split()[i] + ' '
+        if (flag.upper() == "REPORT") or (flag.upper() == "SUGGEST"):
+            msg = ' '
             msg = msg.join(content.split())
 
             embed = Facility.get_default_embed(
@@ -355,7 +349,7 @@ class Core(commands.Cog):
 
     @commands.command(aliases = ["server-info"])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def serverinfo(self, ctx):
+    async def serverinfo(self, ctx : commands.Context):
         '''
         Information about the server that invoke this command.
 
@@ -367,8 +361,8 @@ class Core(commands.Cog):
         **I need:** `Read Message History`, `Send Messages`.
         '''
 
-        guild = ctx.guild
-        embed = discord.Embed(
+        guild : discord.Guild = ctx.guild
+        embed = Facility.get_default_embed(
             description = "Information about this server.", 
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
@@ -424,5 +418,5 @@ class Core(commands.Cog):
 
         await ctx.reply(embed = embed, mention_author = False)
         
-def setup(bot):
+def setup(bot : MichaelBot):
     bot.add_cog(Core(bot))

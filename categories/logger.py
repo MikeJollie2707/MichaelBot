@@ -3,9 +3,11 @@ from discord.ext import commands
 
 import datetime
 import aiohttp # External paste site when embed is too large.
+import typing # IntelliSense purpose only
 
 import categories.utilities.facility as Facility
 from categories.utilities.checks import bot_has_database
+from bot import MichaelBot # IntelliSense purpose only
 
 # Specification:
 # Every single events here (except raw events) must have the following variables declared at the very first line after checking log:
@@ -59,7 +61,7 @@ class LogContent:
     
 class Logging(commands.Cog):
     '''Commands related to logging actions in server.'''
-    def __init__(self, bot):
+    def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.log_channel = 649111117204815883
         self.emoji = '📝'
@@ -1545,5 +1547,5 @@ class Logging(commands.Cog):
 
             await log_channel.send(embed = embed)
 
-def setup(bot):
+def setup(bot : MichaelBot):
     bot.add_cog(Logging(bot))

@@ -4,15 +4,16 @@ import humanize
 
 import traceback
 import sys
-import json
 import datetime
+import typing # IntelliSense purpose only
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 from categories.utilities.checks import bot_has_database
+from bot import MichaelBot # IntelliSense purpose only
 
 class Events(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot : MichaelBot):
         self.bot = bot
 
     @commands.Cog.listener()
@@ -42,7 +43,7 @@ class Events(commands.Cog):
         print(f"Bot reconnected on {datetime.datetime.now()}")
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message : discord.Message):
         if message.author == self.bot.user:
             return
             
@@ -59,16 +60,15 @@ class Events(commands.Cog):
                     "It is really impossible to expect from a bot to respond to someone's DM.",
                     "I can't talk in DM, ask this guy -> <@472832990012243969>"
             ]
-            dm_chan = message.author.dm_channel
+            dm_chan : discord.DMChannel = message.author.dm_channel
             
             import random
-            random_response = random.randint(0, len(RESPONSE_LIST) - 1)
-            await dm_chan.send(RESPONSE_LIST[random_response])
+            await dm_chan.send(random.choice(RESPONSE_LIST))
         
         #await bot.process_commands(message) # uncomment this if this event is outside of a cog.
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx : commands.Context, error : commands.CommandError):
         ERROR_SEPARATOR = "-----------------------------------------------------------------------"
         try:
             if isinstance(error, commands.CommandError):
@@ -129,10 +129,10 @@ class Events(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_command_completion(self, ctx):
+    async def on_command_completion(self, ctx : commands.Context):
         if ctx.cog.qualified_name == "Dev":
             print("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.datetime.today())))
             print("\n\n")
 
-def setup(bot):
+def setup(bot : MichaelBot):
     bot.add_cog(Events(bot))

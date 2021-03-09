@@ -3,14 +3,16 @@ from discord.ext import commands
 
 import random
 import numpy
+import typing # IntelliSense purpose only
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 from categories.utilities.checks import has_database
+from bot import MichaelBot # IntelliSense purpose only
 
 class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to minigames. Most of these also rewards money."""
-    def __init__(self, bot):
+    def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.emoji = '🎮'
     
@@ -25,7 +27,7 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command()
     @commands.check(has_database)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
-    async def slots(self, ctx, amount : int = 50):
+    async def slots(self, ctx : commands.Context, amount : int = 50):
         # First, we have this set of items, with some of them repeat.
         # For the first rotation, we get a random subset of 3 in the list.
         # We then save the 2ND item of that SUBLIST to cache or sth.
@@ -127,5 +129,5 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
 
         
-def setup(bot):
+def setup(bot : MichaelBot):
     bot.add_cog(Game(bot))

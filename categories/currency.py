@@ -4,21 +4,23 @@ import humanize
 
 import datetime
 import random
+import typing # IntelliSense purpose only
 
 import categories.utilities.db as DB
 import categories.utilities.facility as Facility
 from categories.utilities.checks import has_database
+from bot import MichaelBot # IntelliSense purpose only
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""
-    def __init__(self, bot):
+    def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.emoji = '💰'
     
     @commands.command()
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def daily(self, ctx):
+    async def daily(self, ctx : commands.Context):
         '''
         Get an amount of money every 24h.
 
@@ -110,7 +112,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
-    async def work(self, ctx):
+    async def work(self, ctx : commands.Context):
         '''
         Go to work and earn money.
 
@@ -138,7 +140,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
-    async def balance(self, ctx):
+    async def balance(self, ctx : commands.Context):
         '''
         Display the amount of money you currently have.
 
@@ -160,7 +162,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command(aliases = ['lb'], hidden = True)
     @commands.check(has_database)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def topmoney(self, ctx, local__global = "local"):
+    async def topmoney(self, ctx : commands.Context, local__global = "local"):
         '''
         Show the top 10 users with the most amount of money.
 
@@ -175,5 +177,5 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         pass
             
 
-def setup(bot):
+def setup(bot : MichaelBot):
     bot.add_cog(Currency(bot))
