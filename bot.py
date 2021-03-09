@@ -140,4 +140,8 @@ async def main():
             await bot.pool.close()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Bot closed by key interruption.")
+        print("You may now close the terminal.")
