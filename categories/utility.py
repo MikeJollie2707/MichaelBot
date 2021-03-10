@@ -10,14 +10,16 @@ import categories.utilities.facility as Facility
 import categories.utilities.db as DB
 from categories.utilities.converters import IntervalConverter
 from categories.utilities.checks import has_database
+from bot import MichaelBot
 
 NOTIFY_INTERVAL = 900
 
 class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to utilities and fun.'''
-    def __init__(self, bot):
-        self.bot: commands.Bot = bot
+    def __init__(self, bot : MichaelBot):
+        self.bot = bot
         self.emoji = '😆'
+        self.scan_DNotify.start()
     
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
@@ -25,12 +27,17 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         return True
     
+    async def cog_unload(self):
+        self.scan_DNotify.cancel()
+    
     async def do_notify(self, user, message, when = None, record_id = None):
         if when is not None:
             await discord.utils.sleep_until(when)
+            self.bot.debug("Alarm went off, getting ready to send notification.")
         
         if record_id is not None:
-            await DB.Notify.remove_notify(self.bot, record_id)
+            async with self.bot.pool.acquire() as conn:
+                await DB.Notify.remove_notify(conn, record_id)
         try:
             await user.send(message)
         except discord.Forbidden:
@@ -309,20 +316,22 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     # Scan every 15 minutes.
     @tasks.loop(seconds = NOTIFY_INTERVAL)
     async def scan_DNotify(self):
+        self.bot.debug("Checking DNotify...")
         current = datetime.datetime.utcnow()
         future = datetime.datetime.utcnow() + datetime.timedelta(seconds = NOTIFY_INTERVAL)
 
         async with self.bot.pool.acquire() as conn:
-            passed = DB.Notify.get_past_notify(conn, datetime.datetime.utcnow())
-            upcoming = DB.Notify.get_notify(conn, current, future)
+            passed = await DB.Notify.get_past_notify(conn, datetime.datetime.utcnow())
+            upcoming = await DB.Notify.get_notify(conn, current, future)
 
         for missed_notify in passed:
             user = self.bot.get_user(missed_notify["user_id"])
-            self.bot.loop.create_task(self.do_notify(user, missed_notify["message"], None, missed_notify["id"]))
+            self.bot.loop.create_task(self.do_notify(user, missed_notify["message"], datetime.datetime.utcnow(), missed_notify["id"]))
         
         for upcoming_notify in upcoming:
             user = self.bot.get_user(upcoming_notify["user_id"])
             self.bot.loop.create_task(self.do_notify(user, upcoming_notify["message"], upcoming_notify["awake_time"], upcoming_notify["id"]))
+            self.bot.debug("Created a task to notify.")
     @scan_DNotify.before_loop
     async def before(self):
         await self.bot.wait_until_ready()
