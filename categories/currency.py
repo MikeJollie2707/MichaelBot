@@ -182,7 +182,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = ""
+                message = LootTable.get_friendly_reward(final_reward)
                 for reward in final_reward:
                     if final_reward[reward] != 0:
                         message += f"{final_reward[reward]}x **{reward}**, "
