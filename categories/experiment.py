@@ -65,6 +65,9 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
             await ctx.send(messages[choose])
             await asyncio.sleep(10)
 
+    @commands.command()
+    async def send_reaction(self, ctx):
+        await ctx.send("<:fp:819612002183675914>")
 
     
 
