@@ -341,6 +341,10 @@ class Member:
 # Currently we still need some sort of function that scan the db periodically for some schedule stuffs. 
 
 class Inventory:
+    """
+    A group of methods mainly deals with DUsers_Items table.
+    """
+
     @classmethod
     async def get_whole_inventory(cls, conn, user_id : int):
         query = '''
@@ -393,8 +397,8 @@ class Inventory:
         """
         Remove an amount of item from the user's inventory slot.
 
-        If the item doesn't exist, the function do nothing.
-        If the resultant amount is 0 or smaller, the slot is deleted.
+        If the resultant amount is 0, the slot is deleted.
+        If the resultant amount is < 0, or the item doesn't exist, the function return an empty string to test `is None`.
         """
 
         item_existed = await cls.get_one_inventory(conn, user_id, item_id)
