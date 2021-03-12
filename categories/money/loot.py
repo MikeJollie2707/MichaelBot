@@ -1,3 +1,8 @@
+import random
+
+def acapitalize(st : str) -> str:
+    return " ".join(word.capitalize() for word in st.split())
+
 def get_item_info():
     return {
         "log": ["🪵", "Log", 10, None],
@@ -7,6 +12,40 @@ def get_item_info():
         "stone": ["<:stone:819728758160097290>", "stone", 10, None],
         "coal": ["<:coal:819742286250377306>", "coal", 10, None]
     }
+
+def get_emote(name : str) -> str:
+    info = get_item_info()
+    for key in info:
+        if info[key][1] == name:
+            return info[key][0]
+
+def get_emote_i(id : str) -> str:
+    info = get_item_info()
+    return info[id][0]
+
+def get_internal_name(name : str) -> str:
+    info = get_item_info()
+    for key in info:
+        if info[key][1] == name:
+            return key
+
+def get_friendly_name(id : str) -> str:
+    info = get_item_info()
+    return acapitalize(info[id][1])
+
+def get_friendly_reward(reward : dict, emote = True) -> str:
+    msg = ""
+    items = get_item_info()
+    for key in reward:
+        if reward[key] != 0:
+            if emote:
+                msg += f"{items[key][0]} x {reward[key]}, "
+            else:
+                msg += f"{reward[key]}x {acapitalize(items[key][1])}, "
+    
+    # Remove ', '
+    msg = msg[:-2]
+    return msg
 
 def get_mine_loot(pick_name : str):
     if pick_name == "wood_pickaxe":
