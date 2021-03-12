@@ -87,14 +87,14 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
                     member["last_daily"] = datetime.datetime.utcnow()
                     
-                    await DB.User.bulk_update(conn, ctx.author.id, {
-                        "money" : member_local_info["money"],
-                        "streak_daily" : member_local_info["streak_daily"],
-                        "last_daily" : member_local_info["last_daily"]
-                    })
+                    await DB.User.inc_streak(conn, ctx.author.id)
+                    await DB.User.add_money(conn, ctx.author.id, daily_amount)
+                    await DB.User.update_last_daily(conn, ctx.author.id, member["last_daily"])
 
-                    if first_time:
-                        await DB.Inventory.add(conn, ctx.author.id, "log", 4)
+                    loot = LootTable.get_daily_loot(member["streak_daily"] + 1)
+                    for key in loot:
+                        await DB.Inventory.add(conn, ctx.author.id, key, loot[key])
+         
         if too_early:
             remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member["last_daily"])
             remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
@@ -106,14 +106,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             if daily_bonus > 0:
                 msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
-            if first_time:
-                msg += f"You received 4 logs for your first daily ever!"
 
             msg += LootTable.get_friendly_reward(LootTable.get_daily_loot(member["streak_daily"])) + '\n'
             msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily']}`.\n"
 
-            
-            
             await ctx.reply(msg, mention_author = False)
             
     @commands.command(enable = False)
