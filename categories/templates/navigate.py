@@ -53,6 +53,10 @@ class Pages:
         if len(self.__page_list__) == 0:
             return
         
+        if len(self.__page_list__) == 1:
+            await ctx.channel.send(embed = self.__page_list__[0])
+            return
+        
         for num in range(0, len(self.__page_list__)):
             self.__page_list__[num].set_footer(text = "Page %d/%d" % (num + 1, len(self.__page_list__)))
 
