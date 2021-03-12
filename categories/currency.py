@@ -350,6 +350,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name} wooden pickaxe
         '''
+        
         if "_pickaxe" not in tool_name:
             await ctx.reply(f"This is not a pickaxe.", mention_author = False)
         async with self.bot.pool.acquire() as conn:
@@ -358,7 +359,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if exist is None:
                     await ctx.reply(f"This pickaxe does not exist.", mention_author = False)
                 
-                await DB.Inventory.equip_pickaxe(conn, ctx.author.id, tool_name)
+                await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
                 official_name = await DB.Items.get_official_name(conn, tool_name)
                 await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
 
