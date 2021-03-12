@@ -9,8 +9,12 @@ def get_item_info():
         "wood": ["<:plank:819616763074838569>", "wood", 10, None],
         "stick": ["<:stick:819615522878521434>", "stick", 10, None],
         "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", "wooden pickaxe", 10, None],
+        "wood_axe": ["", "wooden axe", 10, None],
         "stone": ["<:stone:819728758160097290>", "stone", 10, None],
-        "coal": ["<:coal:819742286250377306>", "coal", 10, None]
+        "coal": ["<:coal:819742286250377306>", "coal", 10, None],
+        "stone_pickaxe": ["⛏", "stone pickaxe", 10, None],
+        "stone_axe": ["", "stone axe", 10, None],
+        "iron": ["", "iron", 10, None]
     }
 
 def get_emote(name : str) -> str:
@@ -47,27 +51,52 @@ def get_friendly_reward(reward : dict, emote = True) -> str:
     msg = msg[:-2]
     return msg
 
-def get_mine_loot(pick_name : str):
-    if pick_name == "wood_pickaxe":
+def get_mine_loot(pick : str):
+    if pick == "wood_pickaxe":
         return {
             "stone": 0.90,
             "coal": 0.10,
-            "rolls": 7
+            "rolls": 6
         }
-    elif pick_name == "stone_pickaxe":
+    elif pick == "stone_pickaxe":
         return {
             "stone": 0.50,
-            "coal": 0.25,
+            "coal": 0.35,
+            "iron": 0.10,
+            "rolls": 20
+        }
+    elif pick == "iron_pickaxe":
+        return {
+            "stone": 0.35,
+            "coal": 0.30,
             "iron": 0.25,
+            "diamond": 0.10,
             "rolls": 25
         }
-    elif pick_name == "iron_pickaxe":
+    elif pick == "diamond_pickaxe":
         return {
-            "stone": 0.20,
-            "coal": 0.25,
-            "iron": 0.45,
-            "diamond": 0.10,
-            "rolls": 40
+            "stone": 0.15,
+            "coal": 0.10,
+            "iron": 0.30,
+            "diamond": 0.20,
+            "obsidian": 0.25,
+            "rolls": 35
+        }
+    
+    return None
+
+def get_chop_loot(axe : str):
+    if axe == "wood_axe":
+        return {
+            "log": 1,
+            "rolls": 3
+        }
+    elif axe == "stone_axe":
+        return {
+            "log": 0.60,
+            "wood": 0.30,
+            "stick": 0.10,
+            "rolls": 20
         }
     
     return None
@@ -120,6 +149,26 @@ def get_craft_ingredient(item : str):
             "wood": 3,
             "stick": 2,
             "quantity": 1
+        },
+        "wood_axe": {
+            "wood": 3,
+            "stick": 3,
+            "quantity": 1
+        },
+        "stone_pickaxe": {
+            "stone": 3,
+            "stick": 2,
+            "quantity": 1
+        },
+        "stone_axe": {
+            "stone": 3,
+            "stick": 3,
+            "quantity": 1
+        },
+        "coal": {
+            "log": 1,
+            "wood": 1,
+            "quantity": 2
         }
     }
     
