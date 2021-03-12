@@ -101,7 +101,7 @@ class User:
             ])
     
     @classmethod
-    async def update_generic(cls, conn, id : int, col_name : str, new_value):
+    async def __update_generic__(cls, conn, id : int, col_name : str, new_value):
         """
         A generic method to update a column in `DUsers` table.
         
@@ -123,23 +123,23 @@ class User:
 
     @classmethod
     async def update_name(cls, conn, id, new_name : str):
-        return await cls.update_generic(conn, id, "name", new_name)
+        return await cls.__update_generic__(conn, id, "name", new_name)
     @classmethod
     async def update_whitelist(cls, conn, id, new_status : bool):
-        return await cls.update_generic(conn, id, "is_whitelist", new_status)
+        return await cls.__update_generic__(conn, id, "is_whitelist", new_status)
     @classmethod
     async def update_money(cls, conn, id, new_money : int):
         # Money can't be lower than 0, for now.
         if new_money <= 0:
             new_money = 0
         
-        return await cls.update_generic(conn, id, "money", new_money)
+        return await cls.__update_generic__(conn, id, "money", new_money)
     @classmethod
     async def update_last_daily(cls, conn, id, new_last_daily : datetime.datetime):
-        return await cls.update_generic(conn, id, "last_daily", new_last_daily)
+        return await cls.__update_generic__(conn, id, "last_daily", new_last_daily)
     @classmethod
     async def update_streak(cls, conn, id, new_streak : int):
-        return await cls.update_generic(conn, id, "streak_daily", new_streak)
+        return await cls.__update_generic__(conn, id, "streak_daily", new_streak)
     
     @classmethod
     async def bulk_update(cls, conn, id, new_values : dict):
@@ -201,7 +201,7 @@ class User:
             money = await cls.get_money(conn, id)
             # No need to check because update_money() checks.
             return await cls.update_money(conn, id, money - amount)
-
+    
 class Guild:
     """
     A group of methods dealing specifically with `DGuilds` table.
