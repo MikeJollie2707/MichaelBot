@@ -12,6 +12,7 @@ import categories.utilities.facility as Facility
 import categories.money.loot as LootTable
 from categories.utilities.converters import ItemConverter
 from categories.utilities.checks import has_database
+from categories.templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
@@ -41,7 +42,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         too_early = False
         too_late = False
-        first_time = False
         old_streak = 0
         member = {}
         daily_amount = 100
@@ -157,6 +157,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **You need:** None.
         **I need:** `Read Message History`, `Send Messages`.
         '''
+
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 current_pick = await DB.Inventory.get_equip_pickaxe(conn, ctx.author.id)
