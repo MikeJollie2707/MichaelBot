@@ -202,6 +202,15 @@ class User:
             # No need to check because update_money() checks.
             return await cls.update_money(conn, id, money - amount)
     
+    @classmethod
+    async def inc_streak(cls, conn, id):
+        """
+        Increase the streak by 1.
+        """
+
+        user = await cls.find_user(conn, id)
+        await cls.update_streak(conn, id, user["streak_daily"] + 1)
+
 class Guild:
     """
     A group of methods dealing specifically with `DGuilds` table.
