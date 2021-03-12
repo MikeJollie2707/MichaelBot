@@ -349,7 +349,10 @@ class Inventory:
         '''
         
         result = await conn.fetch(query, user_id)
-        return [dict(row) for row in result]
+        if result is None:
+            return None
+        
+        return [rec_to_dict(row) for row in result]
     
     @classmethod
     async def get_one_inventory(cls, conn, user_id, item_id):
@@ -359,7 +362,7 @@ class Inventory:
         '''
         
         result = await conn.fetchrow(query, user_id, item_id)
-        return result if result is None else dict(result)
+        return rec_to_dict(result)
     
     @classmethod
     async def add(cls, conn, user_id, item_id, amount = 1):
