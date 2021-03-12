@@ -43,22 +43,21 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         too_late = False
         first_time = False
         old_streak = 0
-        member_local_info = {}
+        member = {}
         daily_amount = 100
         daily_bonus = 0
 
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                member_local_info = dict(await DB.User.find_user(conn, ctx.author.id))
+                member = DB.rec_to_dict(await DB.User.find_user(conn, ctx.author.id))
 
-                if member_local_info["last_daily"] is None:
-                    member_local_info["last_daily"] = datetime.datetime.utcnow()
-                    first_time = True
-                elif datetime.datetime.utcnow() - member_local_info["last_daily"] < datetime.timedelta(hours = 24.0):
+                if member["last_daily"] is None:
+                    member["last_daily"] = datetime.datetime.utcnow()
+                elif datetime.datetime.utcnow() - member["last_daily"] < datetime.timedelta(hours = 24.0):
                     too_early = True
-                elif datetime.datetime.utcnow() - member_local_info["last_daily"] >= datetime.timedelta(hours = 48.0):
-                    old_streak = member_local_info["streak_daily"]
-                    member_local_info["streak_daily"] = 0
+                elif datetime.datetime.utcnow() - member["last_daily"] >= datetime.timedelta(hours = 48.0):
+                    old_streak = member["streak_daily"]
+                    member["streak_daily"] = 0
                     too_late = True
                 
                 if not too_early:
@@ -69,28 +68,24 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     # - From streak 500+: 1500 + streak * 2
                     # Note: The bonus is cap at $2000, so after streak 1000, it is not possible to increase.
 
-                    if member_local_info["streak_daily"] < 10:
+                    if member["streak_daily"] < 10:
                         daily_amount = 100
                         daily_bonus = 0
-                    elif member_local_info["streak_daily"] < 100:
+                    elif member["streak_daily"] < 100:
                         daily_amount = 120
-
-                        # This is rounded down to the tenth.
-                        daily_bonus = int(member_local_info["streak_daily"] / 10) * 10
-                    elif member_local_info["streak_daily"] < 500:
+                        daily_bonus = int(member["streak_daily"] / 10) * 10
+                    elif member["streak_daily"] < 500:
                         daily_amount = 500
-                        daily_bonus = member_local_info["streak_daily"]
+                        daily_bonus = member["streak_daily"]
                     else:
                         daily_amount = 1500
-                        daily_bonus = member_local_info["streak_daily"] * 2
+                        daily_bonus = member["streak_daily"] * 2
                         if daily_bonus > 2000:
                             daily_bonus = 2000
                     
                     daily_amount += daily_bonus
-                    
-                    member_local_info["money"] += daily_amount
-                    member_local_info["streak_daily"] += 1
-                    member_local_info["last_daily"] = datetime.datetime.utcnow()
+
+                    member["last_daily"] = datetime.datetime.utcnow()
                     
                     await DB.User.bulk_update(conn, ctx.author.id, {
                         "money" : member_local_info["money"],
@@ -101,7 +96,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     if first_time:
                         await DB.Inventory.add(conn, ctx.author.id, "log", 4)
         if too_early:
-            remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member_local_info["last_daily"])
+            remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member["last_daily"])
             remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
             await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
         else:
@@ -114,7 +109,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if first_time:
                 msg += f"You received 4 logs for your first daily ever!"
 
-            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member_local_info['streak_daily']}`.\n"
+            msg += LootTable.get_friendly_reward(LootTable.get_daily_loot(member["streak_daily"])) + '\n'
+            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily']}`.\n"
 
             
             
