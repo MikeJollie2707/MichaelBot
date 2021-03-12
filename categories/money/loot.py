@@ -5,7 +5,7 @@ def acapitalize(st : str) -> str:
 
 def get_item_info():
     return {
-        "log": ["🪵", "Log", 10, None],
+        "log": ["🪵", "log", 10, None],
         "wood": ["<:plank:819616763074838569>", "wood", 10, None],
         "stick": ["<:stick:819615522878521434>", "stick", 10, None],
         "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", "wooden pickaxe", 10, None],
