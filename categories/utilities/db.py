@@ -5,24 +5,29 @@ import datetime
 import typing
 
 import asyncpg
+from categories.money.loot import get_item_info
 
 async def update_db(bot):
     async with bot.pool.acquire() as conn:
-        for guild in bot.guilds:
-            # Alternative way: perform an update_guild(), then if the
-            # status is UPDATE 0, meaning it doesn't exist, then insert it.
-            # This will probably make it in a transaction, rather than separate.
+        async with conn.transaction():
+            for guild in bot.guilds:
+                result = await Guild.find_guild(conn, guild.id)
+                if result is None:
+                    await Guild.insert_guild(conn, guild)
 
-            result = await Guild.find_guild(conn, guild.id)
-            if result is None:
-                await Guild.insert_guild(conn, guild)
-
-            # There might be new member join during this process, so we need to put this outside the if.
-            for member in guild.members:
-                user_existed = await User.find_user(conn, member.id)
-                if user_existed is None:
-                    await User.insert_user(conn, member)
-                    await Member.insert_member(conn, member)
+                # There might be new member join during this process, so we need to put this outside the if.
+                for member in guild.members:
+                    if not member.bot:
+                        user_existed = await User.find_user(conn, member.id)
+                        if user_existed is None:
+                            await User.insert_user(conn, member)
+                            await Member.insert_member(conn, member)
+            
+            items = get_item_info()
+            for key in items:
+                items[key].insert(0, key)
+                await Items.create_item(conn, items[key])
+        
                     
 async def insert_into(conn, table_name : str, *args):
     """
