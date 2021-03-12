@@ -436,7 +436,7 @@ class Inventory:
             await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
 
     @classmethod
-    async def equip_pickaxe(cls, conn, user_id, item_id):
+    async def equip_tool(cls, conn, user_id, item_id):
         query = '''
             UPDATE DUsers_Items
             SET is_main = TRUE
