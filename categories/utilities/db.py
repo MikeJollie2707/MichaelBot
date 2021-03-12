@@ -344,7 +344,7 @@ class Inventory:
     @classmethod
     async def get_whole_inventory(cls, conn, user_id : int):
         query = '''
-            SELECT item_id, quantity FROM DUsers_Items
+            SELECT * FROM DUsers_Items
             WHERE user_id = ($1);
         '''
         
