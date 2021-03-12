@@ -107,21 +107,23 @@ def get_bonus_loot(bonus : int):
     pass
 
 def get_craft_ingredient(item : str):
-    if item == "wood":
-        return {
+    craft_recipe = {
+        "wood": {
             "log": 1,
             "quantity": 4
-        }
-    elif item == "stick":
-        return {
+        },
+        "stick": {
             "wood": 2,
             "quantity": 4
-        }
-    elif item == "wood_pickaxe":
-        return {
+        },
+        "wood_pickaxe": {
             "wood": 3,
             "stick": 2,
             "quantity": 1
         }
+    }
     
-    return None
+    if item is None:
+        return craft_recipe
+    else:
+        return craft_recipe.get(item)
