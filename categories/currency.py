@@ -194,14 +194,17 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def craft(self, ctx : commands.Context, n : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
-        Craft items `n` times.
-
-        Note that many crafting recipes can result in many items.
+        Perform a craft `n` times.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} 2 stick
         **Example 2:** {prefix}{command_name} wooden pickaxe
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
         '''
+
+        if ctx.invoked_subcommand is None:
             if n <= 0:
                 n = 1
             async with self.bot.pool.acquire() as conn:
