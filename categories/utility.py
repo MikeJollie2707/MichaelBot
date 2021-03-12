@@ -19,6 +19,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.emoji = '😆'
+        # Genuinely don't know why vscode red this ._.
         self.scan_DNotify.start()
     
     async def cog_check(self, ctx):
@@ -302,7 +303,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         if time.total_seconds() < 60:
             await ctx.reply("The interval is too small. Must be at least 1 minute.", mention_author = False)
-        elif time.total_seconds() > 108000:
+        elif time.total_seconds() > 2592000:
             await ctx.reply("The interval is too large. Must be at most 30 days.", mention_author = False)
         # No need for a db if the duration is short.
         elif time.total_seconds() < NOTIFY_INTERVAL:
@@ -316,7 +317,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     # Scan every 15 minutes.
     @tasks.loop(seconds = NOTIFY_INTERVAL)
     async def scan_DNotify(self):
-        self.bot.debug("Checking DNotify...")
+        #self.bot.debug("Checking DNotify...")
         current = datetime.datetime.utcnow()
         future = datetime.datetime.utcnow() + datetime.timedelta(seconds = NOTIFY_INTERVAL)
 
