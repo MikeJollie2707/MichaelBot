@@ -59,9 +59,11 @@ async def setup(secrets : dict):
         print("Creating Items table...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS Items (
-                id SERIAL PRIMARY KEY,
+                id TEXT PRIMARY KEY,
+                emoji TEXT NOT NULL UNIQUE,
                 name TEXT NOT NULL,
-                emoji TEXT NOT NULL
+                price INT NOT NULL,
+                durability INT
             );
         ''')
         print("Done!")
@@ -70,8 +72,10 @@ async def setup(secrets : dict):
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS DUsers_Items (
                 user_id INT8 NOT NULL REFERENCES DUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                item_id INT REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                quantity INT4 DEFAULT 0
+                item_id TEXT NOT NULL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                quantity INT4 DEFAULT 0,
+                is_main BOOL NOT NULL DEFAULT FALSE,
+                PRIMARY KEY (user_id, item_id)
             );
         ''')
         print("Done!")
@@ -85,6 +89,7 @@ async def setup(secrets : dict):
                 message TEXT NOT NULL
             );
         ''')
+        print("Done!")
     
     print("Finished setting up tables.")
     await conn.close()
