@@ -189,7 +189,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 await ctx.reply("You go mining and get %s." % message, mention_author = False)
 
-    @commands.command()
+    @commands.group(invoke_without_command = True)
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def craft(self, ctx : commands.Context, n : typing.Optional[int] = 1, *, item : ItemConverter):
@@ -202,35 +202,35 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 1:** {prefix}{command_name} 2 stick
         **Example 2:** {prefix}{command_name} wooden pickaxe
         '''
-        if n <= 0:
-            n = 1
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                exist = await DB.Items.get_item(conn, item)
-                if exist is None:
-                    await ctx.reply("This item doesn't exist. Please check `craft info` for possible crafting items.", mention_author = False)
-                    return
-                
-                ingredient = LootTable.get_craft_ingredient(item)
-                if ingredient is None:
-                    await ctx.reply("This item is not craftable. Please check `craft info` for possible crafting items.", mention_author = False)
-                    return
-                
-                missing_items = []
-                for key in ingredient:
-                    if key != "quantity":
-                        result = await DB.Inventory.remove(conn, ctx.author.id, key, n * ingredient[key])
-                        if result is not None:
-                            missing_items.append(await DB.Items.get_official_name(conn, key))
+            if n <= 0:
+                n = 1
+            async with self.bot.pool.acquire() as conn:
+                async with conn.transaction():
+                    exist = await DB.Items.get_item(conn, item)
+                    if exist is None:
+                        await ctx.reply("This item doesn't exist. Please check `craft recipe` for possible crafting items.", mention_author = False)
+                        return
                     
-                if len(missing_items) == 0:
-                    official_name = await DB.Items.get_official_name(conn, item)
-                    await DB.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
-                    await ctx.reply(f"Crafted {n * ingredient[key]}x **{official_name}** successfully.", mention_author = False)
-                else:
-                    text = Facility.striplist(missing_items)
-                    await ctx.reply("Missing the following items: %s" % text, mention_author = False)
-                
+                    ingredient = LootTable.get_craft_ingredient(item)
+                    if ingredient is None:
+                        await ctx.reply("This item isn't craftable. Please check `craft recipe` for possible crafting items.", mention_author = False)
+                        return
+                    
+                    missing_items = []
+                    for key in ingredient:
+                        if key != "quantity":
+                            result = await DB.Inventory.remove(conn, ctx.author.id, key, n * ingredient[key])
+                            if result is not None:
+                                missing_items.append(f"**{LootTable.get_friendly_name(key)}**")
+                        
+                    if len(missing_items) == 0:
+                        official_name = LootTable.get_friendly_name(item)
+                        await DB.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
+                        await ctx.reply(f"Crafted {n * ingredient[key]}x **{official_name}** successfully.", mention_author = False)
+                    else:
+                        text = Facility.striplist(missing_items)
+                        await ctx.reply("Missing the following items: %s" % text, mention_author = False)
+
     @craft.command()
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
