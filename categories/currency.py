@@ -112,7 +112,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
             await ctx.reply(msg, mention_author = False)
             
-    @commands.command(enable = False)
+    @commands.command(enabled = False)
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
