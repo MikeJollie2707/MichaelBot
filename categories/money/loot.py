@@ -72,6 +72,40 @@ def get_mine_loot(pick_name : str):
     
     return None
 
+def get_daily_loot(streak : int):
+    if streak < 10:
+        return {
+            "log": random.randint(3, 5),
+            "wood": random.randint(0, 3),
+            "stick": random.randint(1, 6)
+        }
+    elif streak < 51:
+        return {
+            "log": random.randint(5, 10),
+            "stone": random.randint(3, 5),
+            "coal": random.randint(10, 12)
+        }
+    elif streak < 101:
+        return {
+            "log": random.randint(12, 15),
+            "stone": random.randint(7, 14),
+            "iron": random.randint(1, 3),
+            "diamond": random.randint(0, 1)
+        }
+    elif streak < 201:
+        return {
+            "log": random.randint(20, 25),
+            "stone": random.randint(20, 25),
+            "iron": random.randint(5, 10),
+            "diamond": random.randint(2, 5)
+        }
+    
+    return None
+
+def get_bonus_loot(bonus : int):
+    # We might not need this.
+    pass
+
 def get_craft_ingredient(item : str):
     if item == "wood":
         return {
