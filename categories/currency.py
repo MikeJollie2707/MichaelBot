@@ -240,6 +240,107 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     text = Facility.striplist(missing_items)
                     await ctx.reply("Missing the following items: %s" % text, mention_author = False)
                 
+    @craft.command()
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    async def recipe(self, ctx : commands.Context, *, item : ItemConverter = None):
+        '''
+        Recipe for an item or all the recipes.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example 1:** {prefix}{command_name} wood
+        **Example 2:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        recipe = LootTable.get_craft_ingredient(item)
+
+        if item is None:
+            MAX_ITEMS = 4
+            cnt = 0
+            page = Pages()
+            embed = None
+            for key in recipe:
+                if cnt == 0:
+                    embed = Facility.get_default_embed(
+                        title = "All crafting recipes",
+                        timestamp = datetime.datetime.utcnow(),
+                        author = ctx.author
+                    )
+                
+                friendly_name = LootTable.get_friendly_name(key)
+                outp = recipe[key].pop("quantity", None)
+                embed.add_field(
+                    name = LootTable.acapitalize(friendly_name),
+                    value = "**Input:** %s\n**Output:** %s\n" % (LootTable.get_friendly_reward(recipe[key]), LootTable.get_friendly_reward({key : outp})),
+                    inline = False
+                )
+
+                cnt += 1
+                if cnt == MAX_ITEMS:
+                    page.add_page(embed)
+                    embed = None
+                    cnt = 0
+            if len(page.__page_list__) == 0:
+                page.add_page(embed)
+            
+            await page.event(ctx, interupt = False) 
+        elif recipe is not None:
+            friendly_name = LootTable.get_friendly_name(item)
+            outp = recipe.pop("quantity", None)
+            embed = Facility.get_default_embed(
+                title = "%s's crafting recipe" % LootTable.acapitalize(friendly_name),
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
+            ).add_field(
+                name = "Input:",
+                value = LootTable.get_friendly_reward(recipe),
+                inline = False
+            ).add_field(
+                name = "Output:",
+                value = LootTable.get_friendly_reward({item : outp}),
+                inline = False
+            )
+
+            await ctx.reply(embed = embed, mention_author = False)
+        else:
+            await ctx.reply("This item doesn't exist.", mention_author = False)
+
+    @commands.command(aliases = ['inv'])
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def inventory(self, ctx : commands.Context):
+        '''
+        View your inventory. Sorted by amount.
+
+        **Aliases:** `inv`.
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user).
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        async with self.bot.pool.acquire() as conn:
+            inventory = await DB.Inventory.get_whole_inventory(conn, ctx.author.id)
+            if inventory is None:
+                await ctx.reply("*Insert empty inventory here*", mention_author = False)
+                return
+            
+            def _on_amount(slot):
+                return -slot["quantity"]
+            inventory.sort(key = _on_amount)
+
+            inventory_dict = {}
+            for slot in inventory:
+                inventory_dict[slot["item_id"]] = slot["quantity"]
+            await ctx.reply(LootTable.get_friendly_reward(inventory_dict), mention_author = False)
+
+
     @commands.command()
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
