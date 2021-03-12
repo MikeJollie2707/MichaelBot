@@ -488,7 +488,6 @@ class Items:
     
     @classmethod
     async def get_internal_name(cls, conn, name : str) -> str:
-        print(name)
         query = '''
             SELECT * FROM Items
             WHERE name = ($1);
