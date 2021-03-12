@@ -544,6 +544,12 @@ class Notify:
 
         await conn.execute(query, id)
 
+def rec_to_dict(record : asyncpg.Record) -> dict:
+    if record is None:
+        return None
+    else:
+        return dict(record)
+
 async def to_dict(bot) -> dict:
     """
     Transform the entire database into dictionary format. (need update)
