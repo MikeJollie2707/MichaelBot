@@ -185,11 +185,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 message = LootTable.get_friendly_reward(final_reward)
                 for reward in final_reward:
                     if final_reward[reward] != 0:
-                        message += f"{final_reward[reward]}x **{reward}**, "
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
-                message = message[:-2]
                 
-                await ctx.reply("You go some mining and get %s." % message, mention_author = False)
+                await ctx.reply("You go mining and get %s." % message, mention_author = False)
 
     @commands.command()
     @commands.check(has_database)
