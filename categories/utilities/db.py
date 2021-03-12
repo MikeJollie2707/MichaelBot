@@ -328,22 +328,161 @@ class Member:
 
 class Inventory:
     @classmethod
-    async def get_inventory(cls, conn, user_id : int) -> asyncpg.Record:
-        return await conn.fetch('''
-            SELECT *
-            FROM DUsers_Items
+    async def get_whole_inventory(cls, conn, user_id : int):
+        query = '''
+            SELECT item_id, quantity FROM DUsers_Items
             WHERE user_id = ($1);
-        ''', user_id)
-    pass
+        '''
+        
+        result = await conn.fetch(query, user_id)
+        return [dict(row) for row in result]
+    
+    @classmethod
+    async def get_one_inventory(cls, conn, user_id, item_id):
+        query = '''
+            SELECT * FROM DUsers_Items
+            WHERE user_id = ($1) AND item_id = ($2);
+        '''
+        
+        result = await conn.fetchrow(query, user_id, item_id)
+        return result if result is None else dict(result)
+    
+    @classmethod
+    async def add(cls, conn, user_id, item_id, amount = 1):
+        """
+        Add an amount of item to the user's inventory slot.
+        
+        If the inventory slot (identified by both user_id and item_id) doesn't exist, it'll be created.
+        """
+
+        item_existed = await cls.get_one_inventory(conn, user_id, item_id)
+        if item_existed is None:
+            query = '''
+                INSERT INTO DUsers_Items
+                VALUES ($1, $2, $3, $4);
+            '''
+            await conn.execute(query, user_id, item_id, amount, False)
+        else:
+            query = '''
+                UPDATE DUsers_Items
+                SET quantity = ($1)
+                WHERE user_id = ($2) AND item_id = ($3);
+            '''
+
+            await conn.execute(query, item_existed["quantity"] + amount, user_id, item_id)
+    
+    @classmethod
+    async def remove(cls, conn, user_id, item_id, amount = 1) -> str:
+        """
+        Remove an amount of item from the user's inventory slot.
+
+        If the item doesn't exist, the function do nothing.
+        If the resultant amount is 0 or smaller, the slot is deleted.
+        """
+
+        item_existed = await cls.get_one_inventory(conn, user_id, item_id)
+        if item_existed is None:
+            return ""
+        else:
+            if item_existed["quantity"] - amount == 0:
+                query = '''
+                    DELETE FROM DUsers_Items
+                    WHERE user_id = ($1) AND item_id = ($2);
+                '''
+
+                await conn.execute(query, user_id, item_id)
+            
+            elif item_existed["quantity"] - amount < 0:
+                return ""
+            else:
+                query = '''
+                    UPDATE DUsers_Items
+                    SET quantity = ($1)
+                    WHERE user_id = ($2) AND item_id = ($3);
+                '''
+
+                await conn.execute(query, item_existed["quantity"] - amount, user_id, item_id)
+        
+
+    @classmethod
+    async def update(cls, conn, user_id, item_id, quantity):
+        item_existed = cls.get_one_inventory(conn, user_id, item_id)
+        if item_existed is None:
+            return
+        elif quantity <= 0:
+            await cls.remove(conn, user_id, item_id, item_existed["quantity"])
+        else:
+            await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
+
+    @classmethod
+    async def equip_pickaxe(cls, conn, user_id, item_id):
+        query = '''
+            UPDATE DUsers_Items
+            SET is_main = TRUE
+            WHERE user_id = ($1) AND item_id = ($2);
+        '''
+
+        await conn.execute(query, user_id, item_id)
+    
+    @classmethod
+    async def unequip_pickaxe(cls, conn, user_id):
+        query = '''
+            UPDATE DUsersCurrentEquip
+            SET current_pick = NULL
+            WHERE user_id = ($1);
+        '''
+
+        await conn.execute(query, user_id)
+
+    @classmethod
+    async def get_equip_pickaxe(cls, conn, user_id):
+        query = '''
+            SELECT item_id
+            FROM DUsers_Items
+            WHERE user_id = ($1) AND is_main = TRUE;
+        '''
+
+        return await conn.fetchval(query, user_id)
 
 class Items:
     @classmethod
-    async def create_item(cls, conn):
-        pass
+    async def create_item(cls, conn, *args):
+        exist = await cls.get_item(conn, args[0][0])
+        if exist is None:
+            await insert_into(conn, "Items", [*args])
+
+    @classmethod
+    async def get_item(cls, conn, id : str) -> dict:
+        query = '''
+            SELECT * FROM Items
+            WHERE id = ($1);
+        '''
+
+        result = await conn.fetchrow(query, id)
+        return result if result is None else dict(result)
 
     @classmethod
     async def remove_item(cls, conn):
         pass
+    
+    @classmethod
+    async def get_internal_name(cls, conn, name : str) -> str:
+        print(name)
+        query = '''
+            SELECT * FROM Items
+            WHERE name = ($1);
+        '''
+
+        return await conn.fetchval(query, name)
+    
+    @classmethod
+    async def get_official_name(cls, conn, id : str) -> str:
+        query = '''
+            SELECT * FROM Items
+            WHERE id = ($1);
+        '''
+
+        return await conn.fetchval(query, id, column = 2)
 
 class Notify:
     @classmethod
