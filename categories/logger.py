@@ -83,6 +83,8 @@ class Logging(commands.Cog):
         self.color_other = discord.Color.teal()
 
     async def log_check(self, guild):
+        if guild is None:
+            return False
         if bot_has_database(self.bot):
             config = await Facility.get_config(self.bot, guild.id)
             if config["ERROR"] == 0 and config["enable_log"] and config["log_channel"] != 0:
