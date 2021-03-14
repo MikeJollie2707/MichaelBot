@@ -80,7 +80,7 @@ def get_info():
     return bot_info, secrets
     
 async def get_prefix(bot, message):
-    if bot.pool is not None:
+    if bot.pool is not None and message.guild is not None:
         async with bot.pool.acquire() as conn:
             prefix = await DB.Guild.get_prefix(conn, message.guild.id)
     else:
