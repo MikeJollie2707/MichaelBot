@@ -151,7 +151,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             timestamp = datetime.datetime.utcnow(),
             author = ctx.author
         )
-        await ctx.reply(embed = embed, mention_author = False)
+        await ctx.send(embed = embed)
 
     @commands.command()
     @commands.bot_has_permissions(manage_messages = True, send_messages = True)
