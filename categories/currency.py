@@ -479,6 +479,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 elif "_rod" in tool_name:
                     tool_type = "rod"
                 
+                has_equipped = await DB.Inventory.find_equip(conn, tool_type, ctx.author.id)
+                if has_equipped is not None:
+                    await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["item_id"])
                 await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
                 official_name = await DB.Items.get_official_name(conn, tool_name)
                 await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
