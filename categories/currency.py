@@ -108,7 +108,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
 
             msg += LootTable.get_friendly_reward(LootTable.get_daily_loot(member["streak_daily"])) + '\n'
-            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily']}`.\n"
+            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
 
             await ctx.reply(msg, mention_author = False)
             
@@ -160,12 +160,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                current_pick = await DB.Inventory.get_equip_pickaxe(conn, ctx.author.id)
+                current_pick = await DB.Inventory.find_equip(conn, "pickaxe", ctx.author.id)
                 if current_pick is None:
                     await ctx.reply("You have no pickaxe equip.")
                     return
                 
-                loot = LootTable.get_mine_loot(current_pick)
+                loot = LootTable.get_mine_loot(current_pick["item_id"])
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
@@ -256,6 +256,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def craft(self, ctx : commands.Context, n : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
         Perform a craft `n` times.
+        This will give you `n * <quantity>` items, with `<quantity>` is the `You gain` section in `craft recipe`.
+
+        Craft wisely!
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} 2 stick
@@ -350,11 +353,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 timestamp = datetime.datetime.utcnow(),
                 author = ctx.author
             ).add_field(
-                name = "Input:",
+                name = "You lose:",
                 value = LootTable.get_friendly_reward(recipe),
                 inline = False
             ).add_field(
-                name = "Output:",
+                name = "You gain:",
                 value = LootTable.get_friendly_reward({item : outp}),
                 inline = False
             )
