@@ -182,7 +182,7 @@ class SmallHelp():
 
     async def send_bot_help(self):
         note = '''
-        Use `%shelp [CommandOrCategory]` to get more info on a command/category.
+        Use `%shelp [command/category]` to get more info on a command/category.
         If you need help, join the [support server](https://discordapp.com/jeMeyNw).
         ''' % self.ctx.prefix
 
