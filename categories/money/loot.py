@@ -18,6 +18,7 @@ def get_item_info():
         "iron": ["<:iron:820009715286671410>", "iron", 10, None],
         "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", "iron pickaxe", 10, None],
         "iron_axe": ["<:iron_axe:820758123714838559>", "iron axe", 10, None],
+        "diamond": ["💎", "diamond", 10, None],
 
         "coal": ["<:coal:819742286250377306>", "coal", 10, None],
         "string": ["<:string:820758307542401055>", "string", 10, None],
