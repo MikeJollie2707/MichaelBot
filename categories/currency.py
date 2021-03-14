@@ -453,21 +453,31 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Equip either a pickaxe, an axe, a sword, or a fishing rod.
 
-        *Currently only support pickaxe*
-
         `tool name` must be an item existed in your inventory.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name} wooden pickaxe
         '''
         
-        if "_pickaxe" not in tool_name:
-            await ctx.reply(f"This is not a pickaxe.", mention_author = False)
+        if "_pickaxe" not in tool_name and "_axe" not in tool_name and "_sword" not in tool_name and "_rod" not in tool_name:
+            await ctx.reply(f"You can't equip this!", mention_author = False)
+            return
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 exist = await DB.Items.get_item(conn, tool_name)
                 if exist is None:
-                    await ctx.reply(f"This pickaxe does not exist.", mention_author = False)
+                    await ctx.reply(f"This tool does not exist.", mention_author = False)
+                    return
+                
+                tool_type = ""
+                if "_pickaxe" in tool_name:
+                    tool_type = "pickaxe"
+                elif "_axe" in tool_name:
+                    tool_type = "axe"
+                elif "_sword" in tool_name:
+                    tool_type = "sword"
+                elif "_rod" in tool_name:
+                    tool_type = "rod"
                 
                 await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
                 official_name = await DB.Items.get_official_name(conn, tool_name)
