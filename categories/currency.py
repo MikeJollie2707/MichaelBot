@@ -184,12 +184,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     upper_bound = 0
                 
                 message = LootTable.get_friendly_reward(final_reward)
+                any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
-                await ctx.reply("You go mining and get %s." % message, mention_author = False)
-
+                if any_reward:
+                    await ctx.reply("You go mining and get %s." % message, mention_author = False)
+                else:
+                    await ctx.reply("You go mining, but you didn't feel well so you left with nothing.", mention_author = False)
+    
     @commands.group(invoke_without_command = True)
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
