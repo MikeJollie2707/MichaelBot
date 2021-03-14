@@ -402,8 +402,21 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command(aliases = ['adv'])
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def adventure(self, ctx : commands.Context):
+        '''
+        Go on an adventure to gather materials! 
+        Watch out though, you might encounter unwanted enemies. Better bring a sword.
+
+        **Aliases:** `adv`
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 minutes per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** A sword.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+        
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 current_sword = await DB.Inventory.find_equip(conn, "sword", ctx.author.id)
