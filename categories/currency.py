@@ -341,7 +341,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     page.add_page(embed)
                     embed = None
                     cnt = 0
-            if len(page.__page_list__) == 0:
+            # If the amount of items doesn't reach MAX_ITEMS.
+            if embed is not None:
                 page.add_page(embed)
             
             await page.event(ctx, interupt = False) 
