@@ -9,12 +9,21 @@ def get_item_info():
         "wood": ["<:plank:819616763074838569>", "wood", 10, None],
         "stick": ["<:stick:819615522878521434>", "stick", 10, None],
         "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", "wooden pickaxe", 10, None],
-        "wood_axe": ["", "wooden axe", 10, None],
+        "wood_axe": ["<:wood_axe:820009505530052621>", "wooden axe", 10, None],
+        "wood_sword": ["<:wood_sword:820757505017118751>", "wooden sword", 10, None],
         "stone": ["<:stone:819728758160097290>", "stone", 10, None],
+        "stone_pickaxe": ["<:stone_pickaxe:820044330613866497>", "stone pickaxe", 10, None],
+        "stone_axe": ["<:stone_axe:820009331000606760>", "stone axe", 10, None],
+        "stone_sword": ["<:stone_sword:820757729790394389>", "stone sword", 10, None],
+        "iron": ["<:iron:820009715286671410>", "iron", 10, None],
+        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", "iron pickaxe", 10, None],
+        "iron_axe": ["<:iron_axe:820758123714838559>", "iron axe", 10, None],
+
         "coal": ["<:coal:819742286250377306>", "coal", 10, None],
-        "stone_pickaxe": ["⛏", "stone pickaxe", 10, None],
-        "stone_axe": ["", "stone axe", 10, None],
-        "iron": ["", "iron", 10, None]
+        "string": ["<:string:820758307542401055>", "string", 10, None],
+        "spider_eye": ["<:spider_eye:820758868468301864>", "spider eye", 10, None],
+        "apple": ["🍎", "apple", 10, None],
+        "flower": ["🌸", "flower", 10, None]
     }
 
 def get_emote(name : str) -> str:
