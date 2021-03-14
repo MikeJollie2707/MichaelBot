@@ -177,6 +177,11 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
+        "wood_sword": {
+            "wood": 2,
+            "stick": 1,
+            "quantity": 1
+        },
         "stone_pickaxe": {
             "stone": 3,
             "stick": 2,
@@ -184,6 +189,21 @@ def get_craft_ingredient(item : str):
         },
         "stone_axe": {
             "stone": 3,
+            "stick": 3,
+            "quantity": 1
+        },
+        "stone_sword": {
+            "stone" : 2,
+            "stick": 1,
+            "quantity": 1
+        },
+        "iron_pickaxe": {
+            "iron": 3,
+            "stick": 2,
+            "quantity": 1
+        },
+        "iron_axe": {
+            "iron": 3,
             "stick": 3,
             "quantity": 1
         },
