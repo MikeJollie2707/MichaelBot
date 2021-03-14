@@ -187,6 +187,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
+                        any_reward = True
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
                 if any_reward:
