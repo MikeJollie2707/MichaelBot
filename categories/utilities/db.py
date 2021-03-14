@@ -456,14 +456,14 @@ class Inventory:
         await conn.execute(query, user_id, item_id)
     
     @classmethod
-    async def unequip_pickaxe(cls, conn, user_id):
+    async def unequip_tool(cls, conn, user_id, item_id):
         query = '''
-            UPDATE DUsersCurrentEquip
-            SET current_pick = NULL
-            WHERE user_id = ($1);
+            UPDATE DUsers_Items
+            SET is_main = FALSE
+            WHERE user_id = ($1) AND item_id = ($2);
         '''
 
-        await conn.execute(query, user_id)
+        await conn.execute(query, user_id, item_id)
 
     @classmethod
     async def get_equip_pickaxe(cls, conn, user_id):
