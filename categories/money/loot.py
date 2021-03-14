@@ -63,32 +63,32 @@ def get_friendly_reward(reward : dict, emote = True) -> str:
 def get_mine_loot(pick : str):
     if pick == "wood_pickaxe":
         return {
-            "stone": 0.90,
-            "coal": 0.10,
+            "stone": 0.90, # 5.4 on average
+            "coal": 0.10, # 0.6 on average
             "rolls": 6
         }
     elif pick == "stone_pickaxe":
         return {
-            "stone": 0.50,
-            "coal": 0.35,
-            "iron": 0.10,
-            "rolls": 20
+            "stone": 0.40, # 6 on average
+            "coal": 0.40, # 6 on average
+            "iron": 0.20, # 3 on average
+            "rolls": 15
         }
     elif pick == "iron_pickaxe":
         return {
-            "stone": 0.35,
-            "coal": 0.30,
-            "iron": 0.25,
-            "diamond": 0.10,
-            "rolls": 25
+            "stone": 0.35, # 7 on average
+            "coal": 0.30, # 6 on average
+            "iron": 0.25, # 5 on average
+            "diamond": 0.10, # 2 on average
+            "rolls": 20
         }
     elif pick == "diamond_pickaxe":
         return {
-            "stone": 0.15,
-            "coal": 0.10,
-            "iron": 0.30,
-            "diamond": 0.20,
-            "obsidian": 0.25,
+            "stone": 0.26, # 9.1 on average
+            "coal": 0.10, # 3.5 on average
+            "iron": 0.30, # 10.5 on average
+            "diamond": 0.14, # 4.9 on average
+            "obsidian": 0.20, # 7 on average
             "rolls": 35
         }
     
@@ -97,16 +97,25 @@ def get_mine_loot(pick : str):
 def get_chop_loot(axe : str):
     if axe == "wood_axe":
         return {
-            "log": 1,
+            "log": 1, # 3 guaranteed
             "rolls": 3
         }
     elif axe == "stone_axe":
         return {
-            "log": 0.60,
-            "wood": 0.30,
-            "stick": 0.10,
+            "log": 0.60, # 6 on average
+            "stick": 0.20, # 2 on average
+            "apple": 0.20, # 2 on average
+            "rolls": 10
+        }
+    elif axe == "iron_axe":
+        return {
+            "log": 0.50, # 10 on average
+            "stick": 0.15, # 3 on average
+            "apple": 0.15, # 3 on average
+            "flower": 0.20, # 4 on average
             "rolls": 20
         }
+    
     
     return None
 
@@ -126,9 +135,9 @@ def get_adventure_loot(sword : str):
 def get_daily_loot(streak : int):
     if streak < 10:
         return {
-            "log": random.randint(3, 5),
+            "log": random.randint(2, 5),
             "wood": random.randint(0, 3),
-            "stick": random.randint(1, 6)
+            "stick": random.randint(1, 4)
         }
     elif streak < 51:
         return {
@@ -138,16 +147,16 @@ def get_daily_loot(streak : int):
         }
     elif streak < 101:
         return {
-            "log": random.randint(12, 15),
-            "stone": random.randint(7, 14),
-            "iron": random.randint(1, 3),
+            "log": random.randint(20, 30),
+            "stone": random.randint(10, 20),
+            "iron": random.randint(5, 8),
             "diamond": random.randint(0, 1)
         }
     elif streak < 201:
         return {
-            "log": random.randint(20, 25),
-            "stone": random.randint(20, 25),
-            "iron": random.randint(5, 10),
+            "log": random.randint(35, 40),
+            "stone": random.randint(15, 25),
+            "iron": random.randint(10, 15),
             "diamond": random.randint(2, 5)
         }
     
