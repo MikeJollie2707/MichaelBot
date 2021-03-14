@@ -110,6 +110,19 @@ def get_chop_loot(axe : str):
     
     return None
 
+def get_adventure_loot(sword : str):
+    if sword == "wood_sword":
+        return {
+            "string": 0.30,  # 1.5 on average
+            "rolls": 5
+        }
+    elif sword == "stone_sword":
+        return {
+            "string": 0.35, # 5.25 on average
+            "spider_eye": 0.05, # 0.75 on average
+            "rolls": 15
+        }
+
 def get_daily_loot(streak : int):
     if streak < 10:
         return {
