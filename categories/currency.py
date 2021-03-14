@@ -195,6 +195,61 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 else:
                     await ctx.reply("You go mining, but you didn't feel well so you left with nothing.", mention_author = False)
     
+    @commands.command()
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
+    async def chop(self, ctx : commands.Context):
+        '''
+        Chop some trees.
+
+        The majority of reward is log, although you can also find some other things with a better axe.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 minutes per 1 use (user).
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                current_axe = await DB.Inventory.find_equip(conn, "axe", ctx.author.id)
+                if current_axe is None:
+                    await ctx.reply("You have no axe equip.")
+                    return
+                
+                loot = LootTable.get_chop_loot(current_axe["item_id"])
+                lower_bound = 0
+                upper_bound = 0
+                final_reward = {}
+                for i in range(0, loot["rolls"]):
+                    for reward in loot:
+                        if reward != "rolls":
+                            if reward not in final_reward:
+                                final_reward[reward] = 0
+                            upper_bound += loot[reward]
+                            chance = random.random()
+                            if chance >= lower_bound and chance < upper_bound:
+                                final_reward[reward] += 1
+                            
+                            lower_bound = upper_bound
+                    lower_bound = 0
+                    upper_bound = 0
+                
+                message = LootTable.get_friendly_reward(final_reward)
+                any_reward = False
+                for reward in final_reward:
+                    if final_reward[reward] != 0:
+                        any_reward = True
+                        await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
+
+                if any_reward:               
+                    await ctx.reply("You go chopping trees and get %s." % message, mention_author = False)
+                else:
+                    await ctx.reply("You go chopping trees, but no tree was found :(", mention_author = False)
+
     @commands.group(invoke_without_command = True)
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -340,11 +395,56 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 inventory_dict[slot["item_id"]] = slot["quantity"]
             await ctx.reply(LootTable.get_friendly_reward(inventory_dict), mention_author = False)
 
+    @commands.command(aliases = ['adv'])
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def adventure(self, ctx : commands.Context):
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                current_sword = await DB.Inventory.find_equip(conn, "sword", ctx.author.id)
+                if current_sword is None:
+                    await ctx.reply("You have no sword equip.")
+                    return
+                
+                loot = LootTable.get_adventure_loot(current_sword["item_id"])
+                lower_bound = 0
+                upper_bound = 0
+                final_reward = {}
+                for i in range(0, loot["rolls"]):
+                    for reward in loot:
+                        if reward != "rolls":
+                            if reward not in final_reward:
+                                final_reward[reward] = 0
+                            upper_bound += loot[reward]
+                            chance = random.random()
+                            if chance >= lower_bound and chance < upper_bound:
+                                final_reward[reward] += 1
+                            
+                            lower_bound = upper_bound
+                    lower_bound = 0
+                    upper_bound = 0
+                
+                message = LootTable.get_friendly_reward(final_reward)
+                any_reward = False
+                for reward in final_reward:
+                    if final_reward[reward] != 0:
+                        any_reward = True
+                        await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
+                
+                if any_reward:
+                    await ctx.reply("You go on an adventure and get %s." % message, mention_author = False)
+                else:
+                    await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
+
+    @commands.command(hidden = True)
+    async def trade(self, ctx : commands.Context):
+        pass
 
     @commands.command()
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    #@commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def equip(self, ctx : commands.Context, *, tool_name : ItemConverter):
         '''
         Equip either a pickaxe, an axe, a sword, or a fishing rod.
