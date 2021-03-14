@@ -436,6 +436,16 @@ class Inventory:
             await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
 
     @classmethod
+    async def find_equip(cls, conn, tool_type : str, user_id):
+        query = f'''
+            SELECT * FROM DUsers_Items
+            WHERE item_id LIKE '%\_{tool_type}' AND is_main = TRUE AND user_id = ($1);
+        '''
+
+        result = await conn.fetchrow(query, user_id)
+        return rec_to_dict(result)
+
+    @classmethod
     async def equip_tool(cls, conn, user_id, item_id):
         query = '''
             UPDATE DUsers_Items
