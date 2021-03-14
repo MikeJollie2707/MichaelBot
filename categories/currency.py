@@ -163,6 +163,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 current_pick = await DB.Inventory.get_equip_pickaxe(conn, ctx.author.id)
                 if current_pick is None:
                     await ctx.reply("You have no pickaxe equip.")
+                    return
                 
                 loot = LootTable.get_mine_loot(current_pick)
                 lower_bound = 0
