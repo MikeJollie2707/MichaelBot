@@ -185,6 +185,9 @@ class Logging(commands.Cog):
                                     "----------------------------",
                                     "**Channel:** %s" % message.channel.mention
                                 )
+                            else:
+                                self.bot.debug("Failed to connect to hastebin.")
+                                self.bot.debug("Error code: %d" % resp.status)
 
                 embed = Facility.get_default_embed(
                     title = log_title,
@@ -318,6 +321,7 @@ class Logging(commands.Cog):
                                 )
                             else:
                                 self.bot.debug("Failed to connect to hastebin.")
+                                self.bot.debug("Error code: %d" % rsp.status)
 
                 
                 log_color = self.color_change
