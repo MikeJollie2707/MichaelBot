@@ -255,6 +255,11 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
+        "iron_sword": {
+            "iron": 2,
+            "stick": 1,
+            "quantity": 1
+        },
         "coal": {
             "log": 1,
             "wood": 1,
