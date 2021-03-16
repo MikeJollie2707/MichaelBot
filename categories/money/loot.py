@@ -69,6 +69,18 @@ def get_internal_name(name : str) -> str:
         if info[key][1] == name:
             return key
 
+def get_description(id : str) -> str:
+    info = get_item_info()
+    return info[id][-1]
+
+def get_rarity(id : str) -> str:
+    info = get_item_info()
+    return info[id][2]
+
+def get_prices(id : str) -> tuple:
+    info = get_item_info()
+    return (info[id][3], info[id][4])
+
 def get_friendly_name(id : str) -> str:
     info = get_item_info()
     return acapitalize(info[id][1])
