@@ -495,24 +495,6 @@ class Items:
     @classmethod
     async def remove_item(cls, conn):
         pass
-    
-    @classmethod
-    async def get_internal_name(cls, conn, name : str) -> str:
-        query = '''
-            SELECT * FROM Items
-            WHERE name = ($1);
-        '''
-
-        return await conn.fetchval(query, name)
-    
-    @classmethod
-    async def get_official_name(cls, conn, id : str) -> str:
-        query = '''
-            SELECT * FROM Items
-            WHERE id = ($1);
-        '''
-
-        return await conn.fetchval(query, id, column = 2)
 
 class Notify:
     @classmethod
