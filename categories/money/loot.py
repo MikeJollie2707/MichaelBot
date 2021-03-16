@@ -83,6 +83,9 @@ def get_prices(id : str) -> tuple:
 
 def get_friendly_name(id : str) -> str:
     info = get_item_info()
+    if info.get(id) is None:
+        return None
+    else:
     return acapitalize(info[id][1])
 
 def get_friendly_reward(reward : dict, emote = True) -> str:
