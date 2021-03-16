@@ -427,7 +427,7 @@ class Inventory:
 
     @classmethod
     async def update(cls, conn, user_id, item_id, quantity):
-        item_existed = cls.get_one_inventory(conn, user_id, item_id)
+        item_existed = await cls.get_one_inventory(conn, user_id, item_id)
         if item_existed is None:
             return
         elif quantity <= 0:
