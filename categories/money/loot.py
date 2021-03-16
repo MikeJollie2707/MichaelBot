@@ -68,6 +68,7 @@ def get_internal_name(name : str) -> str:
     for key in info:
         if info[key][1] == name:
             return key
+    return None
 
 def get_description(id : str) -> str:
     info = get_item_info()
@@ -86,7 +87,7 @@ def get_friendly_name(id : str) -> str:
     if info.get(id) is None:
         return None
     else:
-    return acapitalize(info[id][1])
+        return acapitalize(info[id][1])
 
 def get_friendly_reward(reward : dict, emote = True) -> str:
     msg = ""
@@ -96,7 +97,7 @@ def get_friendly_reward(reward : dict, emote = True) -> str:
             if emote:
                 msg += f"{items[key][0]} x {reward[key]}, "
             else:
-                msg += f"{reward[key]}x {acapitalize(items[key][1])}, "
+                msg += f"{reward[key]}x **{acapitalize(items[key][1])}**, "
     
     # Remove ', '
     msg = msg[:-2]
@@ -105,33 +106,32 @@ def get_friendly_reward(reward : dict, emote = True) -> str:
 def get_mine_loot(pick : str):
     if pick == "wood_pickaxe":
         return {
-            "stone": 0.90, # 5.4 on average
-            "coal": 0.10, # 0.6 on average
-            "rolls": 6
+            "stone": 0.90, # 2.7 on average
+            "rolls": 3
         }
     elif pick == "stone_pickaxe":
         return {
-            "stone": 0.40, # 6 on average
-            "coal": 0.40, # 6 on average
-            "iron": 0.20, # 3 on average
-            "rolls": 15
+            "stone": 0.40, # 3.2 on average
+            "coal": 0.40, # 3.2 on average
+            "iron": 0.10, # 0.8 on average
+            "rolls": 8
         }
     elif pick == "iron_pickaxe":
         return {
-            "stone": 0.35, # 7 on average
-            "coal": 0.30, # 6 on average
-            "iron": 0.25, # 5 on average
-            "diamond": 0.10, # 2 on average
-            "rolls": 20
+            "stone": 0.35, # 3.5 on average
+            "coal": 0.30, # 3 on average
+            "iron": 0.25, # 2.5 on average
+            "diamond": 0.05, # 0.5 on average
+            "rolls": 10
         }
     elif pick == "diamond_pickaxe":
         return {
-            "stone": 0.26, # 9.1 on average
-            "coal": 0.10, # 3.5 on average
-            "iron": 0.30, # 10.5 on average
-            "diamond": 0.14, # 4.9 on average
+            "stone": 0.26, # 5.2 on average
+            "coal": 0.25, # 5 on average
+            "iron": 0.25, # 5 on average
+            "diamond": 0.10, # 2 on average
             "obsidian": 0.20, # 7 on average
-            "rolls": 35
+            "rolls": 20
         }
     
     return None
@@ -144,18 +144,18 @@ def get_chop_loot(axe : str):
         }
     elif axe == "stone_axe":
         return {
-            "log": 0.60, # 6 on average
-            "stick": 0.20, # 2 on average
-            "apple": 0.20, # 2 on average
-            "rolls": 10
+            "log": 0.60, # 4.2 on average
+            "stick": 0.20, # 1.4 on average
+            "apple": 0.20, # 1.4 on average
+            "rolls": 7
         }
     elif axe == "iron_axe":
         return {
-            "log": 0.50, # 10 on average
-            "stick": 0.15, # 3 on average
-            "apple": 0.15, # 3 on average
-            "flower": 0.20, # 4 on average
-            "rolls": 20
+            "log": 0.50, # 5 on average
+            "stick": 0.15, # 1.5 on average
+            "apple": 0.15, # 1.5 on average
+            "flower": 0.20, # 2 on average
+            "rolls": 10
         }
     
     
@@ -165,13 +165,20 @@ def get_adventure_loot(sword : str):
     if sword == "wood_sword":
         return {
             "string": 0.30,  # 1.5 on average
-            "rolls": 5
+            "rolls": 2
         }
     elif sword == "stone_sword":
         return {
             "string": 0.35, # 5.25 on average
             "spider_eye": 0.05, # 0.75 on average
-            "rolls": 15
+            "rolls": 5
+        }
+    elif sword == "iron_sword":
+        return {
+            "string": 0.35,
+            "spider_eye": 0.15,
+            "gunpowder": 0.1,
+            "rolls": 10
         }
 
 def get_daily_loot(streak : int):
