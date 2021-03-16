@@ -28,7 +28,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         return True
     
-    async def cog_unload(self):
+    def cog_unload(self):
         self.scan_DNotify.cancel()
     
     async def do_notify(self, user, message, when = None, record_id = None):
