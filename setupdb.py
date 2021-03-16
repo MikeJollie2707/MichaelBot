@@ -62,8 +62,11 @@ async def setup(secrets : dict):
                 id TEXT PRIMARY KEY,
                 emoji TEXT NOT NULL UNIQUE,
                 name TEXT NOT NULL,
-                price INT NOT NULL,
-                durability INT
+                rarity TEXT NOT NULL,
+                buy_price INT,
+                sell_price INT NOT NULL,
+                durability INT,
+                description TEXT NOT NULL
             );
         ''')
         print("Done!")
