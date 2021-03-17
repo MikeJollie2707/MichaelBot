@@ -5,6 +5,7 @@ import datetime
 
 import pytimeparse
 import categories.utilities.db as DB
+import categories.money.loot as LootTable
 
 class IntervalConverter(commands.Converter):
     async def convert(self, ctx, arg : str) -> datetime.timedelta:
@@ -14,4 +15,4 @@ class ItemConverter(commands.Converter):
     async def convert(self, ctx, arg : str) -> str:
         async with ctx.bot.pool.acquire() as conn:
             arg = arg.lower()
-            return await DB.Items.get_internal_name(conn, arg)
+            return LootTable.get_internal_name(arg)
