@@ -63,7 +63,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if not too_early:
                     # The daily amount is calculated as followed:
                     # - From streak 0 - 9: 100
-                    # - From streak 10 - 99: 120 + (streak / 10) * 10
+                    # - From streak 10 - 99: 300 + (streak / 10) * 10
                     # - From streak 100 - 499: 500 + streak
                     # - From streak 500+: 1500 + streak * 2
                     # Note: The bonus is cap at $2000, so after streak 1000, it is not possible to increase.
@@ -72,7 +72,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         daily_amount = 100
                         daily_bonus = 0
                     elif member["streak_daily"] < 100:
-                        daily_amount = 120
+                        daily_amount = 300
                         daily_bonus = int(member["streak_daily"] / 10) * 10
                     elif member["streak_daily"] < 500:
                         daily_amount = 500
