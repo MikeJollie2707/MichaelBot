@@ -283,20 +283,29 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await ctx.reply("This item isn't craftable. Please check `craft recipe` for possible crafting items.", mention_author = False)
                         return
                     
-                    missing_items = []
+                    fake_inv = {} # Dict {item: remaining_amount}
+                    miss = {} # Dict {item: missing_amount}
                     for key in ingredient:
                         if key != "quantity":
-                            result = await DB.Inventory.remove(conn, ctx.author.id, key, n * ingredient[key])
-                            if result is not None:
-                                missing_items.append(f"**{LootTable.get_friendly_name(key)}**")
-                        
-                    if len(missing_items) == 0:
-                        official_name = LootTable.get_friendly_name(item)
+                            slot = await DB.Inventory.get_one_inventory(conn, ctx.author.id, key)
+                            if slot is None:
+                                fake_inv[key] = -(n * ingredient[key])
+                            else:
+                                fake_inv[key] = slot["quantity"] - n * ingredient[key]
+                            
+                            if fake_inv[key] < 0:
+                                miss[key] = abs(fake_inv[key])
+                    
+                    if len(miss) == 0:
+                        for key in fake_inv:
+                            await DB.Inventory.update(conn, ctx.author.id, key, fake_inv[key])
                         await DB.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
-                        await ctx.reply(f"Crafted {n * ingredient[key]}x **{official_name}** successfully.", mention_author = False)
+                        official_name = LootTable.get_friendly_name(item)
+                        await ctx.reply(f"Crafted {n * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
+                        
                     else:
-                        text = Facility.striplist(missing_items)
-                        await ctx.reply("Missing the following items: %s" % text, mention_author = False)
+                        miss_string = LootTable.get_friendly_reward(miss, False)
+                        await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
 
     @craft.command()
     @commands.check(has_database)
