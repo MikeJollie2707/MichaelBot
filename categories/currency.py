@@ -386,7 +386,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         async with self.bot.pool.acquire() as conn:
             inventory = await DB.Inventory.get_whole_inventory(conn, ctx.author.id)
-            if inventory is None:
+            if inventory is None or inventory == [None] * len(inventory):
                 await ctx.reply("*Insert empty inventory here*", mention_author = False)
                 return
             
