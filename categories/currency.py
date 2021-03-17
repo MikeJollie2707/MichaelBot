@@ -354,11 +354,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 timestamp = datetime.datetime.utcnow(),
                 author = ctx.author
             ).add_field(
-                name = "You lose:",
+                name = "Recipe:",
                 value = LootTable.get_friendly_reward(recipe),
                 inline = False
             ).add_field(
-                name = "You gain:",
+                name = "Receive:",
                 value = LootTable.get_friendly_reward({item : outp}),
                 inline = False
             )
