@@ -454,6 +454,54 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 else:
                     await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
 
+    @commands.command()
+    async def iteminfo(self, ctx : commands.Context, *, item : ItemConverter):
+        if item is not None:
+            desc = LootTable.get_description(item)
+            rarity = LootTable.get_rarity(item)
+            emote = LootTable.get_emote_i(item)
+            friendly_name = LootTable.get_friendly_name(item)
+            craftable = LootTable.get_craft_ingredient(item)
+            purchasable = LootTable.get_prices(item)
+            
+            embed = Facility.get_default_embed(
+                title = f"{LootTable.acapitalize(friendly_name)}",
+                description = f"*{desc}*",
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
+            ).add_field(
+                name = "Emoji:",
+                value = emote,
+            ).add_field(
+                name = "Rarity:",
+                value = LootTable.acapitalize(rarity)
+            )
+
+            if craftable is not None:
+                out = craftable.pop("quantity")
+                embed.add_field(
+                    name = "Recipe:",
+                    value = f"{LootTable.get_friendly_reward(craftable)} -> {LootTable.get_friendly_reward({item : out})}",
+                    inline = False
+                )
+            else:
+                embed.add_field(
+                    name = "Recipe:",
+                    value = "*Cannot be crafted.*",
+                    inline = False
+                )
+            
+            price_str = f"Buy: {f'${purchasable[0]}' if purchasable[0] is not None else 'N/A'}\nSell: {f'${purchasable[1]}' if purchasable[1] is not None else 'N/A'}"
+            embed.add_field(
+                name = "Prices:",
+                value = price_str,
+                inline = False
+            )
+
+            await ctx.reply(embed = embed, mention_author = False)
+        else:
+            await ctx.reply("This item does not exist.", mention_author = False)
+
     @commands.command(hidden = True)
     async def trade(self, ctx : commands.Context):
         pass
