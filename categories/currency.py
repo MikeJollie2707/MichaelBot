@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands.core import command
 import humanize
 
 import datetime
@@ -442,6 +441,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
 
     @commands.command()
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def iteminfo(self, ctx : commands.Context, *, item : ItemConverter):
         if item is not None:
             async with self.bot.pool.acquire() as conn:
@@ -496,10 +498,126 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         else:
             await ctx.reply("This item does not exist.", mention_author = False)
 
-    @commands.command(hidden = True)
+    @commands.group(aliases = ['market'])
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def trade(self, ctx : commands.Context):
-        pass
+        '''
+        Display all items' value in terms of money.
 
+        To buy or sell items, please use the command's subcommands.
+
+        **Aliases:** `market`
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        if ctx.invoked_subcommand is None:
+            MAX_ITEMS = 4
+            cnt = 0
+            page = Pages()
+            embed = None
+            async with self.bot.pool.acquire() as conn:
+                items = await DB.Items.get_whole_items(conn)
+                for item in items:
+                    if cnt == 0:
+                        embed = Facility.get_default_embed(
+                            title = "Market",
+                            timestamp = datetime.datetime.utcnow(),
+                            author = ctx.author
+                        )
+                    embed.add_field(
+                        name = "%s **%s**" % (item["emoji"], LootTable.acapitalize(item["name"])),
+                        value = "*%s*\n**Buy Price**: %s\n**Sell Price**: %s" % (item["description"], 
+                                                                                "N/A" if item["buy_price"] is None else f"${item['buy_price']}",
+                                                                                "N/A" if item["sell_price"] is None else f"${item['sell_price']}"),
+                        inline = False
+                    )
+                    cnt += 1
+                    if cnt == MAX_ITEMS:
+                        page.add_page(embed)
+                        embed = None
+                        cnt = 0
+                if embed is not None:
+                    page.add_page(embed)
+                await page.event(ctx, interupt = False)
+
+    @trade.command()
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def buy(self, ctx, amount : typing.Optional[int] = 1, *, item : ItemConverter):
+        '''
+        Buy an item with your money.
+        Note that many items can't be bought.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name} wood
+        **Example 2:** {prefix}{command_name} 10 wooden axe
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        if item is None:
+            await ctx.reply("This item doesn't exist. Please use `trade` to see all items.", mention_author = False)
+            return
+        if amount < 1:
+            return
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                actual_item = await DB.Items.get_item(conn, item)
+                if actual_item["buy_price"] is None:
+                    await ctx.reply("This item is not purchasable!", mention_author = False)
+                    return
+                money = await DB.User.get_money(conn, ctx.author.id)
+                if money - amount * actual_item["buy_price"] < 0:
+                    await ctx.reply("You don't have enough money to buy. Total cost is: %d" % amount * actual_item["buy_price"], mention_author = False)
+                    return
+                
+                await DB.User.remove_money(conn, ctx.author.id, amount * actual_item["buy_price"])
+                await DB.Inventory.add(conn, ctx.author.id, item, amount)
+                await ctx.reply(f"Bought {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully.", mention_author = False)
+            
+    @trade.command()
+    @commands.check(has_database)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def sell(self, ctx, amount : typing.Optional[int] = 1, *, item : ItemConverter):
+        '''
+        Sell items in your inventory for money.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name} diamond
+        **Example 2:** {prefix}{command_name} 5 wooden pickaxe
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        if item is None:
+            await ctx.reply("This item doesn't exist. Please use `trade` to see all items.", mention_author = False)
+            return
+        if amount < 1:
+            return
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                inv_slot = await DB.Inventory.get_one_inventory(conn, ctx.author.id, item)
+                actual_item = await DB.Items.get_item(conn, item)
+                result = await DB.Inventory.remove(conn, ctx.author.id, item, amount)
+                if result == "":
+                    await ctx.reply("You don't have enough items to sell. You only have: %d" % inv_slot["quantity"] if inv_slot is not None else 0)
+                    return
+                await DB.User.add_money(conn, ctx.author.id, amount * actual_item["sell_price"])
+                await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * actual_item['sell_price']}", mention_author = False)
+    
     @commands.command()
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
