@@ -9,7 +9,7 @@ import typing # IntelliSense purpose only
 
 import categories.utilities.db as DB
 import categories.utilities.facility as Facility
-import categories.money.loot as LootTable
+import categories.utilities.loot as LootTable
 from categories.utilities.converters import ItemConverter
 from categories.utilities.checks import has_database
 from categories.templates.navigate import Pages
@@ -107,38 +107,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if daily_bonus > 0:
                 msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
 
-            msg += LootTable.get_friendly_reward(LootTable.get_daily_loot(member["streak_daily"])) + '\n'
+            msg += await LootTable.get_friendly_reward(conn, LootTable.get_daily_loot(member["streak_daily"])) + '\n'
             msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
 
             await ctx.reply(msg, mention_author = False)
-            
-    @commands.command(enabled = False)
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
-    async def work(self, ctx : commands.Context):
-        '''
-        Go to work and earn money.
-
-        *Warning: This is an early stage for several commands. This command will be gone when inventory is implemented.*
-
-        **Usage:** <prefix>**{command_name} {command_signature}
-        **Cooldown:** 5 minutes per 1 use.
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
-
-        amount = random.randint(15, 25)        
-        async with self.bot.pool.acquire() as conn:
-            await DB.User.add_money(conn, ctx.author.id, amount)
-        
-        embed = Facility.get_default_embed(
-            description = "You worked and earned $%d." % amount,
-            timestamp = datetime.datetime.utcnow()
-        )
-        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.check(has_database)
@@ -183,7 +155,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = LootTable.get_friendly_reward(final_reward)
+                message = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -238,7 +210,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = LootTable.get_friendly_reward(final_reward)
+                message = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -283,10 +255,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await ctx.reply("This item isn't craftable. Please check `craft recipe` for possible crafting items.", mention_author = False)
                         return
                     
+                    # Perform a local transaction, and if it's valid, push to db.
                     fake_inv = {} # Dict {item: remaining_amount}
                     miss = {} # Dict {item: missing_amount}
                     for key in ingredient:
                         if key != "quantity":
+                            # The item may not exist due to x0.
                             slot = await DB.Inventory.get_one_inventory(conn, ctx.author.id, key)
                             if slot is None:
                                 fake_inv[key] = -(n * ingredient[key])
@@ -300,11 +274,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         for key in fake_inv:
                             await DB.Inventory.update(conn, ctx.author.id, key, fake_inv[key])
                         await DB.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
-                        official_name = LootTable.get_friendly_name(item)
+                        official_name = LootTable.acapitalize(exist["name"])
                         await ctx.reply(f"Crafted {n * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
                         
                     else:
-                        miss_string = LootTable.get_friendly_reward(miss, False)
+                        miss_string = await LootTable.get_friendly_reward(conn, miss, False)
                         await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
 
     @craft.command()
@@ -329,6 +303,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             cnt = 0
             page = Pages()
             embed = None
+            friendly_name = ""
             for key in recipe:
                 if cnt == 0:
                     embed = Facility.get_default_embed(
@@ -337,13 +312,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         author = ctx.author
                     )
                 
-                friendly_name = LootTable.get_friendly_name(key)
-                outp = recipe[key].pop("quantity", None)
-                embed.add_field(
-                    name = LootTable.acapitalize(friendly_name),
-                    value = "**Input:** %s\n**Output:** %s\n" % (LootTable.get_friendly_reward(recipe[key]), LootTable.get_friendly_reward({key : outp})),
-                    inline = False
-                )
+                async with self.bot.pool.acquire() as conn:
+                    friendly_name = await DB.Items.get_friendly_name(conn, key)
+                
+                    outp = recipe[key].pop("quantity", None)
+                    embed.add_field(
+                        name = LootTable.acapitalize(friendly_name),
+                        value = "**Input:** %s\n**Output:** %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key]), await LootTable.get_friendly_reward(conn, {key : outp})),
+                        inline = False
+                    )
 
                 cnt += 1
                 if cnt == MAX_ITEMS:
@@ -356,21 +333,22 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             await page.event(ctx, interupt = False) 
         elif recipe is not None:
-            friendly_name = LootTable.get_friendly_name(item)
-            outp = recipe.pop("quantity", None)
-            embed = Facility.get_default_embed(
-                title = "%s's crafting recipe" % LootTable.acapitalize(friendly_name),
-                timestamp = datetime.datetime.utcnow(),
-                author = ctx.author
-            ).add_field(
-                name = "Recipe:",
-                value = LootTable.get_friendly_reward(recipe),
-                inline = False
-            ).add_field(
-                name = "Receive:",
-                value = LootTable.get_friendly_reward({item : outp}),
-                inline = False
-            )
+            async with self.bot.pool.acquire() as conn:
+                friendly_name = await DB.Items.get_friendly_name(conn, item)
+                outp = recipe.pop("quantity", None)
+                embed = Facility.get_default_embed(
+                    title = "%s's crafting recipe" % LootTable.acapitalize(friendly_name),
+                    timestamp = datetime.datetime.utcnow(),
+                    author = ctx.author
+                ).add_field(
+                    name = "Recipe:",
+                    value = await LootTable.get_friendly_reward(conn, recipe),
+                    inline = False
+                ).add_field(
+                    name = "Receive:",
+                    value = await LootTable.get_friendly_reward(conn, {item : outp}),
+                    inline = False
+                )
 
             await ctx.reply(embed = embed, mention_author = False)
         else:
@@ -406,7 +384,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             inventory_dict = {}
             for slot in inventory:
                 inventory_dict[slot["item_id"]] = slot["quantity"]
-            await ctx.reply(LootTable.get_friendly_reward(inventory_dict), mention_author = False)
+            await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict), mention_author = False)
 
     @commands.command(aliases = ['adv'])
     @commands.check(has_database)
@@ -451,7 +429,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = LootTable.get_friendly_reward(final_reward)
+                message = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -466,46 +444,53 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command()
     async def iteminfo(self, ctx : commands.Context, *, item : ItemConverter):
         if item is not None:
-            desc = LootTable.get_description(item)
-            rarity = LootTable.get_rarity(item)
-            emote = LootTable.get_emote_i(item)
-            friendly_name = LootTable.get_friendly_name(item)
-            craftable = LootTable.get_craft_ingredient(item)
-            purchasable = LootTable.get_prices(item)
-            
-            embed = Facility.get_default_embed(
-                title = f"{LootTable.acapitalize(friendly_name)}",
-                description = f"*{desc}*",
-                timestamp = datetime.datetime.utcnow(),
-                author = ctx.author
-            ).add_field(
-                name = "Emoji:",
-                value = emote,
-            ).add_field(
-                name = "Rarity:",
-                value = LootTable.acapitalize(rarity)
-            )
+            async with self.bot.pool.acquire() as conn:
+                exist = await DB.Items.get_item(conn, item)
+                if exist is None:
+                    await ctx.reply("This item doesn't exist.", mention_author = False)
+                    return
+                
+                desc = exist["description"]
+                rarity = exist["rarity"]
+                emote = exist["emoji"]
+                friendly_name = exist["name"]
 
-            if craftable is not None:
-                out = craftable.pop("quantity")
+                craftable = LootTable.get_craft_ingredient(item)
+                purchasable = await DB.Items.get_prices(conn, item)
+                
+                embed = Facility.get_default_embed(
+                    title = f"{LootTable.acapitalize(friendly_name)}",
+                    description = f"*{desc}*",
+                    timestamp = datetime.datetime.utcnow(),
+                    author = ctx.author
+                ).add_field(
+                    name = "Emoji:",
+                    value = emote,
+                ).add_field(
+                    name = "Rarity:",
+                    value = LootTable.acapitalize(rarity)
+                )
+
+                if craftable is not None:
+                    out = craftable.pop("quantity")
+                    embed.add_field(
+                        name = "Recipe:",
+                        value = f"{await LootTable.get_friendly_reward(conn, craftable)} -> {await LootTable.get_friendly_reward(conn, {item : out})}",
+                        inline = False
+                    )
+                else:
+                    embed.add_field(
+                        name = "Recipe:",
+                        value = "*Cannot be crafted.*",
+                        inline = False
+                    )
+                
+                price_str = f"Buy: {f'${purchasable[0]}' if purchasable[0] is not None else 'N/A'}\nSell: {f'${purchasable[1]}' if purchasable[1] is not None else 'N/A'}"
                 embed.add_field(
-                    name = "Recipe:",
-                    value = f"{LootTable.get_friendly_reward(craftable)} -> {LootTable.get_friendly_reward({item : out})}",
+                    name = "Prices:",
+                    value = price_str,
                     inline = False
                 )
-            else:
-                embed.add_field(
-                    name = "Recipe:",
-                    value = "*Cannot be crafted.*",
-                    inline = False
-                )
-            
-            price_str = f"Buy: {f'${purchasable[0]}' if purchasable[0] is not None else 'N/A'}\nSell: {f'${purchasable[1]}' if purchasable[1] is not None else 'N/A'}"
-            embed.add_field(
-                name = "Prices:",
-                value = price_str,
-                inline = False
-            )
 
             await ctx.reply(embed = embed, mention_author = False)
         else:
@@ -553,7 +538,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if has_equipped is not None:
                     await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["item_id"])
                 await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
-                official_name = LootTable.get_friendly_name(tool_name)
+                official_name = await DB.Items.get_friendly_name(conn, has_equipped["item_id"])
                 await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
 
     @commands.command(aliases = ['bal'])

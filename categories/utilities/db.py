@@ -5,7 +5,7 @@ import datetime
 import typing
 
 import asyncpg
-from categories.money.loot import get_item_info
+from categories.utilities.loot import get_item_info
 
 async def update_db(bot):
     async with bot.pool.acquire() as conn:
@@ -424,7 +424,6 @@ class Inventory:
 
                 await conn.execute(query, item_existed["quantity"] - amount, user_id, item_id)
         
-
     @classmethod
     async def update(cls, conn, user_id, item_id, quantity):
         item_existed = await cls.get_one_inventory(conn, user_id, item_id)
@@ -490,11 +489,39 @@ class Items:
         '''
 
         result = await conn.fetchrow(query, id)
-        return result if result is None else dict(result)
+        return rec_to_dict(result)
 
     @classmethod
     async def remove_item(cls, conn):
         pass
+    
+    @classmethod
+    async def get_friendly_name(cls, conn, id : str) -> str:
+        query = '''
+            SELECT name
+            FROM Items
+            WHERE id = ($1);
+        '''
+
+        return await conn.fetchval(query, id, column = 2)
+
+    @classmethod
+    async def get_internal_name(cls, conn, friendly_name : str) -> str:
+        query = '''
+            SELECT id
+            FROM Items
+            WHERE name = ($1);
+        '''
+        
+        return await conn.fetchval(query, friendly_name)
+    
+    @classmethod
+    async def get_prices(cls, conn, id : str):
+        item = await cls.get_item(conn, id)
+        if item is None:
+            return None
+        else:
+            return (item["buy_price"], item["sell_price"])
 
 class Notify:
     @classmethod

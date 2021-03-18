@@ -1,5 +1,7 @@
 import random
 
+import categories.utilities.db as DB
+
 def acapitalize(st : str) -> str:
     return " ".join(word.capitalize() for word in st.split())
 
@@ -53,51 +55,16 @@ def get_item_info():
             "A beautiful flower."]
     }
 
-def get_emote(name : str) -> str:
-    info = get_item_info()
-    for key in info:
-        if info[key][1] == name:
-            return info[key][0]
-
-def get_emote_i(id : str) -> str:
-    info = get_item_info()
-    return info[id][0]
-
-def get_internal_name(name : str) -> str:
-    info = get_item_info()
-    for key in info:
-        if info[key][1] == name:
-            return key
-    return None
-
-def get_description(id : str) -> str:
-    info = get_item_info()
-    return info[id][-1]
-
-def get_rarity(id : str) -> str:
-    info = get_item_info()
-    return info[id][2]
-
-def get_prices(id : str) -> tuple:
-    info = get_item_info()
-    return (info[id][3], info[id][4])
-
-def get_friendly_name(id : str) -> str:
-    info = get_item_info()
-    if info.get(id) is None:
-        return None
-    else:
-        return acapitalize(info[id][1])
-
-def get_friendly_reward(reward : dict, emote = True) -> str:
+async def get_friendly_reward(conn, reward : dict, emote = True) -> str:
     msg = ""
-    items = get_item_info()
     for key in reward:
         if reward[key] != 0:
-            if emote:
-                msg += f"{items[key][0]} x {reward[key]}, "
-            else:
-                msg += f"{reward[key]}x **{acapitalize(items[key][1])}**, "
+            item = await DB.Items.get_item(conn, key)
+            if item is not None:
+                if emote:
+                    msg += f"{item['emoji']} x {reward[key]}, "
+                else:
+                    msg += f"{reward[key]}x **{acapitalize(item['name'])}**, "
     
     # Remove ', '
     msg = msg[:-2]
@@ -121,7 +88,7 @@ def get_mine_loot(pick : str):
             "stone": 0.35, # 3.5 on average
             "coal": 0.30, # 3 on average
             "iron": 0.25, # 2.5 on average
-            "diamond": 0.05, # 0.5 on average
+            "diamond": 0.01, # 0.1 on average
             "rolls": 10
         }
     elif pick == "diamond_pickaxe":
@@ -129,8 +96,8 @@ def get_mine_loot(pick : str):
             "stone": 0.26, # 5.2 on average
             "coal": 0.25, # 5 on average
             "iron": 0.25, # 5 on average
-            "diamond": 0.10, # 2 on average
-            "obsidian": 0.20, # 7 on average
+            "diamond": 0.05, # 1 on average
+            "obsidian": 0.10, # 2 on average
             "rolls": 20
         }
     
