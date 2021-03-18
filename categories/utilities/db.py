@@ -476,6 +476,14 @@ class Inventory:
 
 class Items:
     @classmethod
+    async def get_whole_items(cls, conn):
+        query = '''
+            SELECT * FROM Items;
+        '''
+        
+        result = await conn.fetch(query)
+        return [rec_to_dict(record) for record in result]
+    @classmethod
     async def create_item(cls, conn, *args):
         exist = await cls.get_item(conn, args[0][0])
         if exist is None:
