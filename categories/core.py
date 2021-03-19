@@ -244,6 +244,7 @@ class Core(commands.Cog):
                 await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id), mention_author = False)
 
     @commands.command()
+    @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def profile(self, ctx : commands.Context, member : discord.Member = None):
         '''
@@ -282,11 +283,28 @@ class Core(commands.Cog):
             url = member.avatar_url
         )
 
+        account_age = humanize.precisedelta(datetime.datetime.utcnow() - member.created_at, format = '%0.0f')
+        embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
+
+        member_age = humanize.precisedelta(datetime.datetime.utcnow() - member.joined_at, format = '%0.0f')
+        embed.add_field(name = "Joined %s for:" % member.guild.name, value = member_age, inline = False)
+
+        async with self.bot.pool.acquire() as conn:
+            text = ""
+            current = await DB.Inventory.get_equip(conn, member.id)
+            if len(current) == 0:
+                text = "*None*"
+            else:
+                for tool in current:
+                    actual_tool = await DB.Items.get_item(conn, tool["item_id"])
+                    text += actual_tool["emoji"] + ' '
+            
+            embed.add_field(name = "Current Equipments:", value = text, inline = False)
         role_list = [Facility.mention(role) for role in member.roles[::-1]]
         s = " - "
         s = s.join(role_list)
 
-        embed.add_field(name = "Roles:", value = s)
+        embed.add_field(name = "Roles:", value = s, inline = False)
 
         await ctx.reply(embed = embed, mention_author = False)
 
