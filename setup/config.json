@@ -10,7 +10,7 @@
     },
     "MichaelBeta": {
         "name": "MichaelBeta",
-        "version": "1.6.3.4",
+        "version": "1.6.3.5",
         "description": "A testing bot for MichaelBot :)",
         "debug": true,
         "prefix": "!",
