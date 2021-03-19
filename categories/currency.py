@@ -27,122 +27,31 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             raise commands.CheckFailure("Bot doesn't have database.")
         return True
 
-    
-    @commands.command()
-    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    async def daily(self, ctx : commands.Context):
-        '''
-        Get an amount of money every 24h.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
-        '''
-
-        # Retrieve user info
-        # Check if his last daily is <24h
-        # If yes then update money and increase streak,
-        # otherwise, reset the streak
-
-        too_early = False
-        too_late = False
-        old_streak = 0
-        member = {}
-        daily_amount = 100
-        daily_bonus = 0
-
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                member = DB.rec_to_dict(await DB.User.find_user(conn, ctx.author.id))
-
-                if member["last_daily"] is None:
-                    member["last_daily"] = datetime.datetime.utcnow()
-                elif datetime.datetime.utcnow() - member["last_daily"] < datetime.timedelta(hours = 24.0):
-                    too_early = True
-                elif datetime.datetime.utcnow() - member["last_daily"] >= datetime.timedelta(hours = 48.0):
-                    old_streak = member["streak_daily"]
-                    member["streak_daily"] = 0
-                    too_late = True
-                
-                if not too_early:
-                    # The daily amount is calculated as followed:
-                    # - From streak 0 - 9: 100
-                    # - From streak 10 - 99: 300 + (streak / 10) * 10
-                    # - From streak 100 - 499: 500 + streak
-                    # - From streak 500+: 1500 + streak * 2
-                    # Note: The bonus is cap at $2000, so after streak 1000, it is not possible to increase.
-
-                    if member["streak_daily"] < 10:
-                        daily_amount = 100
-                        daily_bonus = 0
-                    elif member["streak_daily"] < 100:
-                        daily_amount = 300
-                        daily_bonus = int(member["streak_daily"] / 10) * 10
-                    elif member["streak_daily"] < 500:
-                        daily_amount = 500
-                        daily_bonus = member["streak_daily"]
-                    else:
-                        daily_amount = 1500
-                        daily_bonus = member["streak_daily"] * 2
-                        if daily_bonus > 2000:
-                            daily_bonus = 2000
-                    
-                    daily_amount += daily_bonus
-
-                    member["last_daily"] = datetime.datetime.utcnow()
-                    
-                    await DB.User.inc_streak(conn, ctx.author.id)
-                    await DB.User.add_money(conn, ctx.author.id, daily_amount)
-                    await DB.User.update_last_daily(conn, ctx.author.id, member["last_daily"])
-
-                    loot = LootTable.get_daily_loot(member["streak_daily"] + 1)
-                    for key in loot:
-                        await DB.Inventory.add(conn, ctx.author.id, key, loot[key])
-         
-        if too_early:
-            remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member["last_daily"])
-            remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
-            await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
-        else:
-            msg = ""
-            if too_late:
-                msg += "You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(\n" % old_streak
-            
-            if daily_bonus > 0:
-                msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
-
-            msg += await LootTable.get_friendly_reward(conn, LootTable.get_daily_loot(member["streak_daily"])) + '\n'
-            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
-
-            await ctx.reply(msg, mention_author = False)
-
-    @commands.command()
+    @commands.command(aliases = ['adv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
-    async def mine(self, ctx : commands.Context):
+    async def adventure(self, ctx : commands.Context):
         '''
-        Go mining to earn resources.
+        Go on an adventure to gather materials! 
+        Watch out though, you might encounter unwanted enemies. Better bring a sword.
 
-        You need to have a pickaxe equipped using the `equip` command.
-
-        **Usage:** <prefix>**{command_name}**
-        **Cooldown:** 5 minutes per 1 use (user).
+        **Aliases:** `adv`
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 minutes per 1 use (user)
         **Example:** {prefix}{command_name}
 
-        **You need:** None.
+        **You need:** A sword.
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
-
+        
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                current_pick = await DB.Inventory.find_equip(conn, "pickaxe", ctx.author.id)
-                if current_pick is None:
-                    await ctx.reply("You have no pickaxe equip.")
+                current_sword = await DB.Inventory.find_equip(conn, "sword", ctx.author.id)
+                if current_sword is None:
+                    await ctx.reply("You have no sword equip.", mention_author = False)
                     return
                 
-                loot = LootTable.get_mine_loot(current_pick["item_id"])
+                loot = LootTable.get_adventure_loot(current_sword["item_id"])
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
@@ -168,10 +77,32 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
                 if any_reward:
-                    await ctx.reply("You go mining and get %s." % message, mention_author = False)
+                    await ctx.reply("You go on an adventure and get %s." % message, mention_author = False)
                 else:
-                    await ctx.reply("You go mining, but you didn't feel well so you left with nothing.", mention_author = False)
-    
+                    await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
+
+    @commands.command(aliases = ['bal'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
+    async def balance(self, ctx : commands.Context):
+        '''
+        Display the amount of money you currently have.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 2 seconds per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+        
+        member_money = 0
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                member_money = await DB.User.get_money(conn, ctx.author.id)
+
+        await ctx.reply("You have $%d." % member_money, mention_author = False)
+
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
@@ -225,7 +156,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You go chopping trees and get %s." % message, mention_author = False)
                 else:
                     await ctx.reply("You go chopping trees, but no tree was found :(", mention_author = False)
-
+    
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def craft(self, ctx : commands.Context, n : typing.Optional[int] = 1, *, item : ItemConverter):
@@ -356,6 +287,139 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         else:
             await ctx.reply("This item doesn't exist.", mention_author = False)
 
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    async def daily(self, ctx : commands.Context):
+        '''
+        Get an amount of money every 24h.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        # Retrieve user info
+        # Check if his last daily is <24h
+        # If yes then update money and increase streak,
+        # otherwise, reset the streak
+
+        too_early = False
+        too_late = False
+        old_streak = 0
+        member = {}
+        daily_amount = 100
+        daily_bonus = 0
+
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                member = DB.rec_to_dict(await DB.User.find_user(conn, ctx.author.id))
+
+                if member["last_daily"] is None:
+                    member["last_daily"] = datetime.datetime.utcnow()
+                elif datetime.datetime.utcnow() - member["last_daily"] < datetime.timedelta(hours = 24.0):
+                    too_early = True
+                elif datetime.datetime.utcnow() - member["last_daily"] >= datetime.timedelta(hours = 48.0):
+                    old_streak = member["streak_daily"]
+                    member["streak_daily"] = 0
+                    too_late = True
+                
+                if not too_early:
+                    # The daily amount is calculated as followed:
+                    # - From streak 0 - 9: 100
+                    # - From streak 10 - 99: 300 + (streak / 10) * 10
+                    # - From streak 100 - 499: 500 + streak
+                    # - From streak 500+: 1500 + streak * 2
+                    # Note: The bonus is cap at $2000, so after streak 1000, it is not possible to increase.
+
+                    if member["streak_daily"] < 10:
+                        daily_amount = 100
+                        daily_bonus = 0
+                    elif member["streak_daily"] < 100:
+                        daily_amount = 300
+                        daily_bonus = int(member["streak_daily"] / 10) * 10
+                    elif member["streak_daily"] < 500:
+                        daily_amount = 500
+                        daily_bonus = member["streak_daily"]
+                    else:
+                        daily_amount = 1500
+                        daily_bonus = member["streak_daily"] * 2
+                        if daily_bonus > 2000:
+                            daily_bonus = 2000
+                    
+                    daily_amount += daily_bonus
+
+                    member["last_daily"] = datetime.datetime.utcnow()
+                    
+                    await DB.User.inc_streak(conn, ctx.author.id)
+                    await DB.User.add_money(conn, ctx.author.id, daily_amount)
+                    await DB.User.update_last_daily(conn, ctx.author.id, member["last_daily"])
+
+                    loot = LootTable.get_daily_loot(member["streak_daily"] + 1)
+                    for key in loot:
+                        await DB.Inventory.add(conn, ctx.author.id, key, loot[key])
+         
+        if too_early:
+            remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member["last_daily"])
+            remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
+            await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
+        else:
+            msg = ""
+            if too_late:
+                msg += "You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(\n" % old_streak
+            
+            if daily_bonus > 0:
+                msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
+
+            msg += await LootTable.get_friendly_reward(conn, LootTable.get_daily_loot(member["streak_daily"])) + '\n'
+            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
+
+            await ctx.reply(msg, mention_author = False)
+    
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def equip(self, ctx : commands.Context, *, tool_name : ItemConverter):
+        '''
+        Equip either a pickaxe, an axe, a sword, or a fishing rod.
+
+        `tool name` must be an item existed in your inventory.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} wooden pickaxe
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+        
+        if "_pickaxe" not in tool_name and "_axe" not in tool_name and "_sword" not in tool_name and "_rod" not in tool_name:
+            await ctx.reply(f"You can't equip this!", mention_author = False)
+            return
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                exist = await DB.Items.get_item(conn, tool_name)
+                if exist is None:
+                    await ctx.reply(f"This tool does not exist.", mention_author = False)
+                    return
+                
+                tool_type = ""
+                if "_pickaxe" in tool_name:
+                    tool_type = "pickaxe"
+                elif "_axe" in tool_name:
+                    tool_type = "axe"
+                elif "_sword" in tool_name:
+                    tool_type = "sword"
+                elif "_rod" in tool_name:
+                    tool_type = "rod"
+                
+                has_equipped = await DB.Inventory.find_equip(conn, tool_type, ctx.author.id)
+                if has_equipped is not None:
+                    await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["item_id"])
+                await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
+                official_name = await DB.Items.get_friendly_name(conn, tool_name)
+                await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
+
     @commands.command(aliases = ['inv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
@@ -386,60 +450,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             for slot in inventory:
                 inventory_dict[slot["item_id"]] = slot["quantity"]
             await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict), mention_author = False)
-
-    @commands.command(aliases = ['adv'])
-    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
-    async def adventure(self, ctx : commands.Context):
-        '''
-        Go on an adventure to gather materials! 
-        Watch out though, you might encounter unwanted enemies. Better bring a sword.
-
-        **Aliases:** `adv`
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 5 minutes per 1 use (user)
-        **Example:** {prefix}{command_name}
-
-        **You need:** A sword.
-        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
-        '''
-        
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                current_sword = await DB.Inventory.find_equip(conn, "sword", ctx.author.id)
-                if current_sword is None:
-                    await ctx.reply("You have no sword equip.")
-                    return
-                
-                loot = LootTable.get_adventure_loot(current_sword["item_id"])
-                lower_bound = 0
-                upper_bound = 0
-                final_reward = {}
-                for i in range(0, loot["rolls"]):
-                    for reward in loot:
-                        if reward != "rolls":
-                            if reward not in final_reward:
-                                final_reward[reward] = 0
-                            upper_bound += loot[reward]
-                            chance = random.random()
-                            if chance >= lower_bound and chance < upper_bound:
-                                final_reward[reward] += 1
-                            
-                            lower_bound = upper_bound
-                    lower_bound = 0
-                    upper_bound = 0
-                
-                message = await LootTable.get_friendly_reward(conn, final_reward)
-                any_reward = False
-                for reward in final_reward:
-                    if final_reward[reward] != 0:
-                        any_reward = True
-                        await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
-                
-                if any_reward:
-                    await ctx.reply("You go on an adventure and get %s." % message, mention_author = False)
-                else:
-                    await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -508,6 +518,76 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(embed = embed, mention_author = False)
         else:
             await ctx.reply("This item does not exist.", mention_author = False)
+
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
+    async def mine(self, ctx : commands.Context):
+        '''
+        Go mining to earn resources.
+
+        You need to have a pickaxe equipped using the `equip` command.
+
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 5 minutes per 1 use (user).
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                current_pick = await DB.Inventory.find_equip(conn, "pickaxe", ctx.author.id)
+                if current_pick is None:
+                    await ctx.reply("You have no pickaxe equip.", mention_author = False)
+                    return
+                
+                loot = LootTable.get_mine_loot(current_pick["item_id"])
+                lower_bound = 0
+                upper_bound = 0
+                final_reward = {}
+                for i in range(0, loot["rolls"]):
+                    for reward in loot:
+                        if reward != "rolls":
+                            if reward not in final_reward:
+                                final_reward[reward] = 0
+                            upper_bound += loot[reward]
+                            chance = random.random()
+                            if chance >= lower_bound and chance < upper_bound:
+                                final_reward[reward] += 1
+                            
+                            lower_bound = upper_bound
+                    lower_bound = 0
+                    upper_bound = 0
+                
+                message = await LootTable.get_friendly_reward(conn, final_reward)
+                any_reward = False
+                for reward in final_reward:
+                    if final_reward[reward] != 0:
+                        any_reward = True
+                        await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
+                
+                if any_reward:
+                    await ctx.reply("You go mining and get %s." % message, mention_author = False)
+                else:
+                    await ctx.reply("You go mining, but you didn't feel well so you left with nothing.", mention_author = False)
+    
+    @commands.command(aliases = ['lb'], hidden = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
+    async def topmoney(self, ctx : commands.Context, local__global = "local"):
+        '''
+        Show the top 10 users with the most amount of money.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (member)
+        **Example 1:** {prefix}{command_name} global
+        **Example 2:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
+        pass
 
     @commands.group(aliases = ['market'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -625,88 +705,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     return
                 await DB.User.add_money(conn, ctx.author.id, amount * actual_item["sell_price"])
                 await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * actual_item['sell_price']}", mention_author = False)
-    
-    @commands.command()
-    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
-    async def equip(self, ctx : commands.Context, *, tool_name : ItemConverter):
-        '''
-        Equip either a pickaxe, an axe, a sword, or a fishing rod.
-
-        `tool name` must be an item existed in your inventory.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Example:** {prefix}{command_name} wooden pickaxe
-
-        **You need:** None.
-        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
-        '''
-        
-        if "_pickaxe" not in tool_name and "_axe" not in tool_name and "_sword" not in tool_name and "_rod" not in tool_name:
-            await ctx.reply(f"You can't equip this!", mention_author = False)
-            return
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                exist = await DB.Items.get_item(conn, tool_name)
-                if exist is None:
-                    await ctx.reply(f"This tool does not exist.", mention_author = False)
-                    return
                 
-                tool_type = ""
-                if "_pickaxe" in tool_name:
-                    tool_type = "pickaxe"
-                elif "_axe" in tool_name:
-                    tool_type = "axe"
-                elif "_sword" in tool_name:
-                    tool_type = "sword"
-                elif "_rod" in tool_name:
-                    tool_type = "rod"
-                
-                has_equipped = await DB.Inventory.find_equip(conn, tool_type, ctx.author.id)
-                if has_equipped is not None:
-                    await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["item_id"])
-                await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
-                official_name = await DB.Items.get_friendly_name(conn, has_equipped["item_id"])
-                await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
-
-    @commands.command(aliases = ['bal'])
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
-    async def balance(self, ctx : commands.Context):
-        '''
-        Display the amount of money you currently have.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 2 seconds per 1 use (user)
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
-        
-        member_money = 0
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                member_money = await DB.User.get_money(conn, ctx.author.id)
-
-        await ctx.reply("You have $%d." % member_money, mention_author = False)
-    
-    @commands.command(aliases = ['lb'], hidden = True)
-    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def topmoney(self, ctx : commands.Context, local__global = "local"):
-        '''
-        Show the top 10 users with the most amount of money.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 5 seconds per 1 use (member)
-        **Example 1:** {prefix}{command_name} global
-        **Example 2:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Send Messages`.
-        '''
-        pass
-            
 
 def setup(bot : MichaelBot):
     bot.add_cog(Currency(bot))
