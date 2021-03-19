@@ -64,7 +64,7 @@ async def setup(secrets : dict):
                 name TEXT NOT NULL,
                 rarity TEXT NOT NULL,
                 buy_price INT,
-                sell_price INT NOT NULL,
+                sell_price INT,
                 durability INT,
                 description TEXT NOT NULL
             );
