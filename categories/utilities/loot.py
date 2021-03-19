@@ -38,8 +38,18 @@ def get_item_info():
             "A pretty good axe."],
         "iron_sword": ["<:iron_sword:821448555989696593>", "iron sword", "uncommon", None, 33, None,
             "A pretty good sword. You can slay more enemies now due to how good this sword is."],
-        "diamond": ["💎", "diamond", "rare", None, 50, None,
+        "redstone": ["<:redstone:822527280777396264>", "redstone", "uncommon", None, 50, None,
+            "A red dust that's commonly mistaken as blood. It's understandable, it has pulse after all."],
+        "diamond": ["💎", "diamond", "rare", 150, 100, None,
             "Shiny stuffs isn't it? It can be used to craft some of the best tools in the world."],
+        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", "diamond pickaxe", "rare", None, 150, None,
+            "The best pickaxe in the world. You can mine anything :)"],
+        "diamond_axe": ["<:diamond_axe:822530447719268382>", "diamond axe", "rare", None, 150, None,
+            "The best axe in the world. Chopping go brr."],
+        "diamond_sword": ["<:diamond_sword:822530447715598396>", "diamond sword", "rare", None, 150, None,
+            "The best sword in the world? Idk, it doesn't do much though..."],
+        "obsidian": ["<:obsidian:822532045673725964>", "obsidian", "rare", None, 80, None,
+            "The hardest material in the world. It silently emits power that connects to another world."],
 
         "coal": ["<:coal:819742286250377306>", "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
@@ -52,7 +62,9 @@ def get_item_info():
         "apple": ["🍎", "apple", "common", None, 10, None,
             "An apple. Yummy. Watch out for the worms though."],
         "flower": ["🌸", "flower", "common", None, 10, None,
-            "A beautiful flower."]
+            "A beautiful flower."],
+        "moyai": ["🌺", "moyai", "???", None, None, None,
+            "A mysterious mystical flower. It is unknown what this flower truly is."]
     }
 
 async def get_friendly_reward(conn, reward : dict, emote = True) -> str:
@@ -88,14 +100,16 @@ def get_mine_loot(pick : str):
             "stone": 0.35, # 3.5 on average
             "coal": 0.30, # 3 on average
             "iron": 0.25, # 2.5 on average
+            "redstone": 0.05, # 0.5 on average
             "diamond": 0.01, # 0.1 on average
             "rolls": 10
         }
     elif pick == "diamond_pickaxe":
         return {
             "stone": 0.26, # 5.2 on average
-            "coal": 0.25, # 5 on average
+            "coal": 0.15, # 3 on average
             "iron": 0.25, # 5 on average
+            "redstone": 0.10, # 2 on average
             "diamond": 0.05, # 1 on average
             "obsidian": 0.10, # 2 on average
             "rolls": 20
@@ -124,29 +138,45 @@ def get_chop_loot(axe : str):
             "flower": 0.20, # 2 on average
             "rolls": 10
         }
-    
+    elif axe == "diamond_axe":
+        return {
+            "log": 0.45, # 9 on average
+            "stick": 0.10, # 2 on average
+            "apple": 0.25, # 5 on average
+            "flower": 0.20, # 4 on average
+            "moyai": 0.000000005, # 0.0000001 on average
+            "rolls": 20
+        }
     
     return None
 
 def get_adventure_loot(sword : str):
     if sword == "wood_sword":
         return {
-            "string": 0.30,  # 1.5 on average
+            "string": 0.30,  # 0.6 on average
             "rolls": 2
         }
     elif sword == "stone_sword":
         return {
-            "string": 0.35, # 5.25 on average
-            "spider_eye": 0.05, # 0.75 on average
+            "string": 0.35, # 1.75 on average
+            "spider_eye": 0.05, # 0.25 on average
             "rolls": 5
         }
     elif sword == "iron_sword":
         return {
-            "string": 0.35,
-            "spider_eye": 0.15,
-            "gunpowder": 0.1,
+            "string": 0.35, # 3.5 on average
+            "spider_eye": 0.15, # 1.5 on average
+            "gunpowder": 0.1, # 1 on average
             "rolls": 10
         }
+    elif sword == "diamond_sword":
+        return {
+            "string": 0.30, # 6 on average
+            "spider_eye": 0.15, # 3 on average
+            "gunpowder": 0.25, # 5 on average
+            "rolls": 20
+        }
+    return None
 
 def get_daily_loot(streak : int):
     if streak < 10:
@@ -234,6 +264,21 @@ def get_craft_ingredient(item : str):
         },
         "iron_sword": {
             "iron": 2,
+            "stick": 1,
+            "quantity": 1
+        },
+        "diamond_pickaxe": {
+            "diamond": 3,
+            "stick": 2,
+            "quantity": 1
+        },
+        "diamond_axe": {
+            "diamond": 3,
+            "stick": 3,
+            "quantity": 1
+        },
+        "diamond_sword": {
+            "diamond": 2,
             "stick": 1,
             "quantity": 1
         },

@@ -699,6 +699,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             async with conn.transaction():
                 inv_slot = await DB.Inventory.get_one_inventory(conn, ctx.author.id, item)
                 actual_item = await DB.Items.get_item(conn, item)
+                if actual_item["sell_price"] is None:
+                    await ctx.reply("This item cannot be sold.", mention_author = False)
+                    return
                 result = await DB.Inventory.remove(conn, ctx.author.id, item, amount)
                 if result == "":
                     await ctx.reply("You don't have enough items to sell. You only have: %d" % inv_slot["quantity"] if inv_slot is not None else 0)
