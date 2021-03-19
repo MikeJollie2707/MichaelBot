@@ -506,7 +506,7 @@ class Items:
     @classmethod
     async def get_friendly_name(cls, conn, id : str) -> str:
         query = '''
-            SELECT name
+            SELECT *
             FROM Items
             WHERE id = ($1);
         '''
