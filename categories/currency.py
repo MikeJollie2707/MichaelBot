@@ -23,7 +23,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def cog_check(self, ctx : commands.Context):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
-        if has_database(ctx):
+        if not has_database(ctx):
             raise commands.CheckFailure("Bot doesn't have database.")
         return True
 
