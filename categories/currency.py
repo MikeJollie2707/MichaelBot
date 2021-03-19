@@ -20,9 +20,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.bot = bot
         self.emoji = '💰'
     
+    async def cog_check(self, ctx : commands.Context):
+        if isinstance(ctx.channel, discord.DMChannel):
+            raise commands.NoPrivateMessage()
+        if has_database(ctx):
+            raise commands.CheckFailure("Bot doesn't have database.")
+        return True
+
+    
     @commands.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def daily(self, ctx : commands.Context):
         '''
         Get an amount of money every 24h.
@@ -31,7 +38,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         # Retrieve user info
@@ -112,8 +119,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(msg, mention_author = False)
 
     @commands.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def mine(self, ctx : commands.Context):
         '''
@@ -126,7 +132,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         async with self.bot.pool.acquire() as conn:
@@ -167,8 +173,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You go mining, but you didn't feel well so you left with nothing.", mention_author = False)
     
     @commands.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def chop(self, ctx : commands.Context):
         '''
@@ -181,7 +186,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         async with self.bot.pool.acquire() as conn:
@@ -222,8 +227,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You go chopping trees, but no tree was found :(", mention_author = False)
 
     @commands.group(invoke_without_command = True)
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def craft(self, ctx : commands.Context, n : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
         Perform a craft `n` times.
@@ -236,7 +240,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} wooden pickaxe
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         if ctx.invoked_subcommand is None:
@@ -281,8 +285,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
 
     @craft.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def recipe(self, ctx : commands.Context, *, item : ItemConverter = None):
         '''
         Recipe for an item or all the recipes.
@@ -292,7 +295,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         recipe = LootTable.get_craft_ingredient(item)
@@ -354,8 +357,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply("This item doesn't exist.", mention_author = False)
 
     @commands.command(aliases = ['inv'])
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def inventory(self, ctx : commands.Context):
         '''
@@ -367,7 +369,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         async with self.bot.pool.acquire() as conn:
@@ -386,8 +388,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict), mention_author = False)
 
     @commands.command(aliases = ['adv'])
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
     async def adventure(self, ctx : commands.Context):
         '''
@@ -400,7 +401,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** A sword.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
         
         async with self.bot.pool.acquire() as conn:
@@ -441,10 +442,20 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
 
     @commands.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def iteminfo(self, ctx : commands.Context, *, item : ItemConverter):
+        '''
+        Display an item's information.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user)
+        **Example:** {prefix}{command_name} diamond
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
         if item is not None:
             async with self.bot.pool.acquire() as conn:
                 exist = await DB.Items.get_item(conn, item)
@@ -499,8 +510,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply("This item does not exist.", mention_author = False)
 
     @commands.group(aliases = ['market'])
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def trade(self, ctx : commands.Context):
         '''
@@ -514,7 +524,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         if ctx.invoked_subcommand is None:
@@ -548,8 +558,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await page.event(ctx, interupt = False)
 
     @trade.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def buy(self, ctx, amount : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
@@ -562,7 +571,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} 10 wooden axe
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         if item is None:
@@ -586,7 +595,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply(f"Bought {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully.", mention_author = False)
             
     @trade.command()
-    @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def sell(self, ctx, amount : typing.Optional[int] = 1, *, item : ItemConverter):
@@ -599,7 +607,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name} 5 wooden pickaxe
 
         **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
         if item is None:
@@ -619,8 +627,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * actual_item['sell_price']}", mention_author = False)
     
     @commands.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def equip(self, ctx : commands.Context, *, tool_name : ItemConverter):
         '''
@@ -630,6 +637,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example:** {prefix}{command_name} wooden pickaxe
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
         
         if "_pickaxe" not in tool_name and "_axe" not in tool_name and "_sword" not in tool_name and "_rod" not in tool_name:
@@ -660,7 +670,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
 
     @commands.command(aliases = ['bal'])
-    @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
     async def balance(self, ctx : commands.Context):
@@ -683,7 +692,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.reply("You have $%d." % member_money, mention_author = False)
     
     @commands.command(aliases = ['lb'], hidden = True)
-    @commands.check(has_database)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def topmoney(self, ctx : commands.Context, local__global = "local"):
         '''
