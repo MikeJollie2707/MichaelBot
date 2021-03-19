@@ -26,6 +26,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         if not has_database(ctx):
             raise commands.CheckFailure("Bot doesn't have database.")
         return True
+    
+    @commands.Cog.listener("on_member_join")
+    async def _member_join(self, member):
+        async with self.bot.pool.acquire() as conn:
+            exist = await DB.User.find_user(conn, member.id)
+            if exist is None:
+                await DB.User.insert_user(conn, member)
 
     @commands.command(aliases = ['adv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
