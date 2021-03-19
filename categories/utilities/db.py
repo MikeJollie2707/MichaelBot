@@ -465,14 +465,15 @@ class Inventory:
         await conn.execute(query, user_id, item_id)
 
     @classmethod
-    async def get_equip_pickaxe(cls, conn, user_id):
+    async def get_equip(cls, conn, user_id):
         query = '''
-            SELECT item_id
+            SELECT *
             FROM DUsers_Items
             WHERE user_id = ($1) AND is_main = TRUE;
         '''
 
-        return await conn.fetchval(query, user_id)
+        result = await conn.fetch(query, user_id)
+        return [rec_to_dict(record) for record in result]
 
 class Items:
     @classmethod
