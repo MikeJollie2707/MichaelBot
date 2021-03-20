@@ -58,7 +58,7 @@ def get_item_info():
         "spider_eye": ["<:spider_eye:820758868468301864>", "spider eye", "uncommon", None, 20, None,
             "An uncommon drop for some future uses."],
         "gunpowder": ["<:gunpowder:821528688646160395>", "gunpowder", "uncommon", 50, 30, None,
-            "An uncommon drop for some uhh *minor* terrorism purposes."],
+            "An uncommon drop for some uhh __minor__ terrorism purposes."],
         "apple": ["🍎", "apple", "common", None, 10, None,
             "An apple. Yummy. Watch out for the worms though."],
         "flower": ["🌸", "flower", "common", None, 10, None,
