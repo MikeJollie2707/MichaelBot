@@ -400,6 +400,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
         
+        if tool_name is None:
+            await ctx.reply("This item doesn't exist.", mention_author = False)
+            return
         if "_pickaxe" not in tool_name and "_axe" not in tool_name and "_sword" not in tool_name and "_rod" not in tool_name:
             await ctx.reply(f"You can't equip this!", mention_author = False)
             return
