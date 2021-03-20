@@ -267,11 +267,11 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Read Message History`, `Send Messages`.
         '''
         
-        if "MIKEJOLLIE" in target.upper():
+        if "MIKEJOLLIE" in target.upper() or "472832990012243969" in target:
             percent_gay = 0
         elif "STRANGER.COM" in target.upper():
             percent_gay = 100
-        elif "GERG" in target.upper():
+        elif "GERG" in target.upper() or "787303725701791744" in target:
             percent_gay = 100
         else:
             percent_gay = random.randint(0, 100)
