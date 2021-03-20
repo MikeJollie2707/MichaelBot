@@ -378,8 +378,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             if daily_bonus > 0:
                 msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
-
-            msg += await LootTable.get_friendly_reward(conn, LootTable.get_daily_loot(member["streak_daily"])) + '\n'
+            async with self.bot.pool.acquire() as conn:
+                msg += await LootTable.get_friendly_reward(conn, LootTable.get_daily_loot(member["streak_daily"])) + '\n'
             msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
 
             await ctx.reply(msg, mention_author = False)
