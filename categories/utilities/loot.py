@@ -8,64 +8,78 @@ def acapitalize(st : str) -> str:
 def get_item_info():
     return {
         # General format:
-        # id: ['emoji', 'name', 'rarity', buy_price, sell_price, durability, 
+        # id: ['emoji', 'inner_sort', 'name', 'rarity', buy_price, sell_price, durability, 
         #   description]
-        "log": ["🪵", "log", "common", None, 20, None,
+        "log": ["🪵", 1, "log", "common", None, 20, None,
             "A basic necessity for everyone. Useful at any times."],
-        "wood": ["<:plank:819616763074838569>", "wood", "common", 8, 4, None,
+        "wood": ["<:plank:819616763074838569>", 2, "wood", "common", 8, 4, None,
             "A basic material for basic stuffs."],
-        "stick": ["<:stick:819615522878521434>", "stick", "common", 4, 2, None,
+        "stick": ["<:stick:819615522878521434>", 3, "stick", "common", 4, 2, None,
             "A necessity item used to craft various tools."],
-        "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", "wooden pickaxe", "common", 30, 25, None,
+        "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", 4, "wooden pickaxe", "common", 30, 25, 59,
             "A fragile pickaxe."],
-        "wood_axe": ["<:wood_axe:820009505530052621>", "wooden axe", "common", 32, 27, None,
+        "wood_axe": ["<:wood_axe:820009505530052621>", 5, "wooden axe", "common", 32, 27, 59,
             "A fragile axe."],
-        "wood_sword": ["<:wood_sword:820757505017118751>", "wooden sword", "common", 28, 23, None, 
+        "wood_sword": ["<:wood_sword:820757505017118751>", 6, "wooden sword", "common", 28, 23, 59, 
             "A weak sword."],
-        "stone": ["<:stone:819728758160097290>", "stone", "common", None, 15, None,
+        "stone": ["<:stone:819728758160097290>", 7, "stone", "common", None, 15, None,
             "A harder material than wood."],
-        "stone_pickaxe": ["<:stone_pickaxe:820044330613866497>", "stone pickaxe", "common", None, 30, None,
+        "stone_pickaxe": ["<:stone_pickaxe:820044330613866497>", 8, "stone pickaxe", "common", None, 30, 131,
             "A better pickaxe. Hope you can get some iron soon."],
-        "stone_axe": ["<:stone_axe:820009331000606760>", "stone axe", "common", None, 32, None,
+        "stone_axe": ["<:stone_axe:820009331000606760>", 9, "stone axe", "common", None, 32, 131,
             "A better axe."],
-        "stone_sword": ["<:stone_sword:820757729790394389>", "stone sword", "common", None, 28, None,
+        "stone_sword": ["<:stone_sword:820757729790394389>", 10, "stone sword", "common", None, 28, 131,
             "A decent sword. Better than a toy sword, right?"],
-        "iron": ["<:iron:820009715286671410>", "iron", "uncommon", None, 30, None,
+        "iron": ["<:iron:820009715286671410>", 11, "iron", "uncommon", None, 30, None,
             "Iron!"],
-        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", "iron pickaxe", "uncommon", None, 45, None,
+        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", 12, "iron pickaxe", "uncommon", None, 45, 250,
             "A pretty good pickaxe. You may encounter some lucky stuffs with this pickaxe."],
-        "iron_axe": ["<:iron_axe:820758123714838559>", "iron axe", "uncommon", None, 47, None,
+        "iron_axe": ["<:iron_axe:820758123714838559>", 13, "iron axe", "uncommon", None, 47, 250,
             "A pretty good axe."],
-        "iron_sword": ["<:iron_sword:821448555989696593>", "iron sword", "uncommon", None, 43, None,
+        "iron_sword": ["<:iron_sword:821448555989696593>", 14, "iron sword", "uncommon", None, 43, 250,
             "A pretty good sword. You can slay more enemies now due to how good this sword is."],
-        "redstone": ["<:redstone:822527280777396264>", "redstone", "uncommon", None, 50, None,
+        "redstone": ["<:redstone:822527280777396264>", 15, "redstone", "uncommon", None, 50, None,
             "A red dust that's commonly mistaken as blood. It's understandable, it has pulse after all."],
-        "diamond": ["💎", "diamond", "rare", 150, 100, None,
+        "diamond": ["💎", 16, "diamond", "rare", 150, 100, None,
             "Shiny stuffs isn't it? It can be used to craft some of the best tools in the world."],
-        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", "diamond pickaxe", "rare", None, 150, None,
+        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", 17, "diamond pickaxe", "rare", None, 150, 1561,
             "The best pickaxe in the world. You can mine anything :)"],
-        "diamond_axe": ["<:diamond_axe:822530447719268382>", "diamond axe", "rare", None, 150, None,
+        "diamond_axe": ["<:diamond_axe:822530447719268382>", 18, "diamond axe", "rare", None, 150, 1561,
             "The best axe in the world. Chopping go brr."],
-        "diamond_sword": ["<:diamond_sword:822530447715598396>", "diamond sword", "rare", None, 150, None,
+        "diamond_sword": ["<:diamond_sword:822530447715598396>", 19, "diamond sword", "rare", None, 150, 1561,
             "The best sword in the world? Idk, it doesn't do much though..."],
-        "obsidian": ["<:obsidian:822532045673725964>", "obsidian", "rare", None, 80, None,
+        "obsidian": ["<:obsidian:822532045673725964>", 20, "obsidian", "rare", None, 80, None,
             "The hardest material in the world. It silently emits power that connects to another world."],
+        "nether": ["⛩️", 21, "nether portal", "???", None, None, 5,
+            "A mysterious gate that travels to the deepest place in the world."],
+        "netherrack": ["<:netherrack:823592746865655868>", 22, "netherrack", "common", None, 10, None,
+            "A red-ish stone block only presents in the hottest place."],
+        "gold": ["<:gold:823592599314104331>", 23, "gold", "uncommon", None, 20, None,
+            "Gold. How useful."],
 
-        "coal": ["<:coal:819742286250377306>", "coal", "common", 15, 10, None,
+        "coal": ["<:coal:819742286250377306>", 24, "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
-        "string": ["<:string:820758307542401055>", "string", "common", 15, 10, None,
+        "string": ["<:string:820758307542401055>", 25,"string", "common", 15, 10, None,
             "A useful drop for some future uses."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", "spider eye", "uncommon", None, 20, None,
+        "spider_eye": ["<:spider_eye:820758868468301864>", 26, "spider eye", "uncommon", None, 20, None,
             "An uncommon drop for some future uses."],
-        "gunpowder": ["<:gunpowder:821528688646160395>", "gunpowder", "uncommon", 50, 30, None,
+        "gunpowder": ["<:gunpowder:821528688646160395>", 27, "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
-        "apple": ["🍎", "apple", "common", None, 10, None,
+        "magma_cream": ["<:magma_cream:823593239683924038>", 28, "magma cream", "uncommon", 50, 40, None,
+            "An uncommon drop for some future uses."],
+        "apple": ["🍎", 29, "apple", "common", None, 10, None,
             "An apple. Yummy. Watch out for the worms though."],
-        "flower": ["🌸", "flower", "common", None, 10, None,
+        "flower": ["🌸", 30, "flower", "common", None, 10, None,
             "A beautiful flower."],
-        "moyai": ["🌺", "moyai", "???", None, None, None,
+        "moyai": ["🌺", 31, "moyai", "???", None, None, None,
             "A mysterious mystical flower. It is unknown what this flower truly is."]
     }
+
+def get_world(world : int) -> str:
+    if world == 0:
+        return "Overworld"
+    elif world == 1:
+        return "Nether"
 
 async def get_friendly_reward(conn, reward : dict, emote = True) -> str:
     msg = ""
@@ -82,100 +96,169 @@ async def get_friendly_reward(conn, reward : dict, emote = True) -> str:
     msg = msg[:-2]
     return msg
 
-def get_mine_loot(pick : str):
-    if pick == "wood_pickaxe":
-        return {
-            "stone": 0.90, # 2.7 on average
-            "rolls": 3
-        }
-    elif pick == "stone_pickaxe":
-        return {
-            "stone": 0.40, # 3.2 on average
-            "coal": 0.40, # 3.2 on average
-            "iron": 0.10, # 0.8 on average
-            "rolls": 8
-        }
-    elif pick == "iron_pickaxe":
-        return {
-            "stone": 0.35, # 3.5 on average
-            "coal": 0.30, # 3 on average
-            "iron": 0.25, # 2.5 on average
-            "redstone": 0.05, # 0.5 on average
-            "diamond": 0.01, # 0.1 on average
-            "rolls": 10
-        }
-    elif pick == "diamond_pickaxe":
-        return {
-            "stone": 0.26, # 5.2 on average
-            "coal": 0.15, # 3 on average
-            "iron": 0.25, # 5 on average
-            "redstone": 0.10, # 2 on average
-            "diamond": 0.05, # 1 on average
-            "obsidian": 0.10, # 2 on average
-            "rolls": 20
-        }
+def get_mine_loot(pick : str, world : int):
+    if world == 0:
+        if pick == "wood_pickaxe":
+            return {
+                "stone": 0.90, # 2.7 on average
+                "rolls": 3
+            }
+        elif pick == "stone_pickaxe":
+            return {
+                "stone": 0.40, # 3.2 on average
+                "coal": 0.40, # 3.2 on average
+                "iron": 0.10, # 0.8 on average
+                "rolls": 8
+            }
+        elif pick == "iron_pickaxe":
+            return {
+                "stone": 0.35, # 3.5 on average
+                "coal": 0.30, # 3 on average
+                "iron": 0.25, # 2.5 on average
+                "redstone": 0.05, # 0.5 on average
+                "diamond": 0.01, # 0.1 on average
+                "rolls": 10
+            }
+        elif pick == "diamond_pickaxe":
+            return {
+                "stone": 0.26, # 5.2 on average
+                "coal": 0.15, # 3 on average
+                "iron": 0.25, # 5 on average
+                "redstone": 0.10, # 2 on average
+                "diamond": 0.05, # 1 on average
+                "obsidian": 0.10, # 2 on average
+                "rolls": 20
+            }
+    elif world == 1:
+        if pick == "wood_pickaxe":
+            return {
+                "netherrack": 0.99,
+                "gold": 0.01,
+                "rolls": 3
+            }
+        elif pick == "stone_pickaxe":
+            return {
+                "netherrack": 0.90,
+                "gold": 0.10,
+                "rolls": 8
+            }
+        elif pick == "iron_pickaxe":
+            return {
+                "netherrack": 0.80,
+                "gold": 0.20,
+                "rolls": 10
+            }
+        elif pick == "diamond_pickaxe":
+            return {
+                "netherrack": 0.80,
+                "gold": 0.20,
+                "rolls": 20
+            }
+    return None
+
+def get_chop_loot(axe : str, world : int):
+    if world == 0:
+        if axe == "wood_axe":
+            return {
+                "log": 1, # 3 guaranteed
+                "rolls": 3
+            }
+        elif axe == "stone_axe":
+            return {
+                "log": 0.60, # 4.2 on average
+                "stick": 0.20, # 1.4 on average
+                "apple": 0.20, # 1.4 on average
+                "rolls": 7
+            }
+        elif axe == "iron_axe":
+            return {
+                "log": 0.50, # 5 on average
+                "stick": 0.15, # 1.5 on average
+                "apple": 0.15, # 1.5 on average
+                "flower": 0.20, # 2 on average
+                "rolls": 10
+            }
+        elif axe == "diamond_axe":
+            return {
+                "log": 0.45, # 9 on average
+                "stick": 0.10, # 2 on average
+                "apple": 0.25, # 5 on average
+                "flower": 0.20, # 4 on average
+                "moyai": 0.000000005, # 0.0000001 on average
+                "rolls": 20
+            }
+    elif world == 1:
+        if axe == "wood_axe":
+            return {
+                "log": 0.5, # 1.5 on average
+                "rolls": 3
+            }
+        elif axe == "stone_axe":
+            return {
+                "log": 0.60, # 4.2 on average
+                "rolls": 7
+            }
+        elif axe == "iron_axe":
+            return {
+                "log": 0.50, # 5 on average
+                "rolls": 10
+            }
+        elif axe == "diamond_axe":
+            return {
+                "log": 0.45, # 9 on average
+                "rolls": 20
+            }
     
     return None
 
-def get_chop_loot(axe : str):
-    if axe == "wood_axe":
-        return {
-            "log": 1, # 3 guaranteed
-            "rolls": 3
-        }
-    elif axe == "stone_axe":
-        return {
-            "log": 0.60, # 4.2 on average
-            "stick": 0.20, # 1.4 on average
-            "apple": 0.20, # 1.4 on average
-            "rolls": 7
-        }
-    elif axe == "iron_axe":
-        return {
-            "log": 0.50, # 5 on average
-            "stick": 0.15, # 1.5 on average
-            "apple": 0.15, # 1.5 on average
-            "flower": 0.20, # 2 on average
-            "rolls": 10
-        }
-    elif axe == "diamond_axe":
-        return {
-            "log": 0.45, # 9 on average
-            "stick": 0.10, # 2 on average
-            "apple": 0.25, # 5 on average
-            "flower": 0.20, # 4 on average
-            "moyai": 0.000000005, # 0.0000001 on average
-            "rolls": 20
-        }
-    
-    return None
-
-def get_adventure_loot(sword : str):
-    if sword == "wood_sword":
-        return {
-            "string": 0.30,  # 0.6 on average
-            "rolls": 2
-        }
-    elif sword == "stone_sword":
-        return {
-            "string": 0.35, # 1.75 on average
-            "spider_eye": 0.05, # 0.25 on average
-            "rolls": 5
-        }
-    elif sword == "iron_sword":
-        return {
-            "string": 0.35, # 3.5 on average
-            "spider_eye": 0.15, # 1.5 on average
-            "gunpowder": 0.1, # 1 on average
-            "rolls": 10
-        }
-    elif sword == "diamond_sword":
-        return {
-            "string": 0.30, # 6 on average
-            "spider_eye": 0.15, # 3 on average
-            "gunpowder": 0.25, # 5 on average
-            "rolls": 20
-        }
+def get_adventure_loot(sword : str, world : int):
+    if world == 0:
+        if sword == "wood_sword":
+            return {
+                "string": 0.30,  # 0.6 on average
+                "rolls": 2
+            }
+        elif sword == "stone_sword":
+            return {
+                "string": 0.35, # 1.75 on average
+                "spider_eye": 0.05, # 0.25 on average
+                "rolls": 5
+            }
+        elif sword == "iron_sword":
+            return {
+                "string": 0.35, # 3.5 on average
+                "spider_eye": 0.15, # 1.5 on average
+                "gunpowder": 0.1, # 1 on average
+                "rolls": 10
+            }
+        elif sword == "diamond_sword":
+            return {
+                "string": 0.30, # 6 on average
+                "spider_eye": 0.15, # 3 on average
+                "gunpowder": 0.25, # 5 on average
+                "rolls": 20
+            }
+    elif world == 1:
+        if sword == "wood_sword":
+            return {
+                "magma_cream": 0.5,
+                "rolls": 2
+            }
+        elif sword == "stone_sword":
+            return {
+                "magma_cream": 0.5,
+                "rolls": 5
+            }
+        elif sword == "iron_sword":
+            return {
+                "magma_cream": 0.75,
+                "rolls": 10
+            }
+        elif sword == "diamond_sword":
+            return {
+                "magma_cream": 0.75,
+                "rolls": 20
+            }
     return None
 
 def get_daily_loot(streak : int):
@@ -280,6 +363,10 @@ def get_craft_ingredient(item : str):
         "diamond_sword": {
             "diamond": 2,
             "stick": 1,
+            "quantity": 1
+        },
+        "nether": {
+            "obsidian": 10,
             "quantity": 1
         },
         "coal": {
