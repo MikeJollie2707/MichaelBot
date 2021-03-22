@@ -58,7 +58,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You have no sword equip.", mention_author = False)
                     return
                 
-                loot = LootTable.get_adventure_loot(current_sword["item_id"])
+                world = await DB.User.get_world(conn, ctx.author.id)
+                loot = LootTable.get_adventure_loot(current_sword["item_id"], world)
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
@@ -134,9 +135,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You have no axe equip.")
                     return
                 
-                loot = LootTable.get_chop_loot(current_axe["item_id"])
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_chop_loot(current_axe["item_id"], world)
+                lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
                 for i in range(0, loot["rolls"]):
@@ -558,7 +559,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You have no pickaxe equip.", mention_author = False)
                     return
                 
-                loot = LootTable.get_mine_loot(current_pick["item_id"])
+                world = await DB.User.get_world(conn, ctx.author.id)
+                loot = LootTable.get_mine_loot(current_pick["item_id"], world)
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
