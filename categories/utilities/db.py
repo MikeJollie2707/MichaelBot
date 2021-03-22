@@ -61,7 +61,7 @@ class User:
     """
 
     @classmethod
-    async def find_user(cls, conn, user_id : int) -> asyncpg.Record:
+    async def find_user(cls, conn, user_id : int) -> dict:
         """
         Find a member data in `DUsers`.
 
@@ -79,7 +79,7 @@ class User:
             WHERE id = ($1)
         ''', user_id)
 
-        return result
+        return rec_to_dict(result)
 
     @classmethod
     async def insert_user(cls, conn, member : discord.Member):
@@ -97,8 +97,9 @@ class User:
         member_existed = await cls.find_user(conn, member.id)
         if member_existed is None:
             await insert_into(conn, "DUsers", [
-                (member.id, member.name, True, 0, None, 0)
+                (member.id, member.name, True, 0, None, 0, 0, None)
             ])
+
     
     @classmethod
     async def __update_generic__(cls, conn, id : int, col_name : str, new_value):
@@ -142,6 +143,14 @@ class User:
         return await cls.__update_generic__(conn, id, "streak_daily", new_streak)
     
     @classmethod
+    async def update_world(cls, conn, id, new_world : int):
+        return await cls.__update_generic__(conn, id, "world", new_world)
+    
+    @classmethod
+    async def update_last_move(cls, conn, id, new_last_move : datetime.datetime):
+        return await cls.__update_generic__(conn, id, "last_move", new_last_move)
+
+    @classmethod
     async def bulk_update(cls, conn, id, new_values : dict):
         """
         Update all values in one SQL statement.
@@ -175,6 +184,11 @@ class User:
         member_info = dict(await cls.find_user(conn, id))
         return member_info["money"]
     
+    @classmethod
+    async def get_world(cls, conn, id) -> int:
+        member_info = rec_to_dict(await cls.find_user(conn, id))
+        return member_info["world"] if member_info is not None else None
+
     @classmethod
     async def add_money(cls, conn, id, amount : int):
         """
@@ -512,7 +526,7 @@ class Items:
             WHERE id = ($1);
         '''
 
-        return await conn.fetchval(query, id, column = 2)
+        return await conn.fetchval(query, id, column = 3)
 
     @classmethod
     async def get_internal_name(cls, conn, friendly_name : str) -> str:
