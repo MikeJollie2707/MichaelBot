@@ -135,7 +135,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     return
                 
                 loot = LootTable.get_chop_loot(current_axe["item_id"])
-                lower_bound = 0
+                world = await DB.User.get_world(conn, ctx.author.id)
+                loot = LootTable.get_chop_loot(current_axe["item_id"], world)
                 upper_bound = 0
                 final_reward = {}
                 for i in range(0, loot["rolls"]):
@@ -321,7 +322,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
-                member = DB.rec_to_dict(await DB.User.find_user(conn, ctx.author.id))
+                member = await DB.User.find_user(conn, ctx.author.id)
 
                 if member["last_daily"] is None:
                     member["last_daily"] = datetime.datetime.utcnow()
@@ -598,7 +599,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
         pass
-    
+
     @commands.group(aliases = ['market'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
