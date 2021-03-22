@@ -455,7 +455,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             def _on_amount(slot):
                 return -slot["quantity"]
+            def _on_order(slot):
+                item = LootTable.get_item_info()[slot["item_id"]]
+                return item[1]
             inventory.sort(key = _on_amount)
+            inventory.sort(key = _on_order)
 
             inventory_dict = {}
             for slot in inventory:
