@@ -24,7 +24,9 @@ async def setup(secrets : dict):
                 is_whitelist BOOL DEFAULT TRUE,
                 money INT8 DEFAULT 0,
                 last_daily TIMESTAMP,
-                streak_daily INT4 DEFAULT 0
+                streak_daily INT4 DEFAULT 0,
+                world INT4 DEFAULT 0,
+                last_move TIMESTAMP
             );
         ''')
         print("Done!")
@@ -61,6 +63,7 @@ async def setup(secrets : dict):
             CREATE TABLE IF NOT EXISTS Items (
                 id TEXT PRIMARY KEY,
                 emoji TEXT NOT NULL UNIQUE,
+                inner_sort INT4,
                 name TEXT NOT NULL,
                 rarity TEXT NOT NULL,
                 buy_price INT,
