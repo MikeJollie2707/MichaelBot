@@ -60,6 +60,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_adventure_loot(current_sword["item_id"], world)
+                if world == 1:
+                    die_chance = 0.05
+                    rng = random.random()
+                    if rng <= die_chance:
+                        equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
+                        for tool in equipment:
+                            await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                        
+                        await ctx.reply("You go on an adventure, but while doing some sick parkour, you fall to a lava pit and lose all your current equipment :(", mention_author = False)
+                        return
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
@@ -117,7 +127,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def chop(self, ctx : commands.Context):
         '''
         Chop some trees.
-
         The majority of reward is log, although you can also find some other things with a better axe.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
@@ -137,6 +146,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_chop_loot(current_axe["item_id"], world)
+                if world == 1:
+                    die_chance = 0.05
+                    rng = random.random()
+                    if rng <= die_chance:
+                        equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
+                        for tool in equipment:
+                            await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                        
+                        await ctx.reply("You go chopping, but a hoglin knocks you into a lava pool and lose all your current equipment :(", mention_author = False)
+                        return
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
@@ -541,7 +560,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def mine(self, ctx : commands.Context):
         '''
         Go mining to earn resources.
-
         You need to have a pickaxe equipped using the `equip` command.
 
         **Usage:** <prefix>**{command_name}**
@@ -561,6 +579,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_mine_loot(current_pick["item_id"], world)
+                if world == 1:
+                    die_chance = 0.05
+                    rng = random.random()
+                    if rng <= die_chance:
+                        equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
+                        for tool in equipment:
+                            await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                        
+                        await ctx.reply("You go mining, but you fall to a lava pool and lose all your current equipment :(", mention_author = False)
+                        return
                 lower_bound = 0
                 upper_bound = 0
                 final_reward = {}
