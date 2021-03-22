@@ -56,22 +56,24 @@ def get_item_info():
             "A red-ish stone block only presents in the hottest place."],
         "gold": ["<:gold:823592599314104331>", 23, "gold", "uncommon", None, 20, None,
             "Gold. How useful."],
+        "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 100, None,
+            "A leftover of what is once the toughest metal in the universe."],
 
-        "coal": ["<:coal:819742286250377306>", 24, "coal", "common", 15, 10, None,
+        "coal": ["<:coal:819742286250377306>", 25, "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
-        "string": ["<:string:820758307542401055>", 25,"string", "common", 15, 10, None,
+        "string": ["<:string:820758307542401055>", 26,"string", "common", 15, 10, None,
             "A useful drop for some future uses."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", 26, "spider eye", "uncommon", None, 20, None,
+        "spider_eye": ["<:spider_eye:820758868468301864>", 27, "spider eye", "uncommon", None, 20, None,
             "An uncommon drop for some future uses."],
-        "gunpowder": ["<:gunpowder:821528688646160395>", 27, "gunpowder", "uncommon", 50, 30, None,
+        "gunpowder": ["<:gunpowder:821528688646160395>", 28, "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
-        "magma_cream": ["<:magma_cream:823593239683924038>", 28, "magma cream", "uncommon", 50, 40, None,
+        "magma_cream": ["<:magma_cream:823593239683924038>", 29, "magma cream", "uncommon", 50, 40, None,
             "An uncommon drop for some future uses."],
-        "apple": ["🍎", 29, "apple", "common", None, 10, None,
+        "apple": ["🍎", 30, "apple", "common", None, 10, None,
             "An apple. Yummy. Watch out for the worms though."],
-        "flower": ["🌸", 30, "flower", "common", None, 10, None,
+        "flower": ["🌸", 31, "flower", "common", None, 10, None,
             "A beautiful flower."],
-        "moyai": ["🌺", 31, "moyai", "???", None, None, None,
+        "moyai": ["🌺", 32, "moyai", "???", None, None, None,
             "A mysterious mystical flower. It is unknown what this flower truly is."]
     }
 
@@ -132,26 +134,27 @@ def get_mine_loot(pick : str, world : int):
     elif world == 1:
         if pick == "wood_pickaxe":
             return {
-                "netherrack": 0.99,
-                "gold": 0.01,
+                "netherrack": 0.90, # 2.7 on average
+                "gold": 0.10, # 0.3 on average
                 "rolls": 3
             }
         elif pick == "stone_pickaxe":
             return {
-                "netherrack": 0.90,
-                "gold": 0.10,
+                "netherrack": 0.90, # 7.2 on average
+                "gold": 0.10, # 0.8 on average
                 "rolls": 8
             }
         elif pick == "iron_pickaxe":
             return {
-                "netherrack": 0.80,
-                "gold": 0.20,
+                "netherrack": 0.80, # 8 on average
+                "gold": 0.20, # 2 on average
                 "rolls": 10
             }
         elif pick == "diamond_pickaxe":
             return {
-                "netherrack": 0.80,
-                "gold": 0.20,
+                "netherrack": 0.80, # 16 on average
+                "gold": 0.19, # 3.8 on average
+                "debris": 0.001, # 0.02 on average
                 "rolls": 20
             }
     return None
