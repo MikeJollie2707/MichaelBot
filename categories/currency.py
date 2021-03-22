@@ -719,6 +719,60 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await DB.User.add_money(conn, ctx.author.id, amount * actual_item["sell_price"])
                 await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * actual_item['sell_price']}", mention_author = False)
                 
+    @commands.command(aliases = ['moveto', 'goto'])
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    async def travelto(self, ctx, destination : str):
+        '''
+        Travel to another dimension.
+        You can travel to either `Overworld` or `Nether` currently.
+
+        **Aliases:** `moveto`, `goto`
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 1 day after 1 use (user)
+        **Example:** {prefix}{command_name} nether
+
+        **You need:** A Nether portal item.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        dest = 0
+        if destination.upper() == "OVERWORLD":
+            dest = 0
+        elif destination.upper() == "NETHER":
+            dest = 1
+        else:
+            await ctx.reply("There's no such destination to travel!", mention_author = False)
+            return
+        
+        async with self.bot.pool.acquire() as conn:
+            user_info = await DB.User.find_user(conn, ctx.author.id)
+            world = user_info["world"]
+            if world == dest:
+                await ctx.reply("You're already at %s." % LootTable.get_world(dest), mention_author = False)
+                return
+            
+            if (dest == 1 and world == 0) or (dest == 0 and world == 1):
+                user_inv = await DB.Inventory.get_one_inventory(conn, ctx.author.id, "nether")
+            
+            if user_inv is None:
+                await ctx.reply("You don't have a portal to travel to this destination.", mention_author = False)
+                return
+
+            if user_info["last_move"] is not None:
+                if datetime.datetime.utcnow() - user_info["last_move"] < datetime.timedelta(hours = 24.0):
+                    remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - user_info["last_move"])
+                    remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
+                    await ctx.reply(f"You still have {remaining_str} left before you can travel again.", mention_author = False)
+                    return
+            if user_info["world"] == dest:
+                await ctx.reply("Already at %s." % LootTable.get_world(dest), mention_author = False)
+                return
+
+            await DB.User.update_world(conn, ctx.author.id, dest)
+            await DB.User.update_last_move(conn, ctx.author.id, datetime.datetime.utcnow())
+            # Decrease portal durability here...
+
+            await ctx.reply("Moved to %s." % LootTable.get_world(dest), mention_author = False)
 
 def setup(bot : MichaelBot):
     bot.add_cog(Currency(bot))
