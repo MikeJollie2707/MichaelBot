@@ -686,7 +686,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply(f"Bought {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully.", mention_author = False)
             
     @trade.command()
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def sell(self, ctx, amount : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
