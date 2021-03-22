@@ -603,7 +603,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Send Messages`.
         '''
         pass
-
+    
     @commands.group(aliases = ['market'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
