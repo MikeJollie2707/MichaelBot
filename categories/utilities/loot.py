@@ -56,8 +56,8 @@ def get_item_info():
             "A red-ish stone block only presents in the hottest place."],
         "gold": ["<:gold:823592599314104331>", 23, "gold", "uncommon", None, 20, None,
             "Gold. How useful."],
-        "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 100, None,
-            "A leftover of what is once the toughest metal in the universe."],
+        "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 150, None,
+            "A leftover of what was once the toughest metal in the universe. Such toughness is only achievable under the undying heat."],
 
         "coal": ["<:coal:819742286250377306>", 25, "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
