@@ -473,13 +473,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply("*Insert empty inventory here*", mention_author = False)
                 return
             
-            def _on_amount(slot):
-                return -slot["quantity"]
-            def _on_order(slot):
+            def _on_inner_amount(slot):
                 item = LootTable.get_item_info()[slot["item_id"]]
-                return item[1]
-            inventory.sort(key = _on_amount)
-            inventory.sort(key = _on_order)
+                return (-slot["quantity"], item[1])
+            inventory.sort(key = _on_inner_amount)
 
             inventory_dict = {}
             for slot in inventory:
