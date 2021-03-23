@@ -14,6 +14,8 @@ from categories.utilities.checks import has_database
 from categories.templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
 
+NETHER_DIE = 0.025
+
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""
     def __init__(self, bot : MichaelBot):
@@ -61,7 +63,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_adventure_loot(current_sword["item_id"], world)
                 if world == 1:
-                    die_chance = 0.05
+                    die_chance = NETHER_DIE
                     rng = random.random()
                     if rng <= die_chance:
                         equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
@@ -147,7 +149,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_chop_loot(current_axe["item_id"], world)
                 if world == 1:
-                    die_chance = 0.05
+                    die_chance = NETHER_DIE
                     rng = random.random()
                     if rng <= die_chance:
                         equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
@@ -578,7 +580,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 world = await DB.User.get_world(conn, ctx.author.id)
                 loot = LootTable.get_mine_loot(current_pick["item_id"], world)
                 if world == 1:
-                    die_chance = 0.05
+                    die_chance = NETHER_DIE
                     rng = random.random()
                     if rng <= die_chance:
                         equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
