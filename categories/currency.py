@@ -476,7 +476,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             def _on_inner_amount(slot):
                 item = LootTable.get_item_info()[slot["item_id"]]
-                return (-slot["quantity"], item[1])
+                return (-slot["quantity"], -item[1])
             inventory.sort(key = _on_inner_amount)
 
             inventory_dict = {}
