@@ -449,7 +449,15 @@ class Inventory:
             await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
 
     @classmethod
-    async def find_equip(cls, conn, tool_type : str, user_id):
+    async def find_equip(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
+        """
+        Find the current equipment.
+
+        Important Parameters:
+        - `tool_type`: Either `pickaxe`, `axe` or `sword`.
+        - `user_id`: The user's id.
+        """
+        
         query = f'''
             SELECT * FROM DUsers_Items
             WHERE item_id LIKE '%\_{tool_type}' AND is_main = TRUE AND user_id = ($1);
