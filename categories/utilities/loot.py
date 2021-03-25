@@ -264,6 +264,142 @@ def get_adventure_loot(sword : str, world : int):
             }
     return None
 
+def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
+    """
+    Get the random message for a mining session.
+
+    Parameters:
+    - `type`: The type of message you want. Acceptable are `reward`, `empty`/`nothing`, or `die`.
+    - `world`: The world the user is in.
+    - `reward_string`: The reward under the form of string obtained using `get_friendly_reward`. Can be ignored if `type` is not `reward`.
+
+    Return type: `str`
+    """
+
+    messages = None
+    if type == "reward":
+        if world == 0:
+            messages = [
+                f"You go mining and get {reward_string}.",
+                f"You go to some caves and get out with {reward_string}.",
+                f"You visit an abandoned mineshaft and steal {reward_string} from there."
+            ]
+        elif world == 1:
+            messages = [
+                f"You go mining and get {reward_string}."
+            ]
+    elif type == "empty" or type == "nothing":
+        if world == 0:
+            messages = [
+                "You go mining in a happy day, but you get nothing, so now it's a bad day.",
+                "You thought you're gonna get some diamonds, but it turns out to be just you being color blinded.",
+                "You go mining some resources, but somebody decides to put a Curse of Greedy on you and thus you get nothing but dust."
+            ]
+        elif world == 1:
+            messages = [
+                "You go mine, hoping for something, but you just get tons of netherrack, so you throw them all away."
+            ]
+    elif type == "die":
+        if world == 0:
+            messages = [
+                "You went mining in a ravine, but a creeper went kamikaze so you died. Don't go to a ravine.",
+                "You digged into a nest of cave spiders and died horrifically.",
+                "You decided to go sicko mode and digged straight down. It didn't end well."
+            ]
+        elif world == 1:
+            messages = [
+                "Your pickaxe is too good that you accidentally mined into a lava pocket and died miserably.",
+                "The ghast shot you just right after you went up from your mine, effectively killed you.",
+                "You slept."
+            ]
+    
+    return random.choice(messages)
+
+def get_chop_msg(type : str, world : int, reward_string : str = "") -> str:
+    messages = None
+    if type == "reward":
+        if world == 0:
+            messages = [
+                f"You go chop some trees and get {reward_string}.",
+                f"You chop down some villager's houses to get {reward_string} because you hate them.",
+                f"You go *deforestation*, which is by the way, *illegal*, to get {reward_string}."
+            ]
+        elif world == 1:
+            messages = [
+                f"You go chop some trees and get {reward_string}."
+            ]
+    elif type == "empty" or type == "nothing":
+        if world == 0:
+            messages = [
+                "You are distracted by the butterflies so you do nothing.",
+                "You feel sorry for the villagers somehow so you spare their homes.",
+                "You are bored today so you don't go chopping despite the command telling so."
+            ]
+        elif world == 1:
+            messages = [
+                "You are scared of the hoglins so you quit chopping for a while.",
+                "You don't like the wood in the Nether. Why discriminate them?",
+            ]
+    elif type == "die":
+        if world == 0:
+            messages = [
+                "You didn't see a creeper creeping behind you so you die.",
+                "You got owned by the Iron Golem while destroying the houses. Rip equipments.",
+                "You got the logs, but while navigating through the forest, you fell down a hidden ravine and died."
+            ]
+        elif world == 1:
+            messages = [
+                "You were chopping some trees, but a hoglin knocked you off the cliff so you died.",
+                "You forgot to wear golden boots (*psst, they don't exist*).",
+                "You looked at the enderman."
+            ]
+
+    return random.choice(messages)
+
+def get_adventure_msg(type : str, world : int, reward_string : str = "") -> str:
+    messages = None
+    if type == "reward":
+        if world == 0:
+            messages = [
+                f"You go on an adventure and get {reward_string}.",
+                f"You slay some monsters and get {reward_string}.",
+                f"You steal some villagers' chests to get {reward_string}."
+            ]
+        elif world == 1:
+            messages = [
+                f"You loot some bastion and get {reward_string}.",
+                f"You go to a fortress and get {reward_string}. Spooky."
+            ]
+    elif type == "empty" or type == "nothing":
+        if world == 0:
+            messages = [
+                "You sleep.",
+                "You're sick right now, so you don't really feel going on an adventure.",
+                "You fear that you'll lose your house, so you don't leave it for now."
+            ]
+        elif world == 1:
+            messages = [
+                "You decide to take a day off from walking in literal hell.",
+                "You are afraid of the bastion so you listen to the OST instead.",
+                "You're not confident walking around without a golden helmet, so you stay in a 2x2 pit."
+            ]
+    elif type == "die":
+        if world == 0:
+            messages = [
+                "A creeper jumped out of nowhere and went kamikaze. It was very effective.",
+                "You smacked an Iron Golem while visiting a village, only to get smacked by it *hard*.",
+                "While doing some sick parkour, you fell into a ravine and died."
+            ]
+        elif world == 1:
+            messages = [
+                "You were tired, so you slept. It was not a wise decision.",
+                "While doing some sick parkour and block clutches, your mouse died midway, dragging you with it.",
+                "The strider decided to die while you were riding on it.",
+                "You tried to raid a bastion, only to get raided by Brute Piglins."
+            ]
+    
+    return random.choice(messages)
+
 def get_daily_loot(streak : int):
     if streak < 10:
         return {
