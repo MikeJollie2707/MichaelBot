@@ -15,6 +15,7 @@ from categories.templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
 
 NETHER_DIE = 0.025
+OVERWORLD_DIE = 0.0125
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""
@@ -53,39 +54,58 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
         
+        # The code for `adventure()`, `chop()` and `mine()` should be identical for now.
+        # Just copy and change some stuffs.
+
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
+                # Edit the name of the variable and the string argument.
                 current_sword = await DB.Inventory.find_equip(conn, "sword", ctx.author.id)
                 if current_sword is None:
+                    # Edit this message.
                     await ctx.reply("You have no sword equip.", mention_author = False)
                     return
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
+                # Edit function name
                 loot = LootTable.get_adventure_loot(current_sword["item_id"], world)
-                if world == 1:
+                
+                if world == 0:
+                    die_chance = OVERWORLD_DIE
+                elif world == 1:
                     die_chance = NETHER_DIE
-                    rng = random.random()
-                    if rng <= die_chance:
-                        equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
-                        for tool in equipment:
-                            await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
-                        
-                        await ctx.reply("You go on an adventure, but while doing some sick parkour, you fall to a lava pit and lose all your current equipment :(", mention_author = False)
-                        return
+                
+                rng = random.random()
+                if rng <= die_chance:
+                    equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
+                    for tool in equipment:
+                        await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                    
+                    # Edit the function name
+                    await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
+                    return
+                
+                # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
                 lower_bound = 0
                 upper_bound = 0
+                # Later on we can check if the user has a certain potion that can affect the roll like double or something.
+                rolls = loot.pop("rolls")
+                # A dict of {"item": amount}
                 final_reward = {}
-                for i in range(0, loot["rolls"]):
+
+                for i in range(0, rolls):
                     for reward in loot:
-                        if reward != "rolls":
-                            if reward not in final_reward:
-                                final_reward[reward] = 0
-                            upper_bound += loot[reward]
-                            chance = random.random()
-                            if chance >= lower_bound and chance < upper_bound:
-                                final_reward[reward] += 1
-                            
-                            lower_bound = upper_bound
+                        if reward not in final_reward:
+                            final_reward[reward] = 0
+                        
+                        upper_bound += loot[reward]
+                        chance = random.random()
+                        if chance >= lower_bound and chance < upper_bound:
+                            final_reward[reward] += 1
+                        
+                        lower_bound = upper_bound
+                    
+                    # Reset all these after every rolls.
                     lower_bound = 0
                     upper_bound = 0
                 
@@ -96,10 +116,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         any_reward = True
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
+                # Edit functions name.
                 if any_reward:
-                    await ctx.reply("You go on an adventure and get %s." % message, mention_author = False)
+                    await ctx.reply(LootTable.get_adventure_msg("reward", world, message), mention_author = False)
                 else:
-                    await ctx.reply("You go on an adventure but didn't get anything :(", mention_author = False)
+                    await ctx.reply(LootTable.get_adventure_msg("empty", world), mention_author = False)
 
     @commands.command(aliases = ['bal'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -139,39 +160,58 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
+        # The code for `adventure()`, `chop()` and `mine()` should be identical for now.
+        # Just copy and change some stuffs.
+
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
+                # Edit the name of the variable and the string argument.
                 current_axe = await DB.Inventory.find_equip(conn, "axe", ctx.author.id)
                 if current_axe is None:
-                    await ctx.reply("You have no axe equip.")
+                    # Edit this message.
+                    await ctx.reply("You have no axe equip.", mention_author = False)
                     return
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
+                # Edit function name
                 loot = LootTable.get_chop_loot(current_axe["item_id"], world)
-                if world == 1:
+                
+                if world == 0:
+                    die_chance = OVERWORLD_DIE
+                elif world == 1:
                     die_chance = NETHER_DIE
-                    rng = random.random()
-                    if rng <= die_chance:
-                        equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
-                        for tool in equipment:
-                            await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
-                        
-                        await ctx.reply("You go chopping, but a hoglin knocks you into a lava pool and lose all your current equipment :(", mention_author = False)
-                        return
+                
+                rng = random.random()
+                if rng <= die_chance:
+                    equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
+                    for tool in equipment:
+                        await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                    
+                    # Edit the function name
+                    await ctx.reply(LootTable.get_chop_msg("die", world), mention_author = False)
+                    return
+                
+                # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
                 lower_bound = 0
                 upper_bound = 0
+                # Later on we can check if the user has a certain potion that can affect the roll like double or something.
+                rolls = loot.pop("rolls")
+                # A dict of {"item": amount}
                 final_reward = {}
-                for i in range(0, loot["rolls"]):
+
+                for i in range(0, rolls):
                     for reward in loot:
-                        if reward != "rolls":
-                            if reward not in final_reward:
-                                final_reward[reward] = 0
-                            upper_bound += loot[reward]
-                            chance = random.random()
-                            if chance >= lower_bound and chance < upper_bound:
-                                final_reward[reward] += 1
-                            
-                            lower_bound = upper_bound
+                        if reward not in final_reward:
+                            final_reward[reward] = 0
+                        
+                        upper_bound += loot[reward]
+                        chance = random.random()
+                        if chance >= lower_bound and chance < upper_bound:
+                            final_reward[reward] += 1
+                        
+                        lower_bound = upper_bound
+                    
+                    # Reset all these after every rolls.
                     lower_bound = 0
                     upper_bound = 0
                 
@@ -181,11 +221,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     if final_reward[reward] != 0:
                         any_reward = True
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
-
-                if any_reward:               
-                    await ctx.reply("You go chopping trees and get %s." % message, mention_author = False)
+                
+                # Edit functions name.
+                if any_reward:
+                    await ctx.reply(LootTable.get_chop_msg("reward", world, message), mention_author = False)
                 else:
-                    await ctx.reply("You go chopping trees, but no tree was found :(", mention_author = False)
+                    await ctx.reply(LootTable.get_chop_msg("empty", world), mention_author = False)
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -570,39 +611,58 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
+        # The code for `adventure()`, `chop()` and `mine()` should be identical for now.
+        # Just copy and change some stuffs.
+
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
+                # Edit the name of the variable and the string argument.
                 current_pick = await DB.Inventory.find_equip(conn, "pickaxe", ctx.author.id)
                 if current_pick is None:
+                    # Edit this message.
                     await ctx.reply("You have no pickaxe equip.", mention_author = False)
                     return
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
+                # Edit function name
                 loot = LootTable.get_mine_loot(current_pick["item_id"], world)
-                if world == 1:
+                
+                if world == 0:
+                    die_chance = OVERWORLD_DIE
+                elif world == 1:
                     die_chance = NETHER_DIE
-                    rng = random.random()
-                    if rng <= die_chance:
-                        equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
-                        for tool in equipment:
-                            await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
-                        
-                        await ctx.reply("You go mining, but you fall to a lava pool and lose all your current equipment :(", mention_author = False)
-                        return
+                
+                rng = random.random()
+                if rng <= die_chance:
+                    equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
+                    for tool in equipment:
+                        await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                    
+                    # Edit the function name
+                    await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
+                    return
+                
+                # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
                 lower_bound = 0
                 upper_bound = 0
+                # Later on we can check if the user has a certain potion that can affect the roll like double or something.
+                rolls = loot.pop("rolls")
+                # A dict of {"item": amount}
                 final_reward = {}
-                for i in range(0, loot["rolls"]):
+
+                for i in range(0, rolls):
                     for reward in loot:
-                        if reward != "rolls":
-                            if reward not in final_reward:
-                                final_reward[reward] = 0
-                            upper_bound += loot[reward]
-                            chance = random.random()
-                            if chance >= lower_bound and chance < upper_bound:
-                                final_reward[reward] += 1
-                            
-                            lower_bound = upper_bound
+                        if reward not in final_reward:
+                            final_reward[reward] = 0
+                        
+                        upper_bound += loot[reward]
+                        chance = random.random()
+                        if chance >= lower_bound and chance < upper_bound:
+                            final_reward[reward] += 1
+                        
+                        lower_bound = upper_bound
+                    
+                    # Reset all these after every rolls.
                     lower_bound = 0
                     upper_bound = 0
                 
@@ -613,10 +673,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         any_reward = True
                         await DB.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
+                # Edit functions name.
                 if any_reward:
-                    await ctx.reply("You go mining and get %s." % message, mention_author = False)
+                    await ctx.reply(LootTable.get_mine_msg("reward", world, message), mention_author = False)
                 else:
-                    await ctx.reply("You go mining, but you didn't feel well so you left with nothing.", mention_author = False)
+                    await ctx.reply(LootTable.get_mine_msg("empty", world), mention_author = False)
     
     @commands.command(aliases = ['lb'], hidden = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
