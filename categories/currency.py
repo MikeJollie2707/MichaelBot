@@ -139,8 +139,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         member_money = 0
         async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                member_money = await DB.User.get_money(conn, ctx.author.id)
+            member_money = await DB.User.get_money(conn, ctx.author.id)
 
         await ctx.reply("You have $%d." % member_money, mention_author = False)
 
