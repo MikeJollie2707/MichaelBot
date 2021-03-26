@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-import datetime
+import datetime as dt
 import typing
 
 import asyncpg
@@ -65,7 +65,7 @@ class User:
         """
         Find a member data in `DUsers`.
 
-        If a member is found, it'll return a `Record` of the member, otherwise it'll return `None`.
+        If a member is found, it'll return a `dict` of the member, otherwise it'll return `None`.
 
         Parameter:
         - `conn`: The connection you want to do.
@@ -100,7 +100,6 @@ class User:
                 (member.id, member.name, True, 0, None, 0, 0, None)
             ])
 
-    
     @classmethod
     async def __update_generic__(cls, conn, id : int, col_name : str, new_value):
         """
@@ -116,7 +115,7 @@ class User:
         - `new_value`: The new value.
         """
 
-        return await conn.execute('''
+        await conn.execute('''
             UPDATE DUsers
             SET %s = ($1)
             WHERE id = ($2);
@@ -124,31 +123,29 @@ class User:
 
     @classmethod
     async def update_name(cls, conn, id, new_name : str):
-        return await cls.__update_generic__(conn, id, "name", new_name)
+        await cls.__update_generic__(conn, id, "name", new_name)
     @classmethod
     async def update_whitelist(cls, conn, id, new_status : bool):
-        return await cls.__update_generic__(conn, id, "is_whitelist", new_status)
+        await cls.__update_generic__(conn, id, "is_whitelist", new_status)
     @classmethod
     async def update_money(cls, conn, id, new_money : int):
         # Money can't be lower than 0, for now.
         if new_money <= 0:
             new_money = 0
         
-        return await cls.__update_generic__(conn, id, "money", new_money)
+        await cls.__update_generic__(conn, id, "money", new_money)
     @classmethod
-    async def update_last_daily(cls, conn, id, new_last_daily : datetime.datetime):
-        return await cls.__update_generic__(conn, id, "last_daily", new_last_daily)
+    async def update_last_daily(cls, conn, id, new_last_daily : dt.datetime):
+        await cls.__update_generic__(conn, id, "last_daily", new_last_daily)
     @classmethod
     async def update_streak(cls, conn, id, new_streak : int):
-        return await cls.__update_generic__(conn, id, "streak_daily", new_streak)
-    
+        await cls.__update_generic__(conn, id, "streak_daily", new_streak)  
     @classmethod
     async def update_world(cls, conn, id, new_world : int):
-        return await cls.__update_generic__(conn, id, "world", new_world)
-    
+        await cls.__update_generic__(conn, id, "world", new_world)   
     @classmethod
-    async def update_last_move(cls, conn, id, new_last_move : datetime.datetime):
-        return await cls.__update_generic__(conn, id, "last_move", new_last_move)
+    async def update_last_move(cls, conn, id, new_last_move : dt.datetime):
+        await cls.__update_generic__(conn, id, "last_move", new_last_move)
 
     @classmethod
     async def bulk_update(cls, conn, id, new_values : dict):
@@ -181,13 +178,13 @@ class User:
     
     @classmethod
     async def get_money(cls, conn, id) -> int:
-        member_info = dict(await cls.find_user(conn, id))
-        return member_info["money"]
+        exist = await cls.find_user(conn, id)
+        return exist["money"] if exist is not None else 0
     
     @classmethod
-    async def get_world(cls, conn, id) -> int:
-        member_info = rec_to_dict(await cls.find_user(conn, id))
-        return member_info["world"] if member_info is not None else None
+    async def get_world(cls, conn, id) -> typing.Optional[int]:
+        exist = await cls.find_user(conn, id)
+        return exist["world"] if exist is not None else None
 
     @classmethod
     async def add_money(cls, conn, id, amount : int):
@@ -231,11 +228,11 @@ class Guild:
     """
 
     @classmethod
-    async def find_guild(cls, conn, id : int):
+    async def find_guild(cls, conn, id : int) -> dict:
         """
         Find a guild data in `DGuilds`.
 
-        If a guild is found, it'll return a `Record`, otherwise it'll return `None`.
+        If a guild is found, it'll return a `dict`, otherwise it'll return `None`.
 
         Parameter:
         - `conn`: The connection
@@ -248,7 +245,7 @@ class Guild:
             WHERE id = ($1)
         ''', id)
 
-        return result
+        return rec_to_dict(result)
     
     @classmethod
     async def insert_guild(cls, conn, guild : discord.Guild):
@@ -261,6 +258,7 @@ class Guild:
             + Usually from `pool.acquire()`.
         - `guild`: A Discord guild.
         """
+        
         guild_existed = await cls.find_guild(conn, guild.id)
         if guild_existed is None:
             await insert_into(conn, "DGuilds", [
@@ -282,7 +280,7 @@ class Guild:
         - `new_value`: The new value.
         """
         
-        return await conn.execute('''
+        await conn.execute('''
             UPDATE DGuilds
             SET %s = ($1)
             WHERE id = ($2);
@@ -290,11 +288,11 @@ class Guild:
     
     @classmethod
     async def update_name(cls, conn, id : int, new_name : str):
-        return await cls.update_generic(conn, id, "name", new_name)
+        await cls.update_generic(conn, id, "name", new_name)
     
     @classmethod
     async def update_whitelist(cls, conn, id : int, new_status : bool):
-        return await cls.update_generic(conn, id, "is_whitelist", new_status)
+        await cls.update_generic(conn, id, "is_whitelist", new_status)
     
     @classmethod
     async def update_prefix(cls, conn, id : int, new_prefix : str):
@@ -318,7 +316,7 @@ class Guild:
 
     @classmethod
     async def get_prefix(cls, conn, id : int):
-        guild_info = dict(await cls.find_guild(conn, id))
+        guild_info = await cls.find_guild(conn, id)
         return guild_info["prefix"]
 
 class Member:
@@ -327,14 +325,14 @@ class Member:
     """
 
     @classmethod
-    async def find_member(cls, conn, user_id : int, guild_id : int):
+    async def find_member(cls, conn, user_id : int, guild_id : int) -> dict:
         result = await conn.fetchrow('''
             SELECT *
             FROM DUsers_DGuilds
             WHERE user_id = ($1) AND guild_id = ($2);
         ''', user_id, guild_id)
 
-        return result
+        return rec_to_dict(result)
     
     @classmethod
     async def insert_member(cls, conn, member : discord.Member):
@@ -360,7 +358,7 @@ class Inventory:
     """
 
     @classmethod
-    async def get_whole_inventory(cls, conn, user_id : int):
+    async def get_whole_inventory(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
         query = '''
             SELECT * FROM DUsers_Items
             WHERE user_id = ($1);
@@ -373,7 +371,7 @@ class Inventory:
         return [rec_to_dict(row) for row in result]
     
     @classmethod
-    async def get_one_inventory(cls, conn, user_id, item_id):
+    async def get_one_inventory(cls, conn, user_id : int, item_id : int) -> typing.Optional[dict]:
         query = '''
             SELECT * FROM DUsers_Items
             WHERE user_id = ($1) AND item_id = ($2);
@@ -383,7 +381,7 @@ class Inventory:
         return rec_to_dict(result)
     
     @classmethod
-    async def add(cls, conn, user_id, item_id, amount = 1):
+    async def add(cls, conn, user_id : int, item_id : int, amount : int = 1):
         """
         Add an amount of item to the user's inventory slot.
         
@@ -407,7 +405,7 @@ class Inventory:
             await conn.execute(query, item_existed["quantity"] + amount, user_id, item_id)
     
     @classmethod
-    async def remove(cls, conn, user_id, item_id, amount = 1) -> str:
+    async def remove(cls, conn, user_id : int, item_id : int, amount : int = 1) -> str:
         """
         Remove an amount of item from the user's inventory slot.
 
@@ -439,7 +437,7 @@ class Inventory:
                 await conn.execute(query, item_existed["quantity"] - amount, user_id, item_id)
         
     @classmethod
-    async def update(cls, conn, user_id, item_id, quantity):
+    async def update(cls, conn, user_id : int, item_id : int, quantity : int):
         item_existed = await cls.get_one_inventory(conn, user_id, item_id)
         if item_existed is None:
             return
@@ -457,7 +455,7 @@ class Inventory:
         - `tool_type`: Either `pickaxe`, `axe` or `sword`.
         - `user_id`: The user's id.
         """
-        
+
         query = f'''
             SELECT * FROM DUsers_Items
             WHERE item_id LIKE '%\_{tool_type}' AND is_main = TRUE AND user_id = ($1);
@@ -467,7 +465,7 @@ class Inventory:
         return rec_to_dict(result)
 
     @classmethod
-    async def equip_tool(cls, conn, user_id, item_id):
+    async def equip_tool(cls, conn, user_id : int, item_id : int):
         query = '''
             UPDATE DUsers_Items
             SET is_main = TRUE
@@ -477,7 +475,7 @@ class Inventory:
         await conn.execute(query, user_id, item_id)
     
     @classmethod
-    async def unequip_tool(cls, conn, user_id, item_id):
+    async def unequip_tool(cls, conn, user_id : int, item_id : int):
         query = '''
             UPDATE DUsers_Items
             SET is_main = FALSE
@@ -487,7 +485,7 @@ class Inventory:
         await conn.execute(query, user_id, item_id)
 
     @classmethod
-    async def get_equip(cls, conn, user_id):
+    async def get_equip(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
         query = '''
             SELECT *
             FROM DUsers_Items
@@ -499,7 +497,7 @@ class Inventory:
 
 class Items:
     @classmethod
-    async def get_whole_items(cls, conn):
+    async def get_whole_items(cls, conn) -> typing.Optional[typing.List[dict]]:
         query = '''
             SELECT * FROM Items;
         '''
@@ -507,13 +505,7 @@ class Items:
         result = await conn.fetch(query)
         return [rec_to_dict(record) for record in result]
     @classmethod
-    async def create_item(cls, conn, *args):
-        exist = await cls.get_item(conn, args[0][0])
-        if exist is None:
-            await insert_into(conn, "Items", [*args])
-
-    @classmethod
-    async def get_item(cls, conn, id : str) -> dict:
+    async def get_item(cls, conn, id : str) -> typing.Optional[dict]:
         query = '''
             SELECT * FROM Items
             WHERE id = ($1);
@@ -521,6 +513,12 @@ class Items:
 
         result = await conn.fetchrow(query, id)
         return rec_to_dict(result)
+    
+    @classmethod
+    async def create_item(cls, conn, *args):
+        exist = await cls.get_item(conn, args[0][0])
+        if exist is None:
+            await insert_into(conn, "Items", [*args])
 
     @classmethod
     async def remove_item(cls, conn):
@@ -545,18 +543,20 @@ class Items:
         '''
         
         return await conn.fetchval(query, friendly_name)
-    
-    @classmethod
-    async def get_prices(cls, conn, id : str):
-        item = await cls.get_item(conn, id)
-        if item is None:
-            return None
-        else:
-            return (item["buy_price"], item["sell_price"])
 
 class Notify:
     @classmethod
-    async def get_notify(cls, conn, lower_time_limit, upper_time_limit):
+    async def get_notifies(cls, conn, lower_time_limit : dt.datetime, upper_time_limit : dt.datetime) -> typing.List[typing.Optional[dict]]:
+        """
+        Get all notifications that are within the interval.
+
+        Important Parameter:
+        - `lower_time_limit`: The start of the interval.
+        - `upper_time_limit`: The end of the interval.
+
+        Return: `[]` if there are no notifications within the interval, `list(dict)` if there is.
+        """
+
         query = '''
             SELECT * FROM DNotify
             WHERE awake_time > ($1) AND awake_time <= ($2);
@@ -570,7 +570,15 @@ class Notify:
             return [dict(record) for record in result]
     
     @classmethod
-    async def get_past_notify(cls, conn, now):
+    async def get_past_notify(cls, conn, now : dt.datetime) -> typing.List[typing.Optional[dict]]:
+        """
+        Get all notifications that passed the time.
+
+        Important Parameter:
+        - `now`: The time to check.
+
+        Return: `[]` if there are no such notifications, `list(dict)` if there is.
+        """
         query = '''
             SELECT * FROM DNotify
             WHERE awake_time < ($1);
@@ -584,7 +592,7 @@ class Notify:
             return [dict(record) for record in result]
     
     @classmethod
-    async def add_notify(cls, conn, user_id : int, when : datetime.datetime, message : str):
+    async def add_notify(cls, conn, user_id : int, when : dt.datetime, message : str):
         query = '''
         INSERT INTO DNotify (user_id, awake_time, message)
         VALUES ($1, $2, $3);
@@ -606,33 +614,3 @@ def rec_to_dict(record : asyncpg.Record) -> dict:
     else:
         return dict(record)
 
-async def to_dict(bot) -> dict:
-    """
-    Transform the entire database into dictionary format. (need update)
-
-    It is in the following format:
-    `{
-        guild_id: [
-            member_id1,
-            member_id2,
-            ...
-        ]
-    }`
-    """
-    # Transfer the DB to dictionary
-    dictionary = {}
-    async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            result = await conn.fetch('''
-                SELECT *
-                FROM dUsers_dGuilds;
-            '''
-            )
-
-            for record in result:
-                if dictionary.get(record["guild_id"]) is None:
-                    dictionary[record["guild_id"]] = [record["user_id"]]
-                else:
-                    dictionary[record["guild_id"]].append(record["user_id"])
-    
-    return dictionary

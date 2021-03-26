@@ -325,7 +325,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         async with self.bot.pool.acquire() as conn:
             passed = await DB.Notify.get_past_notify(conn, datetime.datetime.utcnow())
-            upcoming = await DB.Notify.get_notify(conn, current, future)
+            upcoming = await DB.Notify.get_notifies(conn, current, future)
 
         for missed_notify in passed:
             user = self.bot.get_user(missed_notify["user_id"])

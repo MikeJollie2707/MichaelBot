@@ -48,7 +48,7 @@ async def save_config(bot, config) -> None:
     """
     if isinstance(config, dict):
         async with bot.pool.acquire() as conn:
-            guild = dict(await DB.Guild.find_guild(conn, config["id"]))
+            guild = await DB.Guild.find_guild(conn, config["id"])
             if guild is not None:
                 guild_col = [column for column in guild]
                 for option in config:
