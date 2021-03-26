@@ -8,6 +8,7 @@ import asyncpg
 from categories.utilities.loot import get_item_info
 
 async def update_db(bot):
+    bot.debug("Updating database on ready...")
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
             for guild in bot.guilds:

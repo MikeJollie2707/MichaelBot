@@ -115,6 +115,7 @@ async def main():
         )
         
         try:
+            bot.debug("Connecting to database...")
             bot.pool = await asyncpg.create_pool(
                 dsn = secrets.get("dsn"),
                 host = secrets.get("host"),
@@ -130,6 +131,7 @@ async def main():
         except ConnectionRefusedError:
             print("Can't connect to database.")
         
+        bot.debug("Loading extensions...")
         for extension in sorted(__discord_extension__):
             bot.load_extension(extension)
 
