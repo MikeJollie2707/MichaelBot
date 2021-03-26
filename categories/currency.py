@@ -17,6 +17,8 @@ from bot import MichaelBot # IntelliSense purpose only
 NETHER_DIE = 0.025
 OVERWORLD_DIE = 0.0125
 
+# Pending functions that needs to be clean: craft (possible rework), daily
+
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     """Commands related to money."""
     def __init__(self, bot : MichaelBot):
@@ -303,7 +305,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         if item is None:
             MAX_ITEMS = 4
-            cnt = 0
+            cnt = 0 # Keep track for MAX_ITEMS
             page = Pages()
             embed = None
             friendly_name = ""
@@ -488,11 +490,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     tool_type = "rod"
                 
                 has_equipped = await DB.Inventory.find_equip(conn, tool_type, ctx.author.id)
+                # Swap out the same tool type.
                 if has_equipped is not None:
                     await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["item_id"])
                 await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
-                official_name = await DB.Items.get_friendly_name(conn, tool_name)
-                await ctx.reply(f"Added {official_name} to main equipments.", mention_author = False)
+                official_name = LootTable.acapitalize(await DB.Items.get_friendly_name(conn, tool_name))
+                await ctx.reply(f"Added **{official_name}** to main equipments.", mention_author = False)
 
     @commands.command(aliases = ['inv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -517,6 +520,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 return
             
             def _on_inner_amount(slot):
+                # We can't make this async, which is unfortunate.
                 item = LootTable.get_item_info()[slot["item_id"]]
                 return (-slot["quantity"], -item[1])
             inventory.sort(key = _on_inner_amount)
@@ -552,9 +556,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 rarity = exist["rarity"]
                 emote = exist["emoji"]
                 friendly_name = exist["name"]
+                buy_price = exist["buy_price"]
+                sell_price = exist["sell_price"]
 
                 craftable = LootTable.get_craft_ingredient(item)
-                purchasable = await DB.Items.get_prices(conn, item)
                 
                 embed = Facility.get_default_embed(
                     title = f"{LootTable.acapitalize(friendly_name)}",
@@ -583,7 +588,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         inline = False
                     )
                 
-                price_str = f"Buy: {f'${purchasable[0]}' if purchasable[0] is not None else 'N/A'}\nSell: {f'${purchasable[1]}' if purchasable[1] is not None else 'N/A'}"
+                price_str = "Buy: %s\nSell: %s" % (
+                    f"${buy_price}" if buy_price is not "None" else "N/A",
+                    f"${sell_price}" if sell_price is not "None" else "N/A",
+                )
                 embed.add_field(
                     name = "Prices:",
                     value = price_str,
@@ -714,7 +722,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         if ctx.invoked_subcommand is None:
             MAX_ITEMS = 4
-            cnt = 0
+            cnt = 0 # Keep track of MAX_ITEMS
             page = Pages()
             embed = None
             async with self.bot.pool.acquire() as conn:
@@ -728,9 +736,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         )
                     embed.add_field(
                         name = "%s **%s**" % (item["emoji"], LootTable.acapitalize(item["name"])),
-                        value = "*%s*\n**Buy Price**: %s\n**Sell Price**: %s" % (item["description"], 
-                                                                                "N/A" if item["buy_price"] is None else f"${item['buy_price']}",
-                                                                                "N/A" if item["sell_price"] is None else f"${item['sell_price']}"),
+                        value = "*%s*\n**Buy Price**: %s\n**Sell Price**: %s" % (
+                            item["description"], 
+                            "N/A" if item["buy_price"] is None else f"${item['buy_price']}",
+                            "N/A" if item["sell_price"] is None else f"${item['sell_price']}"
+                        ),
                         inline = False
                     )
                     cnt += 1
@@ -763,6 +773,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply("This item doesn't exist. Please use `trade` to see all items.", mention_author = False)
             return
         if amount < 1:
+            await ctx.reply("You can't buy 0 or smaller items dummy.", mention_author = False)
             return
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
@@ -772,7 +783,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     return
                 money = await DB.User.get_money(conn, ctx.author.id)
                 if money - amount * actual_item["buy_price"] < 0:
-                    await ctx.reply("You don't have enough money to buy. Total cost is: %d" % amount * actual_item["buy_price"], mention_author = False)
+                    await ctx.reply("You don't have enough money to buy. Total cost is: $%d" % amount * actual_item["buy_price"], mention_author = False)
                     return
                 
                 await DB.User.remove_money(conn, ctx.author.id, amount * actual_item["buy_price"])
@@ -799,6 +810,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply("This item doesn't exist. Please use `trade` to see all items.", mention_author = False)
             return
         if amount < 1:
+            await ctx.reply("So...are you selling or not?", mention_author = False)
             return
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
@@ -807,6 +819,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if actual_item["sell_price"] is None:
                     await ctx.reply("This item cannot be sold.", mention_author = False)
                     return
+                # The function won't affect the inventory if it fails.
                 result = await DB.Inventory.remove(conn, ctx.author.id, item, amount)
                 if result == "":
                     await ctx.reply("You don't have enough items to sell. You only have: %d" % inv_slot["quantity"] if inv_slot is not None else 0)
@@ -852,7 +865,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if user_inv is None:
                 await ctx.reply("You don't have a portal to travel to this destination.", mention_author = False)
                 return
-
+            
             if user_info["last_move"] is not None:
                 if datetime.datetime.utcnow() - user_info["last_move"] < datetime.timedelta(hours = 24.0):
                     remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - user_info["last_move"])
@@ -862,12 +875,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if user_info["world"] == dest:
                 await ctx.reply("Already at %s." % LootTable.get_world(dest), mention_author = False)
                 return
+            
+            async with conn.transaction():
+                await DB.User.update_world(conn, ctx.author.id, dest)
+                await DB.User.update_last_move(conn, ctx.author.id, datetime.datetime.utcnow())
+                # Decrease portal durability here...
 
-            await DB.User.update_world(conn, ctx.author.id, dest)
-            await DB.User.update_last_move(conn, ctx.author.id, datetime.datetime.utcnow())
-            # Decrease portal durability here...
-
-            await ctx.reply("Moved to %s." % LootTable.get_world(dest), mention_author = False)
+                await ctx.reply("Moved to %s." % LootTable.get_world(dest), mention_author = False)
 
 def setup(bot : MichaelBot):
     bot.add_cog(Currency(bot))
