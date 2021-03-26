@@ -589,8 +589,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     )
                 
                 price_str = "Buy: %s\nSell: %s" % (
-                    f"${buy_price}" if buy_price is not "None" else "N/A",
-                    f"${sell_price}" if sell_price is not "None" else "N/A",
+                    f"${buy_price}" if buy_price is not None else "N/A",
+                    f"${sell_price}" if sell_price is not None else "N/A",
                 )
                 embed.add_field(
                     name = "Prices:",
