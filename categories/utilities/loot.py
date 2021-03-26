@@ -198,7 +198,7 @@ def get_chop_loot(axe : str, world : int):
             }
         elif axe == "stone_axe":
             return {
-                "log": 0.60, # 4.2 on average
+                "log": 0.50, # 3.5 on average
                 "rolls": 7
             }
         elif axe == "iron_axe":
@@ -208,7 +208,7 @@ def get_chop_loot(axe : str, world : int):
             }
         elif axe == "diamond_axe":
             return {
-                "log": 0.45, # 9 on average
+                "log": 0.40, # 8 on average
                 "rolls": 20
             }
     
