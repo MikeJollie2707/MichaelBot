@@ -40,7 +40,7 @@ def get_item_info():
             "A pretty good sword. You can slay more enemies now due to how good this sword is."],
         "redstone": ["<:redstone:822527280777396264>", 15, "redstone", "uncommon", None, 50, None,
             "A red dust that's commonly mistaken as blood. It's understandable, it has pulse after all."],
-        "diamond": ["💎", 16, "diamond", "rare", 150, 100, None,
+        "diamond": ["💎", 16, "diamond", "rare", None, 100, None,
             "Shiny stuffs isn't it? It can be used to craft some of the best tools in the world."],
         "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", 17, "diamond pickaxe", "rare", None, 150, 1561,
             "The best pickaxe in the world. You can mine anything :)"],
