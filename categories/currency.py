@@ -413,10 +413,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         daily_amount = 300
                         daily_bonus = int(member["streak_daily"] / 10) * 100
                     elif member["streak_daily"] < 500:
-                        daily_amount = 500
+                        daily_amount = 1000
                         daily_bonus = member["streak_daily"] * 5
                     else:
-                        daily_amount = 1500
+                        daily_amount = 2000
                         daily_bonus = member["streak_daily"] * 10
                         if daily_bonus > 10000:
                             daily_bonus = 10000
