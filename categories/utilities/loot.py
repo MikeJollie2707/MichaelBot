@@ -409,23 +409,24 @@ def get_daily_loot(streak : int):
         }
     elif streak < 51:
         return {
-            "log": random.randint(5, 10),
-            "stone": random.randint(3, 5),
-            "coal": random.randint(10, 12)
+            "log": random.randint(10, 20),
+            "stone": random.randint(10, 15),
+            "coal": random.randint(5, 10)
         }
     elif streak < 101:
         return {
-            "log": random.randint(20, 30),
-            "stone": random.randint(10, 20),
-            "iron": random.randint(5, 8),
+            "log": random.randint(50, 70),
+            "stone": random.randint(30, 45),
+            "iron": random.randint(10, 30),
             "diamond": random.randint(0, 1)
         }
     elif streak < 201:
         return {
-            "log": random.randint(35, 40),
-            "stone": random.randint(15, 25),
-            "iron": random.randint(10, 15),
-            "diamond": random.randint(2, 5)
+            "log": random.randint(100, 150),
+            "stone": random.randint(100, 150),
+            "iron": random.randint(50, 70),
+            "diamond": random.randint(10, 12),
+            "debris": random.randint(0, 1)
         }
     
     return None
