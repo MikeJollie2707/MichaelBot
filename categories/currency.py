@@ -529,17 +529,25 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         )
         async with self.bot.pool.acquire() as conn:
             equipments = await DB.Inventory.get_equip(conn, ctx.author.id)
+            portals = await DB.Inventory.get_portals(conn, ctx.author.id)
 
             def on_inner_sort(item):
                 return item["inner_sort"]
             equipments.sort(key = on_inner_sort)
+            portals.sort(key = on_inner_sort)
 
-            if len(equipments) == 0:
+            if len(equipments) == 0 and len(portals) == 0:
                 embed.description = "*Cricket noises*"
             for tool in equipments:
                 embed.add_field(
                     name = "%s **%s** [%d/%d]" % (tool['emoji'], LootTable.acapitalize(tool['name']), tool['durability_left'], tool['durability']),
                     value = f"*{tool['description']}*",
+                    inline = False
+                )
+            for portal in portals:
+                embed.add_field(
+                    name = "%s **%s** [%d/%d]" % (portal['emoji'], LootTable.acapitalize(portal['name']), portal['durability_left'], portal['durability']),
+                    value = f"*{portal['description']}*",
                     inline = False
                 )
             embed.set_thumbnail(url = ctx.author.avatar_url)
@@ -928,10 +936,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 return
             
             async with conn.transaction():
+                message = "Moved to %s.\n" % LootTable.get_world(dest)
                 await DB.User.update_world(conn, ctx.author.id, dest)
                 await DB.User.update_last_move(conn, ctx.author.id, datetime.datetime.utcnow())
-                # Decrease portal durability here...
-
+                if (dest == 1 and world == 0) or (dest == 0 and world == 1):
+                    res = await DB.Inventory.dec_durability(conn, ctx.author.id, "nether")
+                if res is not None:
+                    message += "The portal broke!"
                 await ctx.reply("Moved to %s." % LootTable.get_world(dest), mention_author = False)
 
 def setup(bot : MichaelBot):
