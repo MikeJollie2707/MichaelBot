@@ -536,6 +536,18 @@ class Inventory:
         result = await conn.fetch(query, user_id)
         return [rec_to_dict(record) for record in result]
 
+    @classmethod
+    async def get_portals(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+        query = '''
+            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
+            FROM DUsers_Items
+                INNER JOIN Items ON item_id = id
+            WHERE user_id = ($1) AND (item_id = 'nether' OR item_id = 'end');
+        '''
+
+        result = await conn.fetch(query, user_id)
+        return [rec_to_dict(record) for record in result]
+
 class Items:
     @classmethod
     async def get_whole_items(cls, conn) -> typing.Optional[typing.List[dict]]:
