@@ -79,8 +79,9 @@ async def setup(secrets : dict):
             CREATE TABLE IF NOT EXISTS DUsers_Items (
                 user_id INT8 NOT NULL REFERENCES DUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
                 item_id TEXT NOT NULL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                quantity INT4 DEFAULT 0,
+                quantity INT4 NOT NULL DEFAULT 0,
                 is_main BOOL NOT NULL DEFAULT FALSE,
+                durability_left INT4,
                 PRIMARY KEY (user_id, item_id)
             );
         ''')
