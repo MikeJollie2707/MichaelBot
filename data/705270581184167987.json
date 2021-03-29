@@ -1,9 +1,0 @@
-{
-    "ERROR": 0,
-    "GUILD_ID": 705270581184167987,
-    "STATUS_LOG": 1,
-    "LOG_CHANNEL": 705271444791099422,
-    "STATUS_WELCOME": 1,
-    "WELCOME_CHANNEL": 705270581746204694,
-    "WELCOME_TEXT": "Welcome [user.mention] to [guild.name]! Everyone, we now have [guild.count] member(s)!"
-}
