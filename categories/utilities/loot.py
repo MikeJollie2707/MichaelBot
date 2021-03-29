@@ -56,7 +56,7 @@ def get_item_info():
         # Nether-related materials
         "obsidian": ["<:obsidian:822532045673725964>", 20, "obsidian", "rare", None, 80, None,
             "The hardest material in the world. It silently emits power that connects to another world."],
-        "nether": ["⛩️", 21, "nether portal", "???", None, None, 5,
+        "nether": ["⛩️", 21, "nether portal", "???", None, None, 6,
             "A mysterious gate that travels to the deepest place in the world."],
         "netherrack": ["<:netherrack:823592746865655868>", 22, "netherrack", "common", None, 10, None,
             "A red-ish stone block only presents in the hottest place."],
@@ -68,20 +68,22 @@ def get_item_info():
         # General purpose materials
         "coal": ["<:coal:819742286250377306>", 25, "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
-        "string": ["<:string:820758307542401055>", 26,"string", "common", 15, 10, None,
-            "A useful drop for some future uses."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", 27, "spider eye", "uncommon", None, 20, None,
-            "An uncommon drop for some future uses."],
-        "gunpowder": ["<:gunpowder:821528688646160395>", 28, "gunpowder", "uncommon", 50, 30, None,
-            "An uncommon drop for some uhh __minor__ terrorism purposes."],
-        "magma_cream": ["<:magma_cream:823593239683924038>", 29, "magma cream", "uncommon", 50, 40, None,
-            "An uncommon drop for some future uses."],
-        "apple": ["🍎", 30, "apple", "common", None, 10, None,
+        "apple": ["🍎", 26, "apple", "common", None, 10, None,
             "An apple. Yummy. Watch out for the worms though."],
-        "flower": ["🌸", 31, "flower", "common", None, 10, None,
+        "flower": ["🌸", 27, "flower", "common", None, 10, None,
             "A beautiful flower."],
-        "moyai": ["🌺", 32, "moyai", "???", None, None, None,
-            "A mysterious mystical flower. It is unknown what this flower truly is."]
+        "moyai": ["🌺", 28, "moyai", "???", None, None, None,
+            "A mysterious mystical flower. It is unknown what this flower truly is."],
+        "string": ["<:string:820758307542401055>", 29,"string", "common", 15, 10, None,
+            "A useful drop for some future uses."],
+        "spider_eye": ["<:spider_eye:820758868468301864>", 30, "spider eye", "uncommon", None, 20, None,
+            "An uncommon drop for some future uses."],
+        "gunpowder": ["<:gunpowder:821528688646160395>", 31, "gunpowder", "uncommon", 50, 30, None,
+            "An uncommon drop for some uhh __minor__ terrorism purposes."],
+        "magma_cream": ["<:magma_cream:823593239683924038>", 32, "magma cream", "common", 50, 40, None,
+            "A common drop for some future uses."],
+        "blaze_rod": ["<:blaze_rod:826150261906472960>", 33, "blaze rod", "rare", None, 45, None,
+            "A rare drop for some future uses."]
     }
 
 def get_world(world : int) -> str:
@@ -251,22 +253,24 @@ def get_adventure_loot(sword : str, world : int):
     elif world == 1:
         if sword == "wood_sword":
             return {
-                "magma_cream": 0.5,
+                "magma_cream": 0.50, # 1 on average
                 "rolls": 2
             }
         elif sword == "stone_sword":
             return {
-                "magma_cream": 0.5,
+                "magma_cream": 0.50, # 2.5 on average
                 "rolls": 5
             }
         elif sword == "iron_sword":
             return {
-                "magma_cream": 0.75,
+                "magma_cream": 0.50, # 5 on average
+                "blaze_rod": 0.01, # 0.1 on average
                 "rolls": 10
             }
         elif sword == "diamond_sword":
             return {
-                "magma_cream": 0.75,
+                "magma_cream": 0.75, # 15 on average
+                "blaze_rod": 0.1, # 2 on average
                 "rolls": 20
             }
     return None
