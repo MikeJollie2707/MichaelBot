@@ -7,6 +7,7 @@ import asyncpg
 
 import categories.utilities.facility as Facility
 import categories.utilities.db as DB
+from categories.utilities.checks import is_dev
 
 # This category is for testing purpose.
 class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
@@ -68,9 +69,6 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
     @commands.command()
     async def send_reaction(self, ctx):
         await ctx.send("<:fp:819612002183675914>")
-
-    
-
 
 def setup(bot):
     bot.add_cog(Experiment(bot))
