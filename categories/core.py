@@ -296,8 +296,7 @@ class Core(commands.Cog):
                 text = "*None*"
             else:
                 for tool in current:
-                    actual_tool = await DB.Items.get_item(conn, tool["item_id"])
-                    text += actual_tool["emoji"] + ' '
+                    text += tool["emoji"] + ' '
             
             embed.add_field(name = "Current Equipments:", value = text, inline = False)
         role_list = [Facility.mention(role) for role in member.roles[::-1]]
