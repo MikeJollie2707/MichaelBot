@@ -1,3 +1,4 @@
+from math import e
 import discord
 from discord.ext import commands
 
@@ -360,6 +361,8 @@ class Inventory:
 
     @classmethod
     async def get_whole_inventory(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+
+        # No need to JOIN in this method due to limited uses.
         query = '''
             SELECT * FROM DUsers_Items
             WHERE user_id = ($1);
@@ -373,8 +376,15 @@ class Inventory:
     
     @classmethod
     async def get_one_inventory(cls, conn, user_id : int, item_id : int) -> typing.Optional[dict]:
+        """
+        Get an inventory slot (or row).
+        The structure of the resultant dictionary is the same as `Items.get_items()` structure, with
+        the additional `user_id`, `is_main` and `durability_left` keys.
+        """
         query = '''
-            SELECT * FROM DUsers_Items
+            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
+            FROM DUsers_Items
+                INNER JOIN Items ON item_id = id
             WHERE user_id = ($1) AND item_id = ($2);
         '''
         
@@ -391,11 +401,12 @@ class Inventory:
 
         item_existed = await cls.get_one_inventory(conn, user_id, item_id)
         if item_existed is None:
+            actual_item = await Items.get_item(conn, item_id)
             query = '''
                 INSERT INTO DUsers_Items
-                VALUES ($1, $2, $3, $4);
+                VALUES ($1, $2, $3, $4, $5);
             '''
-            await conn.execute(query, user_id, item_id, amount, False)
+            await conn.execute(query, user_id, item_id, amount, False, actual_item["durability"])
         else:
             query = '''
                 UPDATE DUsers_Items
@@ -438,7 +449,7 @@ class Inventory:
                 await conn.execute(query, item_existed["quantity"] - amount, user_id, item_id)
         
     @classmethod
-    async def update(cls, conn, user_id : int, item_id : int, quantity : int):
+    async def update_quantity(cls, conn, user_id : int, item_id : int, quantity : int):
         item_existed = await cls.get_one_inventory(conn, user_id, item_id)
         if item_existed is None:
             return
@@ -446,6 +457,32 @@ class Inventory:
             await cls.remove(conn, user_id, item_id, item_existed["quantity"])
         else:
             await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
+
+    @classmethod
+    async def dec_durability(cls, conn, user_id : int, tool_id : int, amount : int = 1):
+        tool = await cls.get_one_inventory(conn, user_id, tool_id)
+        if tool is not None:
+            if tool["durability_left"] - amount <= 0:
+                await cls.remove(conn, user_id, tool_id)
+                return ""
+            else:
+                query = '''
+                    UPDATE DUsers_Items
+                    SET durability_left = ($1)
+                    WHERE user_id = ($2) AND item_id = ($3);
+                '''
+                await conn.execute(query, tool["durability_left"] - amount, user_id, tool_id)
+      
+    @classmethod
+    def get_tool_type(cls, tool_id : str) -> str:
+        if "_pickaxe" in tool_id:
+            return "pickaxe"
+        elif "_axe" in tool_id:
+            return "axe"
+        elif "_sword" in tool_id:
+            return "sword"
+        elif "_rod" in tool_id:
+            return "rod"
 
     @classmethod
     async def find_equip(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
@@ -458,7 +495,9 @@ class Inventory:
         """
 
         query = f'''
-            SELECT * FROM DUsers_Items
+            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
+            FROM DUsers_Items
+                INNER JOIN Items ON item_id = id
             WHERE item_id LIKE '%\_{tool_type}' AND is_main = TRUE AND user_id = ($1);
         '''
 
@@ -488,8 +527,9 @@ class Inventory:
     @classmethod
     async def get_equip(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
         query = '''
-            SELECT *
+            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
             FROM DUsers_Items
+                INNER JOIN Items ON item_id = id
             WHERE user_id = ($1) AND is_main = TRUE;
         '''
 

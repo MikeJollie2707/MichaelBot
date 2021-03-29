@@ -70,7 +70,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 # Edit function name
-                loot = LootTable.get_adventure_loot(current_sword["item_id"], world)
+                loot = LootTable.get_adventure_loot(current_sword["id"], world)
                 
                 if world == 0:
                     die_chance = OVERWORLD_DIE
@@ -81,7 +81,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if rng <= die_chance:
                     equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
                     for tool in equipment:
-                        await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                        await DB.Inventory.remove(conn, ctx.author.id, tool["id"])
                     
                     # Edit the function name
                     await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
@@ -120,7 +120,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 # Edit functions name.
                 if any_reward:
+                    res = await DB.Inventory.dec_durability(conn, ctx.author.id, current_sword["id"], random.randint(1, 3))
                     await ctx.reply(LootTable.get_adventure_msg("reward", world, message), mention_author = False)
+                    if res is not None:
+                        await ctx.reply("Your sword broke after the adventure :(", mention_author = False)
                 else:
                     await ctx.reply(LootTable.get_adventure_msg("empty", world), mention_author = False)
 
@@ -175,7 +178,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 # Edit function name
-                loot = LootTable.get_chop_loot(current_axe["item_id"], world)
+                loot = LootTable.get_chop_loot(current_axe["id"], world)
                 
                 if world == 0:
                     die_chance = OVERWORLD_DIE
@@ -186,7 +189,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if rng <= die_chance:
                     equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
                     for tool in equipment:
-                        await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                        await DB.Inventory.remove(conn, ctx.author.id, tool["id"])
                     
                     # Edit the function name
                     await ctx.reply(LootTable.get_chop_msg("die", world), mention_author = False)
@@ -225,7 +228,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 # Edit functions name.
                 if any_reward:
+                    res = await DB.Inventory.dec_durability(conn, ctx.author.id, current_axe["id"], random.randint(1, 3))
                     await ctx.reply(LootTable.get_chop_msg("reward", world, message), mention_author = False)
+                    if res is not None:
+                        await ctx.reply("Your axe broke after chopping too much trees :(", mention_author = False)
                 else:
                     await ctx.reply(LootTable.get_chop_msg("empty", world), mention_author = False)
     
@@ -278,7 +284,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     if len(miss) == 0:
                         for key in fake_inv:
-                            await DB.Inventory.update(conn, ctx.author.id, key, fake_inv[key])
+                            await DB.Inventory.update_quantity(conn, ctx.author.id, key, fake_inv[key])
                         await DB.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
                         official_name = LootTable.acapitalize(exist["name"])
                         await ctx.reply(f"Crafted {n * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
@@ -479,23 +485,33 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(f"This tool does not exist.", mention_author = False)
                     return
                 
-                tool_type = ""
-                if "_pickaxe" in tool_name:
-                    tool_type = "pickaxe"
-                elif "_axe" in tool_name:
-                    tool_type = "axe"
-                elif "_sword" in tool_name:
-                    tool_type = "sword"
-                elif "_rod" in tool_name:
-                    tool_type = "rod"
+                tool_type = DB.Inventory.get_tool_type(tool_name)
                 
+                message = ""
                 has_equipped = await DB.Inventory.find_equip(conn, tool_type, ctx.author.id)
                 # Swap out the same tool type.
                 if has_equipped is not None:
-                    await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["item_id"])
+                    await DB.Inventory.unequip_tool(conn, ctx.author.id, has_equipped["id"])
+                    name = LootTable.acapitalize(await DB.Items.get_friendly_name(conn, has_equipped["id"]))
+                    message += "You swapped out the old **%s** with the new tool.\n" % name
+                    
+                    # We need to check if the unequipped tool is used (decrease in durability), and if
+                    # it is, then destroy it.
+
+                    if has_equipped["durability_left"] < has_equipped["durability"]:
+                        await DB.Inventory.remove(conn, ctx.author.id, has_equipped["id"])
+                        message += "You already used the old tool, it's now gone into the Void :(\n"
+                    else:
+                        message += "You didn't use the old tool, so it's safely return to your inventory.\n"
+                    
                 await DB.Inventory.equip_tool(conn, ctx.author.id, tool_name)
                 official_name = LootTable.acapitalize(await DB.Items.get_friendly_name(conn, tool_name))
-                await ctx.reply(f"Added **{official_name}** to main equipments.", mention_author = False)
+                message += f"Added **{official_name}** to main equipments."
+                await ctx.reply(message, mention_author = False)
+
+    @commands.command()
+    async def equipments(self, ctx : commands.Context):
+        pass
 
     @commands.command(aliases = ['inv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -632,7 +648,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 # Edit function name
-                loot = LootTable.get_mine_loot(current_pick["item_id"], world)
+                loot = LootTable.get_mine_loot(current_pick["id"], world)
                 
                 if world == 0:
                     die_chance = OVERWORLD_DIE
@@ -643,7 +659,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if rng <= die_chance:
                     equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
                     for tool in equipment:
-                        await DB.Inventory.remove(conn, ctx.author.id, tool["item_id"])
+                        await DB.Inventory.remove(conn, ctx.author.id, tool["id"])
                     
                     # Edit the function name
                     await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
@@ -682,7 +698,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 # Edit functions name.
                 if any_reward:
+                    res = await DB.Inventory.dec_durability(conn, ctx.author.id, current_pick["id"], random.randint(1, 3))
                     await ctx.reply(LootTable.get_mine_msg("reward", world, message), mention_author = False)
+                    if res is not None:
+                        await ctx.reply("Your pickaxe broke after the intense mining :(", mention_author = False)
                 else:
                     await ctx.reply(LootTable.get_mine_msg("empty", world), mention_author = False)
     
@@ -815,8 +834,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 inv_slot = await DB.Inventory.get_one_inventory(conn, ctx.author.id, item)
-                actual_item = await DB.Items.get_item(conn, item)
-                if actual_item["sell_price"] is None:
+                if inv_slot["sell_price"] is None:
                     await ctx.reply("This item cannot be sold.", mention_author = False)
                     return
                 # The function won't affect the inventory if it fails.
@@ -824,8 +842,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if result == "":
                     await ctx.reply("You don't have enough items to sell. You only have: %d" % inv_slot["quantity"] if inv_slot is not None else 0)
                     return
-                await DB.User.add_money(conn, ctx.author.id, amount * actual_item["sell_price"])
-                await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * actual_item['sell_price']}", mention_author = False)
+                await DB.User.add_money(conn, ctx.author.id, amount * inv_slot["sell_price"])
+                await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * inv_slot['sell_price']}", mention_author = False)
                 
     @commands.command(aliases = ['moveto', 'goto'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
