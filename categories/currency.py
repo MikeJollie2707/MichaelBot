@@ -941,8 +941,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await DB.User.update_last_move(conn, ctx.author.id, datetime.datetime.utcnow())
                 if (dest == 1 and world == 0) or (dest == 0 and world == 1):
                     res = await DB.Inventory.dec_durability(conn, ctx.author.id, "nether")
-                if res is not None:
-                    message += "The portal broke!"
+                    if res is not None:
+                        await DB.Inventory.remove(conn, ctx.author.id, "nether")
+                        message += "The portal broke!"
                 await ctx.reply("Moved to %s." % LootTable.get_world(dest), mention_author = False)
 
 def setup(bot : MichaelBot):
