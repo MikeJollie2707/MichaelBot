@@ -510,8 +510,41 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply(message, mention_author = False)
 
     @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def equipments(self, ctx : commands.Context):
-        pass
+        '''
+        Display your equipments and its durability.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        embed = Facility.get_default_embed(
+            title = f"{ctx.author}'s Current Equipments",
+            timestamp = datetime.datetime.utcnow(),
+            author = ctx.author
+        )
+        async with self.bot.pool.acquire() as conn:
+            equipments = await DB.Inventory.get_equip(conn, ctx.author.id)
+
+            def on_inner_sort(item):
+                return item["inner_sort"]
+            equipments.sort(key = on_inner_sort)
+
+            if len(equipments) == 0:
+                embed.description = "*Cricket noises*"
+            for tool in equipments:
+                embed.add_field(
+                    name = "%s **%s** [%d/%d]" % (tool['emoji'], LootTable.acapitalize(tool['name']), tool['durability_left'], tool['durability']),
+                    value = f"*{tool['description']}*",
+                    inline = False
+                )
+            embed.set_thumbnail(url = ctx.author.avatar_url)
+        
+        await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command(aliases = ['inv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
