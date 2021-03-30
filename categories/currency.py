@@ -16,6 +16,7 @@ from bot import MichaelBot # IntelliSense purpose only
 
 NETHER_DIE = 0.025
 OVERWORLD_DIE = 0.0125
+DEATH_PENALTY = 0.10
 
 # Pending functions that needs to be clean: craft (possible rework), daily
 
@@ -82,6 +83,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
                     for tool in equipment:
                         await DB.Inventory.remove(conn, ctx.author.id, tool["id"])
+                    money = await DB.User.get_money(conn, ctx.author.id)
+                    await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
                     # Edit the function name
                     await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
@@ -190,6 +193,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
                     for tool in equipment:
                         await DB.Inventory.remove(conn, ctx.author.id, tool["id"])
+                    money = await DB.User.get_money(conn, ctx.author.id)
+                    await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
                     # Edit the function name
                     await ctx.reply(LootTable.get_chop_msg("die", world), mention_author = False)
@@ -701,6 +706,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     equipment = await DB.Inventory.get_equip(conn, ctx.author.id)
                     for tool in equipment:
                         await DB.Inventory.remove(conn, ctx.author.id, tool["id"])
+                    money = await DB.User.get_money(conn, ctx.author.id)
+                    await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
                     # Edit the function name
                     await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
