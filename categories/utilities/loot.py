@@ -82,7 +82,7 @@ def get_item_info():
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
         "magma_cream": ["<:magma_cream:823593239683924038>", 32, "magma cream", "common", 50, 40, None,
             "A common drop for some future uses."],
-        "blaze_rod": ["<:blaze_rod:826150261906472960>", 33, "blaze rod", "rare", None, 45, None,
+        "blaze": ["<:blaze_rod:826150261906472960>", 33, "blaze rod", "rare", None, 45, None,
             "A rare drop for some future uses."]
     }
 
@@ -264,13 +264,13 @@ def get_adventure_loot(sword : str, world : int):
         elif sword == "iron_sword":
             return {
                 "magma_cream": 0.50, # 5 on average
-                "blaze_rod": 0.01, # 0.1 on average
+                "blaze": 0.01, # 0.1 on average
                 "rolls": 10
             }
         elif sword == "diamond_sword":
             return {
                 "magma_cream": 0.75, # 15 on average
-                "blaze_rod": 0.1, # 2 on average
+                "blaze": 0.1, # 2 on average
                 "rolls": 20
             }
     return None
