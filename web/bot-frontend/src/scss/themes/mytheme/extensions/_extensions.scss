@@ -1,0 +1,85 @@
+@import "_mixins.scss";
+
+// Added on components
+@import "_navbar.scss";
+@import "_float-label.scss";
+
+// Basic css styling for html tag
+h1, h2, h3, h4, h5, h6 {
+  margin: 1.5rem 0 1rem;
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  color: inherit;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+a {
+  cursor: pointer !important;
+  color: inherit;
+}
+
+label, input {
+  display: block !important;
+}
+
+small {
+  font-size: 0.75rem;
+}
+
+/* Bootstrap container */
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) { // sm
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) { // md
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) { // lg
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) { // xl
+  .container {
+    max-width: 1140px;
+  }
+}
+

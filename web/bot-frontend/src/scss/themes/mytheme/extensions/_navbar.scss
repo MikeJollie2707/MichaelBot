@@ -1,0 +1,68 @@
+$navbar-padding-y: .625rem;
+$navbar-padding-x: 1rem;
+
+$navbar-toggler-padding-y: .375rem !default;
+$navbar-toggler-padding-x: .5rem !default;
+$navbar-toggler-border-radius: 20px;
+
+/* Importing Bootstrap SCSS file -- Bootstrap 4.6 */
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/navbar";
+@import "~bootstrap/scss/transitions";
+
+.navbar {
+  color: $textColor;
+}
+
+.navbar-brand {
+  color: $primaryColor;
+  font-weight: 700;
+}
+
+.nav-item {
+  padding: 0 .125rem !important;
+}
+
+.nav-link {
+  text-decoration: none !important;
+  padding: 0.5rem 0 !important;
+  border-radius: $borderRadius !important;
+}
+
+.nav-link:hover {
+  color: $primaryColor;
+}
+
+.nav-active {
+  color: $primaryColor;
+}
+
+.navbar-toggler {
+  outline: none;
+  color: $textColor;
+}
+
+.navbar-toggler:hover {
+  background: $bgHoverColor;
+}
+
+@media (min-width: 992px) { // lg
+  .nav-link {
+    padding: 0.625rem 1rem !important;
+  }
+
+  .nav-link:hover {
+    background: $bgHoverColor;
+    color: $textColor;
+  }
+
+  .nav-active {
+    background: $bgHoverColor;
+    color: $textColor;
+  }
+}
+
+

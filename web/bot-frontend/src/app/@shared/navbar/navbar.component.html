@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg p-mb-4">
+  <a class="navbar-brand" id="logo">Logo</a>
+  <button class="navbar-toggler border-none" type="button" data-toggle="collapse"
+          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" (click)="onMenu()">
+    <span><i class="pi pi-bars" *ngIf="!isOpen"></i></span>
+    <span><i class="pi pi-times" *ngIf="isOpen"></i></span>
+  </button>
+  <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav p-mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/home" routerLinkActive="nav-active">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link">Docs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link">Dashboard</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav p-ml-auto">
+      <li class="nav-item">
+        <a class="nav-link">Login</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+
+
+
