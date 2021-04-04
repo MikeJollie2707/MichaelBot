@@ -80,10 +80,41 @@ async def setup(secrets : dict):
                 user_id INT8 NOT NULL REFERENCES DUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
                 item_id TEXT NOT NULL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
                 quantity INT4 NOT NULL DEFAULT 0,
-                is_main BOOL NOT NULL DEFAULT FALSE,
-                durability_left INT4,
                 PRIMARY KEY (user_id, item_id)
             );
+        ''')
+        print("Done!")
+
+        print("Creating DUsers_ActiveTools table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DUsers_ActiveTools (
+                user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id TEXT NOT NULL REFERENCES Items (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                durability_left INT4 NOT NULL,
+                PRIMARY KEY (user_id, item_id)
+            )
+        ''')
+        print("Done!")
+
+        print("Creating DUsers_ActivePortals...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DUsers_ActivePortals (
+                user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id TEXT NOT NULL REFERENCES Items (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                remain_uses INT4 NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, item_id)
+            )
+        ''')
+        print("Done!")
+
+        print("Creating DUsers_ActivePotions...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DUsers_ActivePotions (
+                user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id TEXT NOT NULL REFERENCES Items (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                remain_uses INT4 NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, item_id)
+            )
         ''')
         print("Done!")
 
