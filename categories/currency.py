@@ -302,6 +302,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await ctx.reply("This item doesn't exist. Please check `craft recipe` for possible crafting items.", mention_author = False)
                         return
                     
+                    # You can only craft one of each portal.
+                    if exist["name"] == "nether" or exist["name"] == "end":
+                        portals = await DB.User.ActivePortals.get_portals(conn, ctx.author.id)
+                        if portals is not None:
+                            for portal in portals:
+                                if portal["name"] == exist["name"]:
+                                    await ctx.reply("You already have this portal.", mention_author = False)
+                                    return
+                    
                     ingredient = LootTable.get_craft_ingredient(item)
                     if ingredient is None:
                         await ctx.reply("This item isn't craftable. Please check `craft recipe` for possible crafting items.", mention_author = False)
@@ -324,8 +333,14 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     if len(miss) == 0:
                         for key in fake_inv:
-                            await DB.Inventory.update_quantity(conn, ctx.author.id, key, fake_inv[key])
-                        await DB.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
+                            await DB.User.Inventory.update_quantity(conn, ctx.author.id, key, fake_inv[key])
+                        
+                        # For portals, they need to be added right after crafting is finished.
+                        if item == "nether" or item == "end":
+                            await DB.User.ActivePortals.add(conn, ctx.author.id, item)
+                        else:
+                            await DB.User.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
+                        
                         official_name = LootTable.acapitalize(exist["name"])
                         await ctx.reply(f"Crafted {n * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
                         
