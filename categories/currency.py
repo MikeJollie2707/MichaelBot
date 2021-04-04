@@ -490,7 +490,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Recipe for a potion or all the recipes.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
-        **Example 1:** {prefix}{command_name} wood
+        **Example 1:** {prefix}{command_name} luck potion
         **Example 2:** {prefix}{command_name}
 
         **You need:** None.
@@ -966,7 +966,20 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(LootTable.get_mine_msg("empty", world), mention_author = False)
     
     @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
     async def usepotion(self, ctx : commands.Context, amount : typing.Optional[int], *, potion : ItemConverter):
+        '''
+        Use a potion.
+
+        Note that you can only have at max 10 potions of the same potion at once.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} 5 luck potion
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
         if amount is None:
             amount = 1
         if potion is None:
