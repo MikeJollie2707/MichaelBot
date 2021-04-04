@@ -64,6 +64,14 @@ def get_item_info():
             "Gold. How useful."],
         "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 150, None,
             "A leftover of what was once the toughest metal in the universe. Such toughness is only achievable under the undying heat."],
+        "netherite": ["<:netherite:828129193275293706>", 25, "netherite", "rare+", None, 200, None,
+            "The toughest metal in the universe, recovered from its leftover."],
+        "nether_sword": ["<:nether_sword:828129193434939442>", 26, "netherite sword", "rare+", None, 300, None,
+            "A sword created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe. It can cut down even the toughest enemy."],
+        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", 27, "netherite pickaxe", "rare+", None, 300, None,
+            "A pickaxe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
+        "nether_axe": ["<:nether_axe:828129193367175178>", 28, "netherite axe", "rare+", None, 300, None,
+            "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
         # General purpose materials
         "coal": ["<:coal:819742286250377306>", 25, "coal", "common", 15, 10, None,
@@ -140,6 +148,16 @@ def get_mine_loot(pick : str, world : int):
                 "obsidian": 0.10, # 2 on average
                 "rolls": 20
             }
+        elif pick == "nether_pickaxe":
+            return {
+                "stone": 0.20, # 5 on average
+                "coal": 0.10, # 2.5 on average
+                "iron": 0.27, # 6.75 on average
+                "redstone": 0.20, # 5 on average
+                "diamond": 0.1, # 2.5 on average
+                "obsidian": 0.15, # 3.75 on average
+                "rolls": 25
+            }
     elif world == 1:
         if pick == "wood_pickaxe":
             return {
@@ -165,6 +183,14 @@ def get_mine_loot(pick : str, world : int):
                 "gold": 0.19, # 3.8 on average
                 "debris": 0.001, # 0.02 on average
                 "rolls": 20
+            }
+        elif pick == "nether_pickaxe":
+            return {
+                "netherrack": 0.75, # 18.75 on average
+                "gold": 0.20, # 5 on average
+                "obsidian": 0.05, # 1.25 on average
+                "debris": 0.005, # 0.125 on average
+                "rolls": 25
             }
     return None
 
@@ -199,6 +225,15 @@ def get_chop_loot(axe : str, world : int):
                 "moyai": 0.000000005, # 0.0000001 on average
                 "rolls": 20
             }
+        elif axe == "netherite_axe":
+            return {
+                "log": 0.50, # 12.5 on average
+                "stick": 0.05, # 1.25 on average
+                "apple": 0.20, # 5 on average
+                "flower": 0.15, # 3.75 on average
+                "moyai": 0.000000005, # 0.000000125 on average
+                "rolls": 25
+            }
     elif world == 1:
         if axe == "wood_axe":
             return {
@@ -219,6 +254,11 @@ def get_chop_loot(axe : str, world : int):
             return {
                 "log": 0.40, # 8 on average
                 "rolls": 20
+            }
+        elif axe == "nether_axe":
+            return {
+                "log": 0.50, # 12.5 on average
+                "rolls": 25
             }
     
     return None
@@ -250,6 +290,15 @@ def get_adventure_loot(sword : str, world : int):
                 "gunpowder": 0.25, # 5 on average
                 "rolls": 20
             }
+        elif sword == "nether_sword":
+            return {
+                "string": 0.25, # 6.25 on average
+                "spider_eye": 0.15, # 3.75 on average
+                "zombie_meat": 0.20, # 5 on average
+                "bone": 0.20, # 5 on average
+                "gunpowder": 0.20, # 5 on average
+                "rolls": 25
+            }
     elif world == 1:
         if sword == "wood_sword":
             return {
@@ -272,6 +321,14 @@ def get_adventure_loot(sword : str, world : int):
                 "magma_cream": 0.75, # 15 on average
                 "blaze": 0.1, # 2 on average
                 "rolls": 20
+            }
+        elif sword == "nether_sword":
+            return {
+                "magma_cream": 0.75, # 18.75 on average
+                "coal": 0.15, # 3.75 on average
+                "blaze": 0.09, # 2.25 on average
+                "nether_star": 0.005, # 0.125 on average
+                "rolls": 25
             }
     return None
 
@@ -516,8 +573,19 @@ def get_craft_ingredient(item : str):
             "stick": 1,
             "quantity": 1
         },
-        "nether": {
-            "obsidian": 10,
+        "nether_sword": {
+            "netherite": 1,
+            "diamond_sword": 1,
+            "quantity": 1
+        },
+        "nether_pickaxe": {
+            "netherite": 1,
+            "diamond_pickaxe": 1,
+            "quantity": 1
+        },
+        "nether_axe": {
+            "netherite": 1,
+            "diamond_axe": 1,
             "quantity": 1
         },
         "coal": {
