@@ -538,6 +538,11 @@ def get_craft_ingredient(item : str):
             "wood": 2,
             "quantity": 4
         },
+        "wood_sword": {
+            "wood": 2,
+            "stick": 1,
+            "quantity": 1
+        },
         "wood_pickaxe": {
             "wood": 3,
             "stick": 2,
@@ -548,8 +553,8 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
-        "wood_sword": {
-            "wood": 2,
+        "stone_sword": {
+            "stone" : 2,
             "stick": 1,
             "quantity": 1
         },
@@ -563,8 +568,8 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
-        "stone_sword": {
-            "stone" : 2,
+        "iron_sword": {
+            "iron": 2,
             "stick": 1,
             "quantity": 1
         },
@@ -578,8 +583,8 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
-        "iron_sword": {
-            "iron": 2,
+        "diamond_sword": {
+            "diamond": 2,
             "stick": 1,
             "quantity": 1
         },
@@ -593,9 +598,13 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
-        "diamond_sword": {
-            "diamond": 2,
-            "stick": 1,
+        "nether": {
+            "obsidian": 10,
+            "quantity": 1
+        },
+        "netherite": {
+            "debris": 4,
+            "gold": 4,
             "quantity": 1
         },
         "nether_sword": {
