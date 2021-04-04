@@ -96,7 +96,6 @@ class User:
         ''', user_id)
 
         return rec_to_dict(result)
-
     @classmethod
     async def insert_user(cls, conn, member : discord.Member):
         """
@@ -115,7 +114,6 @@ class User:
             await insert_into(conn, "DUsers", [
                 (member.id, member.name, True, 0, None, 0, 0, None)
             ])
-
     @classmethod
     async def __update_generic__(cls, conn, id : int, col_name : str, new_value):
         """
@@ -136,7 +134,6 @@ class User:
             SET %s = ($1)
             WHERE id = ($2);
         ''' % col_name, new_value, id)
-
     @classmethod
     async def update_name(cls, conn, id, new_name : str):
         await cls.__update_generic__(conn, id, "name", new_name)
@@ -162,7 +159,6 @@ class User:
     @classmethod
     async def update_last_move(cls, conn, id, new_last_move : dt.datetime):
         await cls.__update_generic__(conn, id, "last_move", new_last_move)
-
     @classmethod
     async def bulk_update(cls, conn, id, new_values : dict):
         """
@@ -195,8 +191,7 @@ class User:
     @classmethod
     async def get_money(cls, conn, id) -> int:
         exist = await cls.find_user(conn, id)
-        return exist["money"] if exist is not None else 0
-    
+        return exist["money"] if exist is not None else 0    
     @classmethod
     async def get_world(cls, conn, id) -> typing.Optional[int]:
         exist = await cls.find_user(conn, id)
@@ -237,6 +232,390 @@ class User:
 
         user = await cls.find_user(conn, id)
         await cls.update_streak(conn, id, user["streak_daily"] + 1)
+
+    class Inventory:
+        """
+        A group of methods mainly deals with DUsers_Items table.
+        """
+
+        # DUsers_Items
+        @classmethod
+        async def get_whole_inventory(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+            """
+            Retrieve an entire inventory. `None` if the user has empty inventory.
+            """
+
+            # No need to JOIN in this method due to limited uses.
+            query = '''
+                SELECT * FROM DUsers_Items
+                WHERE user_id = ($1);
+            '''
+            
+            result = await conn.fetch(query, user_id)
+            if result is None:
+                return None
+            
+            return [rec_to_dict(row) for row in result]
+        
+        @classmethod
+        async def get_one_inventory(cls, conn, user_id : int, item_id : int) -> typing.Optional[dict]:
+            """
+            Get an inventory slot.
+
+            The structure of the resultant dictionary is the same as `Items.get_items()` structure, with
+            the additional `quantity` keys.
+
+            `None` if no such slot exist.
+            """
+            query = '''
+                SELECT Items.*, DUsers_Items.quantity
+                FROM DUsers_Items
+                    INNER JOIN Items ON item_id = id
+                WHERE user_id = ($1) AND item_id = ($2);
+            '''
+            
+            result = await conn.fetchrow(query, user_id, item_id)
+            return rec_to_dict(result)
+
+        @classmethod
+        async def find_equipment(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
+            """
+            Find the "tool" items that are inactive (still in the inventory).
+
+            `None` if no such equipments.
+
+            Important Parameters:
+            - `tool_type`: Either `pickaxe`, `axe` or `sword`.
+            - `user_id`: The user's id.
+            """
+
+            query = f'''
+                SELECT Items.*, DUsers_Items.quantity
+                FROM DUsers_Items
+                    INNER JOIN Items ON item_id = id
+                WHERE item_id LIKE '%\_{tool_type}' AND user_id = ($1);
+            '''
+
+            result = await conn.fetchrow(query, user_id)
+            return rec_to_dict(result)
+
+        @classmethod
+        async def add(cls, conn, user_id : int, item_id : int, amount : int = 1):
+            """
+            Add an amount of item to the user's inventory slot.
+            
+            If the inventory slot (identified by both user_id and item_id) doesn't exist, it'll be created.
+
+            **DO NOT USE THIS TO ADD ACTIVE EQUIPMENTS OR ACTIVE POTIONS**
+            """
+
+            item_existed = await cls.get_one_inventory(conn, user_id, item_id)
+            if item_existed is None:
+                query = '''
+                    INSERT INTO DUsers_Items
+                    VALUES ($1, $2, $3);
+                '''
+                await conn.execute(query, user_id, item_id, amount)
+            else:
+                query = '''
+                    UPDATE DUsers_Items
+                    SET quantity = ($1)
+                    WHERE user_id = ($2) AND item_id = ($3);
+                '''
+
+                await conn.execute(query, item_existed["quantity"] + amount, user_id, item_id)
+        
+        @classmethod
+        async def remove(cls, conn, user_id : int, item_id : int, amount : int = 1) -> str:
+            """
+            Remove an amount of item from the user's inventory slot.
+
+            If the resultant amount is 0, the slot is deleted.
+            If the item doesn't exist, the function raises `ItemNotPresent` exception.
+            If the resultant amount < 0, the function raises `InvTooLargeRemoval` exception.
+            """
+
+            item_existed = await cls.get_one_inventory(conn, user_id, item_id)
+            if item_existed is None:
+                raise ItemNotPresent(f"Item {item_id} does not exist in the user {user_id}'s inventory.")
+            else:
+                if item_existed["quantity"] - amount == 0:
+                    query = '''
+                        DELETE FROM DUsers_Items
+                        WHERE user_id = ($1) AND item_id = ($2);
+                    '''
+
+                    await conn.execute(query, user_id, item_id)
+                
+                elif item_existed["quantity"] - amount < 0:
+                    raise TooLargeRemoval("Quantity exceeded the amount presented in the inventory.")
+                else:
+                    query = '''
+                        UPDATE DUsers_Items
+                        SET quantity = ($1)
+                        WHERE user_id = ($2) AND item_id = ($3);
+                    '''
+
+                    await conn.execute(query, item_existed["quantity"] - amount, user_id, item_id)
+            
+        @classmethod
+        async def update_quantity(cls, conn, user_id : int, item_id : int, quantity : int):
+            item_existed = await cls.get_one_inventory(conn, user_id, item_id)
+            if item_existed is None:
+                return
+            elif quantity <= 0:
+                await cls.remove(conn, user_id, item_id, item_existed["quantity"])
+            else:
+                await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
+
+
+    class ActiveTools:
+        # DUsers_ActiveTools
+        @classmethod
+        def get_tool_type(cls, tool_id : str) -> str:
+            if "_pickaxe" in tool_id:
+                return "pickaxe"
+            elif "_axe" in tool_id:
+                return "axe"
+            elif "_sword" in tool_id:
+                return "sword"
+            elif "_rod" in tool_id:
+                return "rod"
+
+        @classmethod
+        async def get_equipments(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+            """
+            Get a list of active equipments.
+
+            `None` if no active equipments.
+            """
+            query = '''
+                SELECT Items.*, DUsers_ActiveTools.durability_left
+                FROM DUsers_ActiveTools
+                    INNER JOIN Items ON item_id = id
+                WHERE user_id = ($1);
+            '''
+
+            result = await conn.fetch(query, user_id)
+            return [rec_to_dict(record) for record in result]
+
+        @classmethod
+        async def get_equipment(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
+            """
+            Get an active equipment based on its type.
+            
+            It is recommended to pass `tool_type` with `get_tool_type()`.
+            """
+            query = f'''
+                SELECT Items.*, DUsers_ActiveTools.durability_left
+                FROM DUsers_ActiveTools
+                    INNER JOIN Items ON item_id = id
+                WHERE item_id LIKE '%\_{tool_type}' AND user_id = ($1);
+            '''
+
+            result = await conn.fetchrow(query, user_id)
+            return rec_to_dict(result)
+
+        @classmethod
+        async def dec_durability(cls, conn, user_id : int, tool_id : int, amount : int = 1):
+            tool = await cls.get_equipment(conn, cls.get_tool_type(tool_id), user_id)
+            if tool is not None:
+                if tool["durability_left"] - amount <= 0:
+                    await cls.unequip_tool(conn, user_id, tool_id)
+                    raise ItemExpired
+                else:
+                    query = '''
+                        UPDATE DUsers_ActiveTools
+                        SET durability_left = ($1)
+                        WHERE user_id = ($2) AND item_id = ($3);
+                    '''
+                    await conn.execute(query, tool["durability_left"] - amount, user_id, tool_id)
+
+        @classmethod
+        async def equip_tool(cls, conn, user_id : int, item_id : int):
+            """
+            Equip the tool for the user.
+
+            This method does not deal with the situation where the user already equipped a same tool type.
+            """
+            exist = await User.Inventory.find_equipment(conn, cls.get_tool_type(item_id), user_id)
+            if exist is None:
+                raise ItemNotPresent(f"Item {item_id} does not exist in the user {user_id}'s inventory.")
+            
+            await User.Inventory.remove(conn, user_id, item_id)
+
+            query = '''
+                INSERT INTO DUsers_ActiveTools
+                VALUES ($1, $2, $3);
+            '''
+            await conn.execute(query, user_id, item_id, exist["durability"])
+        
+        @classmethod
+        async def unequip_tool(cls, conn, user_id : int, item_id : int):
+            """
+            Unequip the tool from the user.
+
+            This destroys the items if the tool is used, otherwise, it's added back to the inventory.
+            If the item is destroyed, it raises `ItemExpired`.
+            """
+            equipped = await cls.get_equipment(conn, cls.get_tool_type(item_id), user_id)
+            if equipped is not None:
+                query = '''
+                    DELETE FROM DUsers_ActiveTools
+                    WHERE user_id = ($1) AND item_id = ($2);
+                '''
+
+                await conn.execute(query, user_id, item_id)
+                if equipped["durability_left"] == equipped["durability"]:
+                    await User.Inventory.add(conn, user_id, item_id)
+                else:
+                    raise ItemExpired(f"Item {item_id}'s durability is forcefully returned to 0.")
+            else:
+                raise ItemNotPresent(f"Item {item_id} is not currently equipping by user {user_id}.")
+    
+    class ActivePortals:
+        # DUsers_ActivePortals
+        @classmethod
+        async def get_portals(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+            query = '''
+                SELECT Items.*, DUsers_ActivePortals.remain_uses
+                FROM DUsers_ActivePortals
+                    INNER JOIN Items ON item_id = id
+                WHERE user_id = ($1);
+            '''
+
+            result = await conn.fetch(query, user_id)
+            return [rec_to_dict(record) for record in result]
+        @classmethod
+        async def get_portal(cls, conn, user_id : int, portal_id : str) -> typing.Optional[dict]:
+            query = '''
+                SELECT Items.*, DUsers_ActivePortals.remain_uses
+                FROM DUsers_ActivePortals
+                    INNER JOIN Items ON item_id = id
+                WHERE user_id = ($1) AND item_id = ($2);
+            '''
+
+            result = await conn.fetchrow(query, user_id, portal_id)
+            return rec_to_dict(result)
+        
+        @classmethod
+        async def add(cls, conn, user_id : int, portal_id : str):
+            # It is the bot's job to keep this table has no similar portals.
+            portal = await Items.get_item(conn, portal_id)
+            query = '''
+                INSERT INTO DUsers_ActivePortals
+                VALUES ($1, $2, $3);
+            '''
+            await conn.execute(query, user_id, portal_id, portal["durability"])
+        @classmethod
+        async def remove(cls, conn, user_id : int, portal_id : str):
+            query = '''
+                DELETE FROM DUsers_ActivePortals
+                WHERE user_id = ($1) AND item_id = ($2);
+            '''
+
+            await conn.execute(query, user_id, portal_id)
+        @classmethod
+        async def dec_durability(cls, conn, user_id : int, portal_id : int, amount : int = 1):
+            tool = await cls.get_portal(conn, portal_id, user_id)
+            if tool is not None:
+                if tool["remain_uses"] - amount <= 0:
+                    await cls.remove(conn, user_id, portal_id)
+                    raise ItemExpired
+                else:
+                    query = '''
+                        UPDATE DUsers_ActivePortals
+                        SET remain_uses = ($1)
+                        WHERE user_id = ($2) AND item_id = ($3);
+                    '''
+                    await conn.execute(query, tool["remain_uses"] - amount, user_id, portal_id)
+
+    
+    
+    
+    class ActivePotions:
+        # DUsers_ActivePotions
+        @classmethod
+        async def get_potions(cls, conn, user_id : int):
+            query = '''
+                SELECT Items.*, DUsers_ActivePotions.remain_uses
+                FROM DUsers_ActivePotions
+                    INNER JOIN Items ON item_id = id
+                WHERE user_id = ($1);
+            '''
+
+            result = await conn.fetch(query, user_id)
+            return [rec_to_dict(record) for record in result]
+        @classmethod
+        async def get_potion(cls, conn, user_id : int, potion_id : str):
+            query = '''
+                SELECT Items.*, DUsers_ActivePotions.remain_uses
+                FROM DUsers_ActivePotions
+                    INNER JOIN Items ON item_id = id
+                WHERE user_id = ($1) AND item_id = ($2);
+            '''
+
+            result = await conn.fetchrow(query, user_id, potion_id)
+            return rec_to_dict(result)
+
+        @classmethod
+        async def get_stack(cls, conn, potion_id : str, remaining : int):
+            default_durability = (await Items.get_item(conn, potion_id))["durability"]
+            from math import ceil
+            return ceil(remaining / default_durability)
+        @classmethod
+        async def set_potion_active(cls, conn, user_id : int, potion_id : str, amount : int = 1):
+            try:
+                await User.Inventory.remove(conn, user_id, potion_id, amount)
+            except ItemNotPresent as inp:
+                raise inp
+            except TooLargeRemoval as itlr:
+                raise itlr
+            
+            await cls.add_active_potion(conn, user_id, potion_id, amount)
+        
+        @classmethod
+        async def add_active_potion(cls, conn, user_id : int, potion_id : int, amount : int = 1):
+            existed = await cls.get_potion(conn, user_id, potion_id)
+            if existed is None:
+                actual_item = await Items.get_item(conn, potion_id)
+                query = '''
+                    INSERT INTO DUsers_ActivePotions
+                    VALUES ($1, $2, $3);
+                '''
+
+                await conn.execute(query, user_id, potion_id, actual_item["durability"] * amount)
+            else:
+                query = '''
+                    UPDATE DUsers_ActivePotions
+                    SET remain_uses = ($1)
+                    WHERE user_id = ($2) AND item_id = ($3);
+                '''
+
+                await conn.execute(query, existed["remain_uses"] + amount * existed["durability"], user_id, potion_id)
+        
+        @classmethod
+        async def decrease_active_potion(cls, conn, user_id : int, potion_id : int, durability : int = 1):
+            existed = await cls.get_potion(conn, user_id, potion_id)
+            if existed is None:
+                raise PotionNotActive(f"Potion {potion_id} is not active.")
+            else:
+                if existed["remain_uses"] - durability <= 0:
+                    query = '''
+                        DELETE FROM DUsers_ActivePotions
+                        WHERE user_id = ($1) AND item_id = ($2);
+                    '''
+
+                    await conn.execute(query, user_id, potion_id)
+                    raise ItemExpired
+                else:
+                    query = '''
+                        UPDATE DUsers_ActivePotions
+                        SET remain_uses = ($1)
+                        WHERE user_id = ($2) AND item_id = ($3);
+                    '''
+
+                    await conn.execute(query, existed["remain_uses"] - durability, user_id, potion_id)
 
 class Guild:
     """
@@ -368,205 +747,14 @@ class Member:
     
 # Currently we still need some sort of function that scan the db periodically for some schedule stuffs. 
 
-class Inventory:
-    """
-    A group of methods mainly deals with DUsers_Items table.
-    """
 
-    @classmethod
-    async def get_whole_inventory(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
-
-        # No need to JOIN in this method due to limited uses.
-        query = '''
-            SELECT * FROM DUsers_Items
-            WHERE user_id = ($1);
-        '''
-        
-        result = await conn.fetch(query, user_id)
-        if result is None:
-            return None
-        
-        return [rec_to_dict(row) for row in result]
-    
-    @classmethod
-    async def get_one_inventory(cls, conn, user_id : int, item_id : int) -> typing.Optional[dict]:
-        """
-        Get an inventory slot (or row).
-        The structure of the resultant dictionary is the same as `Items.get_items()` structure, with
-        the additional `user_id`, `is_main` and `durability_left` keys.
-        """
-        query = '''
-            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
-            FROM DUsers_Items
-                INNER JOIN Items ON item_id = id
-            WHERE user_id = ($1) AND item_id = ($2);
-        '''
-        
-        result = await conn.fetchrow(query, user_id, item_id)
-        return rec_to_dict(result)
-    
-    @classmethod
-    async def add(cls, conn, user_id : int, item_id : int, amount : int = 1):
-        """
-        Add an amount of item to the user's inventory slot.
-        
-        If the inventory slot (identified by both user_id and item_id) doesn't exist, it'll be created.
-        """
-
-        item_existed = await cls.get_one_inventory(conn, user_id, item_id)
-        if item_existed is None:
-            actual_item = await Items.get_item(conn, item_id)
-            query = '''
-                INSERT INTO DUsers_Items
-                VALUES ($1, $2, $3, $4, $5);
-            '''
-            await conn.execute(query, user_id, item_id, amount, False, actual_item["durability"])
-        else:
-            query = '''
-                UPDATE DUsers_Items
-                SET quantity = ($1)
-                WHERE user_id = ($2) AND item_id = ($3);
-            '''
-
-            await conn.execute(query, item_existed["quantity"] + amount, user_id, item_id)
-    
-    @classmethod
-    async def remove(cls, conn, user_id : int, item_id : int, amount : int = 1) -> str:
-        """
-        Remove an amount of item from the user's inventory slot.
-
-        If the resultant amount is 0, the slot is deleted.
-        If the resultant amount is < 0, or the item doesn't exist, the function return an empty string to test `is None`.
-        """
-
-        item_existed = await cls.get_one_inventory(conn, user_id, item_id)
-        if item_existed is None:
-            return ""
-        else:
-            if item_existed["quantity"] - amount == 0:
-                query = '''
-                    DELETE FROM DUsers_Items
-                    WHERE user_id = ($1) AND item_id = ($2);
-                '''
-
-                await conn.execute(query, user_id, item_id)
-            
-            elif item_existed["quantity"] - amount < 0:
-                return ""
-            else:
-                query = '''
-                    UPDATE DUsers_Items
-                    SET quantity = ($1)
-                    WHERE user_id = ($2) AND item_id = ($3);
-                '''
-
-                await conn.execute(query, item_existed["quantity"] - amount, user_id, item_id)
-        
-    @classmethod
-    async def update_quantity(cls, conn, user_id : int, item_id : int, quantity : int):
-        item_existed = await cls.get_one_inventory(conn, user_id, item_id)
-        if item_existed is None:
-            return
-        elif quantity <= 0:
-            await cls.remove(conn, user_id, item_id, item_existed["quantity"])
-        else:
-            await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
-
-    @classmethod
-    async def dec_durability(cls, conn, user_id : int, tool_id : int, amount : int = 1):
-        tool = await cls.get_one_inventory(conn, user_id, tool_id)
-        if tool is not None:
-            if tool["durability_left"] - amount <= 0:
-                await cls.remove(conn, user_id, tool_id)
-                return ""
-            else:
-                query = '''
-                    UPDATE DUsers_Items
-                    SET durability_left = ($1)
-                    WHERE user_id = ($2) AND item_id = ($3);
-                '''
-                await conn.execute(query, tool["durability_left"] - amount, user_id, tool_id)
-      
-    @classmethod
-    def get_tool_type(cls, tool_id : str) -> str:
-        if "_pickaxe" in tool_id:
-            return "pickaxe"
-        elif "_axe" in tool_id:
-            return "axe"
-        elif "_sword" in tool_id:
-            return "sword"
-        elif "_rod" in tool_id:
-            return "rod"
-
-    @classmethod
-    async def find_equip(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
-        """
-        Find the current equipment.
-
-        Important Parameters:
-        - `tool_type`: Either `pickaxe`, `axe` or `sword`.
-        - `user_id`: The user's id.
-        """
-
-        query = f'''
-            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
-            FROM DUsers_Items
-                INNER JOIN Items ON item_id = id
-            WHERE item_id LIKE '%\_{tool_type}' AND is_main = TRUE AND user_id = ($1);
-        '''
-
-        result = await conn.fetchrow(query, user_id)
-        return rec_to_dict(result)
-
-    @classmethod
-    async def equip_tool(cls, conn, user_id : int, item_id : int):
-        query = '''
-            UPDATE DUsers_Items
-            SET is_main = TRUE
-            WHERE user_id = ($1) AND item_id = ($2);
-        '''
-
-        await conn.execute(query, user_id, item_id)
-    
-    @classmethod
-    async def unequip_tool(cls, conn, user_id : int, item_id : int):
-        query = '''
-            UPDATE DUsers_Items
-            SET is_main = FALSE
-            WHERE user_id = ($1) AND item_id = ($2);
-        '''
-
-        await conn.execute(query, user_id, item_id)
-
-    @classmethod
-    async def get_equip(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
-        query = '''
-            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
-            FROM DUsers_Items
-                INNER JOIN Items ON item_id = id
-            WHERE user_id = ($1) AND is_main = TRUE;
-        '''
-
-        result = await conn.fetch(query, user_id)
-        return [rec_to_dict(record) for record in result]
-
-    @classmethod
-    async def get_portals(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
-        query = '''
-            SELECT Items.*, DUsers_Items.user_id, DUsers_Items.quantity, DUsers_Items.is_main, DUsers_Items.durability_left
-            FROM DUsers_Items
-                INNER JOIN Items ON item_id = id
-            WHERE user_id = ($1) AND (item_id = 'nether' OR item_id = 'end');
-        '''
-
-        result = await conn.fetch(query, user_id)
-        return [rec_to_dict(record) for record in result]
 
 class Items:
     @classmethod
     async def get_whole_items(cls, conn) -> typing.Optional[typing.List[dict]]:
         query = '''
-            SELECT * FROM Items;
+            SELECT * FROM Items
+            ORDER BY inner_sort;
         '''
         
         result = await conn.fetch(query)
