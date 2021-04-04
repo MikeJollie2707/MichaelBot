@@ -438,7 +438,8 @@ class User:
 
             This method does not deal with the situation where the user already equipped a same tool type.
             """
-            exist = await User.Inventory.find_equipment(conn, cls.get_tool_type(item_id), user_id)
+            
+            exist = await User.Inventory.get_one_inventory(conn, user_id, item_id)
             if exist is None:
                 raise ItemNotPresent(f"Item {item_id} does not exist in the user {user_id}'s inventory.")
             
