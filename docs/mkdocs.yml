@@ -15,6 +15,9 @@ nav:
     - "NSFW": commands/nsfw.md
     - "Settings": commands/server.md
     - "Utility": commands/utility.md
+  - "Currency System":
+    - "Intro": currency/currency_basic.md
+    - "Basic": currency/currency_start.md
   - "Templates":
     - "Help": template/help.md
     - "Menu": template/menu.md
