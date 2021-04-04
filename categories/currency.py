@@ -67,6 +67,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         # The code for `adventure()`, `chop()` should be identical for now.
         # Just copy and change some stuffs.
 
+        message = ""
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 # Edit the name of the variable and the string argument.
@@ -90,7 +91,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
                         if is_fire_pot is not None:
                             die_chance = NETHER_DIE / 2
-                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
+                            try:
+                                await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
+                            except DB.ItemExpired:
+                                message += "**Fire Potion** expired.\n"
                 
                 rng = random.random()
                 if rng <= die_chance:
@@ -101,7 +105,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
                     # Edit the function name
-                    await ctx.reply(LootTable.get_adventure_msg("die", world), mention_author = False)
+                    message += LootTable.get_adventure_msg("die", world)
+                    await ctx.reply(message, mention_author = False)
                     return
                 
                 # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
@@ -116,7 +121,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
                     if is_luck is not None:
                         rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
-                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                        try:
+                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                        except DB.ItemExpired:
+                            message += "**Luck Potion** expired.\n"
 
                 # A dict of {"item": amount}
                 final_reward = {}
@@ -137,7 +145,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = await LootTable.get_friendly_reward(conn, final_reward)
+                reward_string = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -150,11 +158,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     try:
                         await DB.User.ActiveTools.dec_durability(conn, ctx.author.id, current_sword["id"], random.randint(1, 3))
                     except DB.ItemExpired:
-                        await ctx.reply("Your sword broke after the adventure :(", mention_author = False)
+                        message += "Your sword broke after get adventure :(\n"
                     
-                    await ctx.reply(LootTable.get_adventure_msg("reward", world, message), mention_author = False)
+
+                    await ctx.reply(message + LootTable.get_adventure_msg("reward", world, reward_string), mention_author = False)
                 else:
-                    await ctx.reply(LootTable.get_adventure_msg("empty", world), mention_author = False)
+                    await ctx.reply(message + LootTable.get_adventure_msg("empty", world), mention_author = False)
 
     @commands.command(aliases = ['bal'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -196,6 +205,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         # The code for `adventure()`, `chop()` should be identical for now.
         # Just copy and change some stuffs.
 
+        message = ""
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 # Edit the name of the variable and the string argument.
@@ -214,10 +224,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 elif world == 1:
                     die_chance = NETHER_DIE
                     # A roughly 50% chance of using fire potion.
-                    is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
-                    if is_fire_pot is not None:
-                        die_chance = NETHER_DIE / 2
-                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
+                    use_fire = random.random()
+                    if use_fire <= FIRE_ACTIVATE_CHANCE:
+                        is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
+                        if is_fire_pot is not None:
+                            die_chance = NETHER_DIE / 2
+                            try:
+                                await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
+                            except DB.ItemExpired:
+                                message += "**Fire Potion** expired.\n"
                 
                 rng = random.random()
                 if rng <= die_chance:
@@ -228,7 +243,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
                     # Edit the function name
-                    await ctx.reply(LootTable.get_chop_msg("die", world), mention_author = False)
+                    message += LootTable.get_chop_msg("die", world)
+                    await ctx.reply(message, mention_author = False)
                     return
                 
                 # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
@@ -236,13 +252,18 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 upper_bound = 0
                 # Later on we can check if the user has a certain potion that can affect the roll like double or something.
                 rolls = loot.pop("rolls")
+
                 # A roughly 50% chance of using luck potion.
                 use_luck = random.random()
-                if use_luck > 0.5:
+                if use_luck <= LUCK_ACTIVATE_CHANCE:
                     is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
                     if is_luck is not None:
                         rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
-                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                        try:
+                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                        except DB.ItemExpired:
+                            message += "**Luck Potion** expired.\n"
+
                 # A dict of {"item": amount}
                 final_reward = {}
 
@@ -262,7 +283,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = await LootTable.get_friendly_reward(conn, final_reward)
+                reward_string = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -275,11 +296,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     try:
                         await DB.User.ActiveTools.dec_durability(conn, ctx.author.id, current_axe["id"], random.randint(1, 3))
                     except DB.ItemExpired:
-                        await ctx.reply("Your axe broke after chopping too many trees :(", mention_author = False)
+                        message += "Your axe broke after chopping too many trees :(\n"
                     
-                    await ctx.reply(LootTable.get_chop_msg("reward", world, message), mention_author = False)
+
+                    await ctx.reply(message + LootTable.get_chop_msg("reward", world, reward_string), mention_author = False)
                 else:
-                    await ctx.reply(LootTable.get_chop_msg("empty", world), mention_author = False)
+                    await ctx.reply(message + LootTable.get_chop_msg("empty", world), mention_author = False)
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -682,9 +704,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 # Swap out the same tool type.
                 if has_equipped is not None:
                     try:
-                        await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, has_equipped["id"])
                         name = LootTable.acapitalize(await DB.Items.get_friendly_name(conn, has_equipped["id"]))
                         message += "You swapped out the old **%s** with the new tool.\n" % name
+                        await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, has_equipped["id"])
                     except DB.ItemExpired:
                         message += "Your old tool is used, so it's gone into the Void after you remove it :(\n"
                     else:
@@ -868,6 +890,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
+        message = ""
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 # Edit the name of the variable and the string argument.
@@ -891,7 +914,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
                         if is_fire_pot is not None:
                             die_chance = NETHER_DIE / 2
-                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
+                            try:
+                                await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
+                            except DB.ItemExpired:
+                                message += "**Fire Potion** expired.\n"
                 
                 rng = random.random()
                 if rng <= die_chance:
@@ -917,7 +943,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     if is_luck is not None:
                         # 10 is currently a fixed number. It might be changed due to a badge.
                         rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
-                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                        try:
+                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                        except DB.ItemExpired:
+                            message += "**Luck Potion** expired.\n"
                 # A roughly 75% chance of using the potion.
                 use_haste = random.random()
                 haste_stack = 0
@@ -925,7 +954,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     is_haste = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "haste_potion")
                     if is_haste is not None:
                         haste_stack = await DB.User.ActivePotions.get_stack(conn, "haste_potion", is_haste["remain_uses"]) * POTION_STACK_MULTIPLIER
-                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "haste_potion")
+                        try:
+                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "haste_potion")
+                        except:
+                            message += "**Haste Potion** expired.\n"
                 
                 # A dict of {"item": amount}
                 final_reward = {}
@@ -946,7 +978,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     lower_bound = 0
                     upper_bound = 0
                 
-                message = await LootTable.get_friendly_reward(conn, final_reward)
+                reward_string = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -961,9 +993,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     except DB.ItemExpired:
                         await ctx.reply("Your pickaxe broke after you mine :(", mention_author = False)
                     
-                    await ctx.reply(LootTable.get_mine_msg("reward", world, message), mention_author = False)
+                    await ctx.reply(message + LootTable.get_mine_msg("reward", world, reward_string), mention_author = False)
                 else:
-                    await ctx.reply(LootTable.get_mine_msg("empty", world), mention_author = False)
+                    await ctx.reply(message + LootTable.get_mine_msg("empty", world), mention_author = False)
     
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
