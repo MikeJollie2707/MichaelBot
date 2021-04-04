@@ -8,6 +8,20 @@ import typing
 import asyncpg
 from categories.utilities.loot import get_item_info
 
+class MichaelBotDatabaseException(Exception):
+    pass
+
+class ItemNotPresent(MichaelBotDatabaseException):
+    pass
+class PotionNotActive(MichaelBotDatabaseException):
+    pass
+class EquipmentNotActive(MichaelBotDatabaseException):
+    pass
+class TooLargeRemoval(MichaelBotDatabaseException):
+    pass
+class ItemExpired(MichaelBotDatabaseException):
+    pass
+
 async def update_db(bot):
     bot.debug("Updating database on ready...")
     async with bot.pool.acquire() as conn:
