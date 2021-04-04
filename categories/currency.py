@@ -686,9 +686,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         name = LootTable.acapitalize(await DB.Items.get_friendly_name(conn, has_equipped["id"]))
                         message += "You swapped out the old **%s** with the new tool.\n" % name
                     except DB.ItemExpired:
-                        message += "Your old tool is used, so it's gone into the Void after you remove it :("
+                        message += "Your old tool is used, so it's gone into the Void after you remove it :(\n"
                     else:
-                        message += "You haven't used the old tool, so it's back into your inventory."
+                        message += "You haven't used the old tool, so it's back into your inventory.\n"
                     
                 await DB.User.ActiveTools.equip_tool(conn, ctx.author.id, tool_name)
                 official_name = LootTable.acapitalize(await DB.Items.get_friendly_name(conn, tool_name))
