@@ -977,17 +977,25 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             return
         
         async with self.bot.pool.acquire() as conn:
-            try:
-                await DB.User.ActivePotions.set_potion_active(conn, ctx.author.id, potion, amount)
-            except DB.ItemNotPresent:
-                await ctx.reply("You don't have such a potion.", mention_author = False)
-                return
-            except DB.TooLargeRemoval:
-                await ctx.reply("You don't have this many potion.", mention_author = False)
-                return
+            actual_potion = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, potion)
+            if actual_potion is not None:
+                pot_stack = await DB.User.ActivePotions.get_stack(conn, potion, actual_potion["remain_uses"])
+                if pot_stack == 10:
+                    await ctx.reply("You cannot stack a potion more than 10.", mention_author = False)
+                    return
             
-            official_name = await DB.Items.get_friendly_name(conn, potion)
-            await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
+            async with conn.transaction():
+                try:
+                    await DB.User.ActivePotions.set_potion_active(conn, ctx.author.id, potion, amount)
+                except DB.ItemNotPresent:
+                    await ctx.reply("You don't have such a potion.", mention_author = False)
+                    return
+                except DB.TooLargeRemoval:
+                    await ctx.reply("You don't have this many potion.", mention_author = False)
+                    return
+                
+                official_name = await DB.Items.get_friendly_name(conn, potion)
+                await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
 
     @commands.command(aliases = ['lb'], hidden = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
