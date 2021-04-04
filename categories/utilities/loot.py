@@ -74,19 +74,23 @@ def get_item_info():
             "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
         # General purpose materials
-        "coal": ["<:coal:819742286250377306>", 25, "coal", "common", 15, 10, None,
+        "coal": ["<:coal:819742286250377306>", 29, "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
-        "apple": ["🍎", 26, "apple", "common", None, 10, None,
+        "apple": ["🍎", 30, "apple", "common", None, 10, None,
             "An apple. Yummy. Watch out for the worms though."],
-        "flower": ["🌸", 27, "flower", "common", None, 10, None,
+        "flower": ["🌸", 31, "flower", "common", None, 10, None,
             "A beautiful flower."],
-        "moyai": ["🌺", 28, "moyai", "???", None, None, None,
+        "moyai": ["🌺", 32, "moyai", "???", None, None, None,
             "A mysterious mystical flower. It is unknown what this flower truly is."],
-        "string": ["<:string:820758307542401055>", 29,"string", "common", 15, 10, None,
-            "A useful drop for some future uses."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", 30, "spider eye", "uncommon", None, 20, None,
-            "An uncommon drop for some future uses."],
-        "gunpowder": ["<:gunpowder:821528688646160395>", 31, "gunpowder", "uncommon", 50, 30, None,
+        "string": ["<:string:820758307542401055>", 33,"string", "common", 15, 10, None,
+            "A useful drop for brewing potions."],
+        "spider_eye": ["<:spider_eye:820758868468301864>", 34, "spider eye", "uncommon", None, 20, None,
+            "An uncommon drop for brewing potions."],
+        "bone": ["<:bone2:828133597529374720>", 35, "bone", "common", None, 20, None,
+            "A common drop from skeletons. Hopefully it has some uses."],
+        "zombie_meat": ["<:zombie_meat:828133597659529276>", 36, "rotton flesh", "common", None, 20, None,
+            "A common drop from zombies. Don't eat it."],
+        "gunpowder": ["<:gunpowder:821528688646160395>", 37, "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
         "magma_cream": ["<:magma_cream:823593239683924038>", 38, "magma cream", "common", 30, 20, None,
             "A common drop for brewing potions."],
@@ -279,27 +283,33 @@ def get_adventure_loot(sword : str, world : int):
     if world == 0:
         if sword == "wood_sword":
             return {
-                "string": 0.30,  # 0.6 on average
+                "zombie_meat": 0.30,  # 0.6 on average
                 "rolls": 2
             }
         elif sword == "stone_sword":
             return {
-                "string": 0.35, # 1.75 on average
+                "string": 0.25, # 1.25 on average
                 "spider_eye": 0.05, # 0.25 on average
+                "zombie_meat": 0.30, # 1.5 on average
+                "bone": 0.30, # 1.5 on average
                 "rolls": 5
             }
         elif sword == "iron_sword":
             return {
-                "string": 0.35, # 3.5 on average
-                "spider_eye": 0.15, # 1.5 on average
-                "gunpowder": 0.1, # 1 on average
+                "string": 0.20, # 2 on average
+                "spider_eye": 0.10, # 1 on average
+                "zombie_meat": 0.30, # 3 on average
+                "bone": 0.30, # 3 on average
+                "gunpowder": 0.10, # 1 on average
                 "rolls": 10
             }
         elif sword == "diamond_sword":
             return {
-                "string": 0.30, # 6 on average
+                "string": 0.25, # 5 on average
                 "spider_eye": 0.15, # 3 on average
-                "gunpowder": 0.25, # 5 on average
+                "zombie_meat": 0.25, # 5 on average
+                "bone": 0.25, # 5 on average
+                "gunpowder": 0.15, # 3 on average
                 "rolls": 20
             }
         elif sword == "nether_sword":
@@ -325,13 +335,15 @@ def get_adventure_loot(sword : str, world : int):
         elif sword == "iron_sword":
             return {
                 "magma_cream": 0.50, # 5 on average
+                "coal": 0.10, # 1 on average
                 "blaze": 0.01, # 0.1 on average
                 "rolls": 10
             }
         elif sword == "diamond_sword":
             return {
                 "magma_cream": 0.75, # 15 on average
-                "blaze": 0.1, # 2 on average
+                "coal": 0.10, # 2 on average
+                "blaze": 0.10, # 2 on average
                 "rolls": 20
             }
         elif sword == "nether_sword":
