@@ -18,6 +18,13 @@ NETHER_DIE = 0.025
 OVERWORLD_DIE = 0.0125
 DEATH_PENALTY = 0.10
 
+LUCK_ACTIVATE_CHANCE = 0.5
+FIRE_ACTIVATE_CHANCE = 0.5
+HASTE_ACTIVATE_CHANCE = 0.75
+
+# Unused for now
+POTION_STACK_MULTIPLIER = 1
+
 # Pending functions that needs to be clean: craft (possible rework), daily
 
 class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
@@ -77,6 +84,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
                     die_chance = NETHER_DIE
+                    # A roughly 50% chance of using fire potion.
+                    use_fire = random.random()
+                    if use_fire <= FIRE_ACTIVATE_CHANCE:
+                        is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
+                        if is_fire_pot is not None:
+                            die_chance = NETHER_DIE / 2
+                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
                 
                 rng = random.random()
                 if rng <= die_chance:
@@ -95,6 +109,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 upper_bound = 0
                 # Later on we can check if the user has a certain potion that can affect the roll like double or something.
                 rolls = loot.pop("rolls")
+
+                # A roughly 50% chance of using luck potion.
+                use_luck = random.random()
+                if use_luck <= LUCK_ACTIVATE_CHANCE:
+                    is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
+                    if is_luck is not None:
+                        rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
+                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+
                 # A dict of {"item": amount}
                 final_reward = {}
 
@@ -187,6 +210,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
                     die_chance = NETHER_DIE
+                    # A roughly 50% chance of using fire potion.
+                    is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
+                    if is_fire_pot is not None:
+                        die_chance = NETHER_DIE / 2
+                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
                 
                 rng = random.random()
                 if rng <= die_chance:
@@ -205,6 +233,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 upper_bound = 0
                 # Later on we can check if the user has a certain potion that can affect the roll like double or something.
                 rolls = loot.pop("rolls")
+                # A roughly 50% chance of using luck potion.
+                use_luck = random.random()
+                if use_luck > 0.5:
+                    is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
+                    if is_luck is not None:
+                        rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
+                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
                 # A dict of {"item": amount}
                 final_reward = {}
 
@@ -369,6 +404,135 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(embed = embed, mention_author = False)
         else:
             await ctx.reply("This item doesn't exist.", mention_author = False)
+
+    @commands.group(invoke_without_command = True)
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    async def brew(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, potion : ItemConverter):
+        '''
+        Brew potion.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} luck potion
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                exist = await DB.Items.get_item(conn, potion)
+                if exist is None:
+                    await ctx.reply("This potion doesn't exist. Please check `brew recipe` for possible brewing potions.", mention_author = False)
+                    return
+                if "_potion" not in potion:
+                    await ctx.reply("This is not a potion.", mention_author = False)
+                    return
+                
+                ingredient = LootTable.get_brew_ingredient(potion)
+                if ingredient is None:
+                    await ctx.reply("This potion is not brewable. Please check `brew recipe` for possible brewing potions.", mention_author = False)
+                    return
+                
+                # Perform a local transaction, and if it's valid, push to db.
+                fake_inv = {} # Dict {item: remaining_amount}
+                miss = {} # Dict {item: missing_amount}
+                for key in ingredient:
+                    if key != "quantity" and key != "money":
+                        # The item may not exist due to x0.
+                        slot = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, key)
+                        if slot is None:
+                            fake_inv[key] = -(amount * ingredient[key])
+                        else:
+                            fake_inv[key] = slot["quantity"] - amount * ingredient[key]
+                        
+                        if fake_inv[key] < 0:
+                            miss[key] = abs(fake_inv[key])
+                
+                if len(miss) == 0:
+                    for key in fake_inv:
+                        await DB.User.Inventory.update_quantity(conn, ctx.author.id, key, fake_inv[key])
+                    
+                    await DB.User.Inventory.add(conn, ctx.author.id, potion, amount * ingredient["quantity"])
+                    await DB.User.remove_money(conn, ctx.author.id, ingredient["money"])
+                    
+                    official_name = LootTable.acapitalize(exist["name"])
+                    await ctx.reply(f"Brewed {amount * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
+                    
+                else:
+                    miss_string = await LootTable.get_friendly_reward(conn, miss, False)
+                    await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
+
+    @brew.command(name = 'recipe')
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    async def brew_recipe(self, ctx : commands.Context, *, potion : ItemConverter = None):
+        '''
+        Recipe for a potion or all the recipes.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example 1:** {prefix}{command_name} wood
+        **Example 2:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        recipe = LootTable.get_brew_ingredient(potion)
+
+        if potion is None:
+            MAX_ITEMS = 4
+            cnt = 0 # Keep track for MAX_ITEMS
+            page = Pages()
+            embed = None
+            friendly_name = ""
+            for key in recipe:
+                if cnt == 0:
+                    embed = Facility.get_default_embed(
+                        title = "All crafting recipes",
+                        timestamp = datetime.datetime.utcnow(),
+                        author = ctx.author
+                    )
+                
+                async with self.bot.pool.acquire() as conn:
+                    friendly_name = await DB.Items.get_friendly_name(conn, key)
+                
+                    outp = recipe[key].pop("quantity", None)
+                    embed.add_field(
+                        name = LootTable.acapitalize(friendly_name),
+                        value = "**Input:** %s\n**Output:** %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key]), await LootTable.get_friendly_reward(conn, {key : outp})),
+                        inline = False
+                    )
+
+                cnt += 1
+                if cnt == MAX_ITEMS:
+                    page.add_page(embed)
+                    embed = None
+                    cnt = 0
+            # If the amount of items doesn't reach MAX_ITEMS.
+            if embed is not None:
+                page.add_page(embed)
+            
+            await page.event(ctx, interupt = False) 
+        elif recipe is not None:
+            async with self.bot.pool.acquire() as conn:
+                friendly_name = await DB.Items.get_friendly_name(conn, potion)
+                outp = recipe.pop("quantity", None)
+                embed = Facility.get_default_embed(
+                    title = "%s's brewing recipe" % LootTable.acapitalize(friendly_name),
+                    timestamp = datetime.datetime.utcnow(),
+                    author = ctx.author
+                ).add_field(
+                    name = "Recipe:",
+                    value = await LootTable.get_friendly_reward(conn, recipe),
+                    inline = False
+                ).add_field(
+                    name = "Receive:",
+                    value = await LootTable.get_friendly_reward(conn, {potion : outp}),
+                    inline = False
+                )
+
+            await ctx.reply(embed = embed, mention_author = False)
+        else:
+            await ctx.reply("This potion doesn't exist.", mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -549,6 +713,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     value = f"*{tool['description']}*",
                     inline = False
                 )
+            for potion in potions:
+                embed.add_field(
+                    name = "%s **%s** [%d/%d]" % (potion['emoji'], LootTable.acapitalize(potion['name']), potion['remain_uses'], potion['durability']),
+                    value = f"*{potion['description']}*",
+                    inline = False
+                )
             for portal in portals:
                 embed.add_field(
                     name = "%s **%s** [%d/%d]" % (portal['emoji'], LootTable.acapitalize(portal['name']), portal['durability_left'], portal['durability']),
@@ -700,6 +870,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
                     die_chance = NETHER_DIE
+                    # A roughly 50% chance of using fire potion.
+                    use_fire = random.random()
+                    if use_fire <= FIRE_ACTIVATE_CHANCE:
+                        is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
+                        if is_fire_pot is not None:
+                            die_chance = NETHER_DIE / 2
+                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
                 
                 rng = random.random()
                 if rng <= die_chance:
@@ -718,6 +895,23 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 upper_bound = 0
                 # Later on we can check if the user has a certain potion that can affect the roll like double or something.
                 rolls = loot.pop("rolls")
+                # A roughly 50% chance of using luck potion.
+                use_luck = random.random()
+                if use_luck <= LUCK_ACTIVATE_CHANCE:
+                    is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
+                    if is_luck is not None:
+                        # 10 is currently a fixed number. It might be changed due to a badge.
+                        rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
+                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
+                # A roughly 75% chance of using the potion.
+                use_haste = random.random()
+                haste_stack = 0
+                if use_haste <= HASTE_ACTIVATE_CHANCE:
+                    is_haste = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "haste_potion")
+                    if is_haste is not None:
+                        haste_stack = await DB.User.ActivePotions.get_stack(conn, "haste_potion", is_haste["remain_uses"]) * POTION_STACK_MULTIPLIER
+                        await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "haste_potion")
+                
                 # A dict of {"item": amount}
                 final_reward = {}
 
@@ -753,6 +947,30 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 else:
                     await ctx.reply(LootTable.get_mine_msg("empty", world), mention_author = False)
     
+    @commands.command()
+    async def usepotion(self, ctx : commands.Context, amount : typing.Optional[int], *, potion : ItemConverter):
+        if amount is None:
+            amount = 1
+        if potion is None:
+            await ctx.reply("This potion doesn't exist.")
+            return
+        if "_potion" not in potion:
+            await ctx.reply("This is not a potion.")
+            return
+        
+        async with self.bot.pool.acquire() as conn:
+            try:
+                await DB.User.ActivePotions.set_potion_active(conn, ctx.author.id, potion, amount)
+            except DB.ItemNotPresent:
+                await ctx.reply("You don't have such a potion.", mention_author = False)
+                return
+            except DB.TooLargeRemoval:
+                await ctx.reply("You don't have this many potion.", mention_author = False)
+                return
+            
+            official_name = await DB.Items.get_friendly_name(conn, potion)
+            await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
+
     @commands.command(aliases = ['lb'], hidden = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def topmoney(self, ctx : commands.Context, local__global = "local"):

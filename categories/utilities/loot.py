@@ -88,10 +88,22 @@ def get_item_info():
             "An uncommon drop for some future uses."],
         "gunpowder": ["<:gunpowder:821528688646160395>", 31, "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
-        "magma_cream": ["<:magma_cream:823593239683924038>", 32, "magma cream", "common", 50, 40, None,
-            "A common drop for some future uses."],
-        "blaze": ["<:blaze_rod:826150261906472960>", 33, "blaze rod", "rare", None, 45, None,
-            "A rare drop for some future uses."]
+        "magma_cream": ["<:magma_cream:823593239683924038>", 38, "magma cream", "common", 30, 20, None,
+            "A common drop for brewing potions."],
+        "blaze": ["<:blaze_rod:826150261906472960>", 39, "blaze rod", "rare", None, 45, None,
+            "A rare drop for brewing potions."],
+        "nether_star": ["<:nether_star:828135277351534592>", 40, "nether star", "legendary", None, None, None,
+            "A legendary drop from a monster that can only be challenged with the sword created from its origin."],
+        
+        # Potions
+        "luck_potion": ["<a:luck_potion:826871436769493062>", 41, "luck potion", "rare+", 100000, 60, 10,
+            "May the luck be with you."],
+        "fire_potion": ["<a:fire_potion:828135033466126366>", 42, "fire potion", "rare", 10000, 60, 10,
+            "Reduce the chance of dying in the Nether."],
+        "haste_potion": ["<a:haste_potion:828135803812577330>", 43, "haste potion", "rare+", 100000, 60, 10,
+            "Increase loot yield from a mining session."],
+        "undying_potion": ["<:undying_potion:828136854657826836>", 44, "undying potion", "???", None, None, 10000000,
+            "To achieve immortal, one simply requires many many sacrifices."]
     }
 
 def get_world(world : int) -> str:
@@ -599,3 +611,69 @@ def get_craft_ingredient(item : str):
         return craft_recipe
     else:
         return craft_recipe.get(item)
+
+def get_brew_ingredient(item : str):
+    # All potions have the following base ingredients:
+    # redstone: 32
+    # spider_eye: 16
+    # gunpowder: 32
+    # coal: 32
+    # blaze 1
+
+    brew_recipe = {
+        "luck_potion": {
+            "flower": 64,
+            "string": 32,
+
+            "redstone": 32,
+            "spider_eye": 32,
+            "gunpowder": 32,
+            "coal": 64,
+            "blaze": 2,
+
+            "money": 10000,
+            "quantity": 1
+        },
+        "fire_potion": {
+            "magma_cream": 128,
+
+            "redstone": 32,
+            "spider_eye": 16,
+            "gunpowder": 32,
+            "coal": 32,
+            "blaze": 1,
+
+            "money": 1000,
+            "quantity": 1
+        },
+        "haste_potion": {
+            "nether_star": 1,
+
+            "redstone": 32,
+            "spider_eye": 16,
+            "gunpowder": 32,
+            "coal": 64,
+            "blaze": 2,
+
+            "money": 10000,
+            "quantity": 1
+        },
+        "undying_potion": {
+            "moyai": 1,
+            "zombie_meat": 100000,
+
+            "redstone": 100000,
+            "spider_eye": 100000,
+            "gunpowder": 100000,
+            "coal": 100000,
+            "blaze": 100000,
+
+            "money": 100000000,
+            "quantity": 1
+        }
+    }
+
+    if item is None:
+        return brew_recipe
+    else:
+        return brew_recipe.get(item)
