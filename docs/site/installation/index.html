@@ -10,7 +10,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.7">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.8">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.19753c6b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.cb6bc1d0.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.196e0c26.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.39b8e14a.min.css">
         
           
           
@@ -33,7 +33,7 @@
     
       
         
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
       
@@ -55,6 +55,7 @@
     <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan">
       
   
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -84,18 +85,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
     </label>
     <div class="md-header-nav__title" data-md-component="header-title">
-      
-        <div class="md-header-nav__ellipsis">
-          <span class="md-header-nav__topic md-ellipsis">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             MichaelBot Documentation
           </span>
-          <span class="md-header-nav__topic md-ellipsis">
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             
               Installation
             
           </span>
         </div>
-      
+      </div>
     </div>
     
       <label class="md-header-nav__button md-icon" for="__search">
@@ -154,10 +157,14 @@
         <div class="md-main__inner md-grid">
           
             
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
+
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
@@ -189,12 +196,15 @@
       
       
 
-
-  <li class="md-nav__item">
-    <a href=".." class="md-nav__link">
-      Home
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
 
     
       
@@ -202,25 +212,27 @@
       
 
   
-
-
-  <li class="md-nav__item md-nav__item--active">
+  
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
       
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Installation
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
-      Installation
-    </a>
-    
+      </a>
       
+        
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -256,8 +268,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#alternative" class="md-nav__link">
-    Alternative
+  <a href="#configure" class="md-nav__link">
+    Configure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-database" class="md-nav__link">
+    Setup database
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-packages" class="md-nav__link">
+    Install packages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-script" class="md-nav__link">
+    Run script
   </a>
   
 </li>
@@ -270,275 +303,349 @@
     </ul>
   
 </nav>
-    
-  </li>
+      
+    </li>
+  
 
     
       
       
       
 
-
-  <li class="md-nav__item md-nav__item--nested">
+  
+  
+  
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
-    <label class="md-nav__link" for="nav-3">
-      Commands
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="Commands" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
-        <span class="md-nav__icon md-icon"></span>
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
+      
+      <label class="md-nav__link" for="nav-3">
         Commands
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/core/" class="md-nav__link">
-      Core
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/currency/" class="md-nav__link">
-      Currency
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/dev/" class="md-nav__link">
-      Dev
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/events/" class="md-nav__link">
-      Bot events
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/game/" class="md-nav__link">
-      Game
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/logger/" class="md-nav__link">
-      Logging events
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/moderation/" class="md-nav__link">
-      Moderation
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/music/" class="md-nav__link">
-      Music
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/nsfw/" class="md-nav__link">
-      NSFW
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/server/" class="md-nav__link">
-      Settings
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../commands/utility/" class="md-nav__link">
-      Utility
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
-    <label class="md-nav__link" for="nav-4">
-      Templates
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="Templates" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
         <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Commands" data-md-level="1">
+        <label class="md-nav__title" for="nav-3">
+          <span class="md-nav__icon md-icon"></span>
+          Commands
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/core/" class="md-nav__link">
+        Core
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/currency/" class="md-nav__link">
+        Currency
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/dev/" class="md-nav__link">
+        Dev
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/events/" class="md-nav__link">
+        Bot events
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/game/" class="md-nav__link">
+        Game
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/logger/" class="md-nav__link">
+        Logging events
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/moderation/" class="md-nav__link">
+        Moderation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/nsfw/" class="md-nav__link">
+        NSFW
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/server/" class="md-nav__link">
+        Settings
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/utility/" class="md-nav__link">
+        Utility
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
+      
+      <label class="md-nav__link" for="nav-4">
+        Currency System
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Currency System" data-md-level="1">
+        <label class="md-nav__title" for="nav-4">
+          <span class="md-nav__icon md-icon"></span>
+          Currency System
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../currency/currency_basic/" class="md-nav__link">
+        Intro
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../currency/currency_start/" class="md-nav__link">
+        Basic
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
+      
+      <label class="md-nav__link" for="nav-5">
         Templates
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../template/help/" class="md-nav__link">
-      Help
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../template/menu/" class="md-nav__link">
-      Menu
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../template/paginator/" class="md-nav__link">
-      Paginator
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
-    <label class="md-nav__link" for="nav-5">
-      Utilities
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="Utilities" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
         <span class="md-nav__icon md-icon"></span>
-        Utilities
       </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
+      <nav class="md-nav" aria-label="Templates" data-md-level="1">
+        <label class="md-nav__title" for="nav-5">
+          <span class="md-nav__icon md-icon"></span>
+          Templates
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
           
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../template/help/" class="md-nav__link">
+        Help
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../template/menu/" class="md-nav__link">
+        Menu
+      </a>
+    </li>
+  
 
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../template/paginator/" class="md-nav__link">
+        Paginator
+      </a>
+    </li>
+  
 
-  <li class="md-nav__item">
-    <a href="../utilities/facility/" class="md-nav__link">
-      Utility methods
-    </a>
-  </li>
+          
+        </ul>
+      </nav>
+    </li>
+  
 
-        
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" >
+      
+      <label class="md-nav__link" for="nav-6">
+        Utilities
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Utilities" data-md-level="1">
+        <label class="md-nav__title" for="nav-6">
+          <span class="md-nav__icon md-icon"></span>
+          Utilities
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
           
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities/facility/" class="md-nav__link">
+        Utility methods
+      </a>
+    </li>
+  
+
           
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities/db/" class="md-nav__link">
+        Database methods
+      </a>
+    </li>
+  
 
-
-  <li class="md-nav__item">
-    <a href="../utilities/db/" class="md-nav__link">
-      Database methods
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
+          
+        </ul>
+      </nav>
+    </li>
+  
 
     
   </ul>
@@ -548,7 +655,8 @@
               </div>
             
             
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -587,8 +695,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#alternative" class="md-nav__link">
-    Alternative
+  <a href="#configure" class="md-nav__link">
+    Configure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-database" class="md-nav__link">
+    Setup database
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-packages" class="md-nav__link">
+    Install packages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-script" class="md-nav__link">
+    Run script
   </a>
   
 </li>
@@ -624,17 +753,21 @@
 <ul>
 <li><a href="#prerequisite">Prerequisite</a></li>
 <li><a href="#steps">Steps</a><ul>
-<li><a href="#alternative">Alternative</a></li>
+<li><a href="#configure">Configure</a></li>
+<li><a href="#setup-database">Setup database</a></li>
+<li><a href="#install-packages">Install packages</a></li>
+<li><a href="#run-script">Run script</a></li>
 </ul>
 </li>
 </ul>
 <h2 id="prerequisite">Prerequisite</h2>
 <ul>
-<li>It's recommended that you either use Linux or WSL (no idea what this is, but it sounds like Linux inside Windows). Windows instruction is also here, but it might be a bit lengthy.</li>
-<li>You need <code>git</code> and <code>python3</code> (on Windows, it's <code>py -3</code>). You should also install <code>pip</code> and <code>virtualenv</code> under <code>python3</code>. If you don't know how, what's the point of Google?</li>
+<li>It's recommended that you either use Linux or WSL (no idea what this is, but it sounds like Linux inside Windows). Windows instruction is also here, but some might be incorrect because I rarely use it.</li>
+<li>You need <code>git</code> and <code>python3</code> (on Windows, it's <code>py -3</code>). You should also install <code>pip</code> and <code>virtualenv</code> under <code>python3</code>.</li>
 <li>You need PostgreSQL installed and setup (it's pretty complex, and I'm planning to make this optional).</li>
 </ul>
 <h2 id="steps">Steps</h2>
+<h3 id="configure">Configure</h3>
 <p>Clone this directory.</p>
 <pre><code class="language-git">git clone https://github.com/MikeJollie2707/MichaelBot.git
 </code></pre>
@@ -643,6 +776,7 @@
 {
     &quot;token&quot;: &quot;bot token&quot;,
     &quot;host&quot;: &quot;localhost or wherever you host PostgreSQL&quot;,
+    &quot;port&quot;: 5432,
     &quot;user&quot;: &quot;username&quot;,
     &quot;database&quot;: &quot;name of the database&quot;,
     &quot;password&quot;: &quot;password&quot;
@@ -656,12 +790,17 @@
         &quot;version&quot;: &quot;Required&quot;,
         &quot;description&quot;: &quot;Required&quot;,
         &quot;prefix&quot;: &quot;Required&quot;,
-        &quot;debug&quot;: false, // Optional key. Default to false.
+        &quot;debug&quot;: false,
 
         &quot;secret&quot;: &quot;secret.json&quot;
     }
 }
 </code></pre>
+<h3 id="setup-database">Setup database</h3>
+<p><em>Currently this is required. I'm planning to make this optional.</em></p>
+<p>You need to have a database created already. It's usually hosted on port 5432.</p>
+<p>Before running the bot first time, you need to find <code>setupdb.py</code> and run it once so it can create the tables. You only need to do this once, or every time you change the schema.</p>
+<h3 id="install-packages">Install packages</h3>
 <p>Next, setup a virtual environment and install the required packages.</p>
 <pre><code class="language-terminal"># Linux
 python3 -m virtualenv venv
@@ -670,21 +809,20 @@ python3 -m pip install -r requirement.txt
 
 # Windows
 py -3 -m virtualenv venv
-# py -3 will still somehow use the global python interpreter,
-# so for now this is the only way
-.\venv\Scripts\python.exe -m pip install -r requirement.txt
+.\venv\Scripts\activate.bat
+pip install -r requirement.txt
 </code></pre>
 <p>Finally, run the bot.</p>
 <pre><code class="language-terminal"># Linux
 python3 bot.py BotIndex
 
 # Windows
-.\venv\Scripts\python.exe bot.py BotIndex
+py bot.py BotIndex
 </code></pre>
-<h3 id="alternative">Alternative</h3>
-<p>Alternatively, if you don't like typing <code>python3 bot.py BotIndex</code> all the time when you want to start the bot, there's a script <code>startup.sh</code> (for Linux) and <code>run.ps1</code> (for Windows Powershell) to make life a bit easier. Both of them are currently in <code>setup</code> folder, although it might change.</p>
-<p>For <code>startup.sh</code>, you can edit <code>MICHAEL_DIR</code> to your current directory. An absolute path is needed if you plan to put the file to one of the startup application. Mark it executable, and just double click it the next time you want to run. Remember to change the bot index also (I'm planning to make this more obvious).</p>
-<p>For <code>run.ps1</code>, just change the <code>$BotIndex</code>, and then open Powershell, run the script using <code>. ".\run.ps1"</code></p>
+<h3 id="run-script">Run script</h3>
+<p>If you don't like typing <code>python3 bot.py BotIndex</code> all the time when you want to start the bot, there's a script <code>startup.sh</code> (for Linux) and <code>run.ps1</code> (for Windows Powershell) for convenience. Both of them are currently in <code>setup</code> folder, although it might change.</p>
+<p>For <code>startup.sh</code>, you can edit <code>MICHAEL_DIR</code> to your current directory, and <code>BOT_INDEX</code> for the bot's index. An absolute path is needed if you plan to put the file to one of the startup application. Mark it executable, and just double click it the next time you want to run.</p>
+<p>For <code>run.ps1</code>, just change the <code>$BotIndex</code>, and then open Powershell, run the script using <code>. ".\run.ps1"</code>. Current no support for <code>cmd</code> because it can be written by yourself.</p>
                 
               
               
@@ -751,15 +889,15 @@ python3 bot.py BotIndex
       
     </div>
     
-      <script src="../assets/javascripts/vendor.0ac82a11.min.js"></script>
-      <script src="../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../assets/javascripts/vendor.18f0862e.min.js"></script>
+      <script src="../assets/javascripts/bundle.994580cf.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
+            worker: "../assets/javascripts/worker/search.9c0e82ba.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
