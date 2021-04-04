@@ -196,7 +196,8 @@ def get_mine_loot(pick : str, world : int):
         elif pick == "diamond_pickaxe":
             return {
                 "netherrack": 0.80, # 16 on average
-                "gold": 0.19, # 3.8 on average
+                "gold": 0.18, # 3.6 on average
+                "obsidian": 0.02, # 0.4 on average
                 "debris": 0.001, # 0.02 on average
                 "rolls": 20
             }
