@@ -88,7 +88,7 @@ def get_item_info():
             "An uncommon drop for brewing potions."],
         "bone": ["<:bone2:828133597529374720>", 35, "bone", "common", None, 20, None,
             "A common drop from skeletons. Hopefully it has some uses."],
-        "zombie_meat": ["<:zombie_meat:828133597659529276>", 36, "rotton flesh", "common", None, 20, None,
+        "zombie_meat": ["<:zombie_meat:828133597659529276>", 36, "rotten flesh", "common", None, 20, None,
             "A common drop from zombies. Don't eat it."],
         "gunpowder": ["<:gunpowder:821528688646160395>", 37, "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
