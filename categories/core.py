@@ -156,6 +156,7 @@ class Core(commands.Cog):
             value = textwrap.dedent('''
                     **Original Owner + Tester:** <@462726152377860109>
                     **Developer:** <@472832990012243969>
+                    **Web Dev (?):** *Hidden*
                     '''), 
             inline = False
         ).add_field(
@@ -291,7 +292,7 @@ class Core(commands.Cog):
 
         async with self.bot.pool.acquire() as conn:
             text = ""
-            current = await DB.Inventory.get_equip(conn, member.id)
+            current = await DB.User.ActiveTools.get_equipments(conn, member.id)
             if len(current) == 0:
                 text = "*None*"
             else:
