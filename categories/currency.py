@@ -100,7 +100,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if rng <= die_chance:
                     equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
                     for tool in equipment:
-                        await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                        try:
+                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                        except DB.ItemExpired:
+                            pass
                     money = await DB.User.get_money(conn, ctx.author.id)
                     await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
@@ -238,7 +241,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if rng <= die_chance:
                     equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
                     for tool in equipment:
-                        await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                        try:
+                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                        except DB.ItemExpired:
+                            pass
                     money = await DB.User.get_money(conn, ctx.author.id)
                     await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
@@ -522,6 +528,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         recipe = LootTable.get_brew_ingredient(potion)
 
         if potion is None:
+            recipe.pop("undying_potion")
             MAX_ITEMS = 4
             cnt = 0 # Keep track for MAX_ITEMS
             page = Pages()
@@ -530,7 +537,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             for key in recipe:
                 if cnt == 0:
                     embed = Facility.get_default_embed(
-                        title = "All crafting recipes",
+                        title = "All brewing recipes",
                         timestamp = datetime.datetime.utcnow(),
                         author = ctx.author
                     )
@@ -541,7 +548,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     outp = recipe[key].pop("quantity", None)
                     embed.add_field(
                         name = LootTable.acapitalize(friendly_name),
-                        value = "**Input:** %s\n**Output:** %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key]), await LootTable.get_friendly_reward(conn, {key : outp})),
+                        value = "**Input:** %s\n**Cost:** $%d\n**Output:** %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key]), recipe[key]["money"], await LootTable.get_friendly_reward(conn, {key : outp})),
                         inline = False
                     )
 
@@ -923,7 +930,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if rng <= die_chance:
                     equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
                     for tool in equipment:
-                        await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                        try:
+                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                        except DB.ItemExpired:
+                            pass
                     money = await DB.User.get_money(conn, ctx.author.id)
                     await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
                     
