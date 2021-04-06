@@ -1053,8 +1053,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
 
     @commands.command(aliases = ['lb'], hidden = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def topmoney(self, ctx : commands.Context, local__global = "local"):
+    async def leaderboard(self, ctx : commands.Context, local__global = "local"):
         '''
         Show the top 10 users with the most amount of money.
 
@@ -1064,9 +1065,46 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **Example 2:** {prefix}{command_name}
 
         **You need:** None.
-        **I need:** `Send Messages`.
+        **I need:** `Read Messages History`, `Send Messages`.
         '''
-        pass
+        
+        async with self.bot.pool.acquire() as conn:
+            query = ""
+            if local__global == "local":
+                query = '''
+                    SELECT DUsers.id, DUsers.money FROM DUsers_DGuilds
+                        INNER JOIN DUsers ON user_id = id
+                    WHERE DUsers_DGuilds.guild_id = %d
+                    ORDER BY DUsers.money DESC
+                    LIMIT 10;
+                ''' % ctx.guild.id
+            # Any other args will result in global.
+            else:
+                query = '''
+                    SELECT id, money FROM DUsers
+                    ORDER BY money DESC
+                    LIMIT 10;
+                '''
+            
+            result = await conn.fetch(query)
+            if result is None:
+                await ctx.reply("It seems I can't retrieve any users somehow. You might want to report this to the developer.", mention_author = False)
+                return
+            
+            record_list = [DB.rec_to_dict(record) for record in result]
+            print(record_list)
+
+            embed = Facility.get_default_embed(
+                title = "Top 10 richest people %s" % ("in " + ctx.guild.name if local__global == "local" else "on MichaelBot"),
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
+            )
+            embed.description = ""
+            for index, record in enumerate(record_list):
+                user = self.bot.get_user(record["id"])
+                embed.description += f"{index + 1}. **{user}** - ${record['money']}\n"
+            
+            await ctx.reply(embed = embed, mention_author = False)
     
     @commands.group(aliases = ['market'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
