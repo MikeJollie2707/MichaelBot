@@ -658,22 +658,21 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     for key in loot:
                         await DB.User.Inventory.add(conn, ctx.author.id, key, loot[key])
          
-        if too_early:
-            remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member["last_daily"])
-            remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
-            await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
-        else:
-            msg = ""
-            if too_late:
-                msg += "You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(\n" % old_streak
-            
-            if daily_bonus > 0:
-                msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
-            async with self.bot.pool.acquire() as conn:
-                msg += await LootTable.get_friendly_reward(conn, loot) + '\n'
-            msg += f":white_check_mark: You got **${daily_amount}** daily money in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
+            if too_early:
+                remaining_time = datetime.timedelta(hours = 24) - (datetime.datetime.utcnow() - member["last_daily"])
+                remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
+                await ctx.reply(f"You still have {remaining_str} left before you can collect your daily.", mention_author = False)
+            else:
+                msg = ""
+                if too_late:
+                    msg += "You didn't collect your daily for more than 24 hours, so your streak of `x%d` is reset :(\n" % old_streak
+                if daily_bonus > 0:
+                    msg += f"You received an extra of **${daily_bonus}** for maintaining your streak.\n"
+                
+                msg += "Here are some free items: " + await LootTable.get_friendly_reward(conn, loot) + '\n'
+                msg += f":white_check_mark: You got **${daily_amount}** in total.\nYour streak: `x{member['streak_daily'] + 1}`.\n"
 
-            await ctx.reply(msg, mention_author = False)
+                await ctx.reply(msg, mention_author = False)
     
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1010,10 +1009,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
-    async def usepotion(self, ctx : commands.Context, amount : typing.Optional[int], *, potion : ItemConverter):
+    async def usepotion(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, potion : ItemConverter):
         '''
         Use a potion.
-
         Note that you can only have at max 10 potions of the same potion at once.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
@@ -1106,16 +1104,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             await ctx.reply(embed = embed, mention_author = False)
     
-    @commands.group(aliases = ['market'])
+    @commands.group()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
-    async def trade(self, ctx : commands.Context):
+    async def market(self, ctx : commands.Context):
         '''
         Display all items' value in terms of money.
 
         To buy or sell items, please use the command's subcommands.
 
-        **Aliases:** `market`
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example:** {prefix}{command_name}
@@ -1156,7 +1153,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     page.add_page(embed)
                 await page.event(ctx, interupt = False)
 
-    @trade.command()
+    @market.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def buy(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, item : ItemConverter):
@@ -1194,7 +1191,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await DB.User.Inventory.add(conn, ctx.author.id, item, amount)
                 await ctx.reply(f"Bought {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully.", mention_author = False)
             
-    @trade.command()
+    @market.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def sell(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, item : ItemConverter):
