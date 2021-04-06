@@ -66,11 +66,11 @@ def get_item_info():
             "A leftover of what was once the toughest metal in the universe. Such toughness is only achievable under the undying heat."],
         "netherite": ["<:netherite:828129193275293706>", 25, "netherite", "rare+", None, 200, None,
             "The toughest metal in the universe, recovered from its leftover."],
-        "nether_sword": ["<:nether_sword:828129193434939442>", 26, "netherite sword", "rare+", None, 300, None,
+        "nether_sword": ["<:nether_sword:828129193434939442>", 26, "netherite sword", "rare+", None, 300, 2032,
             "A sword created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe. It can cut down even the toughest enemy."],
-        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", 27, "netherite pickaxe", "rare+", None, 300, None,
+        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", 27, "netherite pickaxe", "rare+", None, 300, 2032,
             "A pickaxe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
-        "nether_axe": ["<:nether_axe:828129193367175178>", 28, "netherite axe", "rare+", None, 300, None,
+        "nether_axe": ["<:nether_axe:828129193367175178>", 28, "netherite axe", "rare+", None, 300, 2032,
             "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
         # General purpose materials
@@ -605,6 +605,7 @@ def get_craft_ingredient(item : str):
         "netherite": {
             "debris": 4,
             "gold": 4,
+            "coal": 1,
             "quantity": 1
         },
         "nether_sword": {
