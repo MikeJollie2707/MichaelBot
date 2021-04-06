@@ -518,7 +518,7 @@ class User:
             await conn.execute(query, user_id, portal_id)
         @classmethod
         async def dec_durability(cls, conn, user_id : int, portal_id : int, amount : int = 1):
-            tool = await cls.get_portal(conn, portal_id, user_id)
+            tool = await cls.get_portal(conn, user_id, portal_id)
             if tool is not None:
                 if tool["remain_uses"] - amount <= 0:
                     await cls.remove(conn, user_id, portal_id)
