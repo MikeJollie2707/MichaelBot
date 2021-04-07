@@ -1072,7 +1072,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 query = '''
                     SELECT DUsers.id, DUsers.money FROM DUsers_DGuilds
                         INNER JOIN DUsers ON user_id = id
-                    WHERE DUsers_DGuilds.guild_id = %d
+                    WHERE DUsers_DGuilds.guild_id = %d AND DUsers.money > 0
                     ORDER BY DUsers.money DESC
                     LIMIT 10;
                 ''' % ctx.guild.id
@@ -1080,6 +1080,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             else:
                 query = '''
                     SELECT id, money FROM DUsers
+                    WHERE money > 0
                     ORDER BY money DESC
                     LIMIT 10;
                 '''
@@ -1090,7 +1091,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 return
             
             record_list = [DB.rec_to_dict(record) for record in result]
-            print(record_list)
 
             embed = Facility.get_default_embed(
                 title = "Top 10 richest people %s" % ("in " + ctx.guild.name if local__global == "local" else "on MichaelBot"),
