@@ -3,6 +3,7 @@ from discord.ext import commands
 
 import datetime
 import aiohttp # External paste site when embed is too large.
+import mystbin
 import typing # IntelliSense purpose only
 
 import categories.utilities.facility as Facility
@@ -310,16 +311,13 @@ class Logging(commands.Cog):
                     paste = await mystbin_client.post(content_message + embed_message)
                     log_content.append(
                         "The log content is too long! View the full text here: ",
-                                    f"<{BASE_URL}{key}>",
-                                    "**Author:** %s" % after.author.mention,
-                                    "----------------------------",
-                                    "**Message URL**: [Jump to message](%s)" % after.jump_url,
-                                    "**Channel:** %s" % after.channel.mention
-                                )
-                            else:
-                                self.bot.debug("Failed to connect to hastebin.")
-                                self.bot.debug("Error code: %d" % rsp.status)
-
+                        f"<{paste}>",
+                        "**Author:** %s" % after.author.mention,
+                        "----------------------------",
+                        "**Message URL**: [Jump to message](%s)" % after.jump_url,
+                        "**Channel:** %s" % after.channel.mention
+                    )
+                    await mystbin_client.close()
                 
                 log_color = self.color_change
                 log_time = after.edited_at
