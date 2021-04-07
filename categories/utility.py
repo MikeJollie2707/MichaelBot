@@ -284,6 +284,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.command(aliases = ['remindme', 'timer', 'remind', 'notifyme'])
     @commands.check(has_database)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def notify(self, ctx, time : IntervalConverter, *, message : str):
         '''
         Create a timed reminder.
@@ -293,6 +294,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         **Aliases:** `remindme`, `timer`, `remind`, `notifyme`
         **Usage:** <prefix>**{command_name}** <time> <message>
+        **Cooldown:** 5 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name} 1d Yo collect your daily!
         **Example 2:** {prefix}{command_name} "1 day, 2 hours, 5 minutes, 10 seconds" The moment MikeJollie is gay.
         **Example 3:** {prefix}{command_name} 30d1s Bet you didn't remember setting up this remind.
