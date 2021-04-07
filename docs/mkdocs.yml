@@ -18,8 +18,8 @@ nav:
   - "Currency System":
     - "Intro": currency/currency_start.md
     - "Basic": currency/currency_basic.md
-    - "Intermediate": currency/intermediate.md
-    - "Advanced": currency/advanced.md
+    - "Intermediate": currency/currency_intermediate.md
+    - "Advanced": currency/currency_advanced.md
     - "Balance Changes": currency/balance_changes.md
   - "Templates":
     - "Help": template/help.md
@@ -40,3 +40,9 @@ theme:
     accent: cyan
   icon:
     repo: fontawesome/brands/github
+
+# Use emoji
+markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
