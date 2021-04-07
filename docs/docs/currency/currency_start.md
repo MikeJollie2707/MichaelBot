@@ -1,33 +1,31 @@
-# Currency 102
+# Currency 101
 
-## Daily
+The bot has a dedicated currency system that is heavily inspired by the Minecraft concept. However, because of the Discord limitation, sometimes it can be confusing on where to start or where to progress. This page serve a basic introduction to the overall economic system of MichaelBot.
 
-The `daily` command is the only true starting point for new users. As the name suggested, you'll get a certain money and loot everyday. The command has a hard-coded 24-hour cooldown, with another 24-hour window to collect. If you collect before this 24-hour runs out, you will gain a streak. After certain streak milestones, you'll get much better money and loot. However, if you miss out the window, your streak will be reset to 0.
+Don't expect any tips. Just like Minecraft, it is up to each person to decide what to do.
 
-## Craft
+## Money
 
-Like Minecraft, after you get some materials, you'll eventually need to craft. This can be done using the `craft` command. You can also use its subcommand to view all possible crafting recipes.
+Every user has a certain amount of money. This is fictional money, and has zero relation to the real life money. Money is global for user, meaning you have the same amount of money across all servers. Money can be a good way to flex on other people of how rich you are. You can get money from the command `daily`, by selling items and by winning games. You can check your balance with `balance`. You can also view the top 10 people with the highest amount of money with `leaderboard`.
 
-**The `craft` command has the following signature:** `craft [n] <item name>`. This will **repeat the `craft <item name>` n times**, not **crafting n items**. This is why it's important to view `craft recipe`.
+## Items
 
-Example: a `log` produces 4 `wood`. When trying to do `craft 4 wood`, you don't actually craft 4 `wood`, it's similar to writing `craft wood` 4 times.
+Items play a major role in the currency system. You *need* items to advance further into the system. Some of the early "game" items are `log`, `wood`, `stick`. Items have rarity to see how hard to obtain an item. Some of the items don't have rarity at all, and is displayed as `???`. Many items can be crafted using various materials, but some items are meant to be collected only. You can craft items, use items, buy items, and even sell items for money.
 
-## Tools
+*This is somehow reported by many new users, but like, literally, just use `daily` to start. It's like the start of many economy systems ever existed in Discord.*
 
-Tools are special items that can be used to perform *activities*. Currently there are 3 types of tools: pickaxe, axe, and sword. They are needed to use `mine`, `chop`, and `adventure` respectively. A tool has a fixed durability. This will wear out gradually as you perform activities.
+### Items Information
 
-To use a tool, you need to equip with `equip`. You can check your current equipments with `equipments`. Once equipped, the tool can be used for the corresponding activity. If you try to equip the same type of tool, the old tool will be swapped out and will have 2 fates: either going back into your inventory (unused) or going to the Void (used). Be sure to check the durability before swapping tools.
+MichaelBot provides multiple commands to view and even to perform operations on items. Some of these commands are `craft`, `iteminfo`, and `trade`. Be sure to check out their help for possible subcommands.
 
-## Activities
+## Disclaimers
 
-Activities are a general terms to use when you use `mine`, `chop` or `adventure`. Each activity will give you items that is determined by your corresponding tool. The better the tool, the more loot you will get.
+### Regarding exploiting bugs
 
-There is a small chance of *dying* while doing these activities. Once you get the death message, all your equipped equipments are destroyed, and you lose 10% of your money as a fee to revive you.
+If you are caught exploiting major bugs in MichaelBot to gain advantage, your progress can be reset, and sometimes you might be even get blacklist from the bot. Use `report report` to report the bug instead of exploiting it.
 
-## Shop
+### Regarding real money
 
-The `market` command is the only way to convert items that you have into money. It also can be used to obtain some materials necessary for future uses. With `market` alone, you'll see a reaction page to see all the items' prices. With its subcommands `market buy` and `market sell`, you can buy or sell items.
+As mentioned, under **no** circumstances MichaelBot's money is related to real money (including crypto currency).
 
-## Inventory
-
-At the end of the day, you want to check what items you have. This is achieved with the command `inventory`. Note that equipped equipments *won't* show up in the `inventory`. This also implies that once equipped, the tool can only be used and then later on destroyed. It can't be sold during this process unless you swap it out.
+If you receive such trade, report and do not trade. Accepting the trade is a blacklistable on both parties. You will also receive no support for such trade.

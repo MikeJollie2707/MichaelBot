@@ -16,8 +16,11 @@ nav:
     - "Settings": commands/server.md
     - "Utility": commands/utility.md
   - "Currency System":
-    - "Intro": currency/currency_basic.md
-    - "Basic": currency/currency_start.md
+    - "Intro": currency/currency_start.md
+    - "Basic": currency/currency_basic.md
+    - "Intermediate": currency/intermediate.md
+    - "Advanced": currency/advanced.md
+    - "Balance Changes": currency/balance_changes.md
   - "Templates":
     - "Help": template/help.md
     - "Menu": template/menu.md
