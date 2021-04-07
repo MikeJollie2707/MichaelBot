@@ -306,13 +306,10 @@ class Logging(commands.Cog):
                         "**Channel:** %s" % after.channel.mention
                     )
                 else:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(BASE_URL + "documents", data = content_message + embed_message) as rsp:
-                            if rsp.status == 200:
-                                result = await rsp.json()
-                                key = result["key"]
-                                log_content.append(
-                                    "The log content is too long! View the full text here: ",
+                    mystbin_client = mystbin.Client()
+                    paste = await mystbin_client.post(content_message + embed_message)
+                    log_content.append(
+                        "The log content is too long! View the full text here: ",
                                     f"<{BASE_URL}{key}>",
                                     "**Author:** %s" % after.author.mention,
                                     "----------------------------",
