@@ -826,7 +826,6 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener("on_guild_channel_update")
     async def _guild_channel_update(self, before, after):
-        self.bot.debug("This is activated.")
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -847,7 +846,6 @@ class Logging(commands.Cog):
             # We don't support position yet, because it's spammy if you move a channel way up/down. TODO: Find alternatives.
             # Permission is one heck of a problem, and will be explained clearer down below.
             async for entry in guild.audit_logs(action = discord.AuditLogAction.channel_update, limit = 1):
-                self.bot.debug("Bot retrieved channel_update at %s" % datetime.datetime.now())
                 executor = entry.user
                 log_time = entry.created_at
 
@@ -880,10 +878,11 @@ class Logging(commands.Cog):
                 # Archived, can cause spamming if move a channel way up/down.
                 if before.position != after.position:
                     pass
-                if before.topic != after.topic and before.topic != None: # For some reasons, changing the name of a new channel will also call this.
-                    log_title = "Channel Topic Changed"
-                    log_content.append(
-                        f"**Channel:** {after.mention}",
+                if not isinstance(after, discord.VoiceChannel):
+                    if before.topic != after.topic:
+                        log_title = "Channel Topic Changed"
+                        log_content.append(
+                            f"**Channel:** {after.mention}",
                         f"**Before:** {before.topic}",
                         f"**After:** {after.topic}",
                         "----------------------------",
@@ -911,27 +910,32 @@ class Logging(commands.Cog):
             # {"Role/Member": PermissionOverwrite, "Role/Member": PermissionOverwrite,...}
             # which is a dict.
             #
-            # So first of, we check if there are any new keys or missing keys
-            # If yes, then it's permission added/removed, and we look for the key and its value.
-            # If no, we'll check every keys if is there any differences in the PermissionOverwrite part (remember, Channel.overwrites is a dict)
-            # Then we iterate (by iter()) through all the attributes in PermissionOverwrite for before and after
-            # If there's sth different, then we log it right away, because a user can edit many permissions before one press "Save Changes".
-            async for entry in guild.audit_logs(action = discord.AuditLogAction.overwrite_update, limit = 1):
-                self.bot.debug("Bot retrieved overwrite_update at %s" % datetime.datetime.now())
-                executor = entry.user
-                log_time = entry.created_at
-
-                if before.overwrites != after.overwrites:
-                    action = ""
-                    permission = None
-                    target_type = ""
-
-                    for key in after.overwrites:
-
+            # First, we'll check if there's any new/missing permissions. We can't compare the len, because you can add
+            # and remove one permission and the len is still same. If there is then we'll log it right away.
+            # Because you can also edit something while adding/removing stuffs, a check to see any differences
+            # is mandatory. If there is then we combine all the changes and log it.
+            if before.overwrites != after.overwrites:
+                new_permissions = []
+                removed_permissions = []
+                # A flag to restrict the amount call to Discord API. We want to do this as little as possible.
+                retrieved_update = False
+                
+                # Check new permissions
+                for target in after.overwrites:
+                    if target not in before.overwrites:
+                        if not retrieved_update:
+                            async for entry in guild.audit_logs(action = discord.AuditLogAction.overwrite_create, limit = 1):
+                                executor = entry.user
+                                log_time = entry.created_at
+                            retrieved_update = True
+                        
                         # If there's a permission added (add permission for a member/role)
-                        if key not in before.overwrites:
-                            log_title = "Channel Permission Added"
-                            log_content.append(
+                        new_permissions.append("%s (%s)" % (Facility.mention(target), "Role" if isinstance(target, discord.Role) else "Member"))
+                if len(new_permissions) != 0:
+                    new_perms_str = Facility.striplist(new_permissions)
+
+                    log_title = "Channel Permission Added"
+                    log_content.append(
                                 "**Target:** %s (%s)" % (Facility.mention(key), "Role" if isinstance(key, discord.Role) else "Member"),
                                 "----------------------------",
                                 "**Channel:** %s" % after.mention,
@@ -952,26 +956,43 @@ class Logging(commands.Cog):
                             )
 
                             await log_channel.send(embed = embed)
-                            
-                        else:
-                            # If the current key with the overwrite is different, then we start the process.
-                            if before.overwrites[key] != after.overwrites[key]:
-                                if isinstance(key, discord.Role):
-                                    target_type = "Role"
-                                else:
-                                    target_type = "Member"
+                    log_content = LogContent()
+                retrieved_update = False
+                
+                # Check removed permissions
+                for target in before.overwrites:
+                    if target not in after.overwrites:
+                        if not retrieved_update:
+                            async for entry in guild.audit_logs(action = discord.AuditLogAction.overwrite_delete, limit = 1):
+                                executor = entry.user
+                                log_time = entry.created_at
+                            retrieved_update = True
                         
-                            # This is not confirmed if true or not, but discord.PermissionOverwrite is quite similar to
-                            # discord.Permissions, except that it has None.
-
+                        removed_permissions.append("%s (%s)" % (Facility.mention(target), "Role" if isinstance(target, discord.Role) else "Member"))                    
+                if len(removed_permissions) != 0:
+                    removed_perms_str = Facility.striplist(removed_permissions)
+                    log_title = "Channel Permission Removed"
+                    log_content.append(
+                        "**Target:** %s" % removed_perms_str,
+                        "----------------------------",
+                        "**Channel:** %s" % after.mention,
+                        "**Removed by:** %s" % executor.mention
+                    )
+                    
                             # Retrieve a PermissionOverwrite object.
                             before_overwrite = before.overwrites[key]
                             after_overwrite = after.overwrites[key]
                             
-                            # Get the iter to iterate through the PermissionOverwrite.
-                            iter_before = iter(before_overwrite)
-                            iter_after = iter(after_overwrite)
+                    await log_channel.send(embed = embed)
+                    log_content = LogContent()
+                retrieved_update = False
 
+                # Now we deal with edited permissions
+                before_target_overwrite = before.overwrites
+                after_target_overwrite = after.overwrites
+
+                for target in after_target_overwrite:
+                    if target in before_target_overwrite and before_target_overwrite[target] != after_target_overwrite[target]:
                             granted = []
                             neutralized = []
                             denied = []
@@ -1069,34 +1090,8 @@ class Logging(commands.Cog):
                             )
 
                             await log_channel.send(embed = embed)
-
-                    for key in before.overwrites:
-                        if key not in after.overwrites:
-                            log_title = "Channel Permission Removed"
-                            log_content.append(
-                                "**Target:** %s (%s)" % (Facility.mention(key), "Role" if isinstance(key, discord.Role) else "Member"),
-                                "----------------------------",
-                                "**Channel:** %s" % after.mention,
-                                "**Removed by:** %s" % executor.mention
-                            )
-                            
-                            embed = Facility.get_default_embed(
-                                title = log_title, 
-                                description = log_content.content, 
-                                color = log_color, 
-                                timestamp = log_time
-                            )
-                            embed.set_author(
-                                name = str(executor),
-                                icon_url = executor.avatar_url
-                            )
-                            embed.set_footer(
-                                text = str(executor),
-                                icon_url = executor.avatar_url
-                            )
-
-                            await log_channel.send(embed = embed)
-
+                        log_content = LogContent()
+                       
     @commands.Cog.listener("on_guild_update")
     async def _guild_update(self, before, after):
         # First we check if the logging feature is enabled in that guild.
