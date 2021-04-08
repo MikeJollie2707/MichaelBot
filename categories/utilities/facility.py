@@ -82,111 +82,85 @@ def calculate(expression : str) -> str:
     return answer
 
 def convert_roleperms_dpy_discord(role_permissions : str) -> str:
-    if role_permissions == "administrator":
-        return "Administrator"
-    if role_permissions == "view_audit_log":
-        return "View Audit Log"
-    if role_permissions == "manage_guild":
-        return "Manage Server"
-    if role_permissions == "manage_roles":
-        return "Manage Roles"
-    if role_permissions == "manage_channels":
-        return "Manage Channels"
-    if role_permissions == "kick_members":
-        return "Kick Members"
-    if role_permissions == "ban_members":
-        return "Ban Members"
-    if role_permissions == "create_instant_invite":
-        return "Create Invite"
-    if role_permissions == "change_nickname":
-        return "Change Nickname"
-    if role_permissions == "manage_nicknames":
-        return "Manage Nicknames"
-    if role_permissions == "manage_emojis":
-        return "Manage Emojis"
-    if role_permissions == "manage_webhooks":
-        return "Manage Webhooks"
-    if role_permissions == "read_messages":
-        return "Read Text Channels & See Voice Channels"
-    if role_permissions == "send_messages":
-        return "Send Messages"
-    if role_permissions == "send_tts_messages":
-        return "Send TTS Messages"
-    if role_permissions == "embed_links":
-        return "Embed Links"
-    if role_permissions == "attach_files":
-        return "Attach Files"
-    if role_permissions == "read_message_history":
-        return "Read Message History"
-    if role_permissions == "mention_everyone":
-        return "Mention Everyone"
-    if role_permissions == "external_emojis":
-        return "Use External Emojis"
-    if role_permissions == "add_reactions":
-        return "Add Reactions"
-    if role_permissions == "connect":
-        return "Connect"
-    if role_permissions == "speak":
-        return "Speak"
-    if role_permissions == "mute_members":
-        return "Mute Members"
-    if role_permissions == "deafen_members":
-        return "Deafen Members"
-    if role_permissions == "move_members":
-        return "Move Members"
-    if role_permissions == "use_voice_activation":
-        return "Use Voice Activity"
-    if role_permissions == "priority_speaker":
-        return "Priority Speaker"
-    if role_permissions == "stream":
-        return "Go Live"
+    permissions = {
+        # General Server Permissions
+        "read_messages"        : "View Channels",
+        "manage_channels"      : "Manage Channels",
+        "manage_roles"         : "Manage Roles",
+        "manage_emojis"        : "Manage Emojis",
+        "view_audit_log"       : "View Audit Log",
+        "manage_webhooks"      : "Manage Webhooks",
+        "manage_guild"         : "Manage Server",
+
+        # Membership Permissions
+        "create_instant_invite": "Create Invite",
+        "change_nickname"      : "Change Nickname",
+        "manage_nicknames"     : "Manage Nicknames",
+        "kick_members"         : "Kick Members",
+        "ban_members"          : "Ban Members",
+
+        # Text Channel Permissions
+        "send_messages"        : "Send Messages",
+        "embed_links"          : "Embed Links",
+        "attach_files"         : "Attach Files",
+        "add_reactions"        : "Add Reactions",
+        "external_emojis"      : "Use External Emojis",
+        "mention_everyone"     : "Mention @everyone, @here, and All Roles",
+        "manage_messages"      : "Manage Messages",
+        "read_message_history" : "Read Message History",
+        "send_tts_messages"    : "Send TTS Messages",
+        "use_slash_commands"   : "Use Slash Commands",
+
+        # Voice Channel Permissions
+        "connect"              : "Connect",
+        "speak"                : "Speak",
+        "stream"               : "Video",
+        "use_voice_activation" : "Use Voice Activity",
+        "priority_speaker"     : "Priority Speaker",
+        "mute_members"         : "Mute Members",
+        "deafen_members"       : "Deafen Members",
+        "move_members"         : "Move Members",
+
+        # Advanced Permissions
+        "administrator"        : "Administrator"
+    }
+    return permissions[role_permissions]
 
 def convert_channelperms_dpy_discord(channel_permissions : str) -> str:
-    if channel_permissions == "create_instant_invite":
-        return "Create Invite"
-    if channel_permissions == "manage_channels":
-        return "Manage Channels"
-    if channel_permissions == "manage_messages":
-        return "Manage Messages"
-    if channel_permissions == "manage_roles":
-        return "Manage Permissions"
-    if channel_permissions == "manage_webhooks":
-        return "Manage Webhooks"
-    if channel_permissions == "read_messages":
-        return "Read Messages & View Channel"
-    if channel_permissions == "send_messages":
-        return "Send Messages"
-    if channel_permissions == "send_tts_messages":
-        return "Send TTS Messages"
-    if channel_permissions == "embed_links":
-        return "Embed Links"
-    if channel_permissions == "attach_files":
-        return "Attach Files"
-    if channel_permissions == "read_message_history":
-        return "Read Message History"
-    if channel_permissions == "mention_everyone":
-        return "Mention Everyone"
-    if channel_permissions == "external_emojis":
-        return "Use External Emojis"
-    if channel_permissions == "add_reactions":
-        return "Add Reactions"
-    # Voice channels
-    if channel_permissions == "connect":
-        return "Connect"
-    if channel_permissions == "speak":
-        return "Speak"
-    if channel_permissions == "mute_members":
-        return "Mute Members"
-    if channel_permissions == "deafen_members":
-        return "Deafen Members"
-    if channel_permissions == "move_members":
-        return "Move Members"
-    if channel_permissions == "use_voice_activation":
-        return "Use Voice Activity"
-    if channel_permissions == "priority_speaker":
-        return "Priority Speaker"
-    if channel_permissions == "stream":
-        return "Go Live"  
+    permissions = {
+        # General Channel Permissions
+        "read_messages"        : "View Channel",
+        "manage_channels"      : "Manage Channels",
+        "manage_roles"         : "Manage Permissions",
+        "manage_webhooks"      : "Manage Webhooks",
+
+        # Membership Permissions
+        "create_instant_invite": "Create Invite",
+
+        # Text Channel Permissions
+        "send_messages"        : "Send Messages",
+        "embed_links"          : "Embed Links",
+        "attach_files"         : "Attach Files",
+        "add_reactions"        : "Add Reaction",
+        "external_emojis"      : "Use External Emojis",
+        "mention_everyone"     : "Mention @everyone, @here, and All Roles",
+        "manage_messages"      : "Manage Messages",
+        "read_message_history" : "Read Message History",
+        "send_tts_messages"    : "Send TTS Messages",
+        "use_slash_commands"   : "Use Slash Commands",
+
+        # Voice Channel Permissions
+        "connect"              : "Connect",
+        "speak"                : "Speak",
+        "stream"               : "Video",
+        "use_voice_activation" : "Use Voice Activity",
+        "priority_speaker"     : "Priority Speaker",
+        "mute_members"         : "Mute Members",
+        "deafen_members"       : "Deafen Members",
+        "move_members"         : "Move Members"
+    }
+
+    return permissions[channel_permissions]  
 
 def clean_signature(command_signature : str) -> str:
     """
