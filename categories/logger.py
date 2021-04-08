@@ -201,13 +201,13 @@ class Logging(commands.Cog):
                 url = message.author.avatar_url
             ).set_author(
                 name = str(executor), 
-                    icon_url = executor.avatar_url
-                ).set_footer(
-                    text = str(executor),
-                    icon_url = executor.avatar_url
-                )
-                
-                await log_channel.send(embed = embed)
+                icon_url = executor.avatar_url
+            ).set_footer(
+                text = str(executor),
+                icon_url = executor.avatar_url
+            )
+            
+            await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_bulk_message_delete")
     async def _bulk_message_delete(self, messages):
