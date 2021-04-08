@@ -8,6 +8,7 @@ MichaelBeta.sh
 
 # Nothing to see here
 note
+.style.yapf
 
 # Token
 setup/bot_secret.json
