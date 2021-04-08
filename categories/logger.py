@@ -119,16 +119,8 @@ class Logging(commands.Cog):
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
                 executor = entry.user
                 # Audit log doesn't log message that the author delete himself.
-                log_time = datetime.datetime.utcnow()
-                
-                # Because audit log doesn't log message that the author delete himself,
-                # we need to check if the latest message_delete is roughly the same time as the event is fired.
-                # 1 second is for offset delay. Increasing this reduce the accuracy.
-                # Can't really do anything here except hard-code.
-                log_time2 = entry.created_at
-                deltatime = log_time - log_time2
-                if deltatime.total_seconds() < 1:
-                    executor = message.author
+                # So if there's an entry, it's most likely someone deleting someone else.
+                log_time = entry.created_at
 
             # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
             # For attachment, what we can do is to provide a proxy URL to the attachment, which only usable for images.
