@@ -123,11 +123,11 @@ class Logging(commands.Cog):
                 
                 # Because audit log doesn't log message that the author delete himself,
                 # we need to check if the latest message_delete is roughly the same time as the event is fired.
-                # The 60 seconds is relative. Can be changed, but shouldn't lower than 30 seconds.
-                # Can't really do anything here except hardcode.
+                # 1 second is for offset delay. Increasing this reduce the accuracy.
+                # Can't really do anything here except hard-code.
                 log_time2 = entry.created_at
                 deltatime = log_time - log_time2
-                if deltatime.total_seconds() < 30:
+                if deltatime.total_seconds() < 1:
                     executor = message.author
 
                 # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
