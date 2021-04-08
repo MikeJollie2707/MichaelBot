@@ -1377,6 +1377,10 @@ class Logging(commands.Cog):
             config = await Facility.get_config(self.bot, ctx.guild.id)
             log_channel = self.bot.get_channel(config["log_channel"])
 
+            # Turn off cooldown because it's so annoying.
+            if isinstance(error, commands.CommandOnCooldown):
+                return
+
             log_title = "Command Raised Error"
             log_content = LogContent().append(
                 "A command raised an error.\n",
