@@ -170,22 +170,16 @@ class Logging(commands.Cog):
                     "**Channel:** %s" % message.channel.mention
                 )
             else:
-                    print(content_message + attachment_message + embed_message)
-                    BASE_URL = "https://hastebin.com/"
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(BASE_URL + "documents", data = content_message + attachment_message + embed_message) as resp:
-                            if resp.status == 200:
-                                result = await resp.json()
-                                key = result["key"]
-
-                                log_content.append(
-                                    "The log content is too long! View the full text here: ",
-                                    f"<{BASE_URL}{key}>",
-                                    "**Author:** %s" % message.author.mention,
-                                    "**Deleted by:** %s" % executor.mention,
-                                    "----------------------------",
-                                    "**Channel:** %s" % message.channel.mention
-                                )
+                mystbin_client = mystbin.Client()
+                paste = await mystbin_client.post(content_message + attachment_message + embed_message, syntax = "md")
+                log_content.append(
+                    "The log content is too long! View the full text here: ",
+                    f"<{paste}>",
+                    "**Author:** %s" % message.author.mention,
+                    "**Deleted by:** %s" % executor.mention,
+                    "----------------------------",
+                    "**Channel:** %s" % message.channel.mention
+                )
                             else:
                                 self.bot.debug("Failed to connect to hastebin.")
                                 self.bot.debug("Error code: %d" % resp.status)
@@ -308,7 +302,7 @@ class Logging(commands.Cog):
                     )
                 else:
                     mystbin_client = mystbin.Client()
-                    paste = await mystbin_client.post(content_message + embed_message)
+                    paste = await mystbin_client.post(content_message + embed_message, syntax = "md")
                     log_content.append(
                         "The log content is too long! View the full text here: ",
                         f"<{paste}>",
