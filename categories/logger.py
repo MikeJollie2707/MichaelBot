@@ -659,23 +659,23 @@ class Logging(commands.Cog):
                         "**Edited by:** %s" % executor.mention 
                     )
                 
-                if flag:
-                    embed = Facility.get_default_embed(
-                        title = log_title, 
-                        description = log_content.content, 
-                        color = log_color, 
-                        timestamp = log_time
-                    ).set_thumbnail(
-                        url = after.avatar_url
-                    ).set_author(
-                        name = str(executor), 
-                        icon_url = executor.avatar_url
-                    ).set_footer(
-                        text = str(executor),
-                        icon_url = executor.avatar_url
-                    )
+            if flag:
+                embed = Facility.get_default_embed(
+                    title = log_title, 
+                    description = log_content.content, 
+                    color = log_color, 
+                    timestamp = log_time
+                ).set_thumbnail(
+                    url = after.avatar_url
+                ).set_author(
+                    name = str(executor), 
+                    icon_url = executor.avatar_url
+                ).set_footer(
+                    text = str(executor),
+                    icon_url = executor.avatar_url
+                )
 
-                    await log_channel.send(embed = embed)
+                await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_guild_channel_create")
     async def _guild_channel_create(self, channel):
