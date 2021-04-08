@@ -1112,10 +1112,6 @@ class Logging(commands.Cog):
                 elif hasattr(entry.before, "owner") and hasattr(entry.after, "owner"):
                     flag = True
                     log_title = "Server Owner Changed"
-                    log_content = f'''
-                                    **Before:** {before.owner.mention}
-                                    **After:** {after.owner.mention}
-                                    '''
                     log_content.append(
                         f"**Before:** {before.owner.mention}",
                         f"**After:** {after.owner.mention}"
