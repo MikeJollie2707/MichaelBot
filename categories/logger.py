@@ -1158,125 +1158,15 @@ class Logging(commands.Cog):
                 deny_perm = []
                 
                 # Painful experience :D
-                if role.permissions.administrator:
-                    role_perm.append("Administrator")
-                else:
-                    deny_perm.append("Administrator")
-                if role.permissions.view_audit_log:
-                    role_perm.append("View Audit Log")
-                else:
-                    deny_perm.append("View Audit Log")
-                if role.permissions.manage_guild:
-                    role_perm.append("Manage Server")
-                else:
-                    deny_perm.append("Manage Server")
-                if role.permissions.manage_roles:
-                    role_perm.append("Manage Roles")
-                else:
-                    deny_perm.append("Manage Roles")
-                if role.permissions.manage_channels:
-                    role_perm.append("Manage Channels")
-                else:
-                    deny_perm.append("Manage Channels")
-                if role.permissions.kick_members:
-                    role_perm.append("Kick Members")
-                else:
-                    deny_perm.append("Kick Members")
-                if role.permissions.ban_members:
-                    role_perm.append("Ban Members")
-                else:
-                    deny_perm.append("Ban Members")
-                if role.permissions.create_instant_invite:
-                    role_perm.append("Create Invite")
-                else:
-                    deny_perm.append("Create Invite")
-                if role.permissions.change_nickname:
-                    role_perm.append("Change Nickname")
-                else:
-                    deny_perm.append("Change Nickname")
-                if role.permissions.manage_nicknames:
-                    role_perm.append("Manage Nicknames")
-                else:
-                    deny_perm.append("Manage Nicknames")
-                if role.permissions.manage_emojis:
-                    role_perm.append("Manage Emojis")
-                else:
-                    deny_perm.append("Manage Emojis")
-                if role.permissions.manage_webhooks:
-                    role_perm.append("Manage Webhooks")
-                else:
-                    deny_perm.append("Manage Webhooks")
-                if role.permissions.send_messages:
-                    role_perm.append("Send Messages")
-                else:
-                    deny_perm.append("Send Messages")
-                if role.permissions.send_tts_messages:
-                    role_perm.append("Send TTS Messages")
-                else:
-                    deny_perm.append("Send TTS Messages")
-                if role.permissions.embed_links:
-                    role_perm.append("Embed Links")
-                else:
-                    deny_perm.append("Embed Links")
-                if role.permissions.attach_files:
-                    role_perm.append("Attach Files")
-                else:
-                    deny_perm.append("Attach Files")
-                if role.permissions.read_message_history:
-                    role_perm.append("Read Message History")
-                else:
-                    deny_perm.append("Read Message History")
-                if role.permissions.mention_everyone:
-                    role_perm.append("Mention Everyone")
-                else:
-                    deny_perm.append("Mention Everyone")
-                if role.permissions.external_emojis:
-                    role_perm.append("Use External Emojis")
-                else:
-                    deny_perm.append("Use External Emojis")
-                if role.permissions.add_reactions:
-                    role_perm.append("Add Reactions")
-                else:
-                    deny_perm.append("Add Reactions")
-                if role.permissions.connect:
-                    role_perm.append("Connect")
-                else:
-                    deny_perm.append("Connect")
-                if role.permissions.speak:
-                    role_perm.append("Speak")
-                else:
-                    deny_perm.append("Speak")
-                if role.permissions.mute_members:
-                    role_perm.append("Mute Members")
-                else:
-                    deny_perm.append("Mute Members")
-                if role.permissions.deafen_members:
-                    role_perm.append("Deafen Members")
-                else:
-                    deny_perm.append("Deafen Members")
-                if role.permissions.move_members:
-                    role_perm.append("Move Members")
-                else:
-                    deny_perm.append("Move Members")
-                if role.permissions.use_voice_activation:
-                    role_perm.append("Use Voice Activity")
-                else:
-                    deny_perm.append("Use Voice Activity")
-                if role.permissions.priority_speaker:
-                    role_perm.append("Priority Speaker")
-                else:
-                    deny_perm.append("Priority Speaker")
-                if role.permissions.stream:
-                    role_perm.append("Go Live")
-                else:
-                    deny_perm.append("Go Live")
+                permission_dict = dict(role.permissions)
+                for permission in permission_dict:
+                    if permission_dict[permission]:
+                        role_perm.append(f"`{Facility.convert_roleperms_dpy_discord(permission)}`")
+                    else:
+                        deny_perm.append(f"`{Facility.convert_roleperms_dpy_discord(permission)}`")
                 
-                granted_perms = ""
-                for perm in role_perm:
-                    granted_perms += "`%s` " % perm
-                denied_perms = ""
-                for perm in deny_perm:
-                    denied_perms += "`%s` " % perm
+                granted_perms = " ".join(role_perm) if len(role_perm) > 0 else "None"
+                denied_perms = " ".join(deny_perm) if len(deny_perm) > 0 else "None"
 
                 # TODO: Although this method will bypass user created role, it'll not pass the bot created role, as bot created role can have denied permissions on creation.
                 log_content.append(
