@@ -180,9 +180,7 @@ class Logging(commands.Cog):
                     "----------------------------",
                     "**Channel:** %s" % message.channel.mention
                 )
-                            else:
-                                self.bot.debug("Failed to connect to hastebin.")
-                                self.bot.debug("Error code: %d" % resp.status)
+                await mystbin_client.close()
 
             embed = Facility.get_default_embed(
                 title = log_title,
