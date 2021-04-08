@@ -502,15 +502,15 @@ class Logging(commands.Cog):
             # Now, this approach has a flaw, and that's when the kicked member rejoin and left, then it'll log that member as kicked twice.
             # A probably solution for that is to retrieve the time between the on_member_remove, but that's straight up hardcode.
 
-            # We retrieve the latest entry.
-            async for entry in guild.audit_logs(limit = 1):
-                # If that entry is a kick entry with the same member, then it's a kick. Again, this still has the same flaw.
-                if entry.target.id == member.id and entry.action == discord.AuditLogAction.kick:
+            # We retrieve the latest kick entry.
+            async for entry in guild.audit_logs(action = discord.AuditLogAction.kick, limit = 1):
+                delta_time = datetime.datetime.utcnow() - entry.created_at
+                if entry.target.id == member.id and delta_time.total_seconds() <= 1.0:
                     if entry.reason == None:
                         reason = "Not provided."
                     else:
                         reason = entry.reason
-                    
+                
                     executor = entry.user
                     log_time = entry.created_at
 
@@ -540,6 +540,9 @@ class Logging(commands.Cog):
                     )
 
                     await log_channel.send(embed = embed)
+                # This is most likely a simple leave
+                else:
+                    pass
 
                 # We still want to display the leave message, so we need this.
                 log_title = "Member Left"
