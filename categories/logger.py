@@ -544,33 +544,33 @@ class Logging(commands.Cog):
                 else:
                     pass
 
-                # We still want to display the leave message, so we need this.
-                log_title = "Member Left"
-                log_content.append(
-                    f"**Member:** {member.mention}",
-                    f"**Member Name:** {member}",
-                    "----------------------------",
-                    f"**Member ID:** {member.id}"
-                )
-                log_color = self.color_guild_join_leave
-                log_time = datetime.datetime.utcnow()
+            # We still want to display the leave message, so we need this.
+            log_title = "Member Left"
+            log_content.append(
+                f"**Member:** {member.mention}",
+                f"**Member Name:** {member}",
+                "----------------------------",
+                f"**Member ID:** {member.id}"
+            )
+            log_color = self.color_guild_join_leave
+            log_time = datetime.datetime.utcnow()
 
-                embed = Facility.get_default_embed(
-                    title = log_title, 
-                    description = log_content.content, 
-                    color = log_color, 
-                    timestamp = log_time
-                ).set_thumbnail(
-                    url = member.avatar_url
-                ).set_author(
-                    name = str(member),
-                    icon_url = member.avatar_url
-                ).set_footer(
-                    text = str(member),
-                    icon_url = member.avatar_url
-                )
+            embed = Facility.get_default_embed(
+                title = log_title, 
+                description = log_content.content, 
+                color = log_color, 
+                timestamp = log_time
+            ).set_thumbnail(
+                url = member.avatar_url
+            ).set_author(
+                name = str(member),
+                icon_url = member.avatar_url
+            ).set_footer(
+                text = str(member),
+                icon_url = member.avatar_url
+            )
 
-                await log_channel.send(embed = embed)
+            await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_member_update")
     async def _member_update(self, before, after):
