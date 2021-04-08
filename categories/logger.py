@@ -880,27 +880,27 @@ class Logging(commands.Cog):
                         log_title = "Channel Topic Changed"
                         log_content.append(
                             f"**Channel:** {after.mention}",
-                        f"**Before:** {before.topic}",
-                        f"**After:** {after.topic}",
-                        "----------------------------",
-                        f"**Channel ID:** {after.id}",
-                        f"**Changed by:** {executor.mention}"
-                    )
-                    
-                    embed = Facility.get_default_embed(
-                        title = log_title, 
-                        description = log_content.content, 
-                        color = log_color, 
-                        timestamp = log_time
-                    ).set_author(
-                        name = str(entry.user),
-                        icon_url = entry.user.avatar_url
-                    ).set_footer(
-                        text = str(entry.user),
-                        icon_url = entry.user.avatar_url
-                    )
-                    
-                    await log_channel.send(embed = embed)
+                            f"**Before:** {before.topic if before.topic is not None else '`<None>`'}",
+                            f"**After:** {after.topic if after.topic is not None else '`<None>`'}",
+                            "----------------------------",
+                            f"**Channel ID:** {after.id}",
+                            f"**Changed by:** {executor.mention}"
+                        )
+                        
+                        embed = Facility.get_default_embed(
+                            title = log_title, 
+                            description = log_content.content, 
+                            color = log_color, 
+                            timestamp = log_time
+                        ).set_author(
+                            name = str(entry.user),
+                            icon_url = entry.user.avatar_url
+                        ).set_footer(
+                            text = str(entry.user),
+                            icon_url = entry.user.avatar_url
+                        )
+                        
+                        await log_channel.send(embed = embed)
             # The structure of overwrites look like this:
             # class PermissionOverwrite { self.send_messages = True/None/False; self.read_messages = True/None/False;...}
             # before.overwrites and after.overwrites return sth like this:
