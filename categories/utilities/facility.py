@@ -39,8 +39,6 @@ async def save_config(bot, config) -> None:
     Save the configuration for the guild.
 
     This is an abstract way to modify all columns in `DGuilds` except `id`.
-
-    *This will be removed when `DB.Guild.bulk_update()` is available.*
     
     Parameter:
     - `bot`: A `commands.Bot` instance that has a `pool` attribute.
@@ -48,13 +46,9 @@ async def save_config(bot, config) -> None:
     """
     if isinstance(config, dict):
         async with bot.pool.acquire() as conn:
-            guild = await DB.Guild.find_guild(conn, config["id"])
-            if guild is not None:
-                guild_col = [column for column in guild]
-                for option in config:
-                    # We do NOT want to change the id column, ever.
-                    if (option in guild_col) and (option != "id"):
-                        await DB.Guild.update_generic(conn, config["id"], option, config[option])
+            id = config.pop("id")
+            config.pop("ERROR")
+            await DB.Guild.bulk_update(conn, id, config)
 
 def calculate(expression : str) -> str:
     """
