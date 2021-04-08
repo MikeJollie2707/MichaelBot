@@ -710,7 +710,7 @@ class Logging(commands.Cog):
                         "**Created by:** %s" % executor.mention,
                         "----------------------------",
                         "**ID:** %d" % channel.id,
-                        "**Is NSFW:** %s" % "Yes" if channel.is_nsfw() else "No",
+                        "**Is NSFW:** %s" % ("Yes" if channel.is_nsfw() else "No"),
                         "**Position:** %d" % channel.position
                     )
 
@@ -782,7 +782,7 @@ class Logging(commands.Cog):
                         "**Deleted by:** %s" % executor.mention,
                         "----------------------------",
                         "**ID:** %d" % channel.id,
-                        "**Was NSFW:** %s" % "Yes" if channel.is_nsfw() else "No"
+                        "**Was NSFW:** %s" % ("Yes" if channel.is_nsfw() else "No")
                     )
 
                 elif isinstance(channel, discord.VoiceChannel):
