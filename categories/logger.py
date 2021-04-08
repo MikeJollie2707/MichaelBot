@@ -114,7 +114,7 @@ class Logging(commands.Cog):
             log_color = self.color_delete
             log_time = None
 
-            executor = None
+            executor = message.author
 
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
                 executor = entry.user
@@ -130,46 +130,46 @@ class Logging(commands.Cog):
                 if deltatime.total_seconds() < 1:
                     executor = message.author
 
-                # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
-                # For attachment, what we can do is to provide a proxy URL to the attachment, which only usable for images.
-                # For embed, what we can do is to provide the preview of a single embed a.k.a the dict version of the embed.
-                # How are we gonna display the embed correctly?
-                # We can have a content = ("Content: %s" % message.content) if message.content != "" else ""
-                # For attachment, first we get the list of attachments through message.attachments
-                # Same as content, we check if the attachments list is empty or not.
-                # Then, for each attachment, we get the proxy URL, and put it to attachment_message.
-                # For embeds, it's relatively easy but messy: we also get the list of embeds through message.embeds
-                # Then we simply display the dict, easy.
-                content_message = f"**Content:** {message.content}" if message.content != "" else ""
-                if len(message.attachments) == 0:
-                    attachment_message = ""
-                else:
-                    counter = 1
-                    attachment_message = "\n----------------------------\n" if content_message != "" else ""
-                    for attachment in message.attachments:
-                        attachment_message += f"**Attachment {counter}**\n[View]({attachment.proxy_url}) (Only available for images)\n"
-                        counter += 1
-                    attachment_message += "----------------------------"
-                if len(message.embeds) == 0:
-                    embed_message = ""
-                else:
-                    import json # This help formatting the dict better
-                    counter = 1
-                    embed_message = "\n----------------------------\n" if (content_message != "" and attachment_message != "") else ""
-                    for embed in message.embeds:
-                        embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 2))
-                        counter += 1
-                    embed_message += "\n----------------------------"
-                
-                if len(content_message + attachment_message + embed_message) < 2000:
-                    log_content.append(
-                        "%s%s%s" % (content_message, attachment_message, embed_message),
-                        "**Author:** %s" % message.author.mention,
-                        "**Deleted by:** %s" % executor.mention,
-                        "----------------------------",
-                        "**Channel:** %s" % message.channel.mention
-                    )
-                else:
+            # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
+            # For attachment, what we can do is to provide a proxy URL to the attachment, which only usable for images.
+            # For embed, what we can do is to provide the preview of a single embed a.k.a the dict version of the embed.
+            # How are we gonna display the embed correctly?
+            # We can have a content = ("Content: %s" % message.content) if message.content != "" else ""
+            # For attachment, first we get the list of attachments through message.attachments
+            # Same as content, we check if the attachments list is empty or not.
+            # Then, for each attachment, we get the proxy URL, and put it to attachment_message.
+            # For embeds, it's relatively easy but messy: we also get the list of embeds through message.embeds
+            # Then we simply display the dict, easy.
+            content_message = f"**Content:** {message.content}" if message.content != "" else ""
+            if len(message.attachments) == 0:
+                attachment_message = ""
+            else:
+                counter = 1
+                attachment_message = "\n----------------------------\n" if content_message != "" else ""
+                for attachment in message.attachments:
+                    attachment_message += f"**Attachment {counter}**\n[View]({attachment.proxy_url}) (Only available for images)\n"
+                    counter += 1
+                attachment_message += "----------------------------"
+            if len(message.embeds) == 0:
+                embed_message = ""
+            else:
+                import json # This help formatting the dict better
+                counter = 1
+                embed_message = "\n----------------------------\n" if (content_message != "" and attachment_message != "") else ""
+                for embed in message.embeds:
+                    embed_message = "**Embed %d**\n```%s```" % (counter, json.dumps(embed.to_dict(), indent = 2))
+                    counter += 1
+                embed_message += "\n----------------------------"
+            
+            if len(content_message + attachment_message + embed_message) < 2000:
+                log_content.append(
+                    "%s%s%s" % (content_message, attachment_message, embed_message),
+                    "**Author:** %s" % message.author.mention,
+                    "**Deleted by:** %s" % executor.mention,
+                    "----------------------------",
+                    "**Channel:** %s" % message.channel.mention
+                )
+            else:
                     print(content_message + attachment_message + embed_message)
                     BASE_URL = "https://hastebin.com/"
                     async with aiohttp.ClientSession() as session:
@@ -190,17 +190,17 @@ class Logging(commands.Cog):
                                 self.bot.debug("Failed to connect to hastebin.")
                                 self.bot.debug("Error code: %d" % resp.status)
 
-                embed = Facility.get_default_embed(
-                    title = log_title,
-                    description = log_content.content,
-                    color = log_color,
-                    timestamp = log_time
-                )
+            embed = Facility.get_default_embed(
+                title = log_title,
+                description = log_content.content,
+                color = log_color,
+                timestamp = log_time
+            )
 
-                embed.set_thumbnail(
-                    url = message.author.avatar_url
-                ).set_author(
-                    name = str(executor), 
+            embed.set_thumbnail(
+                url = message.author.avatar_url
+            ).set_author(
+                name = str(executor), 
                     icon_url = executor.avatar_url
                 ).set_footer(
                     text = str(executor),
