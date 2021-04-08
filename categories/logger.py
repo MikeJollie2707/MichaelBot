@@ -100,7 +100,7 @@ class Logging(commands.Cog):
         return False
 
     @commands.Cog.listener("on_message_delete")
-    async def _message_delete(self, message):
+    async def _message_delete(self, message : discord.Message):
         guild = message.guild
         # First we check if the logging feature is enabled in that guild.
         if await self.log_check(guild):
@@ -206,7 +206,7 @@ class Logging(commands.Cog):
         pass
 
     @commands.Cog.listener("on_raw_message_edit")
-    async def _raw_message_edit(self, payload):
+    async def _raw_message_edit(self, payload : discord.RawMessageUpdateEvent):
         if payload.cached_message != None: # on_message_edit
             return
         
@@ -218,23 +218,34 @@ class Logging(commands.Cog):
             edited_message = None
             message_channel = None
             
-            # We're attempting to retrieve the message here...
-            try:
-                message_channel = self.bot.get_channel(payload.channel_id)
-                edited_message = await message_channel.fetch_message(payload.message_id)
-            except discord.NotFound:
-                message_channel = None
-            except discord.HTTPException:
-                pass
-            
             log_title = "Message Edited"
-            log_content = LogContent().append(
-                "⚠ The original content of the message is not found.",
-                "**Author:** %s" % edited_message.author.mention,
-                "----------------------------",
-                "**Message URL:** [Jump to message](%s)" % edited_message.jump_url,
-                "**Channel:** %s" % message_channel.mention if message_channel is not None else "Channel not found."
-            )
+            # We're attempting to retrieve the message here...
+            partial_message = discord.PartialMessage(channel = payload.channel_id, id = payload.message_id)
+            try:
+                edited_message = await partial_message.fetch()
+            except discord.NotFound:
+                log_content = LogContent().append(
+                    "⚠ The original content of the message is not found.",
+                    "⚠ The message cannot be found.",
+                    "----------------------------",
+                    "**Channel:** %s" % partial_message.channel.mention,
+                )
+            except discord.HTTPException:
+                log_content = LogContent().append(
+                    "⚠ The original content of the message is not found.",
+                    "⚠ The message cannot be retrieved.",
+                    "----------------------------",
+                    "**Channel:** %s" % partial_message.channel.mention,
+                )
+            else:
+                message_channel = edited_message.channel
+                log_content = LogContent().append(
+                    "⚠ The original content of the message is not found.",
+                    "**Author:** %s" % edited_message.author.mention,
+                    "----------------------------",
+                    "**Message URL:** [Jump to message](%s)" % edited_message.jump_url,
+                    "**Channel:** %s" % message_channel.mention if message_channel is not None else "Channel not found."
+                )
 
             log_color = self.color_change
             log_time = edited_message.edited_at
@@ -251,7 +262,7 @@ class Logging(commands.Cog):
             await log_channel.send(embed = embed)
     
     @commands.Cog.listener("on_message_edit")
-    async def _message_edit(self, before, after):
+    async def _message_edit(self, before : discord.Message, after : discord.Message):
         # We don't log bot messages yet.
         if after.author.bot == False:
             guild = before.guild
@@ -338,7 +349,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
     
     @commands.Cog.listener("on_member_ban")
-    async def _member_ban(self, guild, user):
+    async def _member_ban(self, guild : discord.Guild, user : discord.User):
         # First we check if the logging feature is enabled in that guild.
         if await self.log_check(guild):
             # Then we get the log channel of that guild.
@@ -388,7 +399,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_member_unban")
-    async def _member_unban(self, guild, user):
+    async def _member_unban(self, guild : discord.Guild, user : discord.User):
         # First we check if the logging feature is enabled in that guild.
         if await self.log_check(guild):
             # Then we get the log channel of that guild.
@@ -438,7 +449,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_member_join")
-    async def _member_join(self, member):
+    async def _member_join(self, member : discord.Member):
         guild = member.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -479,7 +490,7 @@ class Logging(commands.Cog):
             await log_channel.send(embed = embed)
     
     @commands.Cog.listener("on_member_remove")
-    async def _member_remove(self, member):
+    async def _member_remove(self, member : discord.Member):
         guild = member.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -573,7 +584,7 @@ class Logging(commands.Cog):
             await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_member_update")
-    async def _member_update(self, before, after):
+    async def _member_update(self, before : discord.Member, after : discord.Member):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -678,7 +689,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_guild_channel_create")
-    async def _guild_channel_create(self, channel):
+    async def _guild_channel_create(self, channel : discord.abc.GuildChannel):
         guild = channel.guild
 
        # First we check if the logging feature is enabled in that guild.
@@ -753,7 +764,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
     
     @commands.Cog.listener("on_guild_channel_delete")
-    async def _guild_channel_delete(self, channel):
+    async def _guild_channel_delete(self, channel : discord.abc.GuildChannel):
         guild = channel.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -822,7 +833,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_guild_channel_update")
-    async def _guild_channel_update(self, before, after):
+    async def _guild_channel_update(self, before : discord.abc.GuildChannel, after : discord.abc.GuildChannel):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1080,7 +1091,7 @@ class Logging(commands.Cog):
                         log_content = LogContent()
                        
     @commands.Cog.listener("on_guild_update")
-    async def _guild_update(self, before, after):
+    async def _guild_update(self, before : discord.Guild, after : discord.Guild):
         # First we check if the logging feature is enabled in that guild.
         if await self.log_check(after):
             # Then we get the log channel of that guild.
@@ -1134,7 +1145,7 @@ class Logging(commands.Cog):
                     await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_guild_role_create")
-    async def _guild_role_create(self, role):
+    async def _guild_role_create(self, role : discord.Role):
         guild = role.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1197,7 +1208,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
     
     @commands.Cog.listener("on_guild_role_delete")
-    async def _guild_role_delete(self, role):
+    async def _guild_role_delete(self, role : discord.Role):
         guild = role.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1242,7 +1253,7 @@ class Logging(commands.Cog):
                 await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_guild_role_update")
-    async def _guild_role_update(self, before, after):
+    async def _guild_role_update(self, before : discord.Role, after : discord.Role):
         guild = before.guild
 
         # First we check if the logging feature is enabled in that guild.
@@ -1367,7 +1378,7 @@ class Logging(commands.Cog):
                     await log_channel.send(embed = embed)
 
     @commands.Cog.listener("on_command_error")
-    async def command_error(self, ctx, error):
+    async def _command_error(self, ctx : commands.Context, error : commands.CommandError):
         if isinstance(error, commands.CommandNotFound):
             return
         
