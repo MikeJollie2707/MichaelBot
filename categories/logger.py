@@ -933,26 +933,26 @@ class Logging(commands.Cog):
 
                     log_title = "Channel Permission Added"
                     log_content.append(
-                                "**Target:** %s (%s)" % (Facility.mention(key), "Role" if isinstance(key, discord.Role) else "Member"),
-                                "----------------------------",
-                                "**Channel:** %s" % after.mention,
-                                "**Added by:** %s" % executor.mention
-                            )
-                            
-                            embed = Facility.get_default_embed(
-                                title = log_title, 
-                                description = log_content.content, 
-                                color = log_color, 
-                                timestamp = log_time
-                            ).set_author(
-                                name = str(executor),
-                                icon_url = executor.avatar_url
-                            ).set_footer(
-                                text = str(executor),
-                                icon_url = executor.avatar_url
-                            )
+                        "**Target:** %s" % new_perms_str,
+                        "----------------------------",
+                        "**Channel:** %s" % after.mention,
+                        "**Added by:** %s" % executor.mention
+                    )
+                        
+                    embed = Facility.get_default_embed(
+                        title = log_title, 
+                        description = log_content.content, 
+                        color = log_color, 
+                        timestamp = log_time
+                    ).set_author(
+                        name = str(executor),
+                        icon_url = executor.avatar_url
+                    ).set_footer(
+                        text = str(executor),
+                        icon_url = executor.avatar_url
+                    )
 
-                            await log_channel.send(embed = embed)
+                    await log_channel.send(embed = embed)
                     log_content = LogContent()
                 retrieved_update = False
                 
@@ -976,10 +976,21 @@ class Logging(commands.Cog):
                         "**Removed by:** %s" % executor.mention
                     )
                     
-                            # Retrieve a PermissionOverwrite object.
-                            before_overwrite = before.overwrites[key]
-                            after_overwrite = after.overwrites[key]
-                            
+                    embed = Facility.get_default_embed(
+                        title = log_title, 
+                        description = log_content.content, 
+                        color = log_color, 
+                        timestamp = log_time
+                    )
+                    embed.set_author(
+                        name = str(executor),
+                        icon_url = executor.avatar_url
+                    )
+                    embed.set_footer(
+                        text = str(executor),
+                        icon_url = executor.avatar_url
+                    )
+
                     await log_channel.send(embed = embed)
                     log_content = LogContent()
                 retrieved_update = False
@@ -990,103 +1001,82 @@ class Logging(commands.Cog):
 
                 for target in after_target_overwrite:
                     if target in before_target_overwrite and before_target_overwrite[target] != after_target_overwrite[target]:
-                            granted = []
-                            neutralized = []
-                            denied = []
+                        granted = []
+                        neutralized = []
+                        denied = []
 
-                            while True:
-                                try:
-                                    i_before = next(iter_before) # i_before and i_after is a tuple of (perm, False/None/True)
-                                    i_after = next(iter_after)
+                        target_type = "Role" if isinstance(target, discord.Role) else "Member"
+                        if not retrieved_update:
+                            async for entry in guild.audit_logs(action = discord.AuditLogAction.overwrite_update, limit = 1):
+                                self.bot.debug("Bot retrieved overwrite_update at %s" % datetime.datetime.now())
+                                executor = entry.user
+                                log_time = entry.created_at
+                                retrieved_update = True
 
-                                    if i_before != i_after:
-                                        permission = Facility.convert_channelperms_dpy_discord(i_after[0])
-                                        if i_after[1]:
-                                            action = "`%s`: " % permission
-                                            if i_before[1] is None:
-                                                action += "`Neutralized -> Granted`"
-                                            else:
-                                                action += "`Denied -> Granted`"
+                        # The structure of dict(PermissionOverwrite) is just simply
+                        # {"permission": False/None/True, ...}.
+                        before_overwrite = dict(before_target_overwrite[target])
+                        after_overwrite = dict(after_target_overwrite[target])
+                        for permission in after_overwrite:
+                            action = "`%s`: " % Facility.convert_channelperms_dpy_discord(permission)
+                            if before_overwrite[permission] == True and after_overwrite[permission] == False:
+                                action += "`Granted -> Denied`"
+                                granted.append(action)
+                            elif before_overwrite[permission] == True and after_overwrite[permission] is None:
+                                action += "`Granted -> Neutralized`"
+                                granted.append(action)
+                            elif before_overwrite[permission] is None and after_overwrite[permission] == True:
+                                action += "`Neutralized -> Granted`"
+                                neutralized.append(action)
+                            elif before_overwrite[permission] is None and after_overwrite[permission] == False:
+                                action += "`Neutralized -> Denied`"
+                                neutralized.append(action)
+                            elif before_overwrite[permission] == False and after_overwrite[permission] == True:
+                                action += "`Denied -> Granted`"
+                                denied.append(action)
+                            elif before_overwrite[permission] == False and after_overwrite[permission] is None:
+                                action += "`Denied -> Neutralized`"
+                                denied.append(action)
+                
+                        # Add enter and comma between elements.
+                        granted_message = ',\n'.join(granted)
+                        neutralized_message = ',\n'.join(neutralized)
+                        denied_message = ',\n'.join(denied)
 
-                                            granted.append(action)
-                                        elif i_after[1] is None:
-                                            print(i_after)
-                                            print(i_before)
-                                            action = "`%s`: " % permission
-                                            if i_before[1]:
-                                                action += "`Granted -> Neutralized`"
-                                            else:
-                                                action += "`Denied -> Neutralized`"
+                        # Some visual format to ensure the content looks good.
+                        if granted_message == "":
+                            pass
+                        elif neutralized_message == "" and denied_message != "":
+                            neutralized_message = '\n'
+                        elif neutralized_message != "" and denied_message == "":
+                            granted_message += '\n'
+                        elif neutralized_message != "" and denied_message != "":
+                            granted_message += '\n'
+                            neutralized_message += '\n'
 
-                                            neutralized.append(action)
-                                        else:
-                                            action = "`%s`: " % permission
-                                            if i_before[1] is None:
-                                                action += "`Neutralized -> Denied`"
-                                            else:
-                                                action += "`Granted -> Denied`"
+                        log_title = "Channel Permission Changed"
+                        log_content.append(
+                            "**Target:** %s (%s)" % (Facility.mention(target), target_type),
+                            f"\n{granted_message}{neutralized_message}{denied_message}\n",
+                            "----------------------------",
+                            "**Channel:** %s" % after.mention,
+                            "**Changed by:** %s" % executor.mention
+                        )
+                        
+                        embed = Facility.get_default_embed(
+                            title = log_title,
+                            description = log_content.content,
+                            color = log_color,
+                            timestamp = log_time
+                        ).set_author(
+                            name = str(executor),
+                            icon_url = executor.avatar_url
+                        ).set_footer(
+                            text = str(executor),
+                            icon_url = executor.avatar_url
+                        )
 
-                                            denied.append(action)
-                                except StopIteration:
-                                    break
-                                
-                            if len(granted) == 0 and len(neutralized) == 0 and len(denied) == 0:
-                                continue
-                            
-                            # Visual format...
-                            # TODO: Change the process to local functions cuz it's repetitive af
-
-                            # Turn list to string.
-                            granted_message = Facility.striplist(granted)
-                            neutralized_message = Facility.striplist(neutralized)
-                            denied_message = Facility.striplist(denied)
-                            
-                            if granted_message == "":
-                                pass
-                            elif neutralized_message == "" and granted_message != "" and denied_message != "":
-                                neutralized_message = '\n\n'
-                            elif granted_message != "" and neutralized_message != "" and denied_message == "":
-                                granted_message += '\n\n'
-                            elif granted_message != "" and neutralized_message != "" and denied_message != "":
-                                granted_message += '\n\n'
-                                neutralized_message += '\n\n'
-                            
-                            # Now the string will be like `Perm`: `PreState -> NewState`, `Perm`: `PreState -> NewState`, ...
-                            # This part is to insert newline after the comma.
-                            for i in range(0, len(granted_message)):
-                                if granted_message[i] == ',':
-                                    granted_message = granted_message[0:(i + 1)] + '\n' + granted_message[(i + 1):]
-                            for i in range(0, len(neutralized_message)):
-                                if neutralized_message[i] == ',':
-                                    neutralized_message = neutralized_message[0:(i + 1)] + '\n' + neutralized_message[(i + 1):]
-                            for i in range(0, len(denied_message)):
-                                if denied_message[i] == ',':
-                                    denied_message = denied_message[0:(i + 1)] + '\n' + denied_message[(i + 1):]
-
-
-                            log_title = "Channel Permission Changed"
-                            log_content.append(
-                                "**Target:** %s (%s)" % (Facility.mention(key), target_type),
-                                f"\n{granted_message}{neutralized_message}{denied_message}\n",
-                                "----------------------------",
-                                "**Channel:** %s" % after.mention,
-                                "**Changed by:** %s" % executor.mention
-                            )
-                            
-                            embed = Facility.get_default_embed(
-                                title = log_title,
-                                description = log_content.content,
-                                color = log_color,
-                                timestamp = log_time
-                            ).set_author(
-                                name = str(executor),
-                                icon_url = executor.avatar_url
-                            ).set_footer(
-                                text = str(executor),
-                                icon_url = executor.avatar_url
-                            )
-
-                            await log_channel.send(embed = embed)
+                        await log_channel.send(embed = embed)
                         log_content = LogContent()
                        
     @commands.Cog.listener("on_guild_update")
@@ -1446,41 +1436,30 @@ class Logging(commands.Cog):
                     action = ""
                     permission = None
                     
-                    iter_before = iter(before.permissions)
-                    iter_after = iter(after.permissions)
+                    before_permissions = dict(before.permissions)
+                    after_permissions = dict(after.permissions)
 
                     granted = []
                     denied = []
-
-                    while True:
-                        try:
-                            i_before = next(iter_before) # i_before and i_after now is a tuple of (perm, False/True)
-                            i_after = next(iter_after)
-
-                            if i_before != i_after:
-                                permission = Facility.convert_roleperms_dpy_discord(i_after[0])
-                                
-                                if i_after[1]:
-                                    action = "`%s`: `Denied -> Granted`" % permission
-                                    granted.append(action)
-                                else:
-                                    action = "`%s`: `Granted -> Denied`" % permission
-                                    denied.append(action)
-                        except StopIteration:
-                            break
+                    for permission in after_permissions:
+                        if before_permissions[permission] != after_permissions[permission]:
+                            action = "`%s`: " % Facility.convert_roleperms_dpy_discord(permission)
+                            if before_permissions[permission]:
+                                action += "`Granted -> Denied`"
+                                granted.append(action)
+                            else:
+                                action += "`Denied -> Granted`"
+                                denied.append(action)
                     
-                    if len(granted) == 0 and len(denied) == 0:
-                        return
-                    
-                    granted_message = Facility.striplist(granted)
-                    denied_message = Facility.striplist(denied)
+                    granted_message = ", ".join(granted)
+                    denied_message = ", ".join(denied)
 
                     if denied_message != "" and granted_message != "":
-                        granted_message += "\n\n"
+                        granted_message += "\n"
                     
                     log_title = "Role Permission Changed"
                     log_content.append(
-                        f"**Target:** {after.name}\n",
+                        f"**Target:** {Facility.mention(after)}\n",
                         f"{granted_message}{denied_message}\n",
                         "----------------------------",
                         f"**Changed by:** {executor.mention}"
