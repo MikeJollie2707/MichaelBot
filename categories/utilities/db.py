@@ -183,7 +183,7 @@ class User:
         update_str = update_str[:-2]
 
         await conn.execute('''
-            UPDATE dUsers
+            UPDATE DUsers
             SET %s
             WHERE id = (%d)
         ''' % (update_str, id), *update_arg)
@@ -368,7 +368,6 @@ class User:
             else:
                 await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
 
-
     class ActiveTools:
         # DUsers_ActiveTools
         @classmethod
@@ -473,7 +472,6 @@ class User:
                     raise ItemExpired(f"Item {item_id}'s durability is forcefully returned to 0.")
             else:
                 raise ItemNotPresent(f"Item {item_id} is not currently equipping by user {user_id}.")
-    
     class ActivePortals:
         # DUsers_ActivePortals
         @classmethod
@@ -530,9 +528,6 @@ class User:
                         WHERE user_id = ($2) AND item_id = ($3);
                     '''
                     await conn.execute(query, tool["remain_uses"] - amount, user_id, portal_id)
-
-    
-    
     
     class ActivePotions:
         # DUsers_ActivePotions
@@ -701,6 +696,35 @@ class Guild:
     @classmethod
     async def update_log_channel(cls, conn, id : int, new_channel : int):
         await cls.update_generic(conn, id, "log_channel", new_channel)
+
+    @classmethod
+    async def bulk_update(cls, conn, id, new_values : dict):
+        """
+        Update all values in one SQL statement.
+
+        Parameter:
+        - `conn`: The connection.
+            + Usually from `pool.acquire()`.
+        - `id`: The user's id.
+        - `new_values`: A dict of `{"col_name": value}`.
+            + `col_name` must match the table's column.
+            + Order can be arbitrary.
+        """
+
+        update_str = ""
+        update_arg = []
+        count = 1
+        for column in new_values:
+            update_str += f"{column} = (${count}), "
+            update_arg.append(new_values[column])
+            count += 1
+        update_str = update_str[:-2]
+
+        await conn.execute('''
+            UPDATE DGuilds
+            SET %s
+            WHERE id = (%d);
+        ''' % (update_str, id), *update_arg)
 
     #@classmethod
     #async def update_autorole(cls, conn, id : int, new_list : list):
