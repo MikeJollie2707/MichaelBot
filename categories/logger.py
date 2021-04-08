@@ -272,8 +272,6 @@ class Logging(commands.Cog):
                 config = await Facility.get_config(self.bot, guild.id)
                 log_channel = self.bot.get_channel(config["log_channel"])
 
-                BASE_URL = "https://hastebin.com/"
-
                 log_title = "Message Edited"
                 log_content = LogContent()
 
@@ -509,8 +507,6 @@ class Logging(commands.Cog):
             
             # When a member is banned/kicked/left by their will, this event will be triggered. 
             # For banning, we already have on_member_ban to deal with.
-            # The approach is to look at the latest kick log and determine if it's the same user.
-            # Now, this approach has a flaw, and that's when the kicked member rejoin and left, then it'll log that member as kicked twice.
             # A probably solution for that is to retrieve the time between the on_member_remove, but that's straight up hardcode.
 
             # We retrieve the latest kick entry.
@@ -883,6 +879,8 @@ class Logging(commands.Cog):
                     )
 
                     await log_channel.send(embed = embed)
+                    # A user can change name and topic at the same time, so this needs to clear the old content.
+                    log_content = LogContent()
                 # Archived, can cause spamming if move a channel way up/down.
                 if before.position != after.position:
                     pass
@@ -1179,7 +1177,6 @@ class Logging(commands.Cog):
                 granted_perms = " ".join(role_perm) if len(role_perm) > 0 else "None"
                 denied_perms = " ".join(deny_perm) if len(deny_perm) > 0 else "None"
 
-                # TODO: Although this method will bypass user created role, it'll not pass the bot created role, as bot created role can have denied permissions on creation.
                 log_content.append(
                     "**Role:** %s" % Facility.mention(role),
                     "**Name:** %s" % role.name,
@@ -1330,7 +1327,6 @@ class Logging(commands.Cog):
                 # However, it's easier because it's a Permission, which only have False/True field.
                 # And also, before.permissions directly return a Permission instead of a dictionary of {"key": PermissionOverwrite}
                 if before.permissions != after.permissions:
-                    action = ""
                     permission = None
                     
                     before_permissions = dict(before.permissions)
