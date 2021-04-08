@@ -443,6 +443,7 @@ class Logging(commands.Cog):
 
         # First we check if the logging feature is enabled in that guild.
         if await self.log_check(guild):
+            import humanize
             # Then we get the log channel of that guild.
             config = await Facility.get_config(self.bot, guild.id)
             log_channel = self.bot.get_channel(config["log_channel"])
@@ -453,7 +454,8 @@ class Logging(commands.Cog):
                 "**Member Name:** %s" % str(member),
                 "----------------------------",
                 "**Member ID:** %d" % member.id,
-                "**Account created on:** %s (UTC)" % member.created_at.strftime("%b %m %Y %I:%M %p")
+                "**Account created on:** %s (UTC)" % member.created_at.strftime("%b %m %Y %I:%M %p"),
+                "**Account age:** %s" % humanize.precisedelta(datetime.datetime.utcnow() - member.created_at, format = '%0.0f')
             )
 
             log_color = self.color_guild_join_leave
