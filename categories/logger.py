@@ -112,15 +112,24 @@ class Logging(commands.Cog):
             log_title = "Message Deleted"
             log_content = LogContent()
             log_color = self.color_delete
-            log_time = None
+            log_time = datetime.datetime.utcnow()
 
             executor = message.author
 
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
-                executor = entry.user
-                # Audit log doesn't log message that the author delete himself.
-                # So if there's an entry, it's most likely someone deleting someone else.
+                # An entirely different log
+                if entry.target != message.author:
+                    break
+                # Check if the entry is created within reasonable time frame.
                 log_time = entry.created_at
+                current_time = datetime.datetime.utcnow()
+                offset_time = current_time - log_time
+                if offset_time.total_seconds() < 1.0:
+                    break
+                
+                executor = entry.user
+                
+                
 
             # Generally we have 3 cases to deal with: normal text only, possibly have attachment, and possibly have embed.
             # For attachment, what we can do is to provide a proxy URL to the attachment, which only usable for images.
