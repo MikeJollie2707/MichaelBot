@@ -202,6 +202,17 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 welcome_text = welcome_text.replace("[guild.count]", str(len(member.guild.members)))
 
                 await welcome_channel.send(welcome_text)
+
+                if not member.bot:
+                    async with self.bot.pool.acquire() as conn:
+                        async with conn.transaction():
+                            user_existed = await DB.User.find_user(conn, member.id)
+                            member_existed = await DB.Member.find_member(conn, member.id, member.guild.id)
+                            if user_existed is None:
+                                await DB.User.insert_user(conn, member)
+                                await DB.Member.insert_member(conn, member)
+                            elif member_existed is None:
+                                await DB.Member.insert_member(conn, member)
             else:
                 return
 

@@ -18,9 +18,6 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        #if not hasattr(self.bot, "__db__"):
-        #    await DB.init_db(self.bot)
-        #    self.bot.__db__ = await DB.to_dict(self.bot)
         if bot_has_database(self.bot):
             await DB.update_db(self.bot)
         
@@ -41,6 +38,24 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_resumed(self):
         print(f"Bot reconnected on {datetime.datetime.now()}")
+    
+    @commands.Cog.listener("on_guild_join")
+    async def _guild_join(self, guild):
+        if bot_has_database(self.bot):
+            async with self.bot.pool.acquire() as conn:
+                guild_existed = await DB.Guild.find_guild(conn, guild.id)
+                if guild_existed is None:
+                    async with conn.transaction():
+                        for member in guild.members:
+                            if not member.bot:
+                                user_existed = await DB.User.find_user(conn, member.id)
+                                member_existed = await DB.Member.find_member(conn, member.id, guild.id)
+                                if user_existed is None:
+                                    await DB.User.insert_user(conn, member)
+                                    await DB.Member.insert_member(conn, member)
+                                elif member_existed is None:
+                                    await DB.Member.insert_member(conn, member)
+
 
     @commands.Cog.listener()
     async def on_message(self, message : discord.Message):
@@ -70,45 +85,32 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx : commands.Context, error : commands.CommandError):
         ERROR_SEPARATOR = "-----------------------------------------------------------------------"
-        try:
-            if isinstance(error, commands.CommandError):
-                print("%s raised an error!" % ctx.command.name)
-        except AttributeError: # If command not found, wrong syntax, etc.
-            async with ctx.typing(): # This will make the bot type for 10 seconds.
-                n = 0
-            return
-
-        isErrorComplex = False    
+        is_complex = False    
         
-        if isinstance(error, commands.MissingRequiredArgument):
+        if isinstance(error, commands.CommandNotFound):
+            await ctx.trigger_typing()
+            return
+        elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
-
         elif isinstance(error, commands.BadArgument):
             if ctx.command.name == "kick" or ctx.command.name == "ban":
                 return
             else:
                 await ctx.send("Wrong argument type. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
-
         elif isinstance(error, commands.NoPrivateMessage):
             return
-        
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send("Sorry, but this command is disabled for now, it'll be back soon :thumbsup:")
-
         elif isinstance(error, commands.TooManyArguments):
             await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
-        
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send("Hey there slow down! %s left!" % humanize.precisedelta(error.retry_after, "seconds", format = "%0.2f"))
-
         elif isinstance(error, commands.MissingPermissions):
             missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
             await ctx.send("You are missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
-        
         elif isinstance(error, commands.BotMissingPermissions):
             missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
             await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
-            
         elif isinstance(error, commands.NSFWChannelRequired):
             await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
         
@@ -117,15 +119,17 @@ class Events(commands.Cog):
             error_text += "```%s```" % error
             await ctx.send(error_text)
             print(ERROR_SEPARATOR)
+            print("%s raised a fatal error!\n" % ctx.command.name)
             print("Ignoring exception in command {}:".format(ctx.command), file = sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file = sys.stderr)
             print(ERROR_SEPARATOR)
             print("\n\n")
-            isErrorComplex = True
+            is_complex = True
         
-        if not isErrorComplex:
-            print("It seems that this error isn't fatal (no traceback). Check the logging channel to know more.")
-            print("\n\n")
+        if not is_complex:
+            pass
+            #print("It seems that this error isn't fatal (no traceback). Check the logging channel to know more.")
+            #print("\n\n")
 
 
     @commands.Cog.listener()
