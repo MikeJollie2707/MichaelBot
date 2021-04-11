@@ -234,15 +234,17 @@ class Core(commands.Cog):
         **I need:** `Read Message History`, `Send Messages`.
         '''
 
-        async with self.bot.pool.acquire() as conn:
-            if new_prefix == None:
-                bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
-                await ctx.reply("Current prefix: " + bot_prefix, mention_author = False)
-            else:
-                await DB.Guild.update_prefix(conn, ctx.guild.id, new_prefix)
-                # Confirmation
-                bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
-                await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id), mention_author = False)
+        if new_prefix is None:
+            bot_prefix = self.bot._prefixes[ctx.guild.id]
+            await ctx.reply("Current prefix: " + bot_prefix, mention_author = False)
+        else:
+            async with self.bot.pool.acquire() as conn:
+                async with conn.transaction():
+                    await DB.Guild.update_prefix(conn, ctx.guild.id, new_prefix)
+                    self.bot._prefixes[ctx.guild.id] = new_prefix
+                    # Confirmation
+                    bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
+                    await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id), mention_author = False)
 
     @commands.command()
     @commands.check(has_database)
