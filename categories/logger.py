@@ -885,7 +885,7 @@ class Logging(commands.Cog):
                 # Archived, can cause spamming if move a channel way up/down.
                 if before.position != after.position:
                     pass
-                if not isinstance(after, discord.VoiceChannel):
+                if isinstance(after, discord.TextChannel):
                     if before.topic != after.topic:
                         log_title = "Channel Topic Changed"
                         log_content.append(
@@ -1028,6 +1028,7 @@ class Logging(commands.Cog):
                         before_overwrite = dict(before_target_overwrite[target])
                         after_overwrite = dict(after_target_overwrite[target])
                         for permission in after_overwrite:
+                            # BUG: Somehow, the `mute` command will raise error because this line somehow has `view_audit_log`.
                             action = "`%s`: " % Facility.convert_channelperms_dpy_discord(permission)
                             if before_overwrite[permission] == True and after_overwrite[permission] == False:
                                 action += "`Granted -> Denied`"
