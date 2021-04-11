@@ -770,6 +770,53 @@ class Member:
             WHERE user_id = ($2) AND guild_id = ($3);
         ''' % col_name, new_value, ids[0], ids[1])
     
+    class TempMute:
+        @classmethod
+        async def get_mutes(cls, conn, lower_time_limit : dt.datetime, upper_time_limit : dt.datetime):
+            query = '''
+                SELECT * FROM DMembers_Tempmute
+                WHERE expire > ($1) AND expire <= ($2);
+            '''
+            result = await conn.fetch(query, lower_time_limit, upper_time_limit)
+            if result is None:
+                return []
+            else:
+                return [rec_to_dict(record) for record in result]
+        @classmethod
+        async def get_missed_mute(cls, conn, now : dt.datetime):
+            query = '''
+                SELECT * FROM DMembers_Tempmute
+                WHERE expire < ($1);
+            '''
+            result = await conn.fetch(query, now)
+            if result is None:
+                return []
+            else:
+                return [rec_to_dict(record) for record in result]
+        @classmethod
+        async def add_entry(cls, conn, user_id : int, guild_id : int, expire : dt.datetime):
+            query = '''
+                INSERT INTO DMembers_Tempmute
+                VALUES ($1, $2, $3);
+            '''
+            await conn.execute(query, user_id, guild_id, expire)
+        @classmethod
+        async def remove_entry(cls, conn, user_id : int, guild_id : int):
+            query = '''
+                DELETE FROM DMembers_Tempmute
+                WHERE user_id = ($1) AND guild_id = ($2);
+            '''
+
+            await conn.execute(query, user_id, guild_id)
+        @classmethod
+        async def get_entry(cls, conn, user_id : int, guild_id : int):
+            query = '''
+                SELECT * FROM DMembers_Tempmute
+                WHERE user_id = ($1) AND guild_id = ($2);
+            '''
+            
+            return rec_to_dict(await conn.fetchrow(query, user_id, guild_id))
+    
 # Currently we still need some sort of function that scan the db periodically for some schedule stuffs. 
 
 
