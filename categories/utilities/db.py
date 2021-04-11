@@ -35,8 +35,12 @@ async def update_db(bot):
                 for member in guild.members:
                     if not member.bot:
                         user_existed = await User.find_user(conn, member.id)
+                        member_existed = await Member.find_member(conn, member.id, guild.id)
                         if user_existed is None:
                             await User.insert_user(conn, member)
+                            await Member.insert_member(conn, member)
+                        # Sometimes, there can be desync between DUsers and DUsers_DGuilds (various reasons, including non-complete support).
+                        elif member_existed is None:
                             await Member.insert_member(conn, member)
             
             items = get_item_info()
