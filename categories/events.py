@@ -18,8 +18,17 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        if bot_has_database(self.bot):
+        if self.bot.pool is not None:
             await DB.update_db(self.bot)
+
+            guilds = self.bot.guilds
+            async with self.bot.pool.acquire() as conn:
+                for guild in guilds:
+                    prefix = await DB.Guild.get_prefix(conn, guild.id)
+                    if prefix is None:
+                        prefix = '$'
+                    self.bot._prefixes[guild.id] = prefix
+            
         
         print("Logged in as")
         print(self.bot.user.name)
@@ -30,6 +39,7 @@ class Events(commands.Cog):
     async def on_connect(self):
         if not hasattr(self.bot, "online_at"):
             self.bot.online_at = datetime.datetime.utcnow()
+        
     
     @commands.Cog.listener()
     async def on_disconnect(self):
@@ -41,7 +51,7 @@ class Events(commands.Cog):
     
     @commands.Cog.listener("on_guild_join")
     async def _guild_join(self, guild):
-        if bot_has_database(self.bot):
+        if self.bot.pool is not None:
             async with self.bot.pool.acquire() as conn:
                 guild_existed = await DB.Guild.find_guild(conn, guild.id)
                 if guild_existed is None:
@@ -55,6 +65,7 @@ class Events(commands.Cog):
                                     await DB.Member.insert_member(conn, member)
                                 elif member_existed is None:
                                     await DB.Member.insert_member(conn, member)
+            self.bot._prefixes[guild.id] = '$'
 
 
     @commands.Cog.listener()
