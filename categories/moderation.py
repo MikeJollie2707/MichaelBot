@@ -1,22 +1,48 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
-from datetime import datetime
+import datetime as dt
 import textwrap
 
 import categories.utilities.facility as Facility
+import categories.utilities.db as DB
+from categories.utilities.converters import IntervalConverter
+
+# For every tempmute, it is added into the db as an entry.
+# We can't do 15 minutes, because, say a tempmute 5 minutes follow by another 15 minutes.
+# Then the bot will locally wait 5 minutes and then remove the role, while the 15 minutes mute, which is saved on DB, is still pending.
+# So we have to do to the minimum.
+TEMPMUTE_CHECK_INTERVAL = 60 * 1
 
 class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     '''Commands related to moderate actions such as kick, ban, etc.'''
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '🔨'
+        
+        self.scan_tempmute.start()
     
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
         
         return True
+    
+    def cog_unload(self):
+        self.scan_tempmute.cancel()
+        return super().cog_unload()
+    
+    async def remove_mute(self, member : discord.Member, expire : dt.datetime.utcnow() = None):
+        if expire is not None:
+            await discord.utils.sleep_until(expire)
+        
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                await DB.Member.TempMute.remove_entry(conn, member.id, member.guild.id)
+        
+        for role in member.roles:
+            if role.name == "Muted":
+                await member.remove_roles(role, reason = f"Timed mute expired.")
 
     @commands.command()
     @commands.has_guild_permissions(ban_members = True)
@@ -52,7 +78,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                         **Reason:** %s
                 ''' % (victim_name, reason),
                 color = 0x000000,
-                timestamp = datetime.utcnow()
+                timestamp = dt.datetime.utcnow()
             ).set_footer(
                 text = f"Banned by {ctx.author.name}",
                 icon_url = ctx.author.avatar_url
@@ -98,7 +124,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                         **Reason:** %s
                 ''' % (user_id, reason),
                 color = 0x000000,
-                timestamp = datetime.utcnow()
+                timestamp = dt.datetime.utcnow()
             ).set_footer(
                 text = f"Banned by {ctx.author.name}",
                 icon_url = ctx.author.avatar_url
@@ -142,7 +168,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                         **Reason:** %s
                 ''' % (victim_name, reason),
                 color = 0x000000,
-                timestamp = datetime.utcnow()
+                timestamp = dt.datetime.utcnow()
             ).set_footer(
                 text = f"Kicked by {ctx.author.name}",
                 icon_url = ctx.author.avatar_url
@@ -154,24 +180,28 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         if isinstance(error, commands.BadArgument):
             await ctx.reply("I cannot kick someone that's not in the guild! If you want someone not to join your guild, use `%shackban`." % ctx.prefix, mention_author = False)
     
-    @commands.command(hidden = True, enabled = True)
+    @commands.command()
     @commands.has_permissions(kick_members = True)
-    @commands.bot_has_guild_permissions(kick_members = True)
+    @commands.bot_has_permissions(manage_permissions = True, read_message_history = True, send_messages = True)
+    @commands.bot_has_guild_permissions(manage_roles = True)
     @commands.cooldown(1, 5.0, commands.BucketType.guild)
     async def mute(self, ctx, member : discord.Member, *, reason = None):
         '''
         Mute a member.
         Note: this command will find a role named `Muted` in the guild and use it as the mute role.
         If not existed, one will be created which will deny `Send Messages`, `Send TTS Messages`, `Add Reactions` and `Speak` by default.
+        This is extremely spammy, especially if there are many channels.
 
         **Usage:** <prefix>**{command_name}** <member> [reason]
         **Cooldown:** 5 seconds per 1 use (guild).
         **Example:** {prefix}{command_name} MikeJollie stop boasting about lolis.
 
         **You need:** `Kick Members`.
-        **I need:** `Manage Roles`, `Manage Permissions`.
+        **I need:** `Manage Roles`, `Manage Permissions`, `Read Message History`, `Send Messages`.
         '''
         
+        if reason is None:
+            reason = "Not provided."
         guild = ctx.guild
         mute_role = discord.utils.find(lambda role: role.name == "Muted", guild.roles)
         if mute_role is None:
@@ -208,27 +238,107 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                             speak = False
                         )
                 except discord.Forbidden:
-                    failed_channels.append(channel.name)
+                    failed_channels.append(f"`{channel.name}`")
 
             if len(failed_channels) != 0:
-                await ctx.send("Failed channels: %s" % failed_channels)
+                await ctx.send("Failed channels: %s" % Facility.striplist(failed_channels))
 
-        await member.add_roles(mute_role, reason = f"{member} is muted by {ctx.author} for {reason}.")
-        
-        await ctx.reply(f"{member} is muted by {ctx.author}.", mention_author = False)
+        await member.add_roles(mute_role, reason = f"{member} is muted by {ctx.author} for {reason}.")    
+        embed = Facility.get_default_embed(
+            title = "Member Muted",
+            description = f"{member} is muted by {ctx.author} because {reason}.",
+            color = 0x000000,
+            timestamp = dt.datetime.utcnow(),
+            author = ctx.author
+        )    
+        await ctx.reply(embed = embed, mention_author = False)
 
         # Perform DB actions here
 
-    @commands.command(hidden = True, enabled = True)
+    @commands.command()
     @commands.has_permissions(kick_members = True)
-    @commands.bot_has_guild_permissions(kick_members = True)
+    @commands.bot_has_permissions(manage_permissions = True, read_message_history = True, send_messages = True)
+    @commands.bot_has_guild_permissions(manage_roles = True)
+    async def tempmute(self, ctx, member : discord.Member, duration : IntervalConverter, *, reason = None):
+        '''
+        Temporarily muted a member. The member will be unmuted after the interval provided.
+        Note: Similar to `unmute`, the unmute behavior is naive: It'll remove a single `Muted` role from the member.
+
+        The `duration` must be in between 1 minute and 30 days.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example 1:** {prefix}{command_name} MikeJollie 1d Chill
+        **Example 2:** {prefix}{command_name} "Hamza Khattab" 1m believed the earth is flat
+
+        **You need:** `Kick Members`.
+        **I need:** `Manage Roles`, `Manage Permissions`, `Read Message History`, `Send Messages`.
+        '''
+
+        end = dt.datetime.utcnow() + duration
+        if duration.total_seconds() < 60:
+            await ctx.reply("There's no meaning for such a short mute.", mention_author = False)
+            return
+        elif duration.total_seconds() > 2592000:
+            await ctx.reply("Too long mute.", mention_author = False)
+            return
+        else:
+            async with self.bot.pool.acquire() as conn:
+                entry_existed = await DB.Member.TempMute.get_entry(conn, member.id, member.guild.id)
+                # This is unfortunate, but I can't really think of a way to 'overwrite' the duration once the `remove_mute()` is fired.
+                # So to avoid such cases, we're doing this.
+                if entry_existed is not None:
+                    import humanize
+                    await ctx.reply("This member is already on a timed mute. Wait %s for it to expire." % humanize.precisedelta(entry_existed["expire"] - (end - duration), format = '%0.0f'), mention_author = False)
+                    return
+                await DB.Member.TempMute.add_entry(conn, member.id, member.guild.id, end)
+                await self.mute(ctx, member, reason = reason)
+    @tasks.loop(seconds = TEMPMUTE_CHECK_INTERVAL)
+    async def scan_tempmute(self):
+        current = dt.datetime.utcnow()
+        future = dt.datetime.utcnow() + dt.timedelta(seconds = TEMPMUTE_CHECK_INTERVAL)
+        async with self.bot.pool.acquire() as conn:
+            passed = await DB.Member.TempMute.get_missed_mute(conn, current)
+            upcoming = await DB.Member.TempMute.get_mutes(conn, current, future)
+
+        for missed_mute in passed:
+            guild = self.bot.get_guild(missed_mute["guild_id"])
+            member = guild.get_member(missed_mute["user_id"])
+            self.bot.loop.create_task(self.remove_mute(member))
+        
+        for upcoming_mute in upcoming:
+            guild = self.bot.get_guild(upcoming_mute["guild_id"])
+            user = guild.get_member(upcoming_mute["user_id"])
+            self.bot.loop.create_task(self.remove_mute(user, upcoming_mute["expire"]))
+    
+    @commands.command()
+    @commands.has_permissions(kick_members = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.bot_has_guild_permissions(manage_roles = True)
     @commands.cooldown(1, 5.0, commands.BucketType.guild)
     async def unmute(self, ctx, member : discord.Member, *, reason = None):
+        '''
+        Unmute a member.
+        This will just simply remove a role called `Muted` from the member, thus it is *not* recommended to use with another bot.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} MikeJollie you're good now
+
+        **You need:** `Kick Members`.
+        **I need:** `Manage Roles`, `Read Message History`, `Send Messages`.
+        '''
+
         for role in member.roles:
             # Simple implementation for now.
             if role.name == "Muted":
-                await member.remove_roles(role, reason = f"{member} is unmuted by {ctx.author} for {reason}.")
-                await ctx.reply(f"{member} is unmuted by {ctx.author}.", mention_author = False)
+                await member.remove_roles(role, reason = f"{member} is unmuted by {ctx.author} because {reason}.")
+                embed = Facility.get_default_embed(
+                    title = "Member Muted",
+                    description = f"{member} is unmuted by {ctx.author} because {reason}.",
+                    color = 0x000000,
+                    timestamp = dt.datetime.utcnow(),
+                    author = ctx.author
+                )    
+                await ctx.reply(embed = embed, mention_author = False)
                 return
         
         await ctx.reply(f"{member} is not previously muted.", mention_author = False)
@@ -265,7 +375,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
                         **Reason:** %s
                 ''' % (id, reason),
                 color = 0x000000,
-                timestamp = datetime.utcnow()
+                timestamp = dt.datetime.utcnow()
             ).set_footer(
                 text = f"Unbanned by {ctx.author.name}",
                 icon_url = ctx.author.avatar_url
