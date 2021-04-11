@@ -1028,8 +1028,8 @@ class Logging(commands.Cog):
                         before_overwrite = dict(before_target_overwrite[target])
                         after_overwrite = dict(after_target_overwrite[target])
                         for permission in after_overwrite:
-                            # BUG: Somehow, the `mute` command will raise error because this line somehow has `view_audit_log`.
-                            action = "`%s`: " % Facility.convert_channelperms_dpy_discord(permission)
+                            # Not sure why the permissions list are according to guild's permission.
+                            action = "`%s`: " % Facility.convert_roleperms_dpy_discord(permission)
                             if before_overwrite[permission] == True and after_overwrite[permission] == False:
                                 action += "`Granted -> Denied`"
                                 granted.append(action)
