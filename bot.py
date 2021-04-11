@@ -36,8 +36,9 @@ class MichaelBot(commands.Bot):
         self.DEBUG : typing.Optional[bool] = kwargs.get("debug")
         self.version : typing.Optional[str] = kwargs.get("version")
         self.__divider__ = "----------------------------\n"
+        self._prefixes = {}
 
-        self.pool : typing.Optional[asyncpg.pool.Pool]= None
+        self.pool : typing.Optional[asyncpg.pool.Pool] = None
         
     def debug(self, message : str):
         if self.DEBUG:
@@ -100,55 +101,55 @@ async def main():
         print("Unable to load enough information for the bot.")
         print("Bot info:", bot_info)
         print("Secrets:", secrets)
-    else:
-        # v1.5.0+ requires Intent.members to be enabled to use most of member cache.
-        intent = discord.Intents().default()
-        intent.members = True
+        return
+    
+    # v1.5.0+ requires Intent.members to be enabled to use most of member cache.
+    intent = discord.Intents().default()
+    intent.members = True
 
-        description = bot_info.get("description") if bot_info.get("description") is not None else "`None`"
-        debug = bot_info.get("debug") if bot_info.get("debug") is not None else False
+    description = bot_info.get("description") if bot_info.get("description") is not None else "`None`"
+    debug = bot_info.get("debug") if bot_info.get("debug") is not None else False
 
-        bot = MichaelBot(
-            command_prefix = get_prefix, 
-            description = description,
-            status = discord.Status.online,
-            activity = discord.Game(name = "Kubuntu"),
-            intents = intent,
+    bot = MichaelBot(
+        command_prefix = get_prefix, 
+        description = description,
+        status = discord.Status.online,
+        activity = discord.Game(name = "Kubuntu"),
+        intents = intent,
 
-            debug = debug,
-            version = bot_info.get("version")
+        debug = debug,
+        version = bot_info.get("version")
+    )
+    
+    try:
+        bot.debug("Connecting to database...")
+        bot.pool = await asyncpg.create_pool(
+            dsn = secrets.get("dsn"),
+            host = secrets.get("host"),
+            port = secrets.get("port"),
+            user = secrets.get("user"),
+            database = secrets.get("database"),
+            password = secrets.get("password")
         )
-        
-        try:
-            bot.debug("Connecting to database...")
-            bot.pool = await asyncpg.create_pool(
-                dsn = secrets.get("dsn"),
-                host = secrets.get("host"),
-                port = secrets.get("port"),
-                user = secrets.get("user"),
-                database = secrets.get("database"),
-                password = secrets.get("password")
-            )
-        except pg_exceptions.InvalidCatalogNameError:
-            print("Can't seems to find the database.")
-        except pg_exceptions.InvalidPasswordError:
-            print("Wrong password or wrong user.")
-        except ConnectionRefusedError:
-            print("Can't connect to database.")
-        
-        bot.debug("Loading extensions...")
-        for extension in sorted(__discord_extension__):
-            bot.load_extension(extension)
+    except pg_exceptions.InvalidCatalogNameError:
+        print("Can't seems to find the database.")
+    except pg_exceptions.InvalidPasswordError:
+        print("Wrong password or wrong user.")
+    except ConnectionRefusedError:
+        print("Can't connect to database.")
+    
+    bot.debug("Loading extensions...")
+    for extension in sorted(__discord_extension__):
+        bot.load_extension(extension)
 
-        try:
-            await bot.start(secrets["token"])
-        except KeyboardInterrupt:
-            await bot.close()
-        except Exception:
-            print(traceback.print_exc())
-        finally:
-            if bot.pool is not None:
-                await bot.pool.close()
+    try:
+        await bot.start(secrets["token"])
+    except Exception:
+        print(traceback.print_exc())
+    finally:
+        await bot.close()
+        if bot.pool is not None:
+            await bot.pool.close()
 
 if __name__ == "__main__":
     try:
