@@ -78,7 +78,9 @@ def calculate(expression : str) -> str:
 def convert_roleperms_dpy_discord(role_permissions : str) -> str:
     permissions = {
         # Community Server Permissions
+        "request_to_speak"     : "Request to Speak",
         "view_guild_insights"  : "Server Insights",
+        
         # General Server Permissions
         "read_messages"        : "View Channels",
         "manage_channels"      : "Manage Channels",
@@ -124,6 +126,7 @@ def convert_roleperms_dpy_discord(role_permissions : str) -> str:
 
 def convert_channelperms_dpy_discord(channel_permissions : str) -> str:
     permissions = {
+        # Community Server Permissions
         # General Channel Permissions
         "read_messages"        : "View Channel",
         "manage_channels"      : "Manage Channels",
