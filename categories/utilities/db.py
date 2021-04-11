@@ -759,7 +759,7 @@ class Member:
         member_existed = await Member.find_member(conn, member.id, member.guild.id)
         if member_existed is None:
             await insert_into(conn, "DUsers_DGuilds", [
-                (member.id, member.guild.id, None)
+                (member.id, member.guild.id)
             ])
     
     @classmethod
