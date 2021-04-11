@@ -1,3 +1,8 @@
+# This script should only run once, and only when:
+# - You have an empty database
+# - One or more tables are missing somehow
+# - There's a change in table's structure (prefer ALTER TABLE instead)
+
 import asyncpg
 import json
 import asyncio
@@ -52,7 +57,6 @@ async def setup(secrets : dict):
             CREATE TABLE IF NOT EXISTS DUsers_DGuilds (
                 user_id INT8 NOT NULL REFERENCES DUsers(id) ON UPDATE CASCADE ON DELETE CASCADE,
                 guild_id INT8 NOT NULL REFERENCES DGuilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                tempmute_end TIMESTAMP,
                 PRIMARY KEY (user_id, guild_id)
             );
         ''')
@@ -122,9 +126,20 @@ async def setup(secrets : dict):
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS DNotify (
                 id SERIAL PRIMARY KEY,
-                user_id INT8 NOT NULL,
+                user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE,
                 awake_time TIMESTAMP NOT NULL,
                 message TEXT NOT NULL
+            );
+        ''')
+        print("Done!")
+
+        print("Creating DMembers_Tempmute", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DMembers_Tempmute (
+                user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                guild_id INT8 NOT NULL REFERENCES DGuilds (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                expire TIMESTAMP NOT NULL,
+                PRIMARY KEY(user_id, guild_id)
             );
         ''')
         print("Done!")
