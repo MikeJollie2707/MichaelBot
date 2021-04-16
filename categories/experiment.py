@@ -67,8 +67,29 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
             await asyncio.sleep(10)
 
     @commands.command()
-    async def send_reaction(self, ctx):
-        await ctx.send("<:fp:819612002183675914>")
+    async def send_reaction_menu(self, ctx):
+        from categories.templates.option import Option
+        embed = discord.Embed(
+            title = "Home",
+            color = discord.Color.green()
+        )
+        embed2 = discord.Embed(
+            title = "Sub1"
+        )
+        embed3 = discord.Embed(
+            title = "Sub2"
+        )
+        embed11 = discord.Embed(
+            title = "Subsub1"
+        )
+        embed111 = discord.Embed(title = "Subsubsub1")
+        embed112 = discord.Embed(title = "Subsubsub2")
+        embed12 = discord.Embed(
+            title = "Subsub2"
+        )
+        
+        menu = Option([embed, {'1️⃣' : embed2, '2️⃣' : [embed3, {'🔰' : [embed11, {'<:redstone:822527280777396264>' : embed111, '🎃' : embed112}], '📛' : embed12}]}])
+        await menu.start(ctx)
 
 def setup(bot):
     bot.add_cog(Experiment(bot))
