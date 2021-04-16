@@ -68,7 +68,7 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
 
     @commands.command()
     async def send_reaction_menu(self, ctx):
-        from categories.templates.option import Option
+        from categories.templates.menu import Option
         embed = discord.Embed(
             title = "Home",
             color = discord.Color.green()
