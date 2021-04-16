@@ -298,6 +298,9 @@ class Core(commands.Cog):
             if len(current) == 0:
                 text = "*None*"
             else:
+                def _on_inner(item):
+                    return item["inner_sort"]
+                current.sort(key = _on_inner)
                 for tool in current:
                     text += tool["emoji"] + ' '
             
