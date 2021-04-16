@@ -4,7 +4,7 @@ from discord.ext import commands
 import datetime
 
 from categories.templates.navigate import Pages
-from categories.templates.menu import Menu
+from categories.templates.menu import Option
 
 import categories.utilities.facility as Facility
 
@@ -215,12 +215,12 @@ class SmallHelp():
             
             cog_info[category] = num_of_commands
         
-        menu = Menu(main_page, '✖️', '🔼')
+        options = {}
         for category in cogs:
             if cog_info[category] > 0:
-                menu.add_page(cogs[category].emoji, cog_help_format(self.ctx, cogs[category]))
-        
-        await menu.event(self.ctx, interupt = False)
+                options[cogs[category].emoji] = cog_help_format(self.ctx, cogs[category])
+        menu = Option([main_page, options])
+        await menu.start(self.ctx)
     
     async def send_cog_help(self, cog):
         paginate = Pages()
