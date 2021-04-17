@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 import datetime
-import aiohttp # External paste site when embed is too large.
+import asyncio
 import mystbin
 import typing # IntelliSense purpose only
 
@@ -116,6 +116,8 @@ class Logging(commands.Cog):
 
             executor = message.author
 
+            await asyncio.sleep(0.5)
+
             async for entry in message.guild.audit_logs(action = discord.AuditLogAction.message_delete, limit = 1):
                 # An entirely different log
                 if entry.target != message.author:
@@ -221,22 +223,22 @@ class Logging(commands.Cog):
             
             log_title = "Message Edited"
             # We're attempting to retrieve the message here...
-            partial_message = discord.PartialMessage(channel = payload.channel_id, id = payload.message_id)
             try:
-                edited_message = await partial_message.fetch()
+                channel = await self.bot.fetch_channel(payload.channel_id)
+                edited_message = await channel.fetch_message(payload.message_id)
             except discord.NotFound:
                 log_content = LogContent().append(
                     "⚠ The original content of the message is not found.",
                     "⚠ The message cannot be found.",
                     "----------------------------",
-                    "**Channel:** %s" % partial_message.channel.mention,
+                    "**Channel:** %s" % channel.mention,
                 )
             except discord.HTTPException:
                 log_content = LogContent().append(
                     "⚠ The original content of the message is not found.",
                     "⚠ The message cannot be retrieved.",
                     "----------------------------",
-                    "**Channel:** %s" % partial_message.channel.mention,
+                    "**Channel:** %s" % channel.mention,
                 )
             else:
                 message_channel = edited_message.channel
