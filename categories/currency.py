@@ -386,7 +386,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def recipe(self, ctx : commands.Context, *, item : ItemConverter = None):
         '''
-        Recipe for an item or all the recipes.
+        Show the recipe for an item or all the recipes.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} wood
@@ -702,6 +702,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if exist is None:
                     await ctx.reply(f"This tool does not exist.", mention_author = False)
                     return
+                exist_inv = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, tool_name)
+                if exist_inv is None:
+                    await ctx.reply(f"You don't have this tool in your inventory.", mention_author = False)
+                    return
                 
                 tool_type = DB.User.ActiveTools.get_tool_type(tool_name)
                 
@@ -800,6 +804,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             def _on_inner_amount(slot):
                 # We can't make this async, which is unfortunate.
                 item = LootTable.get_item_info()[slot["item_id"]]
+                # Sort based on quantity and inner_sort
                 return (-slot["quantity"], -item[1])
             inventory.sort(key = _on_inner_amount)
 
