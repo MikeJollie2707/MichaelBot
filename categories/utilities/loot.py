@@ -673,7 +673,7 @@ def get_brew_ingredient(item : str):
             "nether_star": 1,
 
             "redstone": 32,
-            "spider_eye": 16,
+            "spider_eye": 32,
             "gunpowder": 32,
             "coal": 64,
             "blaze": 2,
@@ -684,6 +684,9 @@ def get_brew_ingredient(item : str):
         "undying_potion": {
             "moyai": 1,
             "zombie_meat": 100000,
+            "bone": 100000,
+            "diamond": 10000,
+            "netherite": 1000,
 
             "redstone": 100000,
             "spider_eye": 100000,
