@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#currency-commands-developing" class="md-skip">
+        <a href="#currency-commands-incomplete" class="md-skip">
           Skip to content
         </a>
       
@@ -311,8 +311,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#daily" class="md-nav__link">
-    daily
+  <a href="#adventure" class="md-nav__link">
+    adventure
   </a>
   
 </li>
@@ -320,6 +320,60 @@
         <li class="md-nav__item">
   <a href="#balance" class="md-nav__link">
     balance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brew" class="md-nav__link">
+    brew
+  </a>
+  
+    <nav class="md-nav" aria-label="brew">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recipe-brew" class="md-nav__link">
+    recipe (brew)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chop" class="md-nav__link">
+    chop
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#craft" class="md-nav__link">
+    craft
+  </a>
+  
+    <nav class="md-nav" aria-label="craft">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recipe-craft" class="md-nav__link">
+    recipe (craft)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#daily" class="md-nav__link">
+    daily
   </a>
   
 </li>
@@ -712,8 +766,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#daily" class="md-nav__link">
-    daily
+  <a href="#adventure" class="md-nav__link">
+    adventure
   </a>
   
 </li>
@@ -721,6 +775,60 @@
         <li class="md-nav__item">
   <a href="#balance" class="md-nav__link">
     balance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brew" class="md-nav__link">
+    brew
+  </a>
+  
+    <nav class="md-nav" aria-label="brew">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recipe-brew" class="md-nav__link">
+    recipe (brew)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chop" class="md-nav__link">
+    chop
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#craft" class="md-nav__link">
+    craft
+  </a>
+  
+    <nav class="md-nav" aria-label="craft">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recipe-craft" class="md-nav__link">
+    recipe (craft)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#daily" class="md-nav__link">
+    daily
   </a>
   
 </li>
@@ -757,9 +865,9 @@
                 
                 
                 <!-- omit in toc -->
-<h1 id="currency-commands-developing">Currency commands [DEVELOPING]</h1>
-<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
-<p>These are commands that involve fake economy. All items and currencies are shared across guilds.</p>
+<h1 id="currency-commands-incomplete">Currency commands [INCOMPLETE]</h1>
+<p><em>This section is labeled as [INCOMPLETE], will be updated in the future.</em></p>
+<p>These are commands that involve fake economy. All items and currencies are shared across guilds. For further guides, refer to <a href="#../currency/currency_start.md">this</a>.</p>
 <!-- omit on toc -->
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
@@ -771,18 +879,88 @@
 <h2 id="__init__-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
 <p>A constructor for this category. This set the <code>Currency</code> category's emoji is <code>💲</code>.</p>
-<h2 id="daily">daily</h2>
-<p>Get an amount of money every 24h.</p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;daily</code></p>
-<p><strong>Cooldown:</strong> 1 day per 1 use (user)</p>
-<p><strong>Example:</strong> <code>$daily</code></p>
+<h2 id="adventure">adventure</h2>
+<p><em>This is an activity</em></p>
+<p>Go on an adventure to gather materials!</p>
+<p>Watch out though, you might encounter unwanted enemies. Better bring a sword.</p>
+<p><strong>Aliases:</strong> <code>adv</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;adventure</code></p>
+<p><strong>Cooldown:</strong> 5 minutes per 1 use (user)</p>
+<p><strong>Example:</strong> <code>$adv</code></p>
 <p><strong>You need:</strong> None.</p>
-<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="balance">balance</h2>
 <p>Display the amount of money you currently have.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;balance</code></p>
 <p><strong>Cooldown:</strong> 2 seconds per 1 use (user)</p>
 <p><strong>Example:</strong> <code>$balance</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="brew">brew</h2>
+<p>Brew potions.</p>
+<p>This command behaves the same way <a href="#craft"><code>craft</code></a> does.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;brew [n=1] &lt;potion&gt;</code></p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>n</code>: The number of times this command is executed. <strong>It is NOT the amount of potions you'll get</strong>.</li>
+<li><code>potion</code>: The potion you want to brew. Refer to <a href="#recipe-brew"><code>brew recipe</code></a> for brewable potions.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$brew 2 fire potion</code></li>
+<li><strong>Example 2:</strong> <code>$brew luck potion</code></li>
+</ul>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<p><strong><em>Subcommands:</em></strong> <a href="#recipe-brew"><code>recipe</code></a></p>
+<h3 id="recipe-brew">recipe (brew)</h3>
+<p>Show the recipe for one potion or for all potions.</p>
+<h2 id="chop">chop</h2>
+<p><em>This is an activity</em></p>
+<p>Chop some trees.</p>
+<p>The majority of reward is log, although you can also find some other things with a better axe.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;chop</code></p>
+<p><strong>Cooldown:</strong> 5 minutes per 1 use (user).</p>
+<p><strong>Example:</strong> <code>$chop</code></p>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="craft">craft</h2>
+<p>Perform a craft <code>n</code> times.</p>
+<p>This will give you <code>n * &lt;quantity&gt;</code> items, with <code>&lt;quantity&gt;</code> is the <code>You gain</code> section in <code>craft recipe</code>.</p>
+<p>Craft wisely!</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;craft [n=1] &lt;item&gt;</code></p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>n</code>: The number of times this command is executed. <strong>It is NOT the amount of items you'll get</strong>.</li>
+<li><code>item</code>: The item you want to craft. Refer to <a href="#recipe-craft"><code>craft recipe</code></a> for craftable items.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$craft 2 stick</code></li>
+<li><strong>Example 2:</strong> <code>$craft wooden pickaxe</code></li>
+</ul>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<p><strong><em>Subcommands:</em></strong> <a href="#recipe"><code>recipe</code></a></p>
+<h3 id="recipe-craft">recipe (craft)</h3>
+<p>Show the <em>crafting</em> recipe for one item or for all items.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;craft recipe [item]</code></p>
+<p><strong>Parameter:</strong></p>
+<ul>
+<li><code>item</code>: The item you want. If this is not provided, the command will show all recipes for all items.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$craft recipe</code></li>
+<li><strong>Example 2:</strong> <code>$craft recipe wood</code></li>
+</ul>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
+<h2 id="daily">daily</h2>
+<p>Get an amount of money every 24h.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;daily</code></p>
+<p><strong>Cooldown:</strong> 1 day per 1 use (user)</p>
+<p><strong>Example:</strong> <code>$daily</code></p>
 <p><strong>You need:</strong> None.</p>
 <p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="topmoney-developing">topmoney [DEVELOPING]</h2>
