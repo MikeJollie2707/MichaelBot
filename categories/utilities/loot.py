@@ -12,17 +12,17 @@ def get_item_info():
         #   description]
 
         # Overworld materials
-        "log": ["🪵", 1, "log", "common", None, 20, None,
+        "log": ["🪵", 1, "log", "common", None, 18, None,
             "A basic necessity for everyone. Useful at any times."],
         "wood": ["<:plank:819616763074838569>", 2, "wood", "common", 8, 4, None,
             "A basic material for basic stuffs."],
         "stick": ["<:stick:819615522878521434>", 3, "stick", "common", 4, 2, None,
             "A necessity item used to craft various tools."],
-        "stone": ["<:stone:819728758160097290>", 4, "stone", "common", None, 20, None,
+        "stone": ["<:stone:819728758160097290>", 4, "stone", "common", None, 22, None,
             "A harder material than wood."],
-        "iron": ["<:iron:820009715286671410>", 5, "iron", "uncommon", None, 50, None,
+        "iron": ["<:iron:820009715286671410>", 5, "iron", "uncommon", None, 40, None,
             "Iron!"],
-        "redstone": ["<:redstone:822527280777396264>", 6, "redstone", "uncommon", None, 40, None,
+        "redstone": ["<:redstone:822527280777396264>", 6, "redstone", "uncommon", None, 30, None,
             "A red dust that's commonly mistaken as blood. It's understandable, it has pulse after all."],
         "diamond": ["💎", 7, "diamond", "rare", None, 100, None,
             "Shiny stuffs isn't it? It can be used to craft some of the best tools in the world."],
@@ -40,11 +40,11 @@ def get_item_info():
             "A better pickaxe. Hope you can get some iron soon."],
         "stone_axe": ["<:stone_axe:820009331000606760>", 13, "stone axe", "common", None, 27, 131,
             "A better axe."],
-        "iron_sword": ["<:iron_sword:821448555989696593>", 14, "iron sword", "uncommon", None, 58, 250,
+        "iron_sword": ["<:iron_sword:821448555989696593>", 14, "iron sword", "uncommon", None, 43, 250,
             "A pretty good sword. You can slay more enemies now due to how good this sword is."],
-        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", 15, "iron pickaxe", "uncommon", None, 60, 250,
+        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", 15, "iron pickaxe", "uncommon", None, 43, 250,
             "A pretty good pickaxe. You may encounter some lucky stuffs with this pickaxe."],
-        "iron_axe": ["<:iron_axe:820758123714838559>", 16, "iron axe", "uncommon", None, 59, 250,
+        "iron_axe": ["<:iron_axe:820758123714838559>", 16, "iron axe", "uncommon", None, 45, 250,
             "A pretty good axe."],
         "diamond_sword": ["<:diamond_sword:822530447715598396>", 17, "diamond sword", "rare", None, 150, 1561,
             "The best sword in the world? Idk, it doesn't do much though..."],
@@ -54,29 +54,29 @@ def get_item_info():
             "The best axe in the world. Chopping go brr."],
         
         # Nether-related materials
-        "obsidian": ["<:obsidian:822532045673725964>", 20, "obsidian", "rare", None, 80, None,
+        "obsidian": ["<:obsidian:822532045673725964>", 20, "obsidian", "rare", None, 75, None,
             "The hardest material in the world. It silently emits power that connects to another world."],
         "nether": ["⛩️", 21, "nether portal", "???", None, None, 6,
             "A mysterious gate that travels to the deepest place in the world."],
         "netherrack": ["<:netherrack:823592746865655868>", 22, "netherrack", "common", None, 8, None,
             "A red-ish stone block only presents in the hottest place."],
-        "gold": ["<:gold:823592599314104331>", 23, "gold", "uncommon", None, 30, None,
+        "gold": ["<:gold:823592599314104331>", 23, "gold", "uncommon", None, 35, None,
             "Gold. How useful."],
-        "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 150, None,
+        "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 200, None,
             "A leftover of what was once the toughest metal in the universe. Such toughness is only achievable under the undying heat."],
-        "netherite": ["<:netherite:828129193275293706>", 25, "netherite", "rare+", None, 200, None,
+        "netherite": ["<:netherite:828129193275293706>", 25, "netherite", "rare+", None, 500, None,
             "The toughest metal in the universe, recovered from its leftover."],
-        "nether_sword": ["<:nether_sword:828129193434939442>", 26, "netherite sword", "rare+", None, 300, 2032,
+        "nether_sword": ["<:nether_sword:828129193434939442>", 26, "netherite sword", "rare+", None, 550, 2032,
             "A sword created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe. It can cut down even the toughest enemy."],
-        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", 27, "netherite pickaxe", "rare+", None, 250, 2032,
+        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", 27, "netherite pickaxe", "rare+", None, 550, 2032,
             "A pickaxe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
-        "nether_axe": ["<:nether_axe:828129193367175178>", 28, "netherite axe", "rare+", None, 250, 2032,
+        "nether_axe": ["<:nether_axe:828129193367175178>", 28, "netherite axe", "rare+", None, 550, 2032,
             "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
         # General purpose materials
         "coal": ["<:coal:819742286250377306>", 29, "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
-        "apple": ["🍎", 30, "apple", "common", 10, 5, None,
+        "apple": ["🍎", 30, "apple", "common", 10, 8, None,
             "An apple. Yummy. Watch out for the worms though."],
         "flower": ["🌸", 31, "flower", "common", 11, 8, None,
             "A beautiful flower."],
@@ -84,7 +84,7 @@ def get_item_info():
             "A mysterious mystical flower. It is unknown what this flower truly is."],
         "string": ["<:string:820758307542401055>", 33,"string", "common", 15, 10, None,
             "A useful drop for brewing potions."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", 34, "spider eye", "uncommon", None, 20, None,
+        "spider_eye": ["<:spider_eye:820758868468301864>", 34, "spider eye", "uncommon", 40, 25, None,
             "An uncommon drop for brewing potions."],
         "bone": ["<:bone2:828133597529374720>", 35, "bone", "common", None, 20, None,
             "A common drop from skeletons. Hopefully it has some uses."],
@@ -104,7 +104,7 @@ def get_item_info():
             "May the luck be with you."],
         "fire_potion": ["<a:fire_potion:828135033466126366>", 42, "fire potion", "rare", 10000, 100, 10,
             "Reduce the chance of dying in the Nether."],
-        "haste_potion": ["<a:haste_potion:828135803812577330>", 43, "haste potion", "rare+", 100000, 150, 10,
+        "haste_potion": ["<a:haste_potion:828135803812577330>", 43, "haste potion", "rare+", 120000, 200, 10,
             "Increase loot yield from a mining session. This potion's stack affects the loot yield rate."],
         "undying_potion": ["<:undying_potion:828136854657826836>", 44, "undying potion", "???", None, None, 10000000,
             "To achieve immortal, one simply requires many many sacrifices."]
@@ -149,8 +149,8 @@ def get_mine_loot(pick : str, world : int):
             return {
                 "stone": 0.35, # 3.5 on average
                 "coal": 0.30, # 3 on average
-                "iron": 0.25, # 2.5 on average
-                "redstone": 0.05, # 0.5 on average
+                "iron": 0.20, # 2 on average
+                "redstone": 0.10, # 1 on average
                 "diamond": 0.01, # 0.1 on average
                 "rolls": 10
             }
@@ -158,8 +158,8 @@ def get_mine_loot(pick : str, world : int):
             return {
                 "stone": 0.26, # 5.2 on average
                 "coal": 0.15, # 3 on average
-                "iron": 0.25, # 5 on average
-                "redstone": 0.10, # 2 on average
+                "iron": 0.15, # 3 on average
+                "redstone": 0.20, # 4 on average
                 "diamond": 0.05, # 1 on average
                 "obsidian": 0.10, # 2 on average
                 "rolls": 20
@@ -168,7 +168,7 @@ def get_mine_loot(pick : str, world : int):
             return {
                 "stone": 0.20, # 5 on average
                 "coal": 0.10, # 2.5 on average
-                "iron": 0.27, # 6.75 on average
+                "iron": 0.20, # 5 on average
                 "redstone": 0.20, # 5 on average
                 "diamond": 0.1, # 2.5 on average
                 "obsidian": 0.15, # 3.75 on average
