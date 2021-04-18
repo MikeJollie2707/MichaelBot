@@ -213,4 +213,4 @@ Provide information about the server that invoke the command.
 
 **The bot needs:** `Send Messages`.
 
-*This document is last updated on Feb 19th (PT) by MikeJollie#1067*
+*This document is last reviewed on Apr 10th (PT) by MikeJollie#1067*

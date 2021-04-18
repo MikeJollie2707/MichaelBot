@@ -5,10 +5,47 @@ This document will show, in details, the changes made to an item. Usually, this 
 
 <!-- omit in toc -->
 ## Table of Contents
-- [1.6.4](#164)
+- [1.6.4.2](#1642)
     - [Buffs](#buffs)
     - [Nerfs](#nerfs)
     - [Neutral changes](#neutral-changes)
+    - [Comment](#comment)
+- [1.6.4](#164)
+    - [Buffs](#buffs-1)
+    - [Nerfs](#nerfs-1)
+    - [Neutral changes](#neutral-changes-1)
+
+## 1.6.4.2
+
+### Buffs
+
+- Stone sell price increased from 20 to 22 (+10%).
+- Gold sell price increased from 30 to 35 (+17%).
+- Ancient Debris sell price increased from 150 to 200 (+33%).
+- Netherite sell price increased from 200 to 500 (+150%).
+- Netherite tools sell price increased from 250 to 550 (+120%).
+- Apple sell price increased from 5 to 8 (+60%).
+- Spider eye is purchasable, sell price increased from 20 to 25 (+25%).
+- Redstone drop chance is increased across all pickaxes that can drop redstone.
+
+### Nerfs
+
+- Log sell price decreased from 20 to 18 (-10%).
+- Iron sell price decreased from 50 to 40 (-20%).
+- Redstone sell price decreased from 40 to 30 (-25%).
+- Iron tools sell price decreased from [58, 60, 59] to [43, 43, 45].
+- Obsidian sell price decreased from 80 to 75 (-6.25%).
+- Haste potion buy price increased from 100000 to 120000 (+17%).
+- Haste potion now requires 32x spider eyes instead of 16x (+100%).
+- Iron drop chance is decreased for iron pickaxe and higher.
+
+### Neutral changes
+
+- `None`.
+
+### Comment
+
+This balance changes is made due to iron's value is way too high despite not having much uses. Additionally, it slightly buff redstone, as it is a hard ingredient to gain for potions. Finally, netherrite deserves more value than it was, hence the massive increase in value.
 
 ## 1.6.4
 
