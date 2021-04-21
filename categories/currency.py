@@ -1223,6 +1223,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 inv_slot = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, item)
                 if inv_slot is None:
                     await ctx.reply("You don't have such item to sell.", mention_author = False)
+                    return
                 if inv_slot["sell_price"] is None:
                     await ctx.reply("This item cannot be sold.", mention_author = False)
                     return
