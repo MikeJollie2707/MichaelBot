@@ -101,7 +101,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
                     for tool in equipment:
                         try:
-                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"], False)
                         except DB.ItemExpired:
                             pass
                     money = await DB.User.get_money(conn, ctx.author.id)
@@ -242,7 +242,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
                     for tool in equipment:
                         try:
-                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"], False)
                         except DB.ItemExpired:
                             pass
                     money = await DB.User.get_money(conn, ctx.author.id)
@@ -935,7 +935,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
                     for tool in equipment:
                         try:
-                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"])
+                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"], False)
                         except DB.ItemExpired:
                             pass
                     money = await DB.User.get_money(conn, ctx.author.id)

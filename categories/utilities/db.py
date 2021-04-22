@@ -455,7 +455,7 @@ class User:
             await conn.execute(query, user_id, item_id, exist["durability"])
         
         @classmethod
-        async def unequip_tool(cls, conn, user_id : int, item_id : int):
+        async def unequip_tool(cls, conn, user_id : int, item_id : int, return_inv = True):
             """
             Unequip the tool from the user.
 
@@ -470,7 +470,7 @@ class User:
                 '''
 
                 await conn.execute(query, user_id, item_id)
-                if equipped["durability_left"] == equipped["durability"]:
+                if equipped["durability_left"] == equipped["durability"] and return_inv:
                     await User.Inventory.add(conn, user_id, item_id)
                 else:
                     raise ItemExpired(f"Item {item_id}'s durability is forcefully returned to 0.")
