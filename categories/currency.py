@@ -496,8 +496,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         
                         if fake_inv[key] < 0:
                             miss[key] = abs(fake_inv[key])
+                money = await DB.User.get_money(conn, ctx.author.id)
                 
-                if len(miss) == 0:
+                if len(miss) == 0 and money >= ingredient["money"]:
                     for key in fake_inv:
                         await DB.User.Inventory.update_quantity(conn, ctx.author.id, key, fake_inv[key])
                     
@@ -508,8 +509,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(f"Brewed {amount * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
                     
                 else:
-                    miss_string = await LootTable.get_friendly_reward(conn, miss, False)
-                    await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
+                    if ingredient["money"] > money:
+                        await ctx.reply("You're missing $%d to run the brewing stand. You need: $%d" % (ingredient["money"] - money, ingredient["money"]), mention_author = False)
+                    else:
+                        miss_string = await LootTable.get_friendly_reward(conn, miss, False)
+                        await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
 
     @brew.command(name = 'recipe')
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
