@@ -1139,6 +1139,8 @@ class Logging(commands.Cog):
                     ).set_author(
                         name = str(executor),
                         icon_url = executor.avatar_url
+                    ).set_thumbnail(
+                        url = executor.avatar_url
                     ).set_footer(
                         text = str(executor),
                         icon_url = executor.avatar_url
