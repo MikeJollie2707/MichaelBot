@@ -75,6 +75,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if current_sword is None:
                     # Edit this message.
                     await ctx.reply("You have no sword equip.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
@@ -216,6 +217,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if current_axe is None:
                     # Edit this message.
                     await ctx.reply("You have no axe equip.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
@@ -696,19 +698,23 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         if tool_name is None:
             await ctx.reply("This item doesn't exist.", mention_author = False)
+            ctx.command.reset_cooldown(ctx)
             return
         if "_pickaxe" not in tool_name and "_axe" not in tool_name and "_sword" not in tool_name and "_rod" not in tool_name:
             await ctx.reply(f"You can't equip this!", mention_author = False)
+            ctx.command.reset_cooldown(ctx)
             return
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 exist = await DB.Items.get_item(conn, tool_name)
                 if exist is None:
                     await ctx.reply(f"This tool does not exist.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 exist_inv = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, tool_name)
                 if exist_inv is None:
                     await ctx.reply(f"You don't have this tool in your inventory.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 tool_type = DB.User.ActiveTools.get_tool_type(tool_name)
@@ -783,7 +789,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         await ctx.reply(embed = embed, mention_author = False)
 
-    @commands.command(aliases = ['inv'])
+    @commands.group(aliases = ['inv'], invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def inventory(self, ctx : commands.Context):
@@ -816,6 +822,19 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             for slot in inventory:
                 inventory_dict[slot["item_id"]] = slot["quantity"]
             await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict), mention_author = False)
+    
+    @inventory.command(name = 'all')
+    async def inv_all(self, ctx : commands.Context):
+        await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
+    
+    @inventory.command(name = 'value')
+    async def inv_value(self, ctx : commands.Context):
+        await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
+    
+    @inventory.command(name = 'sort')
+    async def inv_sort(self, ctx : commands.Context):
+        await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
+
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -837,6 +856,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 exist = await DB.Items.get_item(conn, item)
                 if exist is None:
                     await ctx.reply("This item doesn't exist.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 desc = exist["description"]
@@ -913,6 +933,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if current_pick is None:
                     # Edit this message.
                     await ctx.reply("You have no pickaxe equip.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
@@ -1033,9 +1054,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             amount = 1
         if potion is None:
             await ctx.reply("This potion doesn't exist.")
+            ctx.command.reset_cooldown(ctx)
             return
         if "_potion" not in potion:
             await ctx.reply("This is not a potion.")
+            ctx.command.reset_cooldown(ctx)
             return
         
         async with self.bot.pool.acquire() as conn:
@@ -1044,6 +1067,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 pot_stack = await DB.User.ActivePotions.get_stack(conn, potion, actual_potion["remain_uses"])
                 if pot_stack == 10:
                     await ctx.reply("You cannot stack a potion more than 10.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
             
             async with conn.transaction():
@@ -1051,9 +1075,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await DB.User.ActivePotions.set_potion_active(conn, ctx.author.id, potion, amount)
                 except DB.ItemNotPresent:
                     await ctx.reply("You don't have such a potion.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 except DB.TooLargeRemoval:
                     await ctx.reply("You don't have this many potion.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 official_name = await DB.Items.get_friendly_name(conn, potion)
@@ -1113,7 +1139,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             await ctx.reply(embed = embed, mention_author = False)
     
-    @commands.group()
+    @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def market(self, ctx : commands.Context):
@@ -1181,19 +1207,23 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         if item is None:
             await ctx.reply("This item doesn't exist. Please use `trade` to see all items.", mention_author = False)
+            ctx.command.reset_cooldown(ctx)
             return
         if amount < 1:
             await ctx.reply("You can't buy 0 or smaller items dummy.", mention_author = False)
+            ctx.command.reset_cooldown(ctx)
             return
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 actual_item = await DB.Items.get_item(conn, item)
                 if actual_item["buy_price"] is None:
                     await ctx.reply("This item is not purchasable!", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 money = await DB.User.get_money(conn, ctx.author.id)
                 if money - amount * actual_item["buy_price"] < 0:
                     await ctx.reply("You don't have enough money to buy. Total cost is: $%d" % amount * actual_item["buy_price"], mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 
                 await DB.User.remove_money(conn, ctx.author.id, amount * actual_item["buy_price"])
@@ -1218,24 +1248,29 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         if item is None:
             await ctx.reply("This item doesn't exist. Please use `trade` to see all items.", mention_author = False)
+            ctx.command.reset_cooldown(ctx)
             return
         if amount < 1:
             await ctx.reply("So...are you selling or not?", mention_author = False)
+            ctx.command.reset_cooldown(ctx)
             return
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 inv_slot = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, item)
                 if inv_slot is None:
                     await ctx.reply("You don't have such item to sell.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 if inv_slot["sell_price"] is None:
                     await ctx.reply("This item cannot be sold.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 # The function won't affect the inventory if it fails.
                 try:
                     await DB.User.Inventory.remove(conn, ctx.author.id, item, amount)
                 except DB.TooLargeRemoval:
                     await ctx.reply("You don't have enough items to sell. You only have: %d" % inv_slot["quantity"] if inv_slot is not None else 0, mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
                     return
                 await DB.User.add_money(conn, ctx.author.id, amount * inv_slot["sell_price"])
                 await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * inv_slot['sell_price']}", mention_author = False)
