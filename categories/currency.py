@@ -1085,7 +1085,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 official_name = await DB.Items.get_friendly_name(conn, potion)
                 await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
 
-    @commands.command(aliases = ['lb'], hidden = True)
+    @commands.command(aliases = ['lb'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
     async def leaderboard(self, ctx : commands.Context, local__global = "local"):
