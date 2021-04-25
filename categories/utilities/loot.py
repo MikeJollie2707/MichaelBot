@@ -195,7 +195,7 @@ def get_mine_loot(pick : str, world : int):
             }
         elif pick == "diamond_pickaxe":
             return {
-                "netherrack": 0.80, # 16 on average
+                "netherrack": 0.75, # 15 on average
                 "gold": 0.18, # 3.6 on average
                 "obsidian": 0.02, # 0.4 on average
                 "debris": 0.001, # 0.02 on average
@@ -203,7 +203,7 @@ def get_mine_loot(pick : str, world : int):
             }
         elif pick == "nether_pickaxe":
             return {
-                "netherrack": 0.75, # 18.75 on average
+                "netherrack": 0.73, # 18.25 on average
                 "gold": 0.20, # 5 on average
                 "obsidian": 0.05, # 1.25 on average
                 "debris": 0.005, # 0.125 on average
@@ -238,7 +238,7 @@ def get_chop_loot(axe : str, world : int):
                 "log": 0.45, # 9 on average
                 "stick": 0.10, # 2 on average
                 "apple": 0.25, # 5 on average
-                "flower": 0.20, # 4 on average
+                "flower": 0.19, # 3.8 on average
                 "moyai": 0.000000005, # 0.0000001 on average
                 "rolls": 20
             }
@@ -306,7 +306,7 @@ def get_adventure_loot(sword : str, world : int):
             }
         elif sword == "diamond_sword":
             return {
-                "string": 0.25, # 5 on average
+                "string": 0.20, # 4 on average
                 "spider_eye": 0.15, # 3 on average
                 "zombie_meat": 0.25, # 5 on average
                 "bone": 0.25, # 5 on average
