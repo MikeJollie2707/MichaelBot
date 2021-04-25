@@ -763,6 +763,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             def on_inner_sort(item):
                 return item["inner_sort"]
             equipments.sort(key = on_inner_sort)
+            potions.sort(key = on_inner_sort)
             portals.sort(key = on_inner_sort)
 
             if len(equipments) == 0 and len(potions) == 0 and len(portals) == 0:
