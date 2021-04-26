@@ -6,11 +6,11 @@ import datetime
 import textwrap
 import typing # IntelliSense purpose only
 
-from categories.templates.help import BigHelp, SmallHelp
-from categories.templates.navigate import Pages
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.checks import has_database
+from templates.help import BigHelp, SmallHelp
+from templates.navigate import Pages
+import utilities.facility as Facility
+import utilities.db as DB
+from utilities.checks import has_database
 
 from bot import MichaelBot # IntelliSense purpose only
 

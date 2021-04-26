@@ -6,10 +6,10 @@ import asyncio
 import random
 import datetime
 
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.converters import IntervalConverter
-from categories.utilities.checks import has_database
+import utilities.facility as Facility
+import utilities.db as DB
+from utilities.converters import IntervalConverter
+from utilities.checks import has_database
 from bot import MichaelBot
 
 NOTIFY_INTERVAL = 900

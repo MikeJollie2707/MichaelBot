@@ -8,5 +8,3 @@ def is_dev(ctx):
 def has_database(ctx):
     return ctx.bot.pool is not None
 
-def bot_has_database(bot):
-    return bot.pool is not None

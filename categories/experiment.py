@@ -5,9 +5,9 @@ import datetime
 import asyncio
 import asyncpg
 
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.checks import is_dev
+import utilities.facility as Facility
+import utilities.db as DB
+from utilities.checks import is_dev
 
 # This category is for testing purpose.
 class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
@@ -68,7 +68,7 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
 
     @commands.command()
     async def send_reaction_menu(self, ctx):
-        from categories.templates.menu import Option
+        from templates.menu import Option
         embed = discord.Embed(
             title = "Home",
             color = discord.Color.green()

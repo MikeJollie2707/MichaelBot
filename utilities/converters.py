@@ -4,7 +4,7 @@ from discord.ext import commands
 import datetime
 
 import pytimeparse
-import categories.utilities.db as DB
+import utilities.db as DB
 
 class IntervalConverter(commands.Converter):
     async def convert(self, ctx, arg : str) -> datetime.timedelta:

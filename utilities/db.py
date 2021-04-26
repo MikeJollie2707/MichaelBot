@@ -6,7 +6,7 @@ import datetime as dt
 import typing
 
 import asyncpg
-from categories.utilities.loot import get_item_info
+from utilities.loot import get_item_info
 
 class MichaelBotDatabaseException(Exception):
     pass

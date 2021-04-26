@@ -6,8 +6,7 @@ import asyncio
 import mystbin
 import typing # IntelliSense purpose only
 
-import categories.utilities.facility as Facility
-from categories.utilities.checks import bot_has_database
+import utilities.facility as Facility
 from bot import MichaelBot # IntelliSense purpose only
 
 # Specification:
@@ -86,7 +85,7 @@ class Logging(commands.Cog):
     async def log_check(self, guild):
         if guild is None:
             return False
-        if bot_has_database(self.bot):
+        if self.bot.pool is not None:
             config = await Facility.get_config(self.bot, guild.id)
             if config["ERROR"] == 0 and config["enable_log"] and config["log_channel"] != 0:
                 return True

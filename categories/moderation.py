@@ -4,9 +4,9 @@ from discord.ext import commands, tasks
 import datetime as dt
 import textwrap
 
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.converters import IntervalConverter
+import utilities.facility as Facility
+import utilities.db as DB
+from utilities.converters import IntervalConverter
 
 # For every tempmute, it is added into the db as an entry.
 # We can't do 15 minutes, because, say a tempmute 5 minutes follow by another 15 minutes.

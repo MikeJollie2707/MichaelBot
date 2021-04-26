@@ -12,7 +12,7 @@ import json
 import asyncio
 import typing # IntelliSense only
 
-import categories.utilities.db as DB
+import utilities.db as DB
 
 __discord_extension__ = [
     "categories.core",

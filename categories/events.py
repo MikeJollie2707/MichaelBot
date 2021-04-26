@@ -7,9 +7,8 @@ import sys
 import datetime
 import typing # IntelliSense purpose only
 
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.checks import bot_has_database
+import utilities.facility as Facility
+import utilities.db as DB
 from bot import MichaelBot # IntelliSense purpose only
 
 class Events(commands.Cog):

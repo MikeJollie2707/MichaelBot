@@ -5,9 +5,9 @@ import asyncio
 import datetime
 import textwrap
 
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.checks import is_dev
+import utilities.facility as Facility
+import utilities.db as DB
+from utilities.checks import is_dev
 
 # Commands for developers to test things and stuffs. The format does not need to be formal.
 

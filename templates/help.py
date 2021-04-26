@@ -3,10 +3,10 @@ from discord.ext import commands
 
 import datetime
 
-from categories.templates.navigate import Pages
-from categories.templates.menu import Option
+from templates.navigate import Pages
+from templates.menu import Option
 
-import categories.utilities.facility as Facility
+import utilities.facility as Facility
 
 def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed:
     """

@@ -1,6 +1,6 @@
 import random
 
-import categories.utilities.db as DB
+import utilities.db as DB
 
 def acapitalize(st : str) -> str:
     return " ".join(word.capitalize() for word in st.split())

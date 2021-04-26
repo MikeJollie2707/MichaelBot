@@ -8,7 +8,7 @@ from py_expression_eval import Parser
 import typing
 import numpy
 
-import categories.utilities.db as DB
+import utilities.db as DB
 
 async def get_config(bot, guild_id) -> dict:
     """

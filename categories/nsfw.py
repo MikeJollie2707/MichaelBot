@@ -7,9 +7,8 @@ import random
 import datetime
 import typing
 
-from categories.templates.navigate import Pages
-
-import categories.utilities.facility as Facility
+from templates.navigate import Pages
+import utilities.facility as Facility
 
 class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     """Commands that can only be used in NSFW channels."""

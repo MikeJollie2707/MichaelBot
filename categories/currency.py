@@ -6,12 +6,12 @@ import datetime
 import random
 import typing # IntelliSense purpose only
 
-import categories.utilities.db as DB
-import categories.utilities.facility as Facility
-import categories.utilities.loot as LootTable
-from categories.utilities.converters import ItemConverter
-from categories.utilities.checks import has_database
-from categories.templates.navigate import Pages
+import utilities.db as DB
+import utilities.facility as Facility
+import utilities.loot as LootTable
+from utilities.converters import ItemConverter
+from utilities.checks import has_database
+from templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
 
 NETHER_DIE = 0.025

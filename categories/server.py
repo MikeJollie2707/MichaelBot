@@ -3,9 +3,9 @@ from discord.ext import commands
 
 import datetime
 
-import categories.utilities.facility as Facility
-import categories.utilities.db as DB
-from categories.utilities.checks import bot_has_database, has_database
+import utilities.facility as Facility
+import utilities.db as DB
+from utilities.checks import has_database
 
 class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_parsing": True}):
     '''Commands related to the bot setting in the server.'''
@@ -189,7 +189,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
 
     @commands.Cog.listener("on_member_join")
     async def welcome_new_member(self, member):
-        if bot_has_database(self.bot):
+        if self.bot.pool is not None:
             config = await Facility.get_config(self.bot, member.guild.id)
             if config["ERROR"] == 0 and config["enable_welcome"] == 1 and config["welcome_channel"] != 0:
                 welcome_channel = self.bot.get_channel(config["welcome_channel"])
