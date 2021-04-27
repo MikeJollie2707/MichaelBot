@@ -62,6 +62,17 @@ async def setup(secrets : dict):
         ''')
         print("Done!")
 
+        print("Creating DGuilds_ARoles table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DGuilds_ARoles (
+                guild_id INT8 NOT NULL REFERENCES DGuilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                role_id INT8 NOT NULL,
+                description TEXT,
+                PRIMARY KEY(guild_id, role_id)
+            );
+        ''')
+        print("Done!")
+
         print("Creating Items table...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS Items (
@@ -133,7 +144,7 @@ async def setup(secrets : dict):
         ''')
         print("Done!")
 
-        print("Creating DMembers_Tempmute", end = '')
+        print("Creating DMembers_Tempmute...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS DMembers_Tempmute (
                 user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE ON DELETE CASCADE,

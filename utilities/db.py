@@ -743,6 +743,48 @@ class Guild:
         guild_info = await cls.find_guild(conn, id)
         return guild_info["prefix"]
 
+    class Role:
+        @classmethod
+        async def get_roles(cls, conn, guild_id : int):
+            query = '''
+                SELECT * FROM DGuilds_ARoles
+                WHERE guild_id = ($1);
+            '''
+
+            result = await conn.fetch(query, guild_id)
+            return [rec_to_dict(record) for record in result]
+        
+        @classmethod
+        async def get_role(cls, conn, guild_id : int, role_id : int):
+            query = '''
+                SELECT * FROM DGuilds_ARoles
+                WHERE guild_id = ($1) AND role_id = ($2);
+            '''
+
+            result = await conn.fetchrow(query, guild_id, role_id)
+            return rec_to_dict(result)
+        
+        @classmethod
+        async def add_role(cls, conn, guild_id : int, role_id : int, description : str = None):
+            existed = await cls.get_role(conn, guild_id, role_id)
+            if existed is None:
+                if description is None:
+                    description = "*None provided*"
+                
+                query = '''
+                    INSERT INTO DGuilds_ARoles
+                    VALUES ($1, $2, $3);
+                '''
+                await conn.execute(query, guild_id, role_id, description)
+
+        @classmethod
+        async def remove_role(cls, conn, guild_id : int, role_id : int):
+            query = '''
+                DELETE FROM DGuilds_ARoles
+                WHERE guild_id = ($1) AND role_id = ($2);
+            '''
+            await conn.execute(query, guild_id, role_id)
+
 class Member:
     """
     A group of methods dealing specifically with `DUsers_DGuilds` table.
