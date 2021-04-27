@@ -242,7 +242,7 @@ def get_chop_loot(axe : str, world : int):
                 "moyai": 0.000000005, # 0.0000001 on average
                 "rolls": 20
             }
-        elif axe == "netherite_axe":
+        elif axe == "nether_axe":
             return {
                 "log": 0.50, # 12.5 on average
                 "stick": 0.05, # 1.25 on average
