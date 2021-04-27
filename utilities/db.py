@@ -7,8 +7,9 @@ import typing
 
 import asyncpg
 from utilities.loot import get_item_info
+from utilities.michaelexceptions import MichaelBotException
 
-class MichaelBotDatabaseException(Exception):
+class MichaelBotDatabaseException(MichaelBotException):
     pass
 
 class ItemNotPresent(MichaelBotDatabaseException):
@@ -255,10 +256,7 @@ class User:
                 WHERE user_id = ($1);
             '''
             
-            result = await conn.fetch(query, user_id)
-            if result is None:
-                return None
-            
+            result = await conn.fetch(query, user_id)      
             return [rec_to_dict(row) for row in result]
         
         @classmethod
@@ -396,7 +394,8 @@ class User:
                 SELECT Items.*, DUsers_ActiveTools.durability_left
                 FROM DUsers_ActiveTools
                     INNER JOIN Items ON item_id = id
-                WHERE user_id = ($1);
+                WHERE user_id = ($1)
+                ORDER BY Items.inner_sort;
             '''
 
             result = await conn.fetch(query, user_id)
@@ -484,7 +483,8 @@ class User:
                 SELECT Items.*, DUsers_ActivePortals.remain_uses
                 FROM DUsers_ActivePortals
                     INNER JOIN Items ON item_id = id
-                WHERE user_id = ($1);
+                WHERE user_id = ($1)
+                ORDER BY Items.inner_sort;
             '''
 
             result = await conn.fetch(query, user_id)
@@ -541,7 +541,8 @@ class User:
                 SELECT Items.*, DUsers_ActivePotions.remain_uses
                 FROM DUsers_ActivePotions
                     INNER JOIN Items ON item_id = id
-                WHERE user_id = ($1);
+                WHERE user_id = ($1)
+                ORDER BY Items.inner_sort;
             '''
 
             result = await conn.fetch(query, user_id)
@@ -730,14 +731,6 @@ class Guild:
             WHERE id = (%d);
         ''' % (update_str, id), *update_arg)
 
-    #@classmethod
-    #async def update_autorole(cls, conn, id : int, new_list : list):
-    #    pass
-
-    #@classmethod
-    #async def update_customcmd(cls, conn, id : int, new_list : list):
-    #    pass
-
     @classmethod
     async def get_prefix(cls, conn, id : int):
         guild_info = await cls.find_guild(conn, id)
@@ -824,7 +817,7 @@ class Member:
                 WHERE expire > ($1) AND expire <= ($2);
             '''
             result = await conn.fetch(query, lower_time_limit, upper_time_limit)
-            if result is None:
+            if result == [None] * len(result):
                 return []
             else:
                 return [rec_to_dict(record) for record in result]
@@ -835,7 +828,7 @@ class Member:
                 WHERE expire < ($1);
             '''
             result = await conn.fetch(query, now)
-            if result is None:
+            if result == [None] * len(result):
                 return []
             else:
                 return [rec_to_dict(record) for record in result]
@@ -937,10 +930,10 @@ class Notify:
 
         result = await conn.fetch(query, lower_time_limit, upper_time_limit)
         
-        if result is None:
+        if result == [None] * len(result):
             return []
         else:
-            return [dict(record) for record in result]
+            return [rec_to_dict(record) for record in result]
     
     @classmethod
     async def get_past_notify(cls, conn, now : dt.datetime) -> typing.List[typing.Optional[dict]]:
@@ -959,10 +952,10 @@ class Notify:
 
         result = await conn.fetch(query, now)
 
-        if result is None:
+        if result == [None] * len(result):
             return []
         else:
-            return [dict(record) for record in result]
+            return [rec_to_dict(record) for record in result]
     
     @classmethod
     async def add_notify(cls, conn, user_id : int, when : dt.datetime, message : str):
