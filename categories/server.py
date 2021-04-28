@@ -241,69 +241,8 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         await Facility.save_config(self.bot, config)
 
         await ctx.reply("Welcoming is disabled for this server.", mention_author = False)
-    
-    @commands.command()
-    @commands.check(has_database)
-    @commands.has_guild_permissions(manage_roles = True)
-    @commands.bot_has_permissions(manage_roles = True)
-    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
-    async def addrole(self, ctx, role : discord.Role, *, description : str = None):
-        '''
-        Add a role for self-assigning.
-        This role cannot be the default `everyone` role, nor roles that are above the bot.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 2 seconds per 1 use (guild)
-        **Example 1:** {prefix}{command_name} Weeb
-        **Example 2:** {prefix}{command_name} "Weeb 2" Indicate you're a weeb. Lol.
-
-        **You need:** `Manage Roles`.
-        **I need:** `Manage Roles`.
-        '''
-
-        async with self.bot.pool.acquire() as conn:
-            existed = await DB.Guild.Role.get_role(conn, ctx.guild.id, role.id)
-            if existed is not None:
-                await ctx.reply("This role is already added as self-assign roles.", mention_author = False)
-                return
-            if role == ctx.guild.default_role:
-                await ctx.reply("You cannot add `everyone` role as a self-assign role.", mention_author = False)
-                return
-            if role >= ctx.guild.me.top_role:
-                await ctx.reply("I cannot add this role because the role is higher than me.", mention_author = False)
-                return
-            async with conn.transaction():
-                await DB.Guild.Role.add_role(conn, ctx.guild.id, role.id, description)
-                await ctx.reply("Role added to self-assign roles.", mention_author = False)
-    
-    @commands.command()
-    @commands.check(has_database)
-    @commands.has_guild_permissions(manage_roles = True)
-    @commands.bot_has_permissions(manage_roles = True)
-    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
-    async def rmvrole(self, ctx, role : discord.Role):
-        '''
-        Remove a role from self-assigning.
         
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 2 seconds per 1 use (guild)
-        **Example 1:** {prefix}{command_name} Weeb
-        **Example 2:** {prefix}{command_name} "Weeb 2"
-
-        **You need:** `Manage Roles`.
-        **I need:** `Manage Roles`.
-        '''
-
-        async with self.bot.pool.acquire() as conn:
-            existed = await DB.Guild.Role.get_role(conn, ctx.guild.id, role.id)
-            if existed is not None:
-                async with conn.transaction():
-                    await DB.Guild.Role.remove_role(conn, ctx.guild.id, role.id)
-                    await ctx.reply("Role removed from self-assign roles.", mention_author = False)
-            else:
-                await ctx.reply("This role is not added as self-assign roles.", mention_author = False)
-    
-    @commands.command(aliases = ['giverole'])
+    @commands.group(aliases = ['giverole', 'assignrole'], invoke_without_command = True)
     @commands.check(has_database)
     @commands.bot_has_permissions(manage_roles = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
@@ -367,7 +306,69 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                     pages.add_page(embed)
 
                 await pages.event(ctx, interupt = False)
-                    
+
+    @roleme.command()
+    @commands.check(has_database)
+    @commands.has_guild_permissions(manage_roles = True)
+    @commands.bot_has_permissions(manage_roles = True)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
+    async def add(self, ctx, role : discord.Role, *, description : str = None):
+        '''
+        Add a role for self-assigning.
+        This role cannot be the default `everyone` role, nor roles that are above the bot.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 2 seconds per 1 use (guild)
+        **Example 1:** {prefix}{command_name} Weeb
+        **Example 2:** {prefix}{command_name} "Weeb 2" Indicate you're a weeb. Lol.
+
+        **You need:** `Manage Roles`.
+        **I need:** `Manage Roles`.
+        '''
+
+        async with self.bot.pool.acquire() as conn:
+            existed = await DB.Guild.Role.get_role(conn, ctx.guild.id, role.id)
+            if existed is not None:
+                await ctx.reply("This role is already added as self-assign roles.", mention_author = False)
+                return
+            if role == ctx.guild.default_role:
+                await ctx.reply("You cannot add `everyone` role as a self-assign role.", mention_author = False)
+                return
+            if role >= ctx.guild.me.top_role:
+                await ctx.reply("I cannot add this role because the role is higher than me.", mention_author = False)
+                return
+            async with conn.transaction():
+                await DB.Guild.Role.add_role(conn, ctx.guild.id, role.id, description)
+                await ctx.reply("Role added to self-assign roles.", mention_author = False)
+
+    # I don't consume rest to make it consistent with roleme add.
+    @roleme.command()
+    @commands.check(has_database)
+    @commands.has_guild_permissions(manage_roles = True)
+    @commands.bot_has_permissions(manage_roles = True)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
+    async def remove(self, ctx, role : discord.Role):
+        '''
+        Remove a role from self-assigning.
+        
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 2 seconds per 1 use (guild)
+        **Example 1:** {prefix}{command_name} Weeb
+        **Example 2:** {prefix}{command_name} "Weeb 2"
+
+        **You need:** `Manage Roles`.
+        **I need:** `Manage Roles`.
+        '''
+
+        async with self.bot.pool.acquire() as conn:
+            existed = await DB.Guild.Role.get_role(conn, ctx.guild.id, role.id)
+            if existed is not None:
+                async with conn.transaction():
+                    await DB.Guild.Role.remove_role(conn, ctx.guild.id, role.id)
+                    await ctx.reply("Role removed from self-assign roles.", mention_author = False)
+            else:
+                await ctx.reply("This role is not added as self-assign roles.", mention_author = False)
+
     @commands.Cog.listener("on_guild_role_delete")
     async def _update_self_role(self, role : discord.Role):
         if self.bot.pool is not None:
