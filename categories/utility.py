@@ -317,7 +317,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             async with self.bot.pool.acquire() as conn:
                 await DB.Notify.add_notify(conn, ctx.author.id, when, message)
 
-        await ctx.reply(f"I'll remind you about '{message}' in `{humanize.precisedelta(time, format = '%0.0f')}`.", mention_author = False)
+            await ctx.reply(f"I'll remind you about '{message}' in `{humanize.precisedelta(time, format = '%0.0f')}`.", mention_author = False)
     
     # Scan every 15 minutes.
     @tasks.loop(seconds = NOTIFY_INTERVAL)
