@@ -285,12 +285,15 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 for role in roles:
                     if embed is None:
                         embed = discord.Embed(
-                            title = "**Self-Assignable Roles**"
+                            title = "**Self-Assignable Roles**",
+                            color = discord.Color.green()
                         )
                     r_role = ctx.guild.get_role(role["role_id"])
                     # This means the role is most likely deleted
+                    # So we do a manual delete here, in case the event fails to do it due to disconnect.
                     if r_role is None:
-                        continue
+                        async with conn.transaction():
+                            await DB.Guild.Role.remove_role(conn, r_role.guild.id, r_role.id)
                     embed.add_field(
                         name = r_role,
                         value = role["description"],
