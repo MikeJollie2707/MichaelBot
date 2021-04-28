@@ -88,9 +88,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         use_fire = random.random()
         if use_fire <= FIRE_ACTIVATE_CHANCE and has_fire_pot is not None:
             await DB.User.ActivePotions.decrease_active_potion(conn, member.id, "fire_potion")
-            return False
-        else:
             return True
+        else:
+            return False
 
     async def __attempt_luck__(self, conn, member, loot):
         """
