@@ -14,6 +14,9 @@ from utilities.checks import has_database
 from templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
 
+DURABILITY_PENALTY = 0.05
+DURABILITY_MAX_PENALTY = 130
+
 NETHER_DIE = 0.025
 OVERWORLD_DIE = 0.0125
 DEATH_PENALTY = 0.10
@@ -126,7 +129,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def __reduce_tool_durability__(self, conn, member, current_tool):
         from math import ceil
         base_durability = (await DB.Items.get_item(conn, current_tool["id"]))["durability"]
-        max_durability_loss = ceil(base_durability * 10 / 100)
+        max_durability_loss = ceil(base_durability * DURABILITY_PENALTY)
+        if max_durability_loss > DURABILITY_MAX_PENALTY:
+            max_durability_loss = DURABILITY_MAX_PENALTY
         await DB.User.ActiveTools.dec_durability(conn, member.id, current_tool["id"], random.randint(1, max_durability_loss))
     
     async def cog_check(self, ctx : commands.Context):
