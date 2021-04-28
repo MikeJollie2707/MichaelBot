@@ -86,27 +86,24 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
                     die_chance = NETHER_DIE
-                    # A roughly 50% chance of using fire potion.
-                    use_fire = random.random()
-                    if use_fire <= FIRE_ACTIVATE_CHANCE:
-                        is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
-                        if is_fire_pot is not None:
-                            die_chance = NETHER_DIE / 2
-                            try:
-                                await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
-                            except DB.ItemExpired:
-                                message += "**Fire Potion** expired.\n"
                 
                 rng = random.random()
+                # This section is ugly as fuck but I can't really do anything about this.
+                die = True
                 if rng <= die_chance:
-                    equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
-                    for tool in equipment:
+                    if world == 1:
                         try:
-                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"], False)
+                            # If no exception, then True/False, otherwise, it's False.
+                            die = await self.__attempt_fire__(conn, ctx.author)
+                            if not die:
+                                message += "**Fire Potion** saved you from a cruel death.\n"
                         except DB.ItemExpired:
-                            pass
-                    money = await DB.User.get_money(conn, ctx.author.id)
-                    await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
+                            message += "**Fire Potion** saved you from a cruel death.\n"
+                            message += "**Fire Potion** expired.\n"
+                            die = False
+                            
+                if die:
+                    await self.__remove_equipments_on_die__(conn, ctx.author)
                     
                     # Edit the function name
                     message += LootTable.get_adventure_msg("die", world)
@@ -228,27 +225,24 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
                     die_chance = NETHER_DIE
-                    # A roughly 50% chance of using fire potion.
-                    use_fire = random.random()
-                    if use_fire <= FIRE_ACTIVATE_CHANCE:
-                        is_fire_pot = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "fire_potion")
-                        if is_fire_pot is not None:
-                            die_chance = NETHER_DIE / 2
-                            try:
-                                await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "fire_potion")
-                            except DB.ItemExpired:
-                                message += "**Fire Potion** expired.\n"
                 
                 rng = random.random()
+                # This section is ugly as fuck but I can't really do anything about this.
+                die = True
                 if rng <= die_chance:
-                    equipment = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
-                    for tool in equipment:
+                    if world == 1:
                         try:
-                            await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"], False)
+                            # If no exception, then True/False, otherwise, it's False.
+                            die = await self.__attempt_fire__(conn, ctx.author)
+                            if not die:
+                                message += "**Fire Potion** saved you from a cruel death.\n"
                         except DB.ItemExpired:
-                            pass
-                    money = await DB.User.get_money(conn, ctx.author.id)
-                    await DB.User.remove_money(conn, ctx.author.id, int(money * DEATH_PENALTY))
+                            message += "**Fire Potion** saved you from a cruel death.\n"
+                            message += "**Fire Potion** expired.\n"
+                            die = False
+                            
+                if die:
+                    await self.__remove_equipments_on_die__(conn, ctx.author)
                     
                     # Edit the function name
                     message += LootTable.get_chop_msg("die", world)
