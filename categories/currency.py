@@ -110,41 +110,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(message, mention_author = False)
                     return
                 
-                # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
-                lower_bound = 0
-                upper_bound = 0
-                # Later on we can check if the user has a certain potion that can affect the roll like double or something.
-                rolls = loot.pop("rolls")
-
-                # A roughly 50% chance of using luck potion.
-                use_luck = random.random()
-                if use_luck <= LUCK_ACTIVATE_CHANCE:
-                    is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
-                    if is_luck is not None:
-                        rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
-                        try:
-                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
-                        except DB.ItemExpired:
-                            message += "**Luck Potion** expired.\n"
+                try:
+                    await self.__attempt_luck__(conn, ctx.author, loot)
+                except DB.ItemExpired:
+                    message += "**Luck Potion** expired.\n"
 
                 # A dict of {"item": amount}
-                final_reward = {}
-
-                for i in range(0, rolls):
-                    for reward in loot:
-                        if reward not in final_reward:
-                            final_reward[reward] = 0
-                        
-                        upper_bound += loot[reward]
-                        chance = random.random()
-                        if chance >= lower_bound and chance < upper_bound:
-                            final_reward[reward] += 1
-                        
-                        lower_bound = upper_bound
-                    
-                    # Reset all these after every rolls.
-                    lower_bound = 0
-                    upper_bound = 0
+                final_reward = self.__get_reward__(loot)
                 
                 reward_string = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
@@ -249,41 +221,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(message, mention_author = False)
                     return
                 
-                # We'll make a zone for separate items, and each zone's lower bound is the previous item's upper bound.
-                lower_bound = 0
-                upper_bound = 0
-                # Later on we can check if the user has a certain potion that can affect the roll like double or something.
-                rolls = loot.pop("rolls")
-
-                # A roughly 50% chance of using luck potion.
-                use_luck = random.random()
-                if use_luck <= LUCK_ACTIVATE_CHANCE:
-                    is_luck = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, "luck_potion")
-                    if is_luck is not None:
-                        rolls += round(rolls * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
-                        try:
-                            await DB.User.ActivePotions.decrease_active_potion(conn, ctx.author.id, "luck_potion")
-                        except DB.ItemExpired:
-                            message += "**Luck Potion** expired.\n"
+                try:
+                    await self.__attempt_luck__(conn, ctx.author, loot)
+                except DB.ItemExpired:
+                    message += "**Luck Potion** expired.\n"
 
                 # A dict of {"item": amount}
-                final_reward = {}
-
-                for i in range(0, rolls):
-                    for reward in loot:
-                        if reward not in final_reward:
-                            final_reward[reward] = 0
-                        
-                        upper_bound += loot[reward]
-                        chance = random.random()
-                        if chance >= lower_bound and chance < upper_bound:
-                            final_reward[reward] += 1
-                        
-                        lower_bound = upper_bound
-                    
-                    # Reset all these after every rolls.
-                    lower_bound = 0
-                    upper_bound = 0
+                final_reward = self.__get_reward__(loot)
                 
                 reward_string = await LootTable.get_friendly_reward(conn, final_reward)
                 any_reward = False
