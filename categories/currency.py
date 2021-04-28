@@ -125,7 +125,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     
     async def __reduce_tool_durability__(self, conn, member, current_tool):
         from math import ceil
-        base_durability = await DB.Items.get_item(conn, current_tool["id"])
+        base_durability = (await DB.Items.get_item(conn, current_tool["id"]))["durability"]
         max_durability_loss = ceil(base_durability * 10 / 100)
         await DB.User.ActiveTools.dec_durability(conn, member.id, current_tool["id"], random.randint(1, max_durability_loss))
     
@@ -185,7 +185,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 rng = random.random()
                 # This section is ugly as fuck but I can't really do anything about this.
-                die = True
+                die = False
                 if rng <= die_chance:
                     if world == 1:
                         try:
@@ -197,7 +197,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                             message += "**Fire Potion** saved you from a cruel death.\n"
                             message += "**Fire Potion** expired.\n"
                             die = False
-                            
+                    else:
+                        die = True
+                                            
                 if die:
                     await self.__remove_equipments_on_die__(conn, ctx.author)
                     
@@ -296,7 +298,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 rng = random.random()
                 # This section is ugly as fuck but I can't really do anything about this.
-                die = True
+                die = False
                 if rng <= die_chance:
                     if world == 1:
                         try:
@@ -308,6 +310,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                             message += "**Fire Potion** saved you from a cruel death.\n"
                             message += "**Fire Potion** expired.\n"
                             die = False
+                    else:
+                        die = True
                             
                 if die:
                     await self.__remove_equipments_on_die__(conn, ctx.author)
@@ -982,7 +986,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 rng = random.random()
                 # This section is ugly as fuck but I can't really do anything about this.
-                die = True
+                die = False
                 if rng <= die_chance:
                     if world == 1:
                         try:
@@ -994,6 +998,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                             message += "**Fire Potion** saved you from a cruel death.\n"
                             message += "**Fire Potion** expired.\n"
                             die = False
+                    else:
+                        die = True
                             
                 if die:
                     await self.__remove_equipments_on_die__(conn, ctx.author)
