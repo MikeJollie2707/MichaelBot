@@ -381,7 +381,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 if existed is not None:
                     async with conn.transaction():
                         await DB.Guild.Role.remove_role(conn, role.guild.id, role.id)
-                
-
+    
 def setup(bot):
     bot.add_cog(Server(bot))
