@@ -249,8 +249,9 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     async def roleme(self, ctx, *, role : discord.Role = None):
         '''
         Display the self-assignable roles or self-assign a role.
+        If you already have the role, the role will be removed from you.
 
-        **Aliases:** `giverole`
+        **Aliases:** `giverole`, `assignrole`
         **Usage:** <prefix>**{command_name}** {command_name}
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} Weeb
