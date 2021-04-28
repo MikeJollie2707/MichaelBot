@@ -19,8 +19,10 @@ OVERWORLD_DIE = 0.0125
 DEATH_PENALTY = 0.10
 
 LUCK_ACTIVATE_CHANCE = 0.5
-FIRE_ACTIVATE_CHANCE = 0.5
+FIRE_ACTIVATE_CHANCE = 0.25
 HASTE_ACTIVATE_CHANCE = 0.75
+
+NETHERITE_LOSE_CHANCE = 0.25
 
 # Unused for now
 POTION_STACK_MULTIPLIER = 1
@@ -32,6 +34,60 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.emoji = '💰'
+
+    def __get_reward__(self, loot : dict, bonus_stack = 0) -> dict:
+        rolls = loot.pop("rolls")
+        final_reward = {}
+
+        for reward in loot:
+            if final_reward.get(reward) is None:
+                final_reward[reward] = 0
+            
+            for i in range(0, rolls):
+                chance = random.random()
+                if chance <= loot[reward]:
+                    final_reward[reward] += 1 + bonus_stack
+
+        return final_reward
+    
+    async def __remove_equipments_on_die__(self, conn, member):
+        equipment = await DB.User.ActiveTools.get_equipments(conn, member.id)
+        for tool in equipment:
+            # Netherite tools have a chance to not lose.
+            if "nether_" in tool:
+                rng = random.random()
+                if rng <= NETHERITE_LOSE_CHANCE:
+                    continue
+            
+            try:
+                await DB.User.ActiveTools.unequip_tool(conn, member.id, tool["id"], False)
+            except DB.ItemExpired:
+                pass
+        money = await DB.User.get_money(conn, member.id)
+        await DB.User.remove_money(conn, member.id, int(money * DEATH_PENALTY))
+    
+    async def __attempt_fire__(self, conn, member):
+        has_fire_pot = await DB.User.ActivePotions.get_potion(conn, member.id, "fire_potion")
+        use_fire = random.random()
+        if use_fire <= FIRE_ACTIVATE_CHANCE and has_fire_pot is not None:
+            await DB.User.ActivePotions.decrease_active_potion(conn, member.id, "fire_potion")
+            return False
+        else:
+            return True
+
+    async def __attempt_luck__(self, conn, member, loot):
+        use_luck = random.random()
+        if use_luck <= LUCK_ACTIVATE_CHANCE:
+            is_luck = await DB.User.ActivePotions.get_potion(conn, member.id, "luck_potion")
+            if is_luck is not None:
+                loot["rolls"] += round(loot["rolls"] * await DB.User.ActivePotions.get_stack(conn, "luck_potion", is_luck["remain_uses"]) * POTION_STACK_MULTIPLIER)
+                await DB.User.ActivePotions.decrease_active_potion(conn, member.id, "luck_potion")
+    
+    async def __reduce_tool_durability__(self, conn, member, current_tool):
+        from math import ceil
+        base_durability = await DB.Items.get_item(conn, current_tool["id"])
+        max_durability_loss = ceil(base_durability * 10 / 100)
+        await DB.User.ActiveTools.dec_durability(conn, member.id, current_tool["id"], random.randint(1, max_durability_loss))
     
     async def cog_check(self, ctx : commands.Context):
         if isinstance(ctx.channel, discord.DMChannel):
@@ -126,16 +182,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         # Rewards are guaranteed to not be any of the tools/potions/portals.
                         await DB.User.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
-                # Edit functions name.
                 if any_reward:
                     try:
-                        await DB.User.ActiveTools.dec_durability(conn, ctx.author.id, current_sword["id"], random.randint(1, 3))
+                        await self.__reduce_tool_durability__(conn, ctx.author, current_sword)
                     except DB.ItemExpired:
-                        message += "Your sword broke after get adventure :(\n"
+                        message += f"Your **{LootTable.acapitalize(current_sword['name'])}** broke after get adventure :(\n"
                     
-
+                    # Edit function name.
                     await ctx.reply(message + LootTable.get_adventure_msg("reward", world, reward_string), mention_author = False)
                 else:
+                    # Edit function name.
                     await ctx.reply(message + LootTable.get_adventure_msg("empty", world), mention_author = False)
 
     @commands.command(aliases = ['bal'])
@@ -237,16 +293,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         # Rewards are guaranteed to not be any of the tools/potions/portals.
                         await DB.User.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
                 
-                # Edit functions name.
                 if any_reward:
                     try:
-                        await DB.User.ActiveTools.dec_durability(conn, ctx.author.id, current_axe["id"], random.randint(1, 3))
+                        await self.__reduce_tool_durability__(conn, ctx.author, current_axe)
                     except DB.ItemExpired:
-                        message += "Your axe broke after chopping too many trees :(\n"
+                        message += f"Your **{LootTable.acapitalize(current_axe['name'])}** broke after get adventure :(\n"
                     
-
+                    # Edit function name.
                     await ctx.reply(message + LootTable.get_chop_msg("reward", world, reward_string), mention_author = False)
                 else:
+                    # Edit function name.
                     await ctx.reply(message + LootTable.get_chop_msg("empty", world), mention_author = False)
     
     @commands.group(invoke_without_command = True)
