@@ -64,7 +64,7 @@ def load_info(bot_name):
 def setup_logger(enable : bool = True):
     if enable:
         logger = logging.getLogger("discord")
-        logger.setLevel(logging.WARNING)
+        logger.setLevel(logging.INFO)
         handler = logging.FileHandler(filename = "discord.log", encoding = "utf-8", mode = "w")
         handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
         logger.addHandler(handler)
@@ -102,6 +102,8 @@ async def main():
         print("Bot info:", bot_info)
         print("Secrets:", secrets)
         return
+
+    setup_logger()
     
     # v1.5.0+ requires Intent.members to be enabled to use most of member cache.
     intent = discord.Intents().default()
