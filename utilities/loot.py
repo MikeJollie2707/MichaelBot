@@ -12,101 +12,106 @@ def get_item_info():
         #   description]
 
         # Overworld materials
-        "log": ["🪵", 1, "log", "common", None, 18, None,
+        "log": ["🪵", "log", "common", None, 18, None,
             "A basic necessity for everyone. Useful at any times."],
-        "wood": ["<:plank:819616763074838569>", 2, "wood", "common", 8, 4, None,
+        "wood": ["<:plank:819616763074838569>", "wood", "common", 8, 4, None,
             "A basic material for basic stuffs."],
-        "stick": ["<:stick:819615522878521434>", 3, "stick", "common", 4, 2, None,
+        "stick": ["<:stick:819615522878521434>", "stick", "common", 4, 2, None,
             "A necessity item used to craft various tools."],
-        "stone": ["<:stone:819728758160097290>", 4, "stone", "common", None, 22, None,
+        "stone": ["<:stone:819728758160097290>", "stone", "common", None, 22, None,
             "A harder material than wood."],
-        "iron": ["<:iron:820009715286671410>", 5, "iron", "uncommon", None, 40, None,
+        "iron": ["<:iron:820009715286671410>", "iron", "uncommon", None, 40, None,
             "Iron!"],
-        "redstone": ["<:redstone:822527280777396264>", 6, "redstone", "uncommon", None, 30, None,
+        "redstone": ["<:redstone:822527280777396264>", "redstone", "uncommon", None, 30, None,
             "A red dust that's commonly mistaken as blood. It's understandable, it has pulse after all."],
-        "diamond": ["💎", 7, "diamond", "rare", None, 100, None,
+        "diamond": ["💎", "diamond", "rare", None, 100, None,
             "Shiny stuffs isn't it? It can be used to craft some of the best tools in the world."],
         
         # Overworld tools
-        "wood_sword": ["<:wood_sword:820757505017118751>", 8, "wooden sword", "common", 10, 8, 59, 
+        "wood_sword": ["<:wood_sword:820757505017118751>", "wooden sword", "common", 10, 8, 59, 
             "A weak sword."],
-        "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", 9, "wooden pickaxe", "common", 12, 10, 59,
+        "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", "wooden pickaxe", "common", 12, 10, 59,
             "A fragile pickaxe."],
-        "wood_axe": ["<:wood_axe:820009505530052621>", 10, "wooden axe", "common", 11, 9, 59,
+        "wood_axe": ["<:wood_axe:820009505530052621>", "wooden axe", "common", 11, 9, 59,
             "A fragile axe."],
-        "stone_sword": ["<:stone_sword:820757729790394389>", 11, "stone sword", "common", None, 23, 131,
+        "stone_sword": ["<:stone_sword:820757729790394389>", "stone sword", "common", None, 23, 131,
             "A decent sword. Better than a toy sword, right?"],
-        "stone_pickaxe": ["<:stone_pickaxe:820044330613866497>", 12, "stone pickaxe", "common", None, 25, 131,
+        "stone_pickaxe": ["<:stone_pickaxe:820044330613866497>", "stone pickaxe", "common", None, 25, 131,
             "A better pickaxe. Hope you can get some iron soon."],
-        "stone_axe": ["<:stone_axe:820009331000606760>", 13, "stone axe", "common", None, 27, 131,
+        "stone_axe": ["<:stone_axe:820009331000606760>", "stone axe", "common", None, 27, 131,
             "A better axe."],
-        "iron_sword": ["<:iron_sword:821448555989696593>", 14, "iron sword", "uncommon", None, 43, 250,
+        "iron_sword": ["<:iron_sword:821448555989696593>", "iron sword", "uncommon", None, 43, 250,
             "A pretty good sword. You can slay more enemies now due to how good this sword is."],
-        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", 15, "iron pickaxe", "uncommon", None, 43, 250,
+        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", "iron pickaxe", "uncommon", None, 43, 250,
             "A pretty good pickaxe. You may encounter some lucky stuffs with this pickaxe."],
-        "iron_axe": ["<:iron_axe:820758123714838559>", 16, "iron axe", "uncommon", None, 45, 250,
+        "iron_axe": ["<:iron_axe:820758123714838559>", "iron axe", "uncommon", None, 45, 250,
             "A pretty good axe."],
-        "diamond_sword": ["<:diamond_sword:822530447715598396>", 17, "diamond sword", "rare", None, 150, 1561,
+        "diamond_sword": ["<:diamond_sword:822530447715598396>", "diamond sword", "rare", None, 150, 1561,
             "The best sword in the world? Idk, it doesn't do much though..."],
-        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", 18, "diamond pickaxe", "rare", None, 150, 1561,
+        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", "diamond pickaxe", "rare", None, 150, 1561,
             "The best pickaxe in the world. You can mine anything :)"],
-        "diamond_axe": ["<:diamond_axe:822530447719268382>", 19, "diamond axe", "rare", None, 140, 1561,
+        "diamond_axe": ["<:diamond_axe:822530447719268382>", "diamond axe", "rare", None, 140, 1561,
             "The best axe in the world. Chopping go brr."],
         
+        "anvil": ["<:anvil:837478303862489108>", "anvil", "rare", None, 1200, None,
+            "A useful item required to upgrade tools. I wonder what that means..."],
+        
         # Nether-related materials
-        "obsidian": ["<:obsidian:822532045673725964>", 20, "obsidian", "rare", None, 75, None,
+        "obsidian": ["<:obsidian:822532045673725964>", "obsidian", "rare", None, 75, None,
             "The hardest material in the world. It silently emits power that connects to another world."],
-        "nether": ["⛩️", 21, "nether portal", "???", None, None, 6,
+        "nether": ["⛩️", "nether portal", "???", None, None, 6,
             "A mysterious gate that travels to the deepest place in the world."],
-        "netherrack": ["<:netherrack:823592746865655868>", 22, "netherrack", "common", None, 8, None,
+        "netherrack": ["<:netherrack:823592746865655868>", "netherrack", "common", None, 8, None,
             "A red-ish stone block only presents in the hottest place."],
-        "gold": ["<:gold:823592599314104331>", 23, "gold", "uncommon", None, 35, None,
+        "gold": ["<:gold:823592599314104331>", "gold", "uncommon", None, 35, None,
             "Gold. How useful."],
-        "debris": ["<:debris:823622624118702081>", 24, "ancient debris", "rare+", None, 200, None,
+        "debris": ["<:debris:823622624118702081>", "ancient debris", "rare+", None, 200, None,
             "A leftover of what was once the toughest metal in the universe. Such toughness is only achievable under the undying heat."],
-        "netherite": ["<:netherite:828129193275293706>", 25, "netherite", "rare+", None, 500, None,
+        "netherite": ["<:netherite:828129193275293706>", "netherite", "rare+", None, 500, None,
             "The toughest metal in the universe, recovered from its leftover."],
-        "nether_sword": ["<:nether_sword:828129193434939442>", 26, "netherite sword", "rare+", None, 550, 2032,
+        "nether_sword": ["<:nether_sword:828129193434939442>", "netherite sword", "rare+", None, 550, 2032,
             "A sword created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe. It can cut down even the toughest enemy."],
-        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", 27, "netherite pickaxe", "rare+", None, 550, 2032,
+        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", "netherite pickaxe", "rare+", None, 550, 2032,
             "A pickaxe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
-        "nether_axe": ["<:nether_axe:828129193367175178>", 28, "netherite axe", "rare+", None, 550, 2032,
+        "nether_axe": ["<:nether_axe:828129193367175178>", "netherite axe", "rare+", None, 550, 2032,
             "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
         # General purpose materials
-        "coal": ["<:coal:819742286250377306>", 29, "coal", "common", 15, 10, None,
+        "coal": ["<:coal:819742286250377306>", "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
-        "apple": ["🍎", 30, "apple", "common", 10, 8, None,
+        "apple": ["🍎", "apple", "common", 10, 8, None,
             "An apple. Yummy. Watch out for the worms though."],
-        "flower": ["🌸", 31, "flower", "common", 11, 8, None,
+        "flower": ["🌸", "flower", "common", 11, 8, None,
             "A beautiful flower."],
-        "moyai": ["🌺", 32, "moyai", "???", None, None, None,
+        "moyai": ["🌺", "moyai", "???", None, None, None,
             "A mysterious mystical flower. It is unknown what this flower truly is."],
-        "string": ["<:string:820758307542401055>", 33,"string", "common", 15, 10, None,
+        "string": ["<:string:820758307542401055>", "string", "common", 15, 10, None,
             "A useful drop for brewing potions."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", 34, "spider eye", "uncommon", 40, 25, None,
+        "spider_eye": ["<:spider_eye:820758868468301864>", "spider eye", "uncommon", 40, 25, None,
             "An uncommon drop for brewing potions."],
-        "bone": ["<:bone2:828133597529374720>", 35, "bone", "common", None, 20, None,
+        "bone": ["<:bone2:828133597529374720>", "bone", "common", None, 20, None,
             "A common drop from skeletons. Hopefully it has some uses."],
-        "zombie_meat": ["<:zombie_meat:828133597659529276>", 36, "rotten flesh", "common", None, 20, None,
+        "zombie_meat": ["<:zombie_meat:828133597659529276>", "rotten flesh", "common", None, 20, None,
             "A common drop from zombies. Don't eat it."],
-        "gunpowder": ["<:gunpowder:821528688646160395>", 37, "gunpowder", "uncommon", 50, 30, None,
+        "gunpowder": ["<:gunpowder:821528688646160395>", "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
-        "magma_cream": ["<:magma_cream:823593239683924038>", 38, "magma cream", "common", 30, 20, None,
+        "magma_cream": ["<:magma_cream:823593239683924038>", "magma cream", "common", 30, 20, None,
             "A common drop for brewing potions."],
-        "blaze": ["<:blaze_rod:826150261906472960>", 39, "blaze rod", "uncommon", None, 45, None,
-            "A rare drop for brewing potions."],
-        "nether_star": ["<:nether_star:828135277351534592>", 40, "nether star", "legendary", None, None, None,
+        "blaze": ["<:blaze_rod:826150261906472960>", "blaze rod", "uncommon", None, 45, None,
+            "An uncommon drop for brewing potions."],
+        "pearl": ["<:pearl:837479108555440198>", "pearl", "rare", None, 70, None,
+            "A rare drop from mysterious tall creatures. They're pretty shy it seems."],
+        "nether_star": ["<:nether_star:828135277351534592>", "nether star", "legendary", None, None, None,
             "A legendary drop from a monster that can only be challenged with the sword created from its origin."],
         
         # Potions
-        "luck_potion": ["<a:luck_potion:826871436769493062>", 41, "luck potion", "rare+", 100000, 100, 10,
+        "luck_potion": ["<a:luck_potion:826871436769493062>", "luck potion", "rare+", 100000, 100, 10,
             "May the luck be with you."],
-        "fire_potion": ["<a:fire_potion:828135033466126366>", 42, "fire potion", "rare", 10000, 100, 10,
+        "fire_potion": ["<a:fire_potion:828135033466126366>", "fire potion", "rare", 10000, 100, 10,
             "Reduce the chance of dying in the Nether."],
-        "haste_potion": ["<a:haste_potion:828135803812577330>", 43, "haste potion", "rare+", 120000, 200, 10,
+        "haste_potion": ["<a:haste_potion:828135803812577330>", "haste potion", "rare+", 120000, 200, 10,
             "Increase loot yield from a mining session. This potion's stack affects the loot yield rate."],
-        "undying_potion": ["<:undying_potion:828136854657826836>", 44, "undying potion", "???", None, None, 10000000,
+        "undying_potion": ["<:undying_potion:828136854657826836>", "undying potion", "???", None, None, 10000000,
             "To achieve immortal, one simply requires many many sacrifices."]
     }
 
@@ -115,6 +120,8 @@ def get_world(world : int) -> str:
         return "Overworld"
     elif world == 1:
         return "Nether"
+    elif world == 2:
+        return "Space"
 
 async def get_friendly_reward(conn, reward : dict, emote = True) -> str:
     msg = ""
@@ -220,23 +227,23 @@ def get_chop_loot(axe : str, world : int):
             }
         elif axe == "stone_axe":
             return {
-                "log": 0.60, # 4.2 on average
-                "stick": 0.20, # 1.4 on average
-                "apple": 0.20, # 1.4 on average
+                "log": 0.80, # 5.6 on average
+                "stick": 0.01, # 1.4 on average
+                "apple": 0.19, # 1.33 on average
                 "rolls": 7
             }
         elif axe == "iron_axe":
             return {
-                "log": 0.50, # 5 on average
-                "stick": 0.15, # 1.5 on average
+                "log": 0.70, # 7 on average
+                "stick": 0.05, # 0.5 on average
                 "apple": 0.15, # 1.5 on average
-                "flower": 0.20, # 2 on average
+                "flower": 0.10, # 1 on average
                 "rolls": 10
             }
         elif axe == "diamond_axe":
             return {
                 "log": 0.45, # 9 on average
-                "stick": 0.10, # 2 on average
+                "stick": 0.05, # 1 on average
                 "apple": 0.25, # 5 on average
                 "flower": 0.19, # 3.8 on average
                 "moyai": 0.000000005, # 0.0000001 on average
@@ -248,7 +255,7 @@ def get_chop_loot(axe : str, world : int):
                 "stick": 0.05, # 1.25 on average
                 "apple": 0.20, # 5 on average
                 "flower": 0.15, # 3.75 on average
-                "moyai": 0.000000005, # 0.000000125 on average
+                "moyai": 0.00000001, # 0.00000025 on average
                 "rolls": 25
             }
     elif world == 1:
@@ -301,7 +308,8 @@ def get_adventure_loot(sword : str, world : int):
                 "spider_eye": 0.10, # 1 on average
                 "zombie_meat": 0.30, # 3 on average
                 "bone": 0.30, # 3 on average
-                "gunpowder": 0.10, # 1 on average
+                "gunpowder": 0.05, # 0.5 on average
+                "pearl": 0.01, # 0.1 on average
                 "rolls": 10
             }
         elif sword == "diamond_sword":
@@ -310,7 +318,8 @@ def get_adventure_loot(sword : str, world : int):
                 "spider_eye": 0.15, # 3 on average
                 "zombie_meat": 0.25, # 5 on average
                 "bone": 0.25, # 5 on average
-                "gunpowder": 0.15, # 3 on average
+                "gunpowder": 0.10, # 2 on average
+                "pearl": 0.05, # 1 on average
                 "rolls": 20
             }
         elif sword == "nether_sword":
@@ -319,39 +328,48 @@ def get_adventure_loot(sword : str, world : int):
                 "spider_eye": 0.15, # 3.75 on average
                 "zombie_meat": 0.20, # 5 on average
                 "bone": 0.20, # 5 on average
-                "gunpowder": 0.20, # 5 on average
+                "gunpowder": 0.15, # 3.75 on average
+                "pearl": 0.05, # 1.25 on average
                 "rolls": 25
             }
     elif world == 1:
         if sword == "wood_sword":
             return {
                 "magma_cream": 0.50, # 1 on average
+                "gunpowder": 0.005, # 0.01 on average
                 "rolls": 2
             }
         elif sword == "stone_sword":
             return {
                 "magma_cream": 0.50, # 2.5 on average
+                "gunpowder": 0.10, # 0.5 on average
                 "rolls": 5
             }
         elif sword == "iron_sword":
             return {
                 "magma_cream": 0.50, # 5 on average
                 "coal": 0.10, # 1 on average
+                "gunpowder": 0.10, # 1 on average
                 "blaze": 0.01, # 0.1 on average
+                "pearl": 0.01, # 0.1 on average
                 "rolls": 10
             }
         elif sword == "diamond_sword":
             return {
-                "magma_cream": 0.75, # 15 on average
-                "coal": 0.10, # 2 on average
-                "blaze": 0.10, # 2 on average
+                "magma_cream": 0.65, # 13 on average
+                "coal": 0.05, # 1 on average
+                "gunpowder": 0.10, # 2 on average
+                "blaze": 0.10, # 2 on average,
+                "pearl": 0.10, # 2 on average
                 "rolls": 20
             }
         elif sword == "nether_sword":
             return {
-                "magma_cream": 0.75, # 18.75 on average
-                "coal": 0.15, # 3.75 on average
-                "blaze": 0.09, # 2.25 on average
+                "magma_cream": 0.50, # 12.5 on average
+                "coal": 0.10, # 2.5 on average
+                "gunpowder": 0.05, # 1.25 on average
+                "blaze": 0.10, # 2.25 on average
+                "pearl": 0.20, # 5 on average
                 "nether_star": 0.005, # 0.125 on average
                 "rolls": 25
             }
@@ -598,6 +616,10 @@ def get_craft_ingredient(item : str):
             "stick": 3,
             "quantity": 1
         },
+        "anvil": {
+            "iron": 31,
+            "quantity": 1
+        },
         "nether": {
             "obsidian": 10,
             "quantity": 1
@@ -609,18 +631,21 @@ def get_craft_ingredient(item : str):
             "quantity": 1
         },
         "nether_sword": {
-            "netherite": 1,
             "diamond_sword": 1,
+            "netherite": 1,
+            "anvil": 1,
             "quantity": 1
         },
         "nether_pickaxe": {
-            "netherite": 1,
             "diamond_pickaxe": 1,
+            "netherite": 1,
+            "anvil": 1,
             "quantity": 1
         },
         "nether_axe": {
-            "netherite": 1,
             "diamond_axe": 1,
+            "netherite": 1,
+            "anvil": 1,
             "quantity": 1
         },
         "coal": {
