@@ -15,17 +15,17 @@ from templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
 
 DURABILITY_PENALTY = 0.05
-DURABILITY_MAX_PENALTY = 130
+DURABILITY_MAX_PENALTY = 100
 
 NETHER_DIE = 0.025
 OVERWORLD_DIE = 0.0125
-DEATH_PENALTY = 0.10
+MONEY_PENALTY_DIE = 0.10
 
 LUCK_ACTIVATE_CHANCE = 0.5
 FIRE_ACTIVATE_CHANCE = 0.25
 HASTE_ACTIVATE_CHANCE = 0.75
 
-NETHERITE_LOSE_CHANCE = 0.25
+NETHERITE_SURVIVE_CHANCE = 0.25
 
 # Unused for now
 POTION_STACK_MULTIPLIER = 1
@@ -70,7 +70,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             # Netherite tools have a chance to not lose.
             if "nether_" in tool:
                 rng = random.random()
-                if rng <= NETHERITE_LOSE_CHANCE:
+                if rng <= NETHERITE_SURVIVE_CHANCE:
                     continue
             
             try:
@@ -78,7 +78,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             except DB.ItemExpired:
                 pass
         money = await DB.User.get_money(conn, member.id)
-        await DB.User.remove_money(conn, member.id, int(money * DEATH_PENALTY))
+        await DB.User.remove_money(conn, member.id, int(money * MONEY_PENALTY_DIE))
     
     async def __attempt_fire__(self, conn, member):
         """
@@ -240,6 +240,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 else:
                     # Edit function name.
                     await ctx.reply(message + LootTable.get_adventure_msg("empty", world), mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
 
     @commands.command(aliases = ['bal'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -353,6 +354,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 else:
                     # Edit function name.
                     await ctx.reply(message + LootTable.get_chop_msg("empty", world), mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1048,6 +1050,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 else:
                     # Edit function name.
                     await ctx.reply(message + LootTable.get_mine_msg("empty", world), mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
     
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
