@@ -45,8 +45,13 @@ async def update_db(bot):
                             await Member.insert_member(conn, member)
             
             items = get_item_info()
+            count = 1
             for key in items:
+                # Insert item id into the list.
                 items[key].insert(0, key)
+                # Dict in python3.8+ is ordered, so we can rely on this to dynamically set inner_sort.
+                items[key].insert(2, count)
+                count += 1
                 await Items.create_item(conn, items[key])
         
                     

@@ -855,11 +855,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 await ctx.reply("*Insert empty inventory here*", mention_author = False)
                 return
             
+            all_items = await DB.Items.get_whole_items(conn)
+            all_keys = [item["id"] for item in all_items]
             def _on_inner_amount(slot):
-                # We can't make this async, which is unfortunate.
-                item = LootTable.get_item_info()[slot["item_id"]]
-                # Sort based on quantity and inner_sort
-                return (-slot["quantity"], -item[1])
+                inner_sort = all_keys.index(slot["item_id"])
+                return (-slot["quantity"], -inner_sort)
             inventory.sort(key = _on_inner_amount)
 
             inventory_dict = {}
