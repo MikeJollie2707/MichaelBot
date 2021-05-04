@@ -360,7 +360,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    async def craft(self, ctx : commands.Context, n : typing.Optional[int] = 1, *, item : ItemConverter):
+    async def craft(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
         Perform a craft `n` times.
         This will give you `n * <quantity>` items, with `<quantity>` is the `You gain` section in `craft recipe`.
