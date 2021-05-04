@@ -76,6 +76,16 @@ def get_item_info():
         "nether_axe": ["<:nether_axe:828129193367175178>", "netherite axe", "rare+", None, 550, 2032,
             "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
+        # Moon-related materials
+        "pearl": ["<:pearl:837479108555440198>", "pearl", "rare", None, 70, None,
+            "A rare drop from mysterious tall creatures. They're pretty shy it seems."],
+        "moonstone": ["<:moonstone:839207608275435620>", "moonstone", "common", None, 23, None,
+            "A stone with a weird white surface. They're surprisingly long to break."],
+        "end": ["<:end_frame:839207656219738126>", "space portal", "???", None, None, 6,
+            "A mysterious portal that travels beyond the sky."],
+        "ender_eye": ["<:mysterious_eye:839207993391317003>", "mysterious eye", "rare", None, None, None,
+            "This eye looks kinda weird. It seems to have some correlation to the space portal though..."],
+
         # General purpose materials
         "coal": ["<:coal:819742286250377306>", "coal", "common", 15, 10, None,
             "A mysterious dark object used for fuel."],
@@ -99,8 +109,6 @@ def get_item_info():
             "A common drop for brewing potions."],
         "blaze": ["<:blaze_rod:826150261906472960>", "blaze rod", "uncommon", None, 45, None,
             "An uncommon drop for brewing potions."],
-        "pearl": ["<:pearl:837479108555440198>", "pearl", "rare", None, 70, None,
-            "A rare drop from mysterious tall creatures. They're pretty shy it seems."],
         "nether_star": ["<:nether_star:828135277351534592>", "nether star", "legendary", None, None, None,
             "A legendary drop from a monster that can only be challenged with the sword created from its origin."],
         
@@ -216,6 +224,32 @@ def get_mine_loot(pick : str, world : int):
                 "debris": 0.005, # 0.125 on average
                 "rolls": 25
             }
+    elif world == 2:
+        if pick == "wood_pickaxe":
+            return {
+                "moonstone": 1,
+                "rolls": 3
+            }
+        elif pick == "stone_pickaxe":
+            return {
+                "moonstone": 1,
+                "rolls": 8
+            }
+        elif pick == "iron_pickaxe":
+            return {
+                "moonstone": 1,
+                "rolls": 10
+            }
+        elif pick == "diamond_pickaxe":
+            return {
+                "moonstone": 1,
+                "rolls": 20
+            }
+        elif pick == "nether_pickaxe":
+            return {
+                "moonstone": 1,
+                "rolls": 25
+            }
     return None
 
 def get_chop_loot(axe : str, world : int):
@@ -284,7 +318,32 @@ def get_chop_loot(axe : str, world : int):
                 "log": 0.50, # 12.5 on average
                 "rolls": 25
             }
-    
+    elif world == 2:
+        if axe == "wood_axe":
+            return {
+                "moonstone": 1,
+                "rolls": 3
+            }
+        elif axe == "stone_axe":
+            return {
+                "moonstone": 1,
+                "rolls": 8
+            }
+        elif axe == "iron_axe":
+            return {
+                "moonstone": 1,
+                "rolls": 10
+            }
+        elif axe == "diamond_axe":
+            return {
+                "moonstone": 1,
+                "rolls": 20
+            }
+        elif axe == "nether_axe":
+            return {
+                "moonstone": 1,
+                "rolls": 25
+            }
     return None
 
 def get_adventure_loot(sword : str, world : int):
@@ -373,6 +432,32 @@ def get_adventure_loot(sword : str, world : int):
                 "nether_star": 0.005, # 0.125 on average
                 "rolls": 25
             }
+    elif world == 2:
+        if sword == "wood_sword":
+            return {
+                "pearl": 1,
+                "rolls": 3
+            }
+        elif sword == "stone_sword":
+            return {
+                "pearl": 1,
+                "rolls": 8
+            }
+        elif sword == "iron_sword":
+            return {
+                "pearl": 1,
+                "rolls": 10
+            }
+        elif sword == "diamond_pickaxe":
+            return {
+                "pearl": 1,
+                "rolls": 20
+            }
+        elif sword == "nether_pickaxe":
+            return {
+                "pearl": 1,
+                "rolls": 25
+            }
     return None
 
 def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
@@ -399,6 +484,10 @@ def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
             messages = [
                 f"You go mining and get {reward_string}."
             ]
+        elif world == 2:
+            messages = [
+                f"You go mining and get {reward_string}."
+            ]
     elif type == "empty" or type == "nothing":
         if world == 0:
             messages = [
@@ -409,6 +498,10 @@ def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
         elif world == 1:
             messages = [
                 "You go mine, hoping for something, but you just get tons of netherrack, so you throw them all away."
+            ]
+        elif world == 2:
+            messages = [
+                "You didn't feel like mining these endless stone, so you just took a day off."
             ]
     elif type == "die":
         if world == 0:
@@ -422,6 +515,10 @@ def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
                 "Your pickaxe is too good that you accidentally mined into a lava pocket and died miserably.",
                 "The ghast shot you just right after you went up from your mine, effectively killed you.",
                 "You slept."
+            ]
+        elif world == 2:
+            messages = [
+                "You didn't pay attention to the Y-coord so you fell into the Void."
             ]
     
     return random.choice(messages)
@@ -439,6 +536,10 @@ def get_chop_msg(type : str, world : int, reward_string : str = "") -> str:
             messages = [
                 f"You go chop some trees and get {reward_string}."
             ]
+        elif world == 2:
+            messages = [
+                f"You chop the air and get {reward_string}."
+            ]
     elif type == "empty" or type == "nothing":
         if world == 0:
             messages = [
@@ -450,6 +551,10 @@ def get_chop_msg(type : str, world : int, reward_string : str = "") -> str:
             messages = [
                 "You are scared of the hoglins so you quit chopping for a while.",
                 "You don't like the wood in the Nether. Why discriminate them?",
+            ]
+        elif world == 2:
+            messages = [
+                "You don't feel like chopping right now."
             ]
     elif type == "die":
         if world == 0:
@@ -463,6 +568,10 @@ def get_chop_msg(type : str, world : int, reward_string : str = "") -> str:
                 "You were chopping some trees, but a hoglin knocked you off the cliff so you died.",
                 "You forgot to wear golden boots (*psst, they don't exist*).",
                 "You looked at the enderman."
+            ]
+        elif world == 2:
+            messages = [
+                "You looked at an enderman so you died from its gaze."
             ]
 
     return random.choice(messages)
@@ -481,6 +590,10 @@ def get_adventure_msg(type : str, world : int, reward_string : str = "") -> str:
                 f"You loot some bastion and get {reward_string}.",
                 f"You go to a fortress and get {reward_string}. Spooky."
             ]
+        elif world == 2:
+            messages = [
+                f"You killed some endermen and get {reward_string}."
+            ]
     elif type == "empty" or type == "nothing":
         if world == 0:
             messages = [
@@ -493,6 +606,10 @@ def get_adventure_msg(type : str, world : int, reward_string : str = "") -> str:
                 "You decide to take a day off from walking in literal hell.",
                 "You are afraid of the bastion so you listen to the OST instead.",
                 "You're not confident walking around without a golden helmet, so you stay in a 2x2 pit."
+            ]
+        elif world == 2:
+            messages = [
+                "You're sleepy while in space so you take a break."
             ]
     elif type == "die":
         if world == 0:
@@ -507,6 +624,10 @@ def get_adventure_msg(type : str, world : int, reward_string : str = "") -> str:
                 "While doing some sick parkour and block clutches, your mouse died midway, dragging you with it.",
                 "The strider decided to die while you were riding on it.",
                 "You tried to raid a bastion, only to get raided by Brute Piglins."
+            ]
+        elif world == 2:
+            messages = [
+                "You looked at an enderman and died from its gaze."
             ]
     
     return random.choice(messages)
@@ -647,6 +768,15 @@ def get_craft_ingredient(item : str):
             "netherite": 1,
             "anvil": 1,
             "quantity": 1
+        },
+        "end": {
+            "nether_star": 4,
+            "quantity": 1
+        },
+        "ender_eye": {
+            "pearl": 2,
+            "blaze": 1,
+            "quantity": 2
         },
         "coal": {
             "log": 1,

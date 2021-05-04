@@ -183,6 +183,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 # Edit function name
                 loot = LootTable.get_adventure_loot(current_sword["id"], world)
                 
+                die_chance = 0
                 if world == 0:
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
@@ -297,6 +298,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 # Edit function name
                 loot = LootTable.get_chop_loot(current_axe["id"], world)
                 
+                die_chance = 0
                 if world == 0:
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
@@ -986,6 +988,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 # Edit function name
                 loot = LootTable.get_mine_loot(current_pick["id"], world)
                 
+                die_chance = 0
                 if world == 0:
                     die_chance = OVERWORLD_DIE
                 elif world == 1:
@@ -1084,6 +1087,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if pot_stack == 10:
                     await ctx.reply("You cannot stack a potion more than 10.", mention_author = False)
                     ctx.command.reset_cooldown(ctx)
+                    return
+            else:
+                current_potions = await DB.User.ActivePotions.get_potions(conn, ctx.author.id)
+                if len(current_potions) == 3:
+                    await ctx.reply("You cannot have more than 3 different potions at the same time.", mention_author = False)
                     return
             
             async with conn.transaction():
@@ -1312,6 +1320,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             dest = 0
         elif destination.upper() == "NETHER":
             dest = 1
+        elif destination.upper() == "SPACE":
+            dest = 2
         else:
             await ctx.reply("There's no such destination to travel!", mention_author = False)
             return
@@ -1325,6 +1335,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             if (dest == 1 and world == 0) or (dest == 0 and world == 1):
                 user_inv = await DB.User.ActivePortals.get_portal(conn, ctx.author.id, "nether")
+            elif (dest == 2 and world == 0) or (dest == 0 and world == 2):
+                user_inv = await DB.User.ActivePortals.get_portal(conn, ctx.author.id, "end")
             
             if user_inv is None:
                 await ctx.reply("You don't have a portal to travel to this destination.", mention_author = False)
@@ -1336,19 +1348,28 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     remaining_str = humanize.precisedelta(remaining_time, "seconds", format = "%0.0f")
                     await ctx.reply(f"You still have {remaining_str} left before you can travel again.", mention_author = False)
                     return
-            if user_info["world"] == dest:
-                await ctx.reply("Already at %s." % LootTable.get_world(dest), mention_author = False)
-                return
-            
+            if (dest == 2 and world == 0) or (dest == 0 and world == 2):
+                eye_exist = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, "ender_eye")
+                blaze_exist = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, "blaze")
+                if eye_exist is None:
+                    await ctx.reply(f"You have no **Mysterious Eye** to travel.", mention_author = False)
+                    return
+                if eye_exist["quantity"] < 2 and blaze_exist is None:
+                    await ctx.reply(f"You might not be able to return, so no I won't allow you.", mention_author = False)
+                    return
+                            
             async with conn.transaction():
                 message = "Moved to %s.\n" % LootTable.get_world(dest)
                 await DB.User.update_world(conn, ctx.author.id, dest)
                 await DB.User.update_last_move(conn, ctx.author.id, datetime.datetime.utcnow())
-                if (dest == 1 and world == 0) or (dest == 0 and world == 1):
-                    try:
+                try:    
+                    if (dest == 1 and world == 0) or (dest == 0 and world == 1):
                         await DB.User.ActivePortals.dec_durability(conn, ctx.author.id, "nether")
-                    except DB.ItemExpired:
-                        message += "The portal broke!\n"
+                    elif (dest == 2 and world == 0) or (dest == 0 and world == 2):
+                        await DB.User.ActivePortals.dec_durability(conn, ctx.author.id, "end")
+                        await DB.User.Inventory.remove(conn, ctx.author.id, "ender_eye")
+                except DB.ItemExpired:
+                    message += "The portal broke!\n"
                 await ctx.reply(message, mention_author = False)
 
 def setup(bot : MichaelBot):
