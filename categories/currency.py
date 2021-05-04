@@ -859,13 +859,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if inventory is None or inventory == [None] * len(inventory):
                 await ctx.reply("*Insert empty inventory here*", mention_author = False)
                 return
-            
-            all_items = await DB.Items.get_whole_items(conn)
-            all_keys = [item["id"] for item in all_items]
-            def _on_inner_amount(slot):
-                inner_sort = all_keys.index(slot["id"])
-                return (-slot["quantity"], -inner_sort)
-            inventory.sort(key = _on_inner_amount)
 
             inventory_dict = {}
             for slot in inventory:
