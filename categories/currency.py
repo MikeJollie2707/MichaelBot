@@ -387,6 +387,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     # You can only craft one of each portal.
                     if exist["id"] == "nether" or exist["id"] == "end":
+                        n = 1
                         portals = await DB.User.ActivePortals.get_portals(conn, ctx.author.id)
                         if portals is not None:
                             for portal in portals:
