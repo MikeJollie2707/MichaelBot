@@ -878,7 +878,18 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     
     @inventory.command(name = 'value')
     async def inv_value(self, ctx : commands.Context):
-        await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
+        value = 0
+        async with self.bot.pool.acquire() as conn:
+            inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
+            for item in inv:
+                actual_item = await DB.Items.get_item(conn, item["item_id"])
+                if actual_item["sell_price"] is not None:
+                    value += actual_item["sell_price"] * item["quantity"]
+        
+        if value != 0:
+            await ctx.reply("If you sell all sellable items, you'll get $%d." % value, mention_author = False)
+        else:
+            await ctx.reply("Your inventory is either empty, or filled with unsellable items.", mention_author = False)
     
     @inventory.command(name = 'sort')
     async def inv_sort(self, ctx : commands.Context):
