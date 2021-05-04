@@ -255,10 +255,12 @@ class User:
             Retrieve an entire inventory. `None` if the user has empty inventory.
             """
 
-            # No need to JOIN in this method due to limited uses.
             query = '''
-                SELECT * FROM DUsers_Items
-                WHERE user_id = ($1);
+                SELECT Items.*, DUsers_Items.quantity
+                FROM DUsers_Items
+                    INNER JOIN Items ON item_id = id
+                WHERE DUsers_Items.user_id = ($1)
+                ORDER BY DUsers_Items.quantity DESC, Items.inner_sort DESC;
             '''
             
             result = await conn.fetch(query, user_id)      

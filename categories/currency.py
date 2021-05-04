@@ -863,18 +863,46 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             all_items = await DB.Items.get_whole_items(conn)
             all_keys = [item["id"] for item in all_items]
             def _on_inner_amount(slot):
-                inner_sort = all_keys.index(slot["item_id"])
+                inner_sort = all_keys.index(slot["id"])
                 return (-slot["quantity"], -inner_sort)
             inventory.sort(key = _on_inner_amount)
 
             inventory_dict = {}
             for slot in inventory:
-                inventory_dict[slot["item_id"]] = slot["quantity"]
+                inventory_dict[slot["id"]] = slot["quantity"]
             await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict), mention_author = False)
     
     @inventory.command(name = 'all')
     async def inv_all(self, ctx : commands.Context):
-        await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
+        MAX_ITEMS = 5
+        cnt = 0
+        page = Pages()
+        embed = None
+        async with self.bot.pool.acquire() as conn:
+            inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
+            for item in inv:
+                if cnt == 0:
+                    embed = Facility.get_default_embed(
+                        timestamp = datetime.datetime.utcnow(),
+                        author = ctx.author
+                    ).set_author(
+                        name = f"{ctx.author.name}'s inventory",
+                        icon_url = ctx.author.avatar_url
+                    )
+                embed.add_field(
+                    name = f"{item['emoji']} **{LootTable.acapitalize(item['name'])} x {item['quantity']}**",
+                    value = f"*{item['description']}*",
+                    inline = False
+                )
+                cnt += 1
+                if cnt == MAX_ITEMS:
+                    page.add_page(embed)
+                    cnt = 0
+                    embed = None
+            
+            if embed is not None:
+                page.add_page(embed)
+            await page.event(ctx, interupt = False)
     
     @inventory.command(name = 'value')
     async def inv_value(self, ctx : commands.Context):
@@ -882,9 +910,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         async with self.bot.pool.acquire() as conn:
             inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
             for item in inv:
-                actual_item = await DB.Items.get_item(conn, item["item_id"])
-                if actual_item["sell_price"] is not None:
-                    value += actual_item["sell_price"] * item["quantity"]
+                if item["sell_price"] is not None:
+                    value += item["sell_price"] * item["quantity"]
         
         if value != 0:
             await ctx.reply("If you sell all sellable items, you'll get $%d." % value, mention_author = False)
