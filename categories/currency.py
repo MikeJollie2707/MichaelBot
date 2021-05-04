@@ -362,10 +362,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def craft(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, item : ItemConverter):
         '''
-        Perform a craft `n` times.
-        This will give you `n * <quantity>` items, with `<quantity>` is the `You gain` section in `craft recipe`.
-
-        Craft wisely!
+        Craft up to `amount` items.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} 2 stick
@@ -376,8 +373,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
 
         if ctx.invoked_subcommand is None:
-            if n is None or n <= 0:
-                n = 1
+            if amount is None or amount <= 0:
+                amount = 1
             async with self.bot.pool.acquire() as conn:
                 async with conn.transaction():
                     exist = await DB.Items.get_item(conn, item)
@@ -387,7 +384,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     # You can only craft one of each portal.
                     if exist["id"] == "nether" or exist["id"] == "end":
-                        n = 1
+                        amount = 1
                         portals = await DB.User.ActivePortals.get_portals(conn, ctx.author.id)
                         if portals is not None:
                             for portal in portals:
@@ -400,6 +397,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await ctx.reply("This item isn't craftable. Please check `craft recipe` for possible crafting items.", mention_author = False)
                         return
                     
+                    times = amount // ingredient["quantity"]
+                    if times == 0:
+                        await ctx.reply("The minimum yield from crafting of this item is %d. Please check `craft recipe` to know more." % ingredient["quantity"], mention_author = False)
+                        return
+                    
                     # Perform a local transaction, and if it's valid, push to db.
                     fake_inv = {} # Dict {item: remaining_amount}
                     miss = {} # Dict {item: missing_amount}
@@ -408,9 +410,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                             # The item may not exist due to x0.
                             slot = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, key)
                             if slot is None:
-                                fake_inv[key] = -(n * ingredient[key])
+                                fake_inv[key] = -(amount * ingredient[key])
                             else:
-                                fake_inv[key] = slot["quantity"] - n * ingredient[key]
+                                fake_inv[key] = slot["quantity"] - times * ingredient[key]
                             
                             if fake_inv[key] < 0:
                                 miss[key] = abs(fake_inv[key])
@@ -423,10 +425,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         if item == "nether" or item == "end":
                             await DB.User.ActivePortals.add(conn, ctx.author.id, item)
                         else:
-                            await DB.User.Inventory.add(conn, ctx.author.id, item, n * ingredient["quantity"])
+                            await DB.User.Inventory.add(conn, ctx.author.id, item, times * ingredient["quantity"])
                         
                         official_name = LootTable.acapitalize(exist["name"])
-                        await ctx.reply(f"Crafted {n * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
+                        await ctx.reply(f"Crafted {times * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
                         
                     else:
                         miss_string = await LootTable.get_friendly_reward(conn, miss, False)
