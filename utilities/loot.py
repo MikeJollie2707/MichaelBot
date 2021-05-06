@@ -85,6 +85,17 @@ def get_item_info():
             "A mysterious portal that travels beyond the sky."],
         "ender_eye": ["<:mysterious_eye:839207993391317003>", "mysterious eye", "rare", None, None, None,
             "This eye looks kinda weird. It seems to have some correlation to the space portal though..."],
+        "space_orb": ["☄️", "space orb", "legendary+", None, 1000, None,
+            "An enchanting orb founded randomly during your adventure in the Space."],
+        "star_fragment": ["💫", "star fragment", "legendary+", None, 1000, None,
+            "A fragment of the star, once existed in the universe. It possesses hidden energies of the star."],
+        "star_gem": ["🌟", "star gem", "mythic", None, 10000, None,
+            "A shiny gem created from its fragment, but is greatly enhanced by the space orb."],
+        "fragile_star_pickaxe": ["<:fragile_star_pickaxe:839925697463582792>", "fragile star pickaxe", "mythic", None, 15000, 5000,
+            "A pickaxe created from the gem of the star. Unfortunately, it can't stand against extreme heat, and will break if brought into the Nether."],
+        "star_pickaxe": ["<:star_pickaxe:839930221314834483>", "steady star pickaxe", "mythic+", None, 20000, 5000,
+            "A pickaxe created from the gem of the star, enhanced by the metal of the underworld. It can now stand against any kind of heat."],
+        
 
         # General purpose materials
         "coal": ["<:coal:819742286250377306>", "coal", "common", 15, 10, None,
@@ -189,6 +200,16 @@ def get_mine_loot(pick : str, world : int):
                 "obsidian": 0.15, # 3.75 on average
                 "rolls": 25
             }
+        elif pick == "fragile_star_pickaxe" or pick == "star_pickaxe":
+            return {
+                "stone": 0.20, # 10 on average
+                "coal": 0.10, # 5 on average
+                "iron": 0.15, # 7.5 on average
+                "redstone": 0.15, # 7.5 on average
+                "diamond": 0.20, # 10 on average
+                "obsidian": 0.15, # 7.5 on average
+                "rolls": 50
+            }
     elif world == 1:
         if pick == "wood_pickaxe":
             return {
@@ -224,31 +245,50 @@ def get_mine_loot(pick : str, world : int):
                 "debris": 0.005, # 0.125 on average
                 "rolls": 25
             }
+        elif pick == "star_pickaxe":
+            return {
+                "netherrack": 0.50, # 25 on average
+                "gold": 0.35, # 17.5 on average
+                "obsidian": 0.15, # 7.5 on average
+                "debris": 0.05, # 2.5 on average
+                "rolls": 50
+            }
     elif world == 2:
         if pick == "wood_pickaxe":
             return {
-                "moonstone": 1,
+                "moonstone": 0.2, # 0.6 on average
                 "rolls": 3
             }
         elif pick == "stone_pickaxe":
             return {
-                "moonstone": 1,
+                "moonstone": 0.2, # 1.6 on average
                 "rolls": 8
             }
         elif pick == "iron_pickaxe":
             return {
-                "moonstone": 1,
+                "moonstone": 0.2, # 2 on average
                 "rolls": 10
             }
         elif pick == "diamond_pickaxe":
             return {
-                "moonstone": 1,
+                "moonstone": 0.4, # 8 on average
+                "obsidian": 0.2, # 4 on average
+                "star_fragment": 0.0001, # 0.002 on average
                 "rolls": 20
             }
         elif pick == "nether_pickaxe":
             return {
-                "moonstone": 1,
+                "moonstone": 0.4, # 10 on average
+                "obsidian": 0.2, # 5 on average
+                "star_fragment": 0.0005, # 0.0125 on average
                 "rolls": 25
+            }
+        elif pick == "fragile_star_pickaxe" or pick == "star_pickaxe":
+            return {
+                "moonstone": 0.5, # 25 on average
+                "obsidian": 0.4, # 20 on average
+                "star_fragment": 0.005, # 0.25 on average
+                "rolls": 50
             }
     return None
 
@@ -316,32 +356,6 @@ def get_chop_loot(axe : str, world : int):
         elif axe == "nether_axe":
             return {
                 "log": 0.50, # 12.5 on average
-                "rolls": 25
-            }
-    elif world == 2:
-        if axe == "wood_axe":
-            return {
-                "moonstone": 1,
-                "rolls": 3
-            }
-        elif axe == "stone_axe":
-            return {
-                "moonstone": 1,
-                "rolls": 8
-            }
-        elif axe == "iron_axe":
-            return {
-                "moonstone": 1,
-                "rolls": 10
-            }
-        elif axe == "diamond_axe":
-            return {
-                "moonstone": 1,
-                "rolls": 20
-            }
-        elif axe == "nether_axe":
-            return {
-                "moonstone": 1,
                 "rolls": 25
             }
     return None
@@ -435,27 +449,29 @@ def get_adventure_loot(sword : str, world : int):
     elif world == 2:
         if sword == "wood_sword":
             return {
-                "pearl": 1,
+                "pearl": 0.1, # 0.3 on average
                 "rolls": 3
             }
         elif sword == "stone_sword":
             return {
-                "pearl": 1,
+                "pearl": 0.2, # 1.6 on average
                 "rolls": 8
             }
         elif sword == "iron_sword":
             return {
-                "pearl": 1,
+                "pearl": 0.5, # 5 on average
                 "rolls": 10
             }
-        elif sword == "diamond_pickaxe":
+        elif sword == "diamond_sword":
             return {
-                "pearl": 1,
+                "pearl": 0.75, # 15 on average
+                "space_orb": 0.0001, # 0.002 on average
                 "rolls": 20
             }
-        elif sword == "nether_pickaxe":
+        elif sword == "nether_sword":
             return {
-                "pearl": 1,
+                "pearl": 0.75, # 18.75 on average
+                "space_orb": 0.0005, # 0.0125 on average
                 "rolls": 25
             }
     return None
@@ -468,40 +484,40 @@ def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
     - `type`: The type of message you want. Acceptable are `reward`, `empty`/`nothing`, or `die`.
     - `world`: The world the user is in.
     - `reward_string`: The reward under the form of string obtained using `get_friendly_reward`. Can be ignored if `type` is not `reward`.
-
-    Return type: `str`
     """
 
     messages = None
     if type == "reward":
         if world == 0:
             messages = [
-                f"You go mining and get {reward_string}.",
-                f"You go to some caves and get out with {reward_string}.",
-                f"You visit an abandoned mineshaft and steal {reward_string} from there."
+                f"You went mining and got {reward_string}.",
+                f"You went to some caves and got out with {reward_string}.",
+                f"You visited an abandoned mineshaft and stole {reward_string} from there."
             ]
         elif world == 1:
             messages = [
-                f"You go mining and get {reward_string}."
+                f"You went mining and got {reward_string}."
+                f"You strip-mined for debris and got {reward_string}."
             ]
         elif world == 2:
             messages = [
-                f"You go mining and get {reward_string}."
+                f"You went mining and got {reward_string}."
             ]
     elif type == "empty" or type == "nothing":
         if world == 0:
             messages = [
-                "You go mining in a happy day, but you get nothing, so now it's a bad day.",
-                "You thought you're gonna get some diamonds, but it turns out to be just you being color blinded.",
-                "You go mining some resources, but somebody decides to put a Curse of Greedy on you and thus you get nothing but dust."
+                "You went mining in a happy day, but you got nothing, so it was a bad day.",
+                "You thought you'd get some diamonds, but it turned out to be just you being color blinded.",
+                "You went mining some resources, but somebody decided to put a Curse of Greedy on you and thus you got nothing but dust."
             ]
         elif world == 1:
             messages = [
-                "You go mine, hoping for something, but you just get tons of netherrack, so you throw them all away."
+                "You went to mine, hoping for something, but you just got tons of netherrack, so you threw them all away."
             ]
         elif world == 2:
             messages = [
-                "You didn't feel like mining these endless stone, so you just took a day off."
+                "You didn't feel like mining these endless stone, so you just took a day off.",
+                "You went mining, but you only got moon stones, so you gave up."
             ]
     elif type == "die":
         if world == 0:
@@ -512,13 +528,17 @@ def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
             ]
         elif world == 1:
             messages = [
-                "Your pickaxe is too good that you accidentally mined into a lava pocket and died miserably.",
+                "Your pickaxe was too good that you accidentally mined into a lava pocket and died miserably.",
                 "The ghast shot you just right after you went up from your mine, effectively killed you.",
-                "You slept."
+                "You slept.",
+                "You bed-mined and died from *fire, hellfire*."
             ]
         elif world == 2:
             messages = [
-                "You didn't pay attention to the Y-coord so you fell into the Void."
+                "You didn't pay attention to the Y-coord so you fell into the Void.",
+                "You looked at an enderman and he owned you so hard while you only had your pickaxe.",
+                "The elytra broke midway through the Void while you were trying to reach your mine.",
+                "You mined straight down, but you forgot there are no bedrocks at the bottom."
             ]
     
     return random.choice(messages)
@@ -528,38 +548,30 @@ def get_chop_msg(type : str, world : int, reward_string : str = "") -> str:
     if type == "reward":
         if world == 0:
             messages = [
-                f"You go chop some trees and get {reward_string}.",
-                f"You chop down some villager's houses to get {reward_string} because you hate them.",
-                f"You go *deforestation*, which is by the way, *illegal*, to get {reward_string}."
+                f"You went chop some trees and got {reward_string}.",
+                f"You chopped down some villager's houses to got {reward_string} because you hate them.",
+                f"You went *deforestation*, which is by the way, *illegal*, to get {reward_string}."
             ]
         elif world == 1:
             messages = [
-                f"You go chop some trees and get {reward_string}."
-            ]
-        elif world == 2:
-            messages = [
-                f"You chop the air and get {reward_string}."
+                f"You went chop some trees and got {reward_string}."
             ]
     elif type == "empty" or type == "nothing":
         if world == 0:
             messages = [
-                "You are distracted by the butterflies so you do nothing.",
-                "You feel sorry for the villagers somehow so you spare their homes.",
-                "You are bored today so you don't go chopping despite the command telling so."
+                "You were distracted by the butterflies so you did nothing.",
+                "You felt sorry for the villagers somehow so you spared their homes.",
+                "You were bored today so you didn't go chopping despite the command telling so."
             ]
         elif world == 1:
             messages = [
-                "You are scared of the hoglins so you quit chopping for a while.",
-                "You don't like the wood in the Nether. Why discriminate them?",
-            ]
-        elif world == 2:
-            messages = [
-                "You don't feel like chopping right now."
+                "You were scared of the hoglins so you quitted chopping for a while.",
+                "You didn't like the wood in the Nether. Why discriminate them?",
             ]
     elif type == "die":
         if world == 0:
             messages = [
-                "You didn't see a creeper creeping behind you so you die.",
+                "You didn't see a creeper creeping behind you so you died.",
                 "You got owned by the Iron Golem while destroying the houses. Rip equipments.",
                 "You got the logs, but while navigating through the forest, you fell down a hidden ravine and died."
             ]
@@ -567,11 +579,7 @@ def get_chop_msg(type : str, world : int, reward_string : str = "") -> str:
             messages = [
                 "You were chopping some trees, but a hoglin knocked you off the cliff so you died.",
                 "You forgot to wear golden boots (*psst, they don't exist*).",
-                "You looked at the enderman."
-            ]
-        elif world == 2:
-            messages = [
-                "You looked at an enderman so you died from its gaze."
+                "You looked at the enderman in the forest full of enderman."
             ]
 
     return random.choice(messages)
@@ -581,35 +589,36 @@ def get_adventure_msg(type : str, world : int, reward_string : str = "") -> str:
     if type == "reward":
         if world == 0:
             messages = [
-                f"You go on an adventure and get {reward_string}.",
-                f"You slay some monsters and get {reward_string}.",
-                f"You steal some villagers' chests to get {reward_string}."
+                f"You went on an adventure and got {reward_string}.",
+                f"You slayed some monsters and got {reward_string}.",
+                f"You stole some villagers' chests to get {reward_string}."
             ]
         elif world == 1:
             messages = [
-                f"You loot some bastion and get {reward_string}.",
-                f"You go to a fortress and get {reward_string}. Spooky."
+                f"You looted some bastion and got {reward_string}.",
+                f"You went to a fortress and got {reward_string}. Spooky."
             ]
         elif world == 2:
             messages = [
-                f"You killed some endermen and get {reward_string}."
+                f"You killed some endermen and got {reward_string}."
             ]
     elif type == "empty" or type == "nothing":
         if world == 0:
             messages = [
-                "You sleep.",
-                "You're sick right now, so you don't really feel going on an adventure.",
-                "You fear that you'll lose your house, so you don't leave it for now."
+                "You slept.",
+                "You were a little bit sick, so you didn't really feel going on an adventure.",
+                "You feared that you'd lose your house, so you didn't leave it for now."
             ]
         elif world == 1:
             messages = [
-                "You decide to take a day off from walking in literal hell.",
-                "You are afraid of the bastion so you listen to the OST instead.",
-                "You're not confident walking around without a golden helmet, so you stay in a 2x2 pit."
+                "You decided to take a day off from walking in literal hell.",
+                "You were afraid of the bastion so you listened to the OST instead.",
+                "You were not confident walking around without a golden helmet, so you stayed in a 2x2 pit."
             ]
         elif world == 2:
             messages = [
-                "You're sleepy while in space so you take a break."
+                "You were sleepy while in space so you took a break.",
+                "Luckily, the enderman are passive, so you took a break instead of killing them."
             ]
     elif type == "die":
         if world == 0:
@@ -777,6 +786,23 @@ def get_craft_ingredient(item : str):
             "pearl": 2,
             "blaze": 1,
             "quantity": 2
+        },
+        "star_gem": {
+            "space_orb": 4,
+            "star_fragment": 4,
+            "quantity": 1
+        },
+        "fragile_star_pickaxe": {
+            "diamond_pickaxe": 1,
+            "star_gem": 1,
+            "quantity": 1
+        },
+        "star_pickaxe": {
+            "fragile_star_pickaxe": 1,
+            "netherite": 50,
+            "star_gem": 2,
+            "anvil": 1,
+            "quantity": 1
         },
         "coal": {
             "log": 1,

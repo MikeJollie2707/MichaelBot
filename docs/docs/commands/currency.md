@@ -7,11 +7,16 @@ These are commands that involve fake economy. All items and currencies are share
 
 <!-- omit on toc -->
 ## Table of Contents
-
+- [Table of Contents](#table-of-contents)
 - [\_\_init\_\_ [INTERNAL]](#__init__-internal)
-- [daily](#daily)
+- [adventure](#adventure)
 - [balance](#balance)
-- [topmoney [DEVELOPING]](#topmoney-developing)
+- [brew](#brew)
+    - [recipe (brew)](#recipe-brew)
+- [chop](#chop)
+- [craft](#craft)
+    - [recipe (craft)](#recipe-craft)
+- [daily](#daily)
 
 ## \_\_init\_\_ [INTERNAL]
 
@@ -59,11 +64,11 @@ Brew potions.
 
 This command behaves the same way [`craft`](#craft) does.
 
-**Usage:** `<prefix>brew [n=1] <potion>`
+**Usage:** `<prefix>brew [amount=1] <potion>`
 
 **Parameters:**
 
-- `n`: The number of times this command is executed. **It is NOT the amount of potions you'll get**.
+- `amount`: The amount of potion you want to brew.
 - `potion`: The potion you want to brew. Refer to [`brew recipe`](#recipe-brew) for brewable potions.
 
 **Examples:**
@@ -81,7 +86,20 @@ This command behaves the same way [`craft`](#craft) does.
 
 Show the recipe for one potion or for all potions.
 
+**Usage:** `<prefix>brew recipe [potion]`
 
+**Parameters:**
+
+- `potion`: The potion you want to view. If this is not provided, all potions' recipe will be displayed.
+
+**Examples:**
+
+- **Example 1:** `$brew recipe`
+- **Example 2:** `$brew recipe luck potion`
+
+**You need:** None.
+
+**The bot needs:** `Use External Emojis`, `Read Message History`, `Send Messages`.
 
 ## chop
 
@@ -103,17 +121,15 @@ The majority of reward is log, although you can also find some other things with
 
 ## craft
 
-Perform a craft `n` times.
+Craft up to `amount` items.
 
-This will give you `n * <quantity>` items, with `<quantity>` is the `You gain` section in `craft recipe`.
+The command will repeatedly attempt to craft the item until the pseudo-amount exceed `amount`, in which it will rollback the latest craft attempt. That will be the final amount of the craft.
 
-Craft wisely!
-
-**Usage:** `<prefix>craft [n=1] <item>`
+**Usage:** `<prefix>craft [amount=1] <item>`
 
 **Parameters:**
 
-- `n`: The number of times this command is executed. **It is NOT the amount of items you'll get**.
+- `amount`: The maximum amount of items you'll get.
 - `item`: The item you want to craft. Refer to [`craft recipe`](#recipe-craft) for craftable items.
 
 **Examples:**
@@ -150,6 +166,8 @@ Show the *crafting* recipe for one item or for all items.
 
 Get an amount of money every 24h.
 
+This command's cooldown is hard-coded. You cannot reset it with `reset_all_cooldown`.
+
 **Usage:** `<prefix>daily`
 
 **Cooldown:** 1 day per 1 use (user)
@@ -160,42 +178,8 @@ Get an amount of money every 24h.
 
 **The bot needs:** `Read Message History`, `Send Messages`.
 
-## topmoney [DEVELOPING]
+## equip
 
-*This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.*
-
-Show the top 10 users with the most amount of money.
-
-The default option is `local`.
-
-**Usage:** `<prefix>topmoney [global/local]`
-
-**Parameter:**
-
-- `global/local`: Either `global` (all MichaelBot's users) or `local` (all members in the guild invoked).
-
-**Examples:**
-
-- **Example 1:** `$topmoney global`
-- **Example 2:** `$topmoney`
-
-**You need:** None.
-**The bot needs:** `Read Message History`, `Send Messages`.
-
-## work
-
-Go to work and earn money.
-
-*This command is going to get removed once inventory system is implemented.*
-
-**Usage:** `<prefix>work`
-
-**Cooldown:** 120 seconds per 1 use (user)
-
-**Example:** `$work`
-
-**You need:** None.
-
-**The bot needs:** `Read Message History`, `Send Messages`.
+Equip a tool.
 
 *This document is last updated on Feb 19th (PT) by MikeJollie#1067*
