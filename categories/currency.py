@@ -431,7 +431,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await ctx.reply(f"Crafted {times * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
                         
                     else:
-                        miss_string = await LootTable.get_friendly_reward(conn, miss, False)
+                        miss_string = await LootTable.get_friendly_reward(conn, miss)
                         await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
 
     @craft.command(name = 'recipe')
@@ -865,7 +865,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             inventory_dict = {}
             for slot in inventory:
                 inventory_dict[slot["id"]] = slot["quantity"]
-            await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict), mention_author = False)
+            await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict, True), mention_author = False)
     
     @inventory.command(name = 'all')
     async def inv_all(self, ctx : commands.Context):

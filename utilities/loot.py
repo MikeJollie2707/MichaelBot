@@ -142,16 +142,18 @@ def get_world(world : int) -> str:
     elif world == 2:
         return "Space"
 
-async def get_friendly_reward(conn, reward : dict, emote = True) -> str:
+async def get_friendly_reward(conn, reward : dict, emote : bool = None) -> str:
     msg = ""
     for key in reward:
         if reward[key] != 0:
             item = await DB.Items.get_item(conn, key)
             if item is not None:
-                if emote:
+                if emote is True:
                     msg += f"{item['emoji']} x {reward[key]}, "
-                else:
+                elif emote is False:
                     msg += f"{reward[key]}x **{acapitalize(item['name'])}**, "
+                else:
+                    msg += f"{item['emoji']} {reward[key]}x *{acapitalize(item['name'])}*, "
     
     # Remove ', '
     msg = msg[:-2]
