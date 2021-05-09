@@ -1286,7 +1286,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 
                 await DB.User.remove_money(conn, ctx.author.id, amount * actual_item["buy_price"])
                 await DB.User.Inventory.add(conn, ctx.author.id, item, amount)
-                await ctx.reply(f"Bought {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully.", mention_author = False)
+                await ctx.reply(f"Bought {await LootTable.get_friendly_reward(conn, {item : amount}, False)} (${amount * actual_item['buy_price']})successfully.", mention_author = False)
             
     @market.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
