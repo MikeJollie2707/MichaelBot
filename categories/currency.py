@@ -544,8 +544,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         else:
                             await DB.User.Inventory.add(conn, ctx.author.id, item, times * ingredient["quantity"])
                         
-                        official_name = LootTable.acapitalize(exist["name"])
-                        await ctx.reply(f"Crafted {times * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
+                        display = {item : times * ingredient['quantity']}
+                        await ctx.reply(f"Crafted {await LootTable.get_friendly_reward(conn, display, False)}** successfully", mention_author = False)
                         
                     else:
                         miss_string = await LootTable.get_friendly_reward(conn, miss)
@@ -573,29 +573,29 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             page = Pages()
             embed = None
             friendly_name = ""
-            for key in recipe:
-                if cnt == 0:
-                    embed = Facility.get_default_embed(
-                        title = "All crafting recipes",
-                        timestamp = datetime.datetime.utcnow(),
-                        author = ctx.author
-                    )
-                
-                async with self.bot.pool.acquire() as conn:
+            async with self.bot.pool.acquire() as conn:
+                for key in recipe:
+                    if cnt == 0:
+                        embed = Facility.get_default_embed(
+                            title = "All crafting recipes",
+                            timestamp = datetime.datetime.utcnow(),
+                            author = ctx.author
+                        )
+                    
                     friendly_name = await DB.Items.get_friendly_name(conn, key)
                 
                     outp = recipe[key].pop("quantity", None)
                     embed.add_field(
                         name = LootTable.acapitalize(friendly_name),
-                        value = "**Input:** %s\n**Output:** %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key]), await LootTable.get_friendly_reward(conn, {key : outp})),
+                        value = "📥: %s\n📤: %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key], True), await LootTable.get_friendly_reward(conn, {key : outp}, True)),
                         inline = False
                     )
 
-                cnt += 1
-                if cnt == MAX_ITEMS:
-                    page.add_page(embed)
-                    embed = None
-                    cnt = 0
+                    cnt += 1
+                    if cnt == MAX_ITEMS:
+                        page.add_page(embed)
+                        embed = None
+                        cnt = 0
             # If the amount of items doesn't reach MAX_ITEMS.
             if embed is not None:
                 page.add_page(embed)
@@ -610,11 +610,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     timestamp = datetime.datetime.utcnow(),
                     author = ctx.author
                 ).add_field(
-                    name = "Recipe:",
+                    name = "📥 Input:",
                     value = await LootTable.get_friendly_reward(conn, recipe),
                     inline = False
                 ).add_field(
-                    name = "Receive:",
+                    name = "📤 Output:",
                     value = await LootTable.get_friendly_reward(conn, {item : outp}),
                     inline = False
                 )
@@ -674,8 +674,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await DB.User.Inventory.add(conn, ctx.author.id, potion, amount * ingredient["quantity"])
                     await DB.User.remove_money(conn, ctx.author.id, ingredient["money"])
                     
-                    official_name = LootTable.acapitalize(exist["name"])
-                    await ctx.reply(f"Brewed {amount * ingredient['quantity']}x **{official_name}** successfully", mention_author = False)
+                    display = {potion : amount}
+                    await ctx.reply(f"Brewed {await LootTable.get_friendly_reward(conn, display)} successfully", mention_author = False)
                     
                 else:
                     if ingredient["money"] > money:
@@ -721,7 +721,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     outp = recipe[key].pop("quantity", None)
                     embed.add_field(
                         name = LootTable.acapitalize(friendly_name),
-                        value = "**Input:** %s\n**Cost:** $%d\n**Output:** %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key]), recipe[key]["money"], await LootTable.get_friendly_reward(conn, {key : outp})),
+                        value = "📥: %s\n**Cost:** $%d\n📤: %s\n" % (await LootTable.get_friendly_reward(conn, recipe[key], True), recipe[key]["money"], await LootTable.get_friendly_reward(conn, {key : outp}, True)),
                         inline = False
                     )
 
@@ -744,11 +744,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     timestamp = datetime.datetime.utcnow(),
                     author = ctx.author
                 ).add_field(
-                    name = "Recipe:",
+                    name = "📥 Input:",
                     value = await LootTable.get_friendly_reward(conn, recipe),
                     inline = False
                 ).add_field(
-                    name = "Receive:",
+                    name = "Cost:",
+                    value = recipe["money"],
+                    inline = False
+                ).add_field(
+                    name = "📤 Output:",
                     value = await LootTable.get_friendly_reward(conn, {potion : outp}),
                     inline = False
                 )
@@ -1008,6 +1012,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 )
                 cnt += 1
                 if cnt == MAX_ITEMS:
+                    embed.set_thumbnail(
+                        url = ctx.author.avatar_url
+                    )
                     page.add_page(embed)
                     cnt = 0
                     embed = None
@@ -1249,7 +1256,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         )
                     embed.add_field(
                         name = "%s **%s**" % (item["emoji"], LootTable.acapitalize(item["name"])),
-                        value = "*%s*\n**Buy Price**: %s\n**Sell Price**: %s" % (
+                        value = "*%s*\n**Prices:** 📥 %s 📤 %s" % (
                             item["description"], 
                             "N/A" if item["buy_price"] is None else f"${item['buy_price']}",
                             "N/A" if item["sell_price"] is None else f"${item['sell_price']}"
