@@ -1434,6 +1434,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 try:    
                     if (dest == 1 and world == 0) or (dest == 0 and world == 1):
                         await DB.User.ActivePortals.dec_durability(conn, ctx.author.id, "nether")
+                        tools = await DB.User.ActiveTools.get_tools(conn, ctx.author.id)
+                        for tool in tools:
+                            if "fragile_" in tool["id"]:
+                                await DB.User.ActiveTools.unequip_tool(conn, ctx.author.id, tool["id"], False)
+                                message += f"**{LootTable.acapitalize(tool['name'])}** is destroyed!\n"
                     elif (dest == 2 and world == 0) or (dest == 0 and world == 2):
                         await DB.User.ActivePortals.dec_durability(conn, ctx.author.id, "end")
                         await DB.User.Inventory.remove(conn, ctx.author.id, "ender_eye")
