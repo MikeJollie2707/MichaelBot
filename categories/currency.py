@@ -276,6 +276,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 world = await DB.User.get_world(conn, ctx.author.id)
                 # Edit function name
                 loot = LootTable.get_chop_loot(current_axe["id"], world)
+                if loot is None:
+                    await ctx.reply("It seems that you can't have this activity in this world.", mention_author = False)
+                    return
                 
                 die_chance = 0
                 if world == 0:
