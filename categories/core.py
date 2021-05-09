@@ -295,7 +295,7 @@ class Core(commands.Cog):
 
         async with self.bot.pool.acquire() as conn:
             text = ""
-            current = await DB.User.ActiveTools.get_equipments(conn, member.id)
+            current = await DB.User.ActiveTools.get_tools(conn, member.id)
             if len(current) == 0:
                 text = "*None*"
             else:
