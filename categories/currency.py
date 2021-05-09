@@ -182,6 +182,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 world = await DB.User.get_world(conn, ctx.author.id)
                 # Edit function name
                 loot = LootTable.get_adventure_loot(current_sword["id"], world)
+                if loot is None:
+                    await ctx.reply("It seems that you can't have this activity in this world.", mention_author = False)
+                    return
                 
                 die_chance = 0
                 if world == 0:
@@ -208,6 +211,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                                             
                 if die:
                     await self.__remove_equipments_on_die__(conn, ctx.author)
+                    
+                    if world == 2:
+                        await self.__remove_potions_on_die__(conn, ctx.author)
+                        # Automatically travel to the Overworld. This does not count towards cooldown.
+                        await DB.User.update_world(conn, ctx.author.id, 0)
                     
                     # Edit the function name
                     message += LootTable.get_adventure_msg("die", world)
