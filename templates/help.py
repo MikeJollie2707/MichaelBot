@@ -151,6 +151,7 @@ class BigHelp(commands.HelpCommand):
             commands = cog[category].get_commands() # List of commands in one category
 
             actual_commands = [f"`{command.name}`" for command in commands if not command.hidden]
+            actual_commands.sort()
             display_str += ' '.join(actual_commands)
             num_of_commands = len(actual_commands)
 
@@ -203,6 +204,7 @@ class SmallHelp():
             commands = cogs[category].get_commands()
 
             actual_commands = [f"`{command.name}`" for command in commands if not command.hidden]
+            actual_commands.sort()
             num_of_commands = len(actual_commands)
             
             if num_of_commands != 0:
