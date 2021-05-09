@@ -434,9 +434,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         miss_string = await LootTable.get_friendly_reward(conn, miss, False)
                         await ctx.reply("Missing the following items: %s" % miss_string, mention_author = False)
 
-    @craft.command()
+    @craft.command(name = 'recipe')
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    async def recipe(self, ctx : commands.Context, *, item : ItemConverter = None):
+    async def craft_recipe(self, ctx : commands.Context, *, item : ItemConverter = None):
         '''
         Show the recipe for an item or all the recipes.
 
