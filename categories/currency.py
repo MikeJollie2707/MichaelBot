@@ -66,7 +66,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Remove equipments and `DEATH_PENALTY` of user's money.
         If the tool is netherite, there's a `NETHERITE_LOSE_CHANCE` chance it won't be removed.
         """
-        equipment = await DB.User.ActiveTools.get_equipments(conn, member.id)
+        equipment = await DB.User.ActiveTools.get_tools(conn, member.id)
         for tool in equipment:
             # Netherite tools have a chance to not lose.
             if "nether_" in tool:
@@ -181,7 +181,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 # Edit the name of the variable and the string argument.
-                current_sword = await DB.User.ActiveTools.get_equipment(conn, "sword", ctx.author.id)
+                current_sword = await DB.User.ActiveTools.get_tool(conn, "sword", ctx.author.id)
                 if current_sword is None:
                     # Edit this message.
                     await ctx.reply("You have no sword equip.", mention_author = False)
@@ -239,7 +239,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 # A dict of {"item": amount}
                 final_reward = self.__get_reward__(loot)
                 
-                reward_string = await LootTable.get_friendly_reward(conn, final_reward)
+                reward_string = await LootTable.get_friendly_reward(conn, final_reward, True)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -283,7 +283,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         async with self.bot.pool.acquire() as conn:
             async with conn.transaction():
                 # Edit the name of the variable and the string argument.
-                current_axe = await DB.User.ActiveTools.get_equipment(conn, "axe", ctx.author.id)
+                current_axe = await DB.User.ActiveTools.get_tool(conn, "axe", ctx.author.id)
                 if current_axe is None:
                     # Edit this message.
                     await ctx.reply("You have no axe equip.", mention_author = False)
@@ -336,7 +336,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 # A dict of {"item": amount}
                 final_reward = self.__get_reward__(loot)
                 
-                reward_string = await LootTable.get_friendly_reward(conn, final_reward)
+                reward_string = await LootTable.get_friendly_reward(conn, final_reward, True)
                 any_reward = False
                 for reward in final_reward:
                     if final_reward[reward] != 0:
@@ -554,7 +554,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                             await DB.User.Inventory.add(conn, ctx.author.id, item, times * ingredient["quantity"])
                         
                         display = {item : times * ingredient['quantity']}
-                        await ctx.reply(f"Crafted {await LootTable.get_friendly_reward(conn, display, False)}** successfully", mention_author = False)
+                        await ctx.reply(f"Crafted {await LootTable.get_friendly_reward(conn, display)}** successfully", mention_author = False)
                         
                     else:
                         miss_string = await LootTable.get_friendly_reward(conn, miss)
@@ -697,7 +697,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def brew_recipe(self, ctx : commands.Context, *, potion : ItemConverter = None):
         '''
-        Recipe for a potion or all the recipes.
+        Show the recipe for one potion or for all potions.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
         **Example 1:** {prefix}{command_name} luck potion
@@ -865,7 +865,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def equip(self, ctx : commands.Context, *, tool_name : ItemConverter):
         '''
-        Equip either a pickaxe, an axe, a sword, or a fishing rod.
+        Equip a tool.
+        This can be either sword, pickaxe, or axe.
 
         `tool name` must be an item existed in your inventory.
 
@@ -900,7 +901,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 tool_type = DB.User.ActiveTools.get_tool_type(tool_name)
                 
                 message = ""
-                has_equipped = await DB.User.ActiveTools.get_equipment(conn, tool_type, ctx.author.id)
+                has_equipped = await DB.User.ActiveTools.get_tool(conn, tool_type, ctx.author.id)
                 # Swap out the same tool type.
                 if has_equipped is not None:
                     try:
@@ -936,7 +937,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             author = ctx.author
         )
         async with self.bot.pool.acquire() as conn:
-            equipments = await DB.User.ActiveTools.get_equipments(conn, ctx.author.id)
+            equipments = await DB.User.ActiveTools.get_tools(conn, ctx.author.id)
             potions = await DB.User.ActivePotions.get_potions(conn, ctx.author.id)
             portals = await DB.User.ActivePortals.get_portals(conn, ctx.author.id)
 
