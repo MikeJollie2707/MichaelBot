@@ -13,17 +13,44 @@ class MichaelBotDatabaseException(MichaelBotException):
     pass
 
 class ItemNotPresent(MichaelBotDatabaseException):
+    """
+    This exception is typically raised when an item is not available in the inventory.
+    """
     pass
 class PotionNotActive(MichaelBotDatabaseException):
+    """
+    This exception is typically raised when a potion is not active and is still in inventory.
+    """
     pass
 class EquipmentNotActive(MichaelBotDatabaseException):
+    """
+    This exception is typically raised when a tool is not active and is still in inventory.
+    """
     pass
 class TooLargeRemoval(MichaelBotDatabaseException):
+    """
+    This exception is typically raised when the amount removed from inventory cause the final amount
+    to be negative.
+    """
     pass
 class ItemExpired(MichaelBotDatabaseException):
+    """
+    This exception is typically raised when the tool/potion/portal's remaining use is
+    0 or negative.
+
+    Note that this exception will need to be raised *AFTER* the operation is completed.
+    Thus, this exception should be treated as a special notification rather than an error.
+    """
     pass
 
 async def update_db(bot):
+    """
+    Update database once in a while.
+    This is called once during bot's loading up, and whenever the bot's cache is ready.
+
+    Parameter:
+    - `bot`: A `commands.Bot` object.
+    """
     bot.debug("Updating database on ready...")
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
@@ -53,8 +80,7 @@ async def update_db(bot):
                 items[key].insert(2, count)
                 count += 1
                 await Items.create_item(conn, items[key])
-        
-                    
+                          
 async def insert_into(conn, table_name : str, *args):
     """
     Insert values into `table_name`.
@@ -93,9 +119,7 @@ class User:
 
         If a member is found, it'll return a `dict` of the member, otherwise it'll return `None`.
 
-        Parameter:
-        - `conn`: The connection you want to do.
-            + It's usually just `pool.acquire()`.
+        Important Parameter:
         - `user_id`: The user's id.
         """
 
@@ -113,9 +137,7 @@ class User:
 
         If the user already exist, this method do nothing.
 
-        Parameter:
-        - `conn`: The connection
-            + Usually from `pool.acquire()`.
+        Important Parameter:
         - `member`: A Discord member to insert.
         """
 
@@ -131,9 +153,7 @@ class User:
         
         This method's variations `update_...` is recommended. Only use this when there's a new column.
 
-        Parameter:
-        - `conn`: The connection.
-            + Usually from `pool.acquire()`.
+        Important Parameter:
         - `id`: The member id.
         - `col_name`: The column name in the table. **This must be exactly the same as in the table**.
         - `new_value`: The new value.
@@ -174,9 +194,7 @@ class User:
         """
         Update all values in one SQL statement.
 
-        Parameter:
-        - `conn`: The connection.
-            + Usually from `pool.acquire()`.
+        Important Parameter:
         - `id`: The user's id.
         - `new_values`: A dict of `{"col_name": value}`.
             + `col_name` must match the table's column.
@@ -200,6 +218,13 @@ class User:
     
     @classmethod
     async def get_money(cls, conn, id) -> int:
+        """
+        Get the user's money.
+        If there's no such user, the amount returned is 0.
+
+        Important Parameter:
+        - `id`: The user's id.
+        """
         exist = await cls.find_user(conn, id)
         return exist["money"] if exist is not None else 0    
     @classmethod
@@ -213,7 +238,9 @@ class User:
         Add an amount of money to the user.
         If amount is negative, no changes are made.
 
-        Internally this call `get_money()` and `update_money()`.
+        Important Parameter:
+        - `id`: The user's id.
+        - `amount`: The amount to add.
         """
 
         if amount > 0:
@@ -223,11 +250,13 @@ class User:
     async def remove_money(cls, conn, id, amount : int):
         """
         Remove an amount of money from the user.
-        If amount is negative, no changes are made.
+        
+        - If amount is negative, no changes are made.
+        - If the resulting money is less than 0, the money is 0.
 
-        *If the resulting money is less than 0, the money is 0.*
-
-        Internally this call `get_money()` and `update_money()`.
+        Important Parameter:
+        - `id`: The user's id.
+        - `amount`: The amount to remove.
         """
         if amount > 0:
             money = await cls.get_money(conn, id)
@@ -238,6 +267,9 @@ class User:
     async def inc_streak(cls, conn, id):
         """
         Increase the streak by 1.
+
+        Important Parameter:
+        - `id`: The user's id.
         """
 
         user = await cls.find_user(conn, id)
@@ -248,11 +280,18 @@ class User:
         A group of methods mainly deals with DUsers_Items table.
         """
 
-        # DUsers_Items
         @classmethod
-        async def get_whole_inventory(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+        async def get_whole_inventory(cls, conn, user_id : int) -> typing.List[typing.Optional[dict]]:
             """
-            Retrieve an entire inventory. `None` if the user has empty inventory.
+            Retrieve an entire inventory, sorted based on reverse quantity and reverse `inner_sort`.
+            
+            The structure of each element is the same as `Items.get_items()` structure, with
+            the additional `quantity` key.
+
+            - If the inventory is empty, a list of `None` is returned.
+            
+            Important Parameter:
+            - `user_id`: The user's id.
             """
 
             query = '''
@@ -274,7 +313,11 @@ class User:
             The structure of the resultant dictionary is the same as `Items.get_items()` structure, with
             the additional `quantity` keys.
 
-            `None` if no such slot exist.
+            - If no such slot exist, `None` is returned.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `item_id`: The item's inner name.
             """
             query = '''
                 SELECT Items.*, DUsers_Items.quantity
@@ -291,7 +334,7 @@ class User:
             """
             Find the "tool" items that are inactive (still in the inventory).
 
-            `None` if no such equipments.
+            - If there are no such equipments, `None` is returned.
 
             Important Parameters:
             - `tool_type`: Either `pickaxe`, `axe` or `sword`.
@@ -311,11 +354,14 @@ class User:
         @classmethod
         async def add(cls, conn, user_id : int, item_id : int, amount : int = 1):
             """
-            Add an amount of item to the user's inventory slot.
+            Add an amount of item to the user's inventory slot. **It is not a method deal with active items.**
             
-            If the inventory slot (identified by both user_id and item_id) doesn't exist, it'll be created.
+            - If the inventory slot (identified by both `user_id` and `item_id`) doesn't exist, it'll be created.
 
-            **DO NOT USE THIS TO ADD ACTIVE EQUIPMENTS OR ACTIVE POTIONS**
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `item_id`: The item's inner name.
+            - `amount`: The amount of items to add.
             """
 
             item_existed = await cls.get_one_inventory(conn, user_id, item_id)
@@ -339,9 +385,9 @@ class User:
             """
             Remove an amount of item from the user's inventory slot.
 
-            If the resultant amount is 0, the slot is deleted.
-            If the item doesn't exist, the function raises `ItemNotPresent` exception.
-            If the resultant amount < 0, the function raises `InvTooLargeRemoval` exception.
+            - If the resultant amount is 0, the slot is deleted.
+            - If the item doesn't exist, the function raises `ItemNotPresent` exception.
+            - If the resultant amount < 0, the function raises `TooLargeRemoval` exception.
             """
 
             item_existed = await cls.get_one_inventory(conn, user_id, item_id)
@@ -369,6 +415,14 @@ class User:
             
         @classmethod
         async def update_quantity(cls, conn, user_id : int, item_id : int, quantity : int):
+            """
+            Update the inventory slot's quantity.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `item_id`: The item's inner name.
+            - `quantity`: The new amount.
+            """
             item_existed = await cls.get_one_inventory(conn, user_id, item_id)
             if item_existed is None:
                 return
@@ -378,9 +432,19 @@ class User:
                 await cls.add(conn, user_id, item_id, quantity - item_existed["quantity"])
 
     class ActiveTools:
+        """
+        A group of methods mainly deals with DUsers_ActiveTools.
+        """
+
         # DUsers_ActiveTools
         @classmethod
         def get_tool_type(cls, tool_id : str) -> str:
+            """
+            A utility function to determine what kind of tool is the tool.
+
+            Important Parameter:
+            - `tool_id`: The item's inner name.
+            """
             if "_pickaxe" in tool_id:
                 return "pickaxe"
             elif "_axe" in tool_id:
@@ -391,11 +455,17 @@ class User:
                 return "rod"
 
         @classmethod
-        async def get_equipments(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+        async def get_tools(cls, conn, user_id : int) -> typing.List[typing.Optional[dict]]:
             """
-            Get a list of active equipments.
+            Get a list of active equipments, sorted by `inner_sort`.
 
-            `None` if no active equipments.
+            The structure of each element is same as `Items.get_item()`, along with the extra
+            `durability_left` key.
+
+            - If there are no active equipments, a list of `None` is returned.
+
+            Important Parameter:
+            - `user_id`: The user's id.
             """
             query = '''
                 SELECT Items.*, DUsers_ActiveTools.durability_left
@@ -409,11 +479,15 @@ class User:
             return [rec_to_dict(record) for record in result]
 
         @classmethod
-        async def get_equipment(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
+        async def get_tool(cls, conn, tool_type : str, user_id : int) -> typing.Optional[dict]:
             """
-            Get an active equipment based on its type.
+            Get an active tool based on its type.
             
-            It is recommended to pass `tool_type` with `get_tool_type()`.
+            - If there is no such tool, `None` is returned.
+
+            Important Parameter:
+            - `tool_type`: The tool type. It is recommended to pass in the result of `ActiveTools.get_tool_type()`.
+            - `user_id`: The user's id.
             """
             query = f'''
                 SELECT Items.*, DUsers_ActiveTools.durability_left
@@ -427,7 +501,17 @@ class User:
 
         @classmethod
         async def dec_durability(cls, conn, user_id : int, tool_id : int, amount : int = 1):
-            tool = await cls.get_equipment(conn, cls.get_tool_type(tool_id), user_id)
+            """
+            Decrease the tool's durability by an amount.
+
+            - If the tool's durability reaches 0 and below, `ItemExpired` is raised.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `tool_id`: The item's inner name.
+            - `amount`: The amount of durability to decrease.
+            """
+            tool = await cls.get_tool(conn, cls.get_tool_type(tool_id), user_id)
             if tool is not None:
                 if tool["durability_left"] - amount <= 0:
                     await cls.unequip_tool(conn, user_id, tool_id)
@@ -444,8 +528,14 @@ class User:
         async def equip_tool(cls, conn, user_id : int, item_id : int):
             """
             Equip the tool for the user.
+            **This method does not deal with the situation where the user already equipped a same tool type.**
 
-            This method does not deal with the situation where the user already equipped a same tool type.
+            - If the user doesn't have such tool, `ItemNotPresent` is raised.
+            - Can potentially raise exceptions from `Inventory.remove()`.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `item_id`: The item's inner name.
             """
             
             exist = await User.Inventory.get_one_inventory(conn, user_id, item_id)
@@ -464,11 +554,18 @@ class User:
         async def unequip_tool(cls, conn, user_id : int, item_id : int, return_inv = True):
             """
             Unequip the tool from the user.
+            This destroys the items if the tool is used or `return_inv` is `False`,
+            otherwise, it's added back to the inventory.
+            
+            - If the item is destroyed, `ItemExpired` is raised.
+            - If the item is not equipped, `ItemNotPresent` is raised.
 
-            This destroys the items if the tool is used, otherwise, it's added back to the inventory.
-            If the item is destroyed, it raises `ItemExpired`.
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `item_id`: The item's inner name.
+            - `return_inv`: `False` = destroy the item regardless of being used or not.
             """
-            equipped = await cls.get_equipment(conn, cls.get_tool_type(item_id), user_id)
+            equipped = await cls.get_tool(conn, cls.get_tool_type(item_id), user_id)
             if equipped is not None:
                 query = '''
                     DELETE FROM DUsers_ActiveTools
@@ -485,7 +582,19 @@ class User:
     class ActivePortals:
         # DUsers_ActivePortals
         @classmethod
-        async def get_portals(cls, conn, user_id : int) -> typing.Optional[typing.List[dict]]:
+        async def get_portals(cls, conn, user_id : int) -> typing.List[typing.Optional[dict]]:
+            """
+            Get a list of active portals, sorted by `inner_sort`.
+
+            The structure of each element is same as `Items.get_item()`, along with the extra
+            `remain_uses` key.
+
+            - If there are no active portals, a list of `None` is returned.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            """
+
             query = '''
                 SELECT Items.*, DUsers_ActivePortals.remain_uses
                 FROM DUsers_ActivePortals
@@ -498,6 +607,16 @@ class User:
             return [rec_to_dict(record) for record in result]
         @classmethod
         async def get_portal(cls, conn, user_id : int, portal_id : str) -> typing.Optional[dict]:
+            """
+            Get a portal, based on its id.
+
+            The structure is the same as `Items.get_item()`, along with the extra `remain_uses`
+            key.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `portal_id`: The portal's inner name.
+            """
             query = '''
                 SELECT Items.*, DUsers_ActivePortals.remain_uses
                 FROM DUsers_ActivePortals
@@ -510,6 +629,14 @@ class User:
         
         @classmethod
         async def add(cls, conn, user_id : int, portal_id : str):
+            """
+            Add a portal to activate it.
+            This does NOT check for duplication.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `portal_id`: The portal's inner name.
+            """
             # It is the bot's job to keep this table has no similar portals.
             portal = await Items.get_item(conn, portal_id)
             query = '''
@@ -519,6 +646,15 @@ class User:
             await conn.execute(query, user_id, portal_id, portal["durability"])
         @classmethod
         async def remove(cls, conn, user_id : int, portal_id : str):
+            """
+            Remove a portal.
+            
+            - If there isn't such portal, the method does nothing.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `portal_id`: The portal's inner name.
+            """
             query = '''
                 DELETE FROM DUsers_ActivePortals
                 WHERE user_id = ($1) AND item_id = ($2);
@@ -527,6 +663,16 @@ class User:
             await conn.execute(query, user_id, portal_id)
         @classmethod
         async def dec_durability(cls, conn, user_id : int, portal_id : int, amount : int = 1):
+            """
+            Decrease the portal's remaining uses.
+
+            - If the final remaining uses is 0 or negative, the portal is removed, and `ItemExpired` is raised.
+            
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `portal_id`: The portal's inner name.
+            - `amount`: The amount of durability to remove.
+            """
             tool = await cls.get_portal(conn, user_id, portal_id)
             if tool is not None:
                 if tool["remain_uses"] - amount <= 0:
@@ -543,7 +689,18 @@ class User:
     class ActivePotions:
         # DUsers_ActivePotions
         @classmethod
-        async def get_potions(cls, conn, user_id : int):
+        async def get_potions(cls, conn, user_id : int) -> typing.List[typing.Optional[dict]]:
+            """
+            Get a list of active potions, sorted by `inner_sort`.
+
+            The structure of each element is similar to `Items.get_item()`, along with an extra
+            `remain_uses` key.
+
+            - If there are no active potions, a list of `None` is returned.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            """
             query = '''
                 SELECT Items.*, DUsers_ActivePotions.remain_uses
                 FROM DUsers_ActivePotions
@@ -555,7 +712,16 @@ class User:
             result = await conn.fetch(query, user_id)
             return [rec_to_dict(record) for record in result]
         @classmethod
-        async def get_potion(cls, conn, user_id : int, potion_id : str):
+        async def get_potion(cls, conn, user_id : int, potion_id : str) -> typing.Optional[dict]:
+            """
+            Get an active potion.
+
+            The structure is similar to `Items.get_item()`, along with an extra `remain_uses` key.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `potion_id`: The potion's inner name.
+            """
             query = '''
                 SELECT Items.*, DUsers_ActivePotions.remain_uses
                 FROM DUsers_ActivePotions
@@ -568,11 +734,31 @@ class User:
 
         @classmethod
         async def get_stack(cls, conn, potion_id : str, remaining : int):
+            """
+            An abstract way to get the stack of potions.
+            The stack of a potion with a given remaining use is `remain_uses / base_durability`
+            rounded up.
+
+            Important Parameter:
+            - `potion_id`: The potion's id.
+            - `remaining`: The remaining uses of the potion.
+            """
             default_durability = (await Items.get_item(conn, potion_id))["durability"]
             from math import ceil
             return ceil(remaining / default_durability)
         @classmethod
         async def set_potion_active(cls, conn, user_id : int, potion_id : str, amount : int = 1):
+            """
+            Make a potion active from the user's inventory.
+            In reality, this only remove the potion from the user's inventory, then call `add_active_potion`.
+
+            - Can potentially raises exceptions from `Inventory.remove()`.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `potion_id`: The potion's inner name.
+            - `amount`: The amount of potion to add. This is NOT the remain uses.
+            """
             try:
                 await User.Inventory.remove(conn, user_id, potion_id, amount)
             except ItemNotPresent as inp:
@@ -580,10 +766,18 @@ class User:
             except TooLargeRemoval as itlr:
                 raise itlr
             
-            await cls.add_active_potion(conn, user_id, potion_id, amount)
+            await cls.__add_active_potion__(conn, user_id, potion_id, amount)
         
         @classmethod
-        async def add_active_potion(cls, conn, user_id : int, potion_id : int, amount : int = 1):
+        async def __add_active_potion__(cls, conn, user_id : int, potion_id : int, amount : int = 1):
+            """
+            Add the potion into the active table.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `potion_id`: The potion's inner name.
+            - `amount`: The amount of potion to add. This is NOT remaining uses.
+            """
             existed = await cls.get_potion(conn, user_id, potion_id)
             if existed is None:
                 actual_item = await Items.get_item(conn, potion_id)
@@ -604,6 +798,17 @@ class User:
         
         @classmethod
         async def decrease_active_potion(cls, conn, user_id : int, potion_id : int, durability : int = 1):
+            """
+            Decrease the durability of the potion.
+
+            - If the potion is not active, `PotionNotActive` is raised.
+            - If the potion's durability is 0 or negative, `ItemExpired` is raised.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `potion_id`: The potion's inner name.
+            - `durability`: The amount of durability to remove.
+            """
             existed = await cls.get_potion(conn, user_id, potion_id)
             if existed is None:
                 raise PotionNotActive(f"Potion {potion_id} is not active.")
@@ -631,15 +836,11 @@ class Guild:
     """
 
     @classmethod
-    async def find_guild(cls, conn, id : int) -> dict:
+    async def find_guild(cls, conn, id : int) -> typing.Optional[dict]:
         """
         Find a guild data in `DGuilds`.
 
-        If a guild is found, it'll return a `dict`, otherwise it'll return `None`.
-
-        Parameter:
-        - `conn`: The connection
-            + Usually from `pool.acquire()`
+        Important Parameter:
         - `id`: The guild's id.
         """
         result = await conn.fetchrow('''
@@ -656,9 +857,7 @@ class Guild:
         Insert a guild into `DGuilds`.
         If the guild already existed, the method does nothing.
 
-        Parameter:
-        - `conn`: The connection
-            + Usually from `pool.acquire()`.
+        Important Parameter:
         - `guild`: A Discord guild.
         """
         
@@ -739,13 +938,26 @@ class Guild:
         ''' % (update_str, id), *update_arg)
 
     @classmethod
-    async def get_prefix(cls, conn, id : int):
+    async def get_prefix(cls, conn, id : int) -> str:
+        """
+        Get the prefix for a guild.
+
+        Important Parameter:
+        - `id`: The guild's id.
+        """
         guild_info = await cls.find_guild(conn, id)
         return guild_info["prefix"]
 
     class Role:
+        """A group of methods dealing specifically with `DGuilds_ARoles` table."""
         @classmethod
-        async def get_roles(cls, conn, guild_id : int):
+        async def get_roles(cls, conn, guild_id : int) -> typing.List[typing.Optional[dict]]:
+            """
+            Get a list of self-assign roles in a guild.
+
+            Important Parameter:
+            - `guild_id`: The guild's id.
+            """
             query = '''
                 SELECT * FROM DGuilds_ARoles
                 WHERE guild_id = ($1);
@@ -755,7 +967,14 @@ class Guild:
             return [rec_to_dict(record) for record in result]
         
         @classmethod
-        async def get_role(cls, conn, guild_id : int, role_id : int):
+        async def get_role(cls, conn, guild_id : int, role_id : int) -> typing.Optional[dict]:
+            """
+            Get a self-assign role.
+            
+            Important Parameter:
+            - `guild_id`: The guild's id.
+            - `role_id`: The role's id.
+            """
             query = '''
                 SELECT * FROM DGuilds_ARoles
                 WHERE guild_id = ($1) AND role_id = ($2);
@@ -765,7 +984,15 @@ class Guild:
             return rec_to_dict(result)
         
         @classmethod
-        async def add_role(cls, conn, guild_id : int, role_id : int, description : str = None):
+        async def add_role(cls, conn, guild_id : int, role_id : int, description : str = "*None provided*"):
+            """
+            Make a role self-assignable.
+
+            Important Parameter:
+            - `guild_id`: The guild's id.
+            - `role_id`: The role's id.
+            - `description`: The description for this role.
+            """
             existed = await cls.get_role(conn, guild_id, role_id)
             if existed is None:
                 if description is None:
@@ -779,6 +1006,13 @@ class Guild:
 
         @classmethod
         async def remove_role(cls, conn, guild_id : int, role_id : int):
+            """
+            Make a role non-self-assignable.
+
+            Important Parameter:
+            - `guild_id`: The guild's id.
+            - `role_id`: The role's id.
+            """
             query = '''
                 DELETE FROM DGuilds_ARoles
                 WHERE guild_id = ($1) AND role_id = ($2);
@@ -791,7 +1025,14 @@ class Member:
     """
 
     @classmethod
-    async def find_member(cls, conn, user_id : int, guild_id : int) -> dict:
+    async def find_member(cls, conn, user_id : int, guild_id : int) -> typing.Optional[dict]:
+        """
+        Get a member's info.
+
+        Important Parameter:
+        - `user_id`: The user's id.
+        - `guild_id`: The guild's id.
+        """
         result = await conn.fetchrow('''
             SELECT *
             FROM DUsers_DGuilds
@@ -802,6 +1043,12 @@ class Member:
     
     @classmethod
     async def insert_member(cls, conn, member : discord.Member):
+        """
+        Insert a member.
+
+        Important Parameter:
+        - `member`: A Discord member.
+        """
         member_existed = await Member.find_member(conn, member.id, member.guild.id)
         if member_existed is None:
             await insert_into(conn, "DUsers_DGuilds", [
@@ -817,8 +1064,18 @@ class Member:
         ''' % col_name, new_value, ids[0], ids[1])
     
     class TempMute:
+        """A group of methods dealing specifically with `DMembers_Tempmute`."""
         @classmethod
         async def get_mutes(cls, conn, lower_time_limit : dt.datetime, upper_time_limit : dt.datetime):
+            """
+            Get a list of mute entry within the time range.
+
+            - If there are no entry in the time range, an empty list is returned.
+
+            Important Parameter:
+            - `lower_time_limit`: The minimum time to search.
+            - `upper_time_limit`: The maximum time to search.
+            """
             query = '''
                 SELECT * FROM DMembers_Tempmute
                 WHERE expire > ($1) AND expire <= ($2);
@@ -830,6 +1087,14 @@ class Member:
                 return [rec_to_dict(record) for record in result]
         @classmethod
         async def get_missed_mute(cls, conn, now : dt.datetime):
+            """
+            Get a list of passed mute entry based on the time provided.
+
+            - If there are no such entry, an empty list is returned.
+
+            Important Parameter:
+            - `now`: The time to check.
+            """
             query = '''
                 SELECT * FROM DMembers_Tempmute
                 WHERE expire < ($1);
@@ -841,6 +1106,14 @@ class Member:
                 return [rec_to_dict(record) for record in result]
         @classmethod
         async def add_entry(cls, conn, user_id : int, guild_id : int, expire : dt.datetime):
+            """
+            Add a mute entry.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `guild_id`: The guild's id.
+            - `expire`: The expired time.
+            """
             query = '''
                 INSERT INTO DMembers_Tempmute
                 VALUES ($1, $2, $3);
@@ -848,6 +1121,13 @@ class Member:
             await conn.execute(query, user_id, guild_id, expire)
         @classmethod
         async def remove_entry(cls, conn, user_id : int, guild_id : int):
+            """
+            Remove a mute entry.
+            
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `guild_id`: The guild's id.
+            """
             query = '''
                 DELETE FROM DMembers_Tempmute
                 WHERE user_id = ($1) AND guild_id = ($2);
@@ -856,6 +1136,13 @@ class Member:
             await conn.execute(query, user_id, guild_id)
         @classmethod
         async def get_entry(cls, conn, user_id : int, guild_id : int):
+            """
+            Get a specific entry for a member.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `guild_id`: The guild's id.
+            """
             query = '''
                 SELECT * FROM DMembers_Tempmute
                 WHERE user_id = ($1) AND guild_id = ($2);
@@ -868,8 +1155,14 @@ class Member:
 
 
 class Items:
+    """A group of methods dealing specifically with `Items` table."""
     @classmethod
-    async def get_whole_items(cls, conn) -> typing.Optional[typing.List[dict]]:
+    async def get_whole_items(cls, conn) -> typing.List[typing.Optional[dict]]:
+        """
+        Get a list of all items, sorted by `inner_sort`.
+
+        - If there are no items, a list of `None` is returned.
+        """
         query = '''
             SELECT * FROM Items
             ORDER BY inner_sort;
@@ -879,6 +1172,12 @@ class Items:
         return [rec_to_dict(record) for record in result]
     @classmethod
     async def get_item(cls, conn, id : str) -> typing.Optional[dict]:
+        """
+        Get an item.
+
+        Important Parameter:
+        - `id`: The item's inner name.
+        """
         query = '''
             SELECT * FROM Items
             WHERE id = ($1);
@@ -889,6 +1188,13 @@ class Items:
     
     @classmethod
     async def create_item(cls, conn, *args):
+        """
+        Create an item.
+        
+        Important Parameter:
+        - `args`: A list of attributes of an item. This list exclude the item's id and inner sort, and must
+        follow the order listed in the table.
+        """
         exist = await cls.get_item(conn, args[0][0])
         if exist is None:
             await insert_into(conn, "Items", [*args])
@@ -899,6 +1205,12 @@ class Items:
     
     @classmethod
     async def get_friendly_name(cls, conn, id : str) -> str:
+        """
+        Get the item's UI name.
+
+        Important Parameter:
+        - `id`: The item's id.
+        """
         query = '''
             SELECT *
             FROM Items
@@ -909,6 +1221,12 @@ class Items:
 
     @classmethod
     async def get_internal_name(cls, conn, friendly_name : str) -> str:
+        """
+        Get the item's id.
+
+        Important Parameter:
+        - `friendly_name`: The UI name of an item.
+        """
         query = '''
             SELECT id
             FROM Items
@@ -923,11 +1241,11 @@ class Notify:
         """
         Get all notifications that are within the interval.
 
+        - If there are no such notifications, an empty list is returned.
+
         Important Parameter:
         - `lower_time_limit`: The start of the interval.
         - `upper_time_limit`: The end of the interval.
-
-        Return: `[]` if there are no notifications within the interval, `list(dict)` if there is.
         """
 
         query = '''
@@ -947,10 +1265,10 @@ class Notify:
         """
         Get all notifications that passed the time.
 
+        - If there are no such notification, an empty list is returned.
+
         Important Parameter:
         - `now`: The time to check.
-
-        Return: `[]` if there are no such notifications, `list(dict)` if there is.
         """
         query = '''
             SELECT * FROM DNotify
@@ -966,14 +1284,28 @@ class Notify:
     
     @classmethod
     async def add_notify(cls, conn, user_id : int, when : dt.datetime, message : str):
+        """
+        Add a notification entry.
+
+        Important Parameter:
+        - `user_id`: The user's id.
+        - `when`: The time to notify.
+        - `message`: The message to notify.
+        """
         query = '''
-        INSERT INTO DNotify (user_id, awake_time, message)
-        VALUES ($1, $2, $3);
+            INSERT INTO DNotify (user_id, awake_time, message)
+            VALUES ($1, $2, $3);
         '''
         await conn.execute(query, user_id, when, message)
     
     @classmethod
     async def remove_notify(cls, conn, id : int):
+        """
+        Remove a notification entry.
+
+        Important Parameter:
+        - `id`: The notification's id.
+        """
         query = '''
             DELETE FROM DNotify
             WHERE id = ($1);
@@ -981,7 +1313,15 @@ class Notify:
 
         await conn.execute(query, id)
 
-def rec_to_dict(record : asyncpg.Record) -> dict:
+def rec_to_dict(record : asyncpg.Record) -> typing.Optional[dict]:
+    """
+    Convert a record to a `dict`.
+
+    - If the record is `None`, `None` is returned.
+
+    Important Parameter:
+    - `record`: The record.
+    """
     if record is None:
         return None
     else:
