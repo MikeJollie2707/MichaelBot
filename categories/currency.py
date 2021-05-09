@@ -80,6 +80,14 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 pass
         money = await DB.User.get_money(conn, member.id)
         await DB.User.remove_money(conn, member.id, int(money * MONEY_PENALTY_DIE))
+
+    async def __remove_potions_on_die__(self, conn, member):
+        potions = await DB.User.ActivePotions.get_potions(conn, member.id)
+        for potion in potions:
+            try:
+                await DB.User.ActivePotions.decrease_active_potion(conn, member.id, potion["id"], potion["remain_uses"])
+            except DB.ItemExpired:
+                pass
     
     async def __attempt_fire__(self, conn, member):
         """
