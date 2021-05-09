@@ -243,27 +243,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(message + LootTable.get_adventure_msg("empty", world), mention_author = False)
                     ctx.command.reset_cooldown(ctx)
 
-    @commands.command(aliases = ['bal'])
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
-    async def balance(self, ctx : commands.Context):
-        '''
-        Display the amount of money you currently have.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 2 seconds per 1 use (user)
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
-        
-        member_money = 0
-        async with self.bot.pool.acquire() as conn:
-            member_money = await DB.User.get_money(conn, ctx.author.id)
-
-        await ctx.reply("You have $%d." % member_money, mention_author = False)
-
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
@@ -357,6 +336,133 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     # Edit function name.
                     await ctx.reply(message + LootTable.get_chop_msg("empty", world), mention_author = False)
                     ctx.command.reset_cooldown(ctx)
+    
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
+    async def mine(self, ctx : commands.Context):
+        '''
+        Go mining to earn resources.
+        You need to have a pickaxe equipped using the `equip` command.
+
+        **Usage:** <prefix>**{command_name}**
+        **Cooldown:** 5 minutes per 1 use (user).
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        message = ""
+        async with self.bot.pool.acquire() as conn:
+            async with conn.transaction():
+                # Edit the name of the variable and the string argument.
+                current_pick = await DB.User.ActiveTools.get_tool(conn, "pickaxe", ctx.author.id)
+                if current_pick is None:
+                    # Edit this message.
+                    await ctx.reply("You have no pickaxe equip.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
+                    return
+                
+                world = await DB.User.get_world(conn, ctx.author.id)
+                # Edit function name
+                loot = LootTable.get_mine_loot(current_pick["id"], world)
+                if loot is None:
+                    await ctx.reply("It seems that you can't have this activity in this world.", mention_author = False)
+                    return
+                
+                die_chance = 0
+                if world == 0:
+                    die_chance = OVERWORLD_DIE
+                elif world == 1:
+                    die_chance = NETHER_DIE
+                
+                rng = random.random()
+                # This section is ugly as fuck but I can't really do anything about this.
+                die = False
+                if rng <= die_chance:
+                    if world == 1:
+                        try:
+                            # If no exception, then True/False, otherwise, it's False.
+                            die = not(await self.__attempt_fire__(conn, ctx.author))
+                            if not die:
+                                message += "**Fire Potion** saved you from a cruel death.\n"
+                        except DB.ItemExpired:
+                            message += "**Fire Potion** saved you from a cruel death.\n"
+                            message += "**Fire Potion** expired.\n"
+                            die = False
+                    else:
+                        die = True
+                            
+                if die:
+                    await self.__remove_equipments_on_die__(conn, ctx.author)
+                    
+                    if world == 2:
+                        await self.__remove_potions_on_die__(conn, ctx.author)
+                        # Automatically travel to the Overworld. This does not count towards cooldown.
+                        await DB.User.update_world(conn, ctx.author.id, 0)
+
+                    # Edit the function name
+                    message += LootTable.get_adventure_msg("die", world)
+                    await ctx.reply(message, mention_author = False)
+                    return
+                
+                try:
+                    await self.__attempt_luck__(conn, ctx.author, loot)
+                except DB.ItemExpired:
+                    message += "**Luck Potion** expired.\n"
+
+                try:
+                    haste_stack = await self.__attempt_haste__(conn, ctx.author)
+                except DB.ItemExpired:
+                    message += "**Haste Potion** expired.\n"
+                    # Before it expires, the stack is 1.
+                    haste_stack = 1
+                
+                # A dict of {"item": amount}
+                final_reward = self.__get_reward__(loot, haste_stack)
+                
+                reward_string = await LootTable.get_friendly_reward(conn, final_reward, True)
+                any_reward = False
+                for reward in final_reward:
+                    if final_reward[reward] != 0:
+                        any_reward = True
+                        # Rewards are guaranteed to not be any of the tools/potions/portals.
+                        await DB.User.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
+                
+                if any_reward:
+                    try:
+                        await self.__reduce_tool_durability__(conn, ctx.author, current_pick)
+                    except DB.ItemExpired:
+                        message += f"Your **{LootTable.acapitalize(current_pick['name'])}** broke after get adventure :(\n"
+                    
+                    # Edit function name.
+                    await ctx.reply(message + LootTable.get_mine_msg("reward", world, reward_string), mention_author = False)
+                else:
+                    # Edit function name.
+                    await ctx.reply(message + LootTable.get_mine_msg("empty", world), mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
+
+    @commands.command(aliases = ['bal'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
+    async def balance(self, ctx : commands.Context):
+        '''
+        Display the amount of money you currently have.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 2 seconds per 1 use (user)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+        
+        member_money = 0
+        async with self.bot.pool.acquire() as conn:
+            member_money = await DB.User.get_money(conn, ctx.author.id)
+
+        await ctx.reply("You have $%d." % member_money, mention_author = False)
     
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -989,105 +1095,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
             await ctx.reply(embed = embed, mention_author = False)
         else:
-            await ctx.reply("This item does not exist.", mention_author = False)
-
-    @commands.command()
-    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 300.0, type = commands.BucketType.user)
-    async def mine(self, ctx : commands.Context):
-        '''
-        Go mining to earn resources.
-        You need to have a pickaxe equipped using the `equip` command.
-
-        **Usage:** <prefix>**{command_name}**
-        **Cooldown:** 5 minutes per 1 use (user).
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
-        '''
-
-        message = ""
-        async with self.bot.pool.acquire() as conn:
-            async with conn.transaction():
-                # Edit the name of the variable and the string argument.
-                current_pick = await DB.User.ActiveTools.get_equipment(conn, "pickaxe", ctx.author.id)
-                if current_pick is None:
-                    # Edit this message.
-                    await ctx.reply("You have no pickaxe equip.", mention_author = False)
-                    ctx.command.reset_cooldown(ctx)
-                    return
-                
-                world = await DB.User.get_world(conn, ctx.author.id)
-                # Edit function name
-                loot = LootTable.get_mine_loot(current_pick["id"], world)
-                
-                die_chance = 0
-                if world == 0:
-                    die_chance = OVERWORLD_DIE
-                elif world == 1:
-                    die_chance = NETHER_DIE
-                
-                rng = random.random()
-                # This section is ugly as fuck but I can't really do anything about this.
-                die = False
-                if rng <= die_chance:
-                    if world == 1:
-                        try:
-                            # If no exception, then True/False, otherwise, it's False.
-                            die = not(await self.__attempt_fire__(conn, ctx.author))
-                            if not die:
-                                message += "**Fire Potion** saved you from a cruel death.\n"
-                        except DB.ItemExpired:
-                            message += "**Fire Potion** saved you from a cruel death.\n"
-                            message += "**Fire Potion** expired.\n"
-                            die = False
-                    else:
-                        die = True
-                            
-                if die:
-                    await self.__remove_equipments_on_die__(conn, ctx.author)
-                    
-                    # Edit the function name
-                    message += LootTable.get_adventure_msg("die", world)
-                    await ctx.reply(message, mention_author = False)
-                    return
-                
-                try:
-                    await self.__attempt_luck__(conn, ctx.author, loot)
-                except DB.ItemExpired:
-                    message += "**Luck Potion** expired.\n"
-
-                try:
-                    haste_stack = await self.__attempt_haste__(conn, ctx.author)
-                except DB.ItemExpired:
-                    message += "**Haste Potion** expired.\n"
-                    # Before it expires, the stack is 1.
-                    haste_stack = 1
-                
-                # A dict of {"item": amount}
-                final_reward = self.__get_reward__(loot, haste_stack)
-                
-                reward_string = await LootTable.get_friendly_reward(conn, final_reward)
-                any_reward = False
-                for reward in final_reward:
-                    if final_reward[reward] != 0:
-                        any_reward = True
-                        # Rewards are guaranteed to not be any of the tools/potions/portals.
-                        await DB.User.Inventory.add(conn, ctx.author.id, reward, final_reward[reward])
-                
-                if any_reward:
-                    try:
-                        await self.__reduce_tool_durability__(conn, ctx.author, current_pick)
-                    except DB.ItemExpired:
-                        message += f"Your **{LootTable.acapitalize(current_pick['name'])}** broke after get adventure :(\n"
-                    
-                    # Edit function name.
-                    await ctx.reply(message + LootTable.get_mine_msg("reward", world, reward_string), mention_author = False)
-                else:
-                    # Edit function name.
-                    await ctx.reply(message + LootTable.get_mine_msg("empty", world), mention_author = False)
-                    ctx.command.reset_cooldown(ctx)
+            await ctx.reply("This item does not exist.", mention_author = False)    
     
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
