@@ -438,7 +438,7 @@ class User:
 
         # DUsers_ActiveTools
         @classmethod
-        def get_tool_type(cls, tool_id : str) -> str:
+        def get_tool_type(cls, tool_id : str) -> typing.Optional[str]:
             """
             A utility function to determine what kind of tool is the tool.
 
@@ -453,6 +453,8 @@ class User:
                 return "sword"
             elif "_rod" in tool_id:
                 return "rod"
+            else:
+                return None
 
         @classmethod
         async def get_tools(cls, conn, user_id : int) -> typing.List[typing.Optional[dict]]:
