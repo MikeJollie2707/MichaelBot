@@ -309,7 +309,10 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             guild = self.bot.get_guild(upcoming_mute["guild_id"])
             user = guild.get_member(upcoming_mute["user_id"])
             self.bot.loop.create_task(self.remove_mute(user, upcoming_mute["expire"]))
-    
+    @scan_tempmute.before_loop
+    async def before_tempmute(self):
+        await self.bot.wait_until_ready()
+
     @commands.command()
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
