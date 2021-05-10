@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import humanize
 
 import datetime
@@ -13,6 +13,12 @@ from utilities.converters import ItemConverter
 from utilities.checks import has_database
 from templates.navigate import Pages
 from bot import MichaelBot # IntelliSense purpose only
+
+MAX_TRADE = 4
+MAX_TRADE_VALUE = 1000
+MIN_TRADE_VALUE = 200
+MAX_BARTER = 5
+TRADE_BARTER_REFRESH = 4 # hours
 
 DURABILITY_PENALTY = 0.05
 DURABILITY_MAX_PENALTY = 100
@@ -38,6 +44,39 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     def __init__(self, bot : MichaelBot):
         self.bot = bot
         self.emoji = '💰'
+
+        # [{item, amount, price, is_buy}]
+        # item: The item's id
+        # amount: The amount of item in this trade
+        # price: The total cost of this trade
+        # is_buy: Is the trade a buy or a sell
+        self.__trade__ = []
+        self.__trade_exclude__ = [
+            "nether", "debris", "netherite", "nether_sword", 
+            "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
+            "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
+            "moyai", "blaze", "nether_star", "luck_potion", "haste_potion", 
+            "undying_potion"]
+        # [{item, amount, gold_amount}]
+        # item: The item's id
+        # amount: The amount of item in this barter
+        # gold_amount: The amount of gold for this barter
+        self.__barter__ = {}
+        # Gold must be one of the exclude.
+        self.__barter_exclude__ = [
+            "nether", "gold", "debris", "netherite", "nether_sword", 
+            "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
+            "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
+            "moyai", "nether_star", "luck_potion", "haste_potion", 
+            "undying_potion"]
+        
+        self.refresh_trade.start()
+        self.refresh_barter.start()
+
+    def cog_unload(self):
+        self.refresh_trade.cancel()
+        self.refresh_barter.cancel()
+        return super().cog_unload()
 
     def __get_reward__(self, loot : dict, bonus_stack = 0) -> dict:
         """
@@ -1446,6 +1485,252 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 except DB.ItemExpired:
                     message += "The portal broke!\n"
                 await ctx.reply(message, mention_author = False)
+
+    @tasks.loop(hours = TRADE_BARTER_REFRESH)
+    async def refresh_trade(self):
+        self.__trade__ = []
+        all_items = None
+        async with self.bot.pool.acquire() as conn:
+            all_items = await DB.Items.get_whole_items(conn)
+        
+        i = 0
+        while i < len(all_items):
+            if all_items[i]["id"] in self.__trade_exclude__:
+                all_items.pop(i)
+            else:
+                i += 1
+        
+        # An average ratio buy trade:sell trade of 1:3
+        buy_sell_ratio = 0.75
+        
+        from math import ceil
+        for i in range(0, MAX_TRADE):
+            if i == 0:
+                # Ensure at least 1 trade is <= MIN_TRADE_VALUE
+
+                item = random.choice(all_items)
+                while item["sell_price"] > MIN_TRADE_VALUE:
+                    item = random.choice(all_items)
+                max_amount = int(MIN_TRADE_VALUE / item["sell_price"])
+                amount = random.randint(1, max_amount)
+            else:
+                # Max amount is 64, we keep randomize [1, limit] 
+                # and if the value exceed MAX_TRADE_VALUE, limit /= 2, and repeat.
+
+                limit = 64
+                item = random.choice(all_items)
+                amount = random.randint(1, limit)
+                # Check if the original price already exceed MAX_TRADE_VALUE to avoid unnecessary rerolls.
+                while item["sell_price"] > MAX_TRADE_VALUE:
+                    item = random.choice(all_items)
+                # A hard-limit of 3 on tools.
+                if DB.User.ActiveTools.get_tool_type(item["id"]) is not None:
+                    amount = random.randint(1, 3)
+                else:
+                    while item["sell_price"] * amount > MAX_TRADE_VALUE:
+                        limit /= 2
+                        amount = random.randint(1, limit)
+
+            # The price is the sell price * amount +-random(1, 20)% rounded up.
+            # This is for possible undervalue and overvalue trades.
+            price = ceil(item["sell_price"] * amount * ((100 + random.randint(-20, 20)) / 100))
+            is_buy = True if random.random() <= buy_sell_ratio else False
+            self.__trade__.append({"item": item["id"], "amount": amount, "price": price, "is_buy": is_buy})
+            all_items.remove(item)
+    @refresh_trade.before_loop
+    async def before_trade(self):
+        await self.bot.wait_until_ready()
+
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def trade(self, ctx, index : int = None, times : int = None):
+        '''
+        Trade for items or for money.
+        - You can trade up to 50 times per trade.
+        - Can only be performed while in the Overworld.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} 1
+        **Example 3:** {prefix}{command_name} 1 3
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+        async with self.bot.pool.acquire() as conn:
+            world = await DB.User.get_world(conn, ctx.author.id)
+            if world != 0:
+                await ctx.reply("You can't trade if you're not in the Overworld unfortunately.", mention_author = False)
+                ctx.command.reset_cooldown(ctx)
+                return
+            
+            if index is None:
+                embed = Facility.get_default_embed(
+                    title = "Trading Hall",
+                    timestamp = datetime.datetime.utcnow(),
+                    author = ctx.author
+                ).set_thumbnail(
+                    url = self.bot.user.avatar_url
+                )
+                reset_interval = self.refresh_trade.next_iteration - datetime.datetime.now(datetime.timezone.utc)
+                embed.description = "*Trades will reset in %s.*" % humanize.precisedelta(reset_interval, "seconds", format = "%0.0f")
+                for ind, trade in enumerate(self.__trade__):
+                    item = await DB.Items.get_item(conn, trade["item"])
+                    text = ""
+                    if trade["is_buy"]:
+                        text = f"**${trade['price']}** -> {trade['amount']}x {item['emoji']}"
+                    else:
+                        text = f"{trade['amount']}x {item['emoji']} -> **${trade['price']}**"
+                    
+                    embed.add_field(
+                        name = f"{ind + 1}. {LootTable.acapitalize(item['name'])}",
+                        value = f"{text}",
+                        inline = False
+                    )
+                
+                await ctx.reply(embed = embed, mention_author = False)
+            else:
+                if index < 1 or index > MAX_TRADE:
+                    await ctx.reply("Acceptable trade's index is 1-%d." % MAX_TRADE, mention_author = False)
+                    return
+                
+                if times is None:
+                    times = 1
+                
+                if times > 50:
+                    await ctx.reply("You can only trade up to 50 times during 1 trade, to avoid excessive spending.", mention_author = False)
+                    return
+                
+                target = self.__trade__[index - 1]
+                async with self.bot.pool.acquire() as conn:
+                    total_money = target["price"] * times
+                    total_amount = target["amount"] * times
+                    if target["is_buy"]:
+                        bal = await DB.User.get_money(conn, ctx.author.id)
+                        if bal < total_money:
+                            await ctx.reply("You don't have enough money! The total cost is $%d" % total_money, mention_author = False)
+                            return
+                        async with conn.transaction():
+                            await DB.User.Inventory.add(conn, ctx.author.id, target["item"], total_amount)
+                            await DB.User.remove_money(conn, ctx.author.id, total_money)
+                            friendly = await LootTable.get_friendly_reward(conn, {target["item"]: total_amount}, False)
+                            await ctx.reply(f"Purchased {friendly} successfully with ${total_money}.", mention_author = False)
+                    else:
+                        exist = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, target["item"])
+                        if exist is None or exist["quantity"] < target["amount"]:
+                            await ctx.reply(f"You don't have enough items to trade! You need {await LootTable.get_friendly_reward(conn, {target['item']: target['amount']})}")
+                            return
+                        async with conn.transaction():
+                            await DB.User.add_money(conn, ctx.author.id, total_money)
+                            await DB.User.Inventory.remove(conn, ctx.author.id, target["item"], total_amount)
+                            friendly = await LootTable.get_friendly_reward(conn, {target["item"]: total_amount}, False)
+                            await ctx.reply(f"Traded {friendly} successfully for ${total_money}.", mention_author = False)
+
+    @tasks.loop(hours = TRADE_BARTER_REFRESH)
+    async def refresh_barter(self):
+        self.__barter__ = []
+        all_items = None
+        async with self.bot.pool.acquire() as conn:
+            all_items = await DB.Items.get_whole_items(conn)
+        
+        gold_item = None
+        i = 0
+        while i < len(all_items):
+            if all_items[i]["id"] in self.__barter_exclude__:
+                if all_items[i]["id"] == "gold":
+                    gold_item = all_items[i]
+                all_items.pop(i)
+            else:
+                i += 1
+        
+        from math import ceil
+        for i in range(0, MAX_BARTER):
+            item = random.choice(all_items)
+            if DB.User.ActiveTools.get_tool_type(item["id"]) is not None:
+                amount = 1
+            else:
+                amount = random.randint(1, 64)
+            gold_amount = ceil((item["sell_price"] * amount + 1) / (gold_item["sell_price"] - 5))
+
+            self.__barter__.append({"item": item["id"], "amount": amount, "gold_amount": gold_amount})
+            all_items.remove(item)
+    @refresh_barter.before_loop
+    async def before_barter(self):
+        await self.bot.wait_until_ready()
+    
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
+    async def barter(self, ctx, index : int = None, times : int = None):
+        '''
+        Barter with the Luxury Piglin for goods using gold.
+        - You can barter up to 50 times per barter.
+        - Can only be performed while in the Nether.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 5 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} 2
+        **Example 3:** {prefix}{command_name} 3 15
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+        async with self.bot.pool.acquire() as conn:
+            world = await DB.User.get_world(conn, ctx.author.id)
+            if world != 1:
+                await ctx.reply("You can't barter if you're not in the Nether unfortunately.", mention_author = False)
+                ctx.command.reset_cooldown(ctx)
+                return
+            gold_item = await DB.Items.get_item(conn, "gold")
+            if index is None:
+                embed = Facility.get_default_embed(
+                    title = "Barter",
+                    timestamp = datetime.datetime.utcnow(),
+                    author = ctx.author
+                ).set_thumbnail(
+                    url = self.bot.user.avatar_url
+                )
+                reset_interval = self.refresh_barter.next_iteration - datetime.datetime.now(datetime.timezone.utc)
+                embed.description = "*Barters will reset in %s.*" % humanize.precisedelta(reset_interval, "seconds", format = "%0.2f")
+                for ind, barter in enumerate(self.__barter__):
+                    item = await DB.Items.get_item(conn, barter["item"])
+                    text = f"**{barter['gold_amount']}x {gold_item['emoji']}** -> {barter['amount']}x {item['emoji']}"
+                    
+                    embed.add_field(
+                        name = f"{ind + 1}. {LootTable.acapitalize(item['name'])}",
+                        value = f"{text}",
+                        inline = False
+                    )
+                
+                await ctx.reply(embed = embed, mention_author = False)
+            else:
+                if index < 1 or index > MAX_BARTER:
+                    await ctx.reply("Acceptable barter's index is 1-%d." % MAX_BARTER, mention_author = False)
+                    return
+                
+                if times is None:
+                    times = 1
+                
+                if times > 50:
+                    await ctx.reply("You can only barter up to 50 times during 1 trade, to avoid excessive spending.", mention_author = False)
+                    return
+                
+                target = self.__barter__[index - 1]
+                async with self.bot.pool.acquire() as conn:
+                    total_gold = target["gold_amount"] * times
+                    total_amount = target["amount"] * times
+                    enough_gold = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, "gold")
+                    if enough_gold is None or enough_gold["quantity"] < total_gold:
+                        await ctx.reply("You don't have enough gold! The total gold is %d." % total_gold, mention_author = False)
+                        return
+                    async with conn.transaction():
+                        await DB.User.Inventory.add(conn, ctx.author.id, target["item"], total_amount)
+                        await DB.User.Inventory.remove(conn, ctx.author.id, "gold", total_gold)
+                        friendly = await LootTable.get_friendly_reward(conn, {target["item"]: total_amount}, False)
+                        await ctx.reply(f"Bartered {friendly} successfully with {total_gold}x Gold.", mention_author = False)
 
 def setup(bot : MichaelBot):
     bot.add_cog(Currency(bot))
