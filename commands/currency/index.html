@@ -379,15 +379,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#topmoney-developing" class="md-nav__link">
-    topmoney [DEVELOPING]
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#work" class="md-nav__link">
-    work
+  <a href="#equip" class="md-nav__link">
+    equip
   </a>
   
 </li>
@@ -834,15 +827,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#topmoney-developing" class="md-nav__link">
-    topmoney [DEVELOPING]
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#work" class="md-nav__link">
-    work
+  <a href="#equip" class="md-nav__link">
+    equip
   </a>
   
 </li>
@@ -871,10 +857,21 @@
 <!-- omit on toc -->
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
+<li><a href="#table-of-contents">Table of Contents</a></li>
 <li><a href="#__init__-internal">__init__ [INTERNAL]</a></li>
-<li><a href="#daily">daily</a></li>
+<li><a href="#adventure">adventure</a></li>
 <li><a href="#balance">balance</a></li>
-<li><a href="#topmoney-developing">topmoney [DEVELOPING]</a></li>
+<li><a href="#brew">brew</a><ul>
+<li><a href="#recipe-brew">recipe (brew)</a></li>
+</ul>
+</li>
+<li><a href="#chop">chop</a></li>
+<li><a href="#craft">craft</a><ul>
+<li><a href="#recipe-craft">recipe (craft)</a></li>
+</ul>
+</li>
+<li><a href="#daily">daily</a></li>
+<li><a href="#equip">equip</a></li>
 </ul>
 <h2 id="__init__-internal">__init__ [INTERNAL]</h2>
 <p><em>This section is labeled as [INTERNAL], meaning that it is </em><em>NOT</em><em> a command. It is here only to serve the developers purpose.</em></p>
@@ -899,10 +896,10 @@
 <h2 id="brew">brew</h2>
 <p>Brew potions.</p>
 <p>This command behaves the same way <a href="#craft"><code>craft</code></a> does.</p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;brew [n=1] &lt;potion&gt;</code></p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;brew [amount=1] &lt;potion&gt;</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>n</code>: The number of times this command is executed. <strong>It is NOT the amount of potions you'll get</strong>.</li>
+<li><code>amount</code>: The amount of potion you want to brew.</li>
 <li><code>potion</code>: The potion you want to brew. Refer to <a href="#recipe-brew"><code>brew recipe</code></a> for brewable potions.</li>
 </ul>
 <p><strong>Examples:</strong></p>
@@ -915,6 +912,18 @@
 <p><strong><em>Subcommands:</em></strong> <a href="#recipe-brew"><code>recipe</code></a></p>
 <h3 id="recipe-brew">recipe (brew)</h3>
 <p>Show the recipe for one potion or for all potions.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;brew recipe [potion]</code></p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>potion</code>: The potion you want to view. If this is not provided, all potions' recipe will be displayed.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Example 1:</strong> <code>$brew recipe</code></li>
+<li><strong>Example 2:</strong> <code>$brew recipe luck potion</code></li>
+</ul>
+<p><strong>You need:</strong> None.</p>
+<p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="chop">chop</h2>
 <p><em>This is an activity</em></p>
 <p>Chop some trees.</p>
@@ -925,13 +934,12 @@
 <p><strong>You need:</strong> None.</p>
 <p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="craft">craft</h2>
-<p>Perform a craft <code>n</code> times.</p>
-<p>This will give you <code>n * &lt;quantity&gt;</code> items, with <code>&lt;quantity&gt;</code> is the <code>You gain</code> section in <code>craft recipe</code>.</p>
-<p>Craft wisely!</p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;craft [n=1] &lt;item&gt;</code></p>
+<p>Craft up to <code>amount</code> items.</p>
+<p>The command will repeatedly attempt to craft the item until the pseudo-amount exceed <code>amount</code>, in which it will rollback the latest craft attempt. That will be the final amount of the craft.</p>
+<p><strong>Usage:</strong> <code>&lt;prefix&gt;craft [amount=1] &lt;item&gt;</code></p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>n</code>: The number of times this command is executed. <strong>It is NOT the amount of items you'll get</strong>.</li>
+<li><code>amount</code>: The maximum amount of items you'll get.</li>
 <li><code>item</code>: The item you want to craft. Refer to <a href="#recipe-craft"><code>craft recipe</code></a> for craftable items.</li>
 </ul>
 <p><strong>Examples:</strong></p>
@@ -958,36 +966,15 @@
 <p><strong>The bot needs:</strong> <code>Use External Emojis</code>, <code>Read Message History</code>, <code>Send Messages</code>.</p>
 <h2 id="daily">daily</h2>
 <p>Get an amount of money every 24h.</p>
+<p>This command's cooldown is hard-coded. You cannot reset it with <code>reset_all_cooldown</code>.</p>
 <p><strong>Usage:</strong> <code>&lt;prefix&gt;daily</code></p>
 <p><strong>Cooldown:</strong> 1 day per 1 use (user)</p>
 <p><strong>Example:</strong> <code>$daily</code></p>
 <p><strong>You need:</strong> None.</p>
 <p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
-<h2 id="topmoney-developing">topmoney [DEVELOPING]</h2>
-<p><em>This section is labeled as [DEVELOPING], which means the function/command is currently under development and not available for testing.</em></p>
-<p>Show the top 10 users with the most amount of money.</p>
-<p>The default option is <code>local</code>.</p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;topmoney [global/local]</code></p>
-<p><strong>Parameter:</strong></p>
-<ul>
-<li><code>global/local</code>: Either <code>global</code> (all MichaelBot's users) or <code>local</code> (all members in the guild invoked).</li>
-</ul>
-<p><strong>Examples:</strong></p>
-<ul>
-<li><strong>Example 1:</strong> <code>$topmoney global</code></li>
-<li><strong>Example 2:</strong> <code>$topmoney</code></li>
-</ul>
-<p><strong>You need:</strong> None.
-<strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
-<h2 id="work">work</h2>
-<p>Go to work and earn money.</p>
-<p><em>This command is going to get removed once inventory system is implemented.</em></p>
-<p><strong>Usage:</strong> <code>&lt;prefix&gt;work</code></p>
-<p><strong>Cooldown:</strong> 120 seconds per 1 use (user)</p>
-<p><strong>Example:</strong> <code>$work</code></p>
-<p><strong>You need:</strong> None.</p>
-<p><strong>The bot needs:</strong> <code>Read Message History</code>, <code>Send Messages</code>.</p>
-<p><em>This document is last updated on Feb 19th (PT) by MikeJollie#1067</em></p>
+<h2 id="equip">equip</h2>
+<p>Equip a tool.</p>
+<p><em>This document is last updated on May 11th (PT) by MikeJollie#1067</em></p>
                 
               
               
