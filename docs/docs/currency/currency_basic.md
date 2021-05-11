@@ -8,10 +8,6 @@ The `daily` command is the only true starting point for new users. As the name s
 
 Like Minecraft, after you get some materials, you'll eventually need to craft. This can be done using the `craft` command. You can also use its subcommand to view all possible crafting recipes.
 
-**The `craft` command has the following signature:** `craft [n] <item name>`. This will **repeat the `craft <item name>` n times**, not **crafting n items**. This is why it's important to view `craft recipe`.
-
-Example: a `log` produces 4 `wood`. When trying to do `craft 4 wood`, you don't actually craft 4 `wood`, it's similar to writing `craft wood` 4 times.
-
 ## Tools
 
 Tools are special items that can be used to perform *activities*. Currently there are 3 types of tools: pickaxe, axe, and sword. They are needed to use `mine`, `chop`, and `adventure` respectively. A tool has a fixed durability. This will wear out gradually as you perform activities.
@@ -24,9 +20,13 @@ Activities are a general terms to use when you use `mine`, `chop` or `adventure`
 
 There is a small chance of *dying* while doing these activities. Once you get the death message, all your equipped equipments are destroyed, and you lose 10% of your money as a fee to revive you.
 
+There is also chances of *idle*. While idling, you don't lose any items nor gain anything. The activity will also reset its cooldown. In other words, it's just like you didn't do the session in the first place.
+
 ## Shop
 
-The `market` command is the only way to convert items that you have into money. It also can be used to obtain some materials necessary for future uses. With `market` alone, you'll see a reaction page to see all the items' prices. With its subcommands `market buy` and `market sell`, you can buy or sell items.
+The `market` command is used to convert items that you have into money. It also can be used to obtain some materials necessary for future uses. With `market` alone, you'll see a reaction page to see all the items' prices. With its subcommands `market buy` and `market sell`, you can buy or sell items.
+
+To sell items, such items must be available in your inventory. Not all items are purchasable or sellable.
 
 ## Inventory
 

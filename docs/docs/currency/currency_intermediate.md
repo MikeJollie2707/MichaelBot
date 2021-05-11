@@ -14,9 +14,9 @@ To travel to another world, a user must have the corresponding portal crafted, t
 
 Each world has its own loot table. For example, a mining session in the Overworld can give you stone, but in the Nether, it will give you netherrack instead.
 
-Nether also contains material to one of the strongest tool type: **netherite**. It is only obtainable through mining with a `diamond pickaxe` or higher in the Nether, and it drops under the form of **ancient debris**. Using ancient debris, the user can craft netherite, which can be used to craft netherite tools. Ancient debris is very rare.
+Nether also contains material to one of the strongest tool type: **netherite**. It is only obtainable through mining with a `diamond pickaxe` or higher in the Nether, and it drops under the form of **ancient debris**. Using ancient debris, the user can craft netherite, which can be used to craft netherite tools. Netherite tools can also have a 25% chance of not disappearing if you die. However, ancient debris is very rare.
 
-`adventure` in the Nether also yield valuable loots. One of the loot is **magma cream**, which is an ingredient for the fire potion. The other is **blaze rod**, the de facto ingredient for any potions.
+`adventure` in the Nether also yield valuable loots. One of the loot is **magma cream**, which is an ingredient for the fire potion. The other is **blaze rod**, one of the required ingredient for any potions.
 
 ## Risks
 
