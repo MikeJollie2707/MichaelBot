@@ -147,7 +147,7 @@ def get_badge_info():
         "diamond1": ["💎", "diamond!",
             "A decorative badge. Earned from having a diamond in your inventory."],
         "nether1": ["🔥", "hellfire",
-            "A decorative badge. Earned from enterting the Nether."],
+            "A decorative badge. Earned from entering the Nether."],
         "debris1": ["<:debris:823622624118702081>", "hidden in the depth",
             "A decorative badge. Earned from getting Ancient Debris."],
         "netherite1": ["<:netherite:828129193275293706>", "restoration",
