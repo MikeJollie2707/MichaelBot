@@ -5,6 +5,7 @@ import humanize
 import datetime
 import random
 import typing # IntelliSense purpose only
+from math import ceil
 
 import utilities.db as DB
 import utilities.facility as Facility
@@ -175,13 +176,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         return haste_stack
     
     async def __reduce_tool_durability__(self, conn, member, current_tool):
-        from math import ceil
         base_durability = (await DB.Items.get_item(conn, current_tool["id"]))["durability"]
         max_durability_loss = ceil(base_durability * DURABILITY_PENALTY)
         if max_durability_loss > DURABILITY_MAX_PENALTY:
             max_durability_loss = DURABILITY_MAX_PENALTY
         await DB.User.ActiveTools.dec_durability(conn, member.id, current_tool["id"], random.randint(1, max_durability_loss))
-    
+
     async def cog_check(self, ctx : commands.Context):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
@@ -195,6 +195,36 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             exist = await DB.User.find_user(conn, member.id)
             if exist is None:
                 await DB.User.insert_user(conn, member)
+
+    @commands.Cog.listener("on_command_completion")
+    async def _command_completion(self, ctx):
+        if self.bot.pool is not None and ctx.command.cog is self:
+            async with self.bot.pool.acquire() as conn:
+                inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
+                for slot in inv:
+                    if slot["id"] == "log":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "log1")
+                        if slot["quantity"] >= 5000:
+                            await DB.User.UserBadges.add(conn, ctx.author.id, "wooden_age")
+                    elif slot["id"] == "stone":
+                        if slot["quantity"] >= 10000:
+                            await DB.User.UserBadges.add(conn, ctx.author.id, "stone_age")
+                    elif slot["id"] == "stone_pickaxe":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "stone1")
+                    elif slot["id"] == "iron":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "iron1")
+                        if slot["quantity"] >= 5000:
+                            await DB.User.UserBadges.add(conn, ctx.author.id, "iron_age")
+                    elif slot["id"] == "diamond":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "diamond1")
+                        if slot["quantity"] >= 1000:
+                            await DB.User.UserBadges.add(conn, ctx.author.id, "diamond2")
+                    elif slot["id"] == "debris":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "debris1")
+                    elif slot["id"] == "netherite":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "netherite1")
+                        if slot["quantity"] >= 100:
+                            await DB.User.UserBadges.add(conn, ctx.author.id, "netherite2")
 
     @commands.command(aliases = ['adv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -477,6 +507,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     message += "**Haste Potion** expired.\n"
                     # Before it expires, the stack is 1.
                     haste_stack = 1
+                
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "oh_shiny") is not None:
+                    if "diamond" in loot:
+                        loot["diamond"] *= 2
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "heavy_metals") is not None:
+                    if "debris" in loot:
+                        loot["debris"] *= 2
                 
                 # A dict of {"item": amount}
                 final_reward = self.__get_reward__(loot, haste_stack)
@@ -1090,6 +1127,38 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def inv_sort(self, ctx : commands.Context):
         await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
 
+    @commands.command()
+    async def badges(self, ctx, *, user : discord.User = None):
+        if user is None:
+            user = ctx.author
+        async with self.bot.pool.acquire() as conn:
+            badges = await DB.User.UserBadges.get_badges(conn, user.id)
+            if badges is not None:
+                MAX_PER_PAGE = 5
+                embed = None
+                page = Pages()
+                for index, badge in enumerate(badges):
+                    if embed is None:
+                        embed = Facility.get_default_embed(
+                            timestamp = datetime.datetime.utcnow()
+                        ).set_author(
+                            name = f"{user.name}'s Badges",
+                            icon_url = user.avatar_url
+                        )#.set_thumbnail(
+                        #    url = self.bot.user.avatar_url
+                        #)
+                    embed.add_field(
+                        name = f"{badge['emoji']} - {LootTable.acapitalize(badge['name'])}",
+                        value = f"*{badge['description']}*",
+                        inline = False
+                    )
+                    if index % MAX_PER_PAGE == MAX_PER_PAGE - 1:
+                        page.add_page(embed)
+                        embed = None
+                if embed is not None:
+                    page.add_page(embed)
+                
+                await page.event(ctx, interupt = False)
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1291,18 +1360,18 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         if ctx.invoked_subcommand is None:
             MAX_ITEMS = 4
-            cnt = 0 # Keep track of MAX_ITEMS
             page = Pages()
             embed = None
             async with self.bot.pool.acquire() as conn:
                 items = await DB.Items.get_whole_items(conn)
-                for item in items:
-                    if cnt == 0:
+                for index, item in enumerate(items):
+                    if embed is None:
                         embed = Facility.get_default_embed(
                             title = "Market",
                             timestamp = datetime.datetime.utcnow(),
                             author = ctx.author
                         )
+                    
                     embed.add_field(
                         name = "%s **%s**" % (item["emoji"], LootTable.acapitalize(item["name"])),
                         value = "*%s*\n**Prices:** 📥 %s 📤 %s" % (
@@ -1312,11 +1381,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         ),
                         inline = False
                     )
-                    cnt += 1
-                    if cnt == MAX_ITEMS:
+                    if index % MAX_ITEMS == MAX_ITEMS - 1:
                         page.add_page(embed)
                         embed = None
-                        cnt = 0
                 if embed is not None:
                     page.add_page(embed)
                 await page.event(ctx, interupt = False)
@@ -1405,8 +1472,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply("You don't have enough items to sell. You only have: %d" % inv_slot["quantity"] if inv_slot is not None else 0, mention_author = False)
                     ctx.command.reset_cooldown(ctx)
                     return
-                await DB.User.add_money(conn, ctx.author.id, amount * inv_slot["sell_price"])
-                await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${amount * inv_slot['sell_price']}", mention_author = False)
+                bonus = 1
+                badges = await DB.User.UserBadges.get_badges(conn, ctx.author.id)
+                for badge in badges:
+                    if badge["id"] == "wooden_age" and item == "log" \
+                    or badge["id"] == "stone_age" and item == "stone" \
+                    or badge["id"] == "iron_age" and item == "iron":
+                        bonus = 1.05
+                price = round(amount * inv_slot["sell_price"] * bonus)
+                await DB.User.add_money(conn, ctx.author.id, price)
+                await ctx.reply(f"Sold {await LootTable.get_friendly_reward(conn, {item : amount}, False)} successfully for ${price}", mention_author = False)
                 
     @commands.command(aliases = ['moveto', 'goto'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1503,7 +1578,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         # An average ratio buy trade:sell trade of 1:3
         buy_sell_ratio = 0.75
         
-        from math import ceil
         for i in range(0, MAX_TRADE):
             if i == 0:
                 # Ensure at least 1 trade is <= MIN_TRADE_VALUE
@@ -1570,10 +1644,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 embed = Facility.get_default_embed(
                     title = "Trading Hall",
                     timestamp = datetime.datetime.utcnow(),
+                    color = 0x50c878,
                     author = ctx.author
-                ).set_thumbnail(
-                    url = self.bot.user.avatar_url
-                )
+                )#.set_thumbnail(
+                 #   url = "https://i.pinimg.com/originals/51/b9/b3/51b9b3db5da0b94626e90b1655730fff.png"
+                #)
                 reset_interval = self.refresh_trade.next_iteration - datetime.datetime.now(datetime.timezone.utc)
                 embed.description = "*Trades will reset in %s.*" % humanize.precisedelta(reset_interval, "seconds", format = "%0.0f")
                 for ind, trade in enumerate(self.__trade__):
@@ -1586,7 +1661,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     embed.add_field(
                         name = f"{ind + 1}. {LootTable.acapitalize(item['name'])}",
-                        value = f"{text}",
+                        value = f"*{item['description']}*\n{text}",
                         inline = False
                     )
                 
@@ -1645,7 +1720,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             else:
                 i += 1
         
-        from math import ceil
         for i in range(0, MAX_BARTER):
             item = random.choice(all_items)
             if DB.User.ActiveTools.get_tool_type(item["id"]) is not None:

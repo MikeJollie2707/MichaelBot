@@ -133,6 +133,27 @@ async def setup(secrets : dict):
         ''')
         print("Done!")
 
+        print("Creating Badges table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS Badges (
+                id TEXT PRIMARY KEY,
+                emoji TEXT NOT NULL,
+                inner_sort INT4,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL
+            )
+        ''')
+        print("Done!")
+
+        print("Creating DUsers_Badges table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DUsers_Badges (
+                user_id INT8 NOT NULL REFERENCES DUsers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                badge_id TEXT NOT NULL REFERENCES Badges (id) ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        ''')
+        print("Done!")
+
         print("Creating DNotify table...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS DNotify (

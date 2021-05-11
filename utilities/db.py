@@ -6,7 +6,7 @@ import datetime as dt
 import typing
 
 import asyncpg
-from utilities.loot import get_item_info
+from utilities.loot import get_item_info, get_badge_info
 from utilities.michaelexceptions import MichaelBotException
 
 class MichaelBotDatabaseException(MichaelBotException):
@@ -80,6 +80,14 @@ async def update_db(bot):
                 items[key].insert(2, count)
                 count += 1
                 await Items.create_item(conn, items[key])
+            
+            badges = get_badge_info()
+            count = 1
+            for key in badges:
+                badges[key].insert(0, key)
+                badges[key].insert(2, count)
+                count += 1
+                await Badges.create_badge(conn, badges[key])
                           
 async def insert_into(conn, table_name : str, *args):
     """
@@ -832,6 +840,55 @@ class User:
 
                     await conn.execute(query, existed["remain_uses"] - durability, user_id, potion_id)
 
+    class UserBadges:
+        @classmethod
+        async def get_badges(cls, conn, user_id):
+            query = '''
+                SELECT DUsers_Badges.user_id, Badges.* 
+                FROM DUsers_Badges
+                    INNER JOIN Badges ON badge_id = id
+                WHERE user_id = ($1)
+                ORDER BY Badges.inner_sort;
+            '''
+
+            result = await conn.fetch(query, user_id)
+            return [rec_to_dict(record) for record in result]
+        
+        @classmethod
+        async def get_badge(cls, conn, user_id, badge_id):
+            query = '''
+                SELECT DUsers_Badges.user_id, Badges.* 
+                FROM DUsers_Badges
+                    INNER JOIN Badges ON badge_id = id
+                WHERE user_id = ($1) AND badge_id = ($2)
+                ORDER BY Badges.inner_sort;
+            '''
+
+            result = await conn.fetchrow(query, user_id, badge_id)
+            return rec_to_dict(result)
+        
+        @classmethod
+        async def add(cls, conn, user_id, badge_id):
+            existed = await cls.get_badge(conn, user_id, badge_id)
+            if existed is None:
+                query = '''
+                    INSERT INTO DUsers_Badges
+                    VALUES ($1, $2);
+                '''
+
+                await conn.execute(query, user_id, badge_id)
+        
+        @classmethod
+        async def remove(cls, conn, user_id, badge_id):
+            existed = await cls.get_badge(conn, user_id, badge_id)
+            if existed is not None:
+                query = '''
+                    DELETE FROM DUsers_Badges
+                    WHERE user_id = ($1) AND badge_id = ($2);
+                '''
+                
+                await conn.execute(query, user_id, badge_id)
+
 class Guild:
     """
     A group of methods dealing specifically with `DGuilds` table.
@@ -1236,6 +1293,51 @@ class Items:
         '''
         
         return await conn.fetchval(query, friendly_name)
+
+class Badges:
+    @classmethod
+    async def get_all_badges(cls, conn):
+        query = '''
+            SELECT * FROM Badges
+            ORDER BY inner_sort;
+        '''
+
+        result = await conn.fetch(query)
+        return [rec_to_dict(record) for record in result]
+    
+    @classmethod
+    async def get_badge(cls, conn, id):
+        query = '''
+            SELECT * FROM Badges
+            WHERE id = ($1);
+        '''
+
+        result = await conn.fetchrow(query, id)
+        return rec_to_dict(result)
+    
+    @classmethod
+    async def create_badge(cls, conn, *args):
+        existed = await cls.get_badge(conn, args[0][0])
+        if existed is None:
+            await insert_into(conn, "Badges", [*args])
+    
+    @classmethod
+    def retrieve_relevant(cls):
+        RELATION = {
+            "log1": ["log"],
+            "stone1": ["stone_pickaxe"],
+            "iron1": ["iron"],
+            "diamond1": ["diamond"],
+            "nether1": ["nether"],
+            "debris1": ["debris"],
+            "netherite1": ["netherite"],
+            
+            "wooden_age": ["log"],
+            "stone_age": ["stone"],
+            "iron_age": ["iron"],
+            "diamond2": ["diamond"],
+            "netherite2": ["netherite"]
+        }
 
 class Notify:
     @classmethod

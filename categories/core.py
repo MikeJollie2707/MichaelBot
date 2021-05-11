@@ -293,19 +293,28 @@ class Core(commands.Cog):
         member_age = humanize.precisedelta(datetime.datetime.utcnow() - member.joined_at, format = '%0.0f')
         embed.add_field(name = "Joined %s for:" % member.guild.name, value = member_age, inline = False)
 
+        text = ""
         async with self.bot.pool.acquire() as conn:
-            text = ""
-            current = await DB.User.ActiveTools.get_tools(conn, member.id)
-            if len(current) == 0:
+            badges = await DB.User.UserBadges.get_badges(conn, member.id)
+            if badges == [None] * len(badges):
                 text = "*None*"
             else:
-                def _on_inner(item):
-                    return item["inner_sort"]
-                current.sort(key = _on_inner)
+                # Get last five, reverse it.
+                badges = badges[-5:][::-1]
+                for badge in badges:
+                    text += badge["emoji"] + ' '
+        embed.add_field(name = "Top 5 Badges:", value = text, inline = False)
+
+        text = ""
+        async with self.bot.pool.acquire() as conn:
+            current = await DB.User.ActiveTools.get_tools(conn, member.id)
+            if current == [None] * len(current):
+                text = "*None*"
+            else:
                 for tool in current:
                     text += tool["emoji"] + ' '
             
-            embed.add_field(name = "Current Equipments:", value = text, inline = False)
+        embed.add_field(name = "Current Equipments:", value = text, inline = False)
         role_list = [Facility.mention(role) for role in member.roles[::-1]]
         s = " - "
         s = s.join(role_list)

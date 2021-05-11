@@ -134,6 +134,35 @@ def get_item_info():
             "To achieve immortal, one simply requires many many sacrifices."]
     }
 
+def get_badge_info():
+    return {
+        "log1": ["🕛", "the beginning",
+            "A decorative badge. Earned from having a log in your inventory."],
+        "stone1": ["<:stone_pickaxe:820044330613866497>", "upgrade people, upgrade",
+            "A decorative badge. Earned from having a Stone Pickaxe in your inventory."],
+        "iron1": ["<:iron:820009715286671410>", "metal",
+            "A decorative badge. Earned from having an iron in your inventory."],
+        "diamond1": ["💎", "diamond!",
+            "A decorative badge. Earned from having a diamond in your inventory."],
+        "nether1": ["🔥", "hellfire",
+            "A decorative badge. Earned from enterting the Nether."],
+        "debris1": ["<:debris:823622624118702081>", "hidden in the depth",
+            "A decorative badge. Earned from getting Ancient Debris."],
+        "netherite1": ["<:netherite:828129193275293706>", "restoration",
+            "A decorative badge. Earned from crafting Netherite."],
+
+        "wooden_age": ["🪵", "wooden age",
+            "After chopping quite an amount of logs, the merchant decides to buy your wood for a higher price."],
+        "stone_age": ["<:stone:819728758160097290>", "stone age",
+            "There's a shortage of stone ~~definitely not caused by you~~, so stone sell's price is increased."],
+        "iron_age": ["<:iron:820009715286671410>", "iron age",
+            "Everyone wants iron. With that in mind, you now sell it for even a higher price."],
+        "diamond2": ["🍀", "oh shiny!",
+            "After mining quite an amount of diamonds, you now know the strategy to greatly improve your chance of finding diamonds."],
+        "netherite2": ["<:netherite:828129193275293706>", "heavy metals",
+            "After obtaining quite an amount of netherites, you now know the strategy to greatly improve your chance of finding ancient debris."]
+    }
+
 def get_world(world : int) -> str:
     if world == 0:
         return "Overworld"
