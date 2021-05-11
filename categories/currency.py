@@ -32,6 +32,7 @@ MONEY_PENALTY_DIE = 0.10
 LUCK_ACTIVATE_CHANCE = 0.5
 FIRE_ACTIVATE_CHANCE = 0.25
 HASTE_ACTIVATE_CHANCE = 0.75
+LOOTING_ACTIVATE_CHANCE = 0.75
 
 NETHERITE_SURVIVE_CHANCE = 0.25
 
@@ -175,6 +176,23 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
         return haste_stack
     
+    async def __attempt_looting__(self, conn, member):
+        """
+        Attempt to use looting potion.
+        - If it is successful AND haste potion is not expired, return the number of stacks.
+        - If it is successful AND haste potion is expired, throw `DB.ItemExpired`.
+        - If it is not successful, return `0`.
+        """
+        use_looting = random.random()
+        loot_stack = 0
+        if use_looting <= HASTE_ACTIVATE_CHANCE:
+            is_looting = await DB.User.ActivePotions.get_potion(conn, member.id, "looting_potion")
+            if is_looting is not None:
+                loot_stack = await DB.User.ActivePotions.get_stack(conn, "looting_potion", is_looting["remain_uses"]) * POTION_STACK_MULTIPLIER
+                await DB.User.ActivePotions.decrease_active_potion(conn, member.id, "looting_potion")
+        
+        return loot_stack
+
     async def __reduce_tool_durability__(self, conn, member, current_tool):
         base_durability = (await DB.Items.get_item(conn, current_tool["id"]))["durability"]
         max_durability_loss = ceil(base_durability * DURABILITY_PENALTY)
@@ -304,9 +322,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await self.__attempt_luck__(conn, ctx.author, loot)
                 except DB.ItemExpired:
                     message += "**Luck Potion** expired.\n"
+                
+                try:
+                    looting_stack = await self.__attempt_looting__(conn, ctx.author)
+                except DB.ItemExpired:
+                    message += "**Looting Potion** expired.\n"
+                    # Before it expires, the stack is 1.
+                    looting_stack = 1
 
                 # A dict of {"item": amount}
-                final_reward = self.__get_reward__(loot)
+                final_reward = self.__get_reward__(loot, looting_stack)
                 
                 reward_string = await LootTable.get_friendly_reward(conn, final_reward, True)
                 any_reward = False

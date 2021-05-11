@@ -130,6 +130,8 @@ def get_item_info():
             "Reduce the chance of dying in the Nether."],
         "haste_potion": ["<a:haste_potion:828135803812577330>", "haste potion", "rare+", 120000, 200, 10,
             "Increase loot yield from a mining session. This potion's stack affects the loot yield rate."],
+        "looting_potion": ["<a:looting_potion:841783868860399719>", "looting potion", "rare+", 120000, 200, 10,
+            "Increase loot yield from adventuring. This potion's stack affects the loot yield rate."],
         "undying_potion": ["<:undying_potion:828136854657826836>", "undying potion", "???", None, None, 10000000,
             "To achieve immortal, one simply requires many many sacrifices."]
     }
