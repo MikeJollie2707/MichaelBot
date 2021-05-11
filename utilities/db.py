@@ -841,10 +841,21 @@ class User:
                     await conn.execute(query, existed["remain_uses"] - durability, user_id, potion_id)
 
     class UserBadges:
+        """A group of methods dealing specifically with `DUsers_Badges` table."""
         @classmethod
-        async def get_badges(cls, conn, user_id):
+        async def get_badges(cls, conn, user_id : int) -> typing.List[typing.Optional[dict]]:
+            """
+            Get a list of badges of the user, sorted by `inner_sort`.
+
+            The structure of each element is the same as `Badges.get_item()`.
+
+            - If there are no badges, a list of `None` is returned.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            """
             query = '''
-                SELECT DUsers_Badges.user_id, Badges.* 
+                SELECT Badges.* 
                 FROM DUsers_Badges
                     INNER JOIN Badges ON badge_id = id
                 WHERE user_id = ($1)
@@ -856,8 +867,17 @@ class User:
         
         @classmethod
         async def get_badge(cls, conn, user_id, badge_id):
+            """
+            Get a badge, based on its id.
+
+            The structure is the same as `Badges.get_badge()`.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `badge_id`: The badge's inner name.
+            """
             query = '''
-                SELECT DUsers_Badges.user_id, Badges.* 
+                SELECT Badges.* 
                 FROM DUsers_Badges
                     INNER JOIN Badges ON badge_id = id
                 WHERE user_id = ($1) AND badge_id = ($2)
@@ -869,6 +889,15 @@ class User:
         
         @classmethod
         async def add(cls, conn, user_id, badge_id):
+            """
+            Add a badge to a user.
+
+            - If the badge already existed, the method does nothing.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `badge_id`: The badge's inner name.
+            """
             existed = await cls.get_badge(conn, user_id, badge_id)
             if existed is None:
                 query = '''
@@ -880,6 +909,15 @@ class User:
         
         @classmethod
         async def remove(cls, conn, user_id, badge_id):
+            """
+            Remove a badge.
+
+            - If there isn't such badge, the method does nothing.
+
+            Important Parameter:
+            - `user_id`: The user's id.
+            - `badge_id`: The badge's inner name.
+            """
             existed = await cls.get_badge(conn, user_id, badge_id)
             if existed is not None:
                 query = '''
@@ -1251,8 +1289,7 @@ class Items:
         Create an item.
         
         Important Parameter:
-        - `args`: A list of attributes of an item. This list exclude the item's id and inner sort, and must
-        follow the order listed in the table.
+        - `args`: A list of attributes of an item. This list must follow the order listed in the table.
         """
         exist = await cls.get_item(conn, args[0][0])
         if exist is None:
@@ -1295,8 +1332,14 @@ class Items:
         return await conn.fetchval(query, friendly_name)
 
 class Badges:
+    """A group of methods dealing specifically with `Badges` table."""
     @classmethod
-    async def get_all_badges(cls, conn):
+    async def get_all_badges(cls, conn) -> typing.List[typing.Optional[dict]]:
+        """
+        Get a list of all badges, sorted by `inner_sort`.
+
+        - If there are no badges, a list of `None` is returned.
+        """
         query = '''
             SELECT * FROM Badges
             ORDER BY inner_sort;
@@ -1306,7 +1349,13 @@ class Badges:
         return [rec_to_dict(record) for record in result]
     
     @classmethod
-    async def get_badge(cls, conn, id):
+    async def get_badge(cls, conn, id : str) -> typing.Optional[dict]:
+        """
+        Get a badge.
+
+        Important Parameter:
+        - `id`: The badge's inner name.
+        """
         query = '''
             SELECT * FROM Badges
             WHERE id = ($1);
@@ -1317,6 +1366,12 @@ class Badges:
     
     @classmethod
     async def create_badge(cls, conn, *args):
+        """
+        Create a badge.
+        
+        Important Parameter:
+        - `args`: A list of attributes of a badge. This list must follow the order listed in the table.
+        """
         existed = await cls.get_badge(conn, args[0][0])
         if existed is None:
             await insert_into(conn, "Badges", [*args])

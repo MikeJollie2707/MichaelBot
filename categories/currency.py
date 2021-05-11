@@ -1153,7 +1153,21 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
 
     @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.user)
     async def badges(self, ctx, *, user : discord.User = None):
+        '''
+        Display a user's badges or your badges.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 3 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} MikeJollie
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
         if user is None:
             user = ctx.author
         async with self.bot.pool.acquire() as conn:
