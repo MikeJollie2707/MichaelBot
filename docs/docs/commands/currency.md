@@ -17,6 +17,7 @@ These are commands that involve fake economy. All items and currencies are share
 - [craft](#craft)
     - [recipe (craft)](#recipe-craft)
 - [daily](#daily)
+- [equip](#equip)
 
 ## \_\_init\_\_ [INTERNAL]
 
@@ -182,4 +183,4 @@ This command's cooldown is hard-coded. You cannot reset it with `reset_all_coold
 
 Equip a tool.
 
-*This document is last updated on Feb 19th (PT) by MikeJollie#1067*
+*This document is last updated on May 11th (PT) by MikeJollie#1067*
