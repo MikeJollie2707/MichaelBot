@@ -1801,13 +1801,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if index is None:
                 embed = Facility.get_default_embed(
                     title = "Barter",
+                    color = 0x50c878,
                     timestamp = datetime.datetime.utcnow(),
                     author = ctx.author
-                ).set_thumbnail(
-                    url = self.bot.user.avatar_url
                 )
                 reset_interval = self.refresh_barter.next_iteration - datetime.datetime.now(datetime.timezone.utc)
-                embed.description = "*Barters will reset in %s.*" % humanize.precisedelta(reset_interval, "seconds", format = "%0.2f")
+                embed.description = "*Barters will reset in %s.*" % humanize.precisedelta(reset_interval, "seconds", format = "%0.0f")
                 for ind, barter in enumerate(self.__barter__):
                     item = await DB.Items.get_item(conn, barter["item"])
                     text = f"**{barter['gold_amount']}x {gold_item['emoji']}** -> {barter['amount']}x {item['emoji']}"
