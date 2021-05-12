@@ -529,7 +529,7 @@ def get_mine_msg(type : str, world : int, reward_string : str = "") -> str:
             ]
         elif world == 1:
             messages = [
-                f"You went mining and got {reward_string}."
+                f"You went mining and got {reward_string}.",
                 f"You strip-mined for debris and got {reward_string}."
             ]
         elif world == 2:

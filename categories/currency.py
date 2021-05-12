@@ -655,7 +655,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                             await DB.User.Inventory.add(conn, ctx.author.id, item, times * ingredient["quantity"])
                         
                         display = {item : times * ingredient['quantity']}
-                        await ctx.reply(f"Crafted {await LootTable.get_friendly_reward(conn, display)}** successfully", mention_author = False)
+                        await ctx.reply(f"Crafted {await LootTable.get_friendly_reward(conn, display)} successfully", mention_author = False)
                         
                     else:
                         miss_string = await LootTable.get_friendly_reward(conn, miss)
