@@ -5,15 +5,55 @@ This document will show, in details, the changes made to an item. Usually, this 
 
 <!-- omit in toc -->
 ## Table of Contents
-- [1.6.5](#165)
+- [1.6.5.4](#1654)
     - [Buffs](#buffs)
     - [Nerfs](#nerfs)
     - [Neutral changes](#neutral-changes)
     - [Comment](#comment)
-- [1.6.4](#164)
+- [1.6.5](#165)
     - [Buffs](#buffs-1)
     - [Nerfs](#nerfs-1)
     - [Neutral changes](#neutral-changes-1)
+    - [Comment](#comment-1)
+- [1.6.4](#164)
+    - [Buffs](#buffs-2)
+    - [Nerfs](#nerfs-2)
+    - [Neutral changes](#neutral-changes-2)
+
+## 1.6.5.4
+
+### Buffs
+
+- Iron sell price increased from 40 to 45 (+12.5%).
+- Redstone sell price increased from 30 to 42 (+40%).
+- Iron tools sell price increased from [43, 43, 45] to [65, 65, 63].
+- Diamond tools sell price increased from [150, 150, 140] to [200, 250, 195].
+- Gold sell price increased from 35 to 50 (+42.9%)
+- Ancient Debris sell price increased from 200 to 500 (+250%).
+- Netherite sell price increased from 500 to 2000 (+300%).
+- Netherite tools sell price increased from [550, 550, 550] to [2200, 2200, 2200] (+440%).
+- Space Orb and Star Fragment sell price increased from 1000 to 10000 (+900%).
+- Star Gem sell price increased from 10000 to 100000 (+900%).
+- Fragile Star Pickaxe sell price increased from 15000 to 125000 (+733%).
+- Steady Star Pickaxe sell price increased from 20000 to 150000 (+650%).
+- Spider Eye buy price decreased from 40 to 35 (-12.5%).
+- Magma Cream sell price increased from 20 to 25 (+25%)
+- Blaze Rod sell price increased from 45 to 50 (+11.1%).
+
+### Nerfs
+
+- **Iron, Redstone, Diamond, Gold, Ancient Debris, and some other rare but useful resourses drop chance scalings are now significantly lower.**
+- Stone sell price decreased from 22 to 20 (-10%).
+
+### Neutral changes
+
+- Potions sell price is x10, except for Fire Potion.
+
+### Comment
+
+The main target for this changes is to significantly hurt the drop chance of many items (for example, diamond). Before, switching from iron pickaxe to diamond pickaxe can increase drop chance up to 10 times theoretically. Now, the scaling should be much lower, but more realistic, of 2 times per rank increment, 5 times is possibly the max. Many items' sell prices are increased to partially compensate this.
+
+The neutral changes for potions is not significant at all, however, in a way, that is a huge nerf. I won't tell why.
 
 ## 1.6.5
 
