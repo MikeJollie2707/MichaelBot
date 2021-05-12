@@ -8,7 +8,7 @@ def acapitalize(st : str) -> str:
 def get_item_info():
     return {
         # General format:
-        # id: ['emoji', 'inner_sort', 'name', 'rarity', buy_price, sell_price, durability, 
+        # id: ['emoji', 'name', 'rarity', buy_price, sell_price, durability, 
         #   description]
 
         # Overworld materials
@@ -18,11 +18,11 @@ def get_item_info():
             "A basic material for basic stuffs."],
         "stick": ["<:stick:819615522878521434>", "stick", "common", 4, 2, None,
             "A necessity item used to craft various tools."],
-        "stone": ["<:stone:819728758160097290>", "stone", "common", None, 22, None,
+        "stone": ["<:stone:819728758160097290>", "stone", "common", None, 20, None,
             "A harder material than wood."],
-        "iron": ["<:iron:820009715286671410>", "iron", "uncommon", None, 40, None,
+        "iron": ["<:iron:820009715286671410>", "iron", "uncommon", None, 45, None,
             "Iron!"],
-        "redstone": ["<:redstone:822527280777396264>", "redstone", "uncommon", None, 30, None,
+        "redstone": ["<:redstone:822527280777396264>", "redstone", "uncommon", None, 42, None,
             "A red dust that's commonly mistaken as blood. It's understandable, it has pulse after all."],
         "diamond": ["💎", "diamond", "rare", None, 100, None,
             "Shiny stuffs isn't it? It can be used to craft some of the best tools in the world."],
@@ -31,26 +31,26 @@ def get_item_info():
         "wood_sword": ["<:wood_sword:820757505017118751>", "wooden sword", "common", 10, 8, 59, 
             "A weak sword."],
         "wood_pickaxe": ["<:wood_pickaxe:819617302164930570>", "wooden pickaxe", "common", 12, 10, 59,
-            "A fragile pickaxe."],
+            "A weak pickaxe."],
         "wood_axe": ["<:wood_axe:820009505530052621>", "wooden axe", "common", 11, 9, 59,
-            "A fragile axe."],
+            "A weak axe."],
         "stone_sword": ["<:stone_sword:820757729790394389>", "stone sword", "common", None, 23, 131,
             "A decent sword. Better than a toy sword, right?"],
         "stone_pickaxe": ["<:stone_pickaxe:820044330613866497>", "stone pickaxe", "common", None, 25, 131,
             "A better pickaxe. Hope you can get some iron soon."],
         "stone_axe": ["<:stone_axe:820009331000606760>", "stone axe", "common", None, 27, 131,
             "A better axe."],
-        "iron_sword": ["<:iron_sword:821448555989696593>", "iron sword", "uncommon", None, 43, 250,
+        "iron_sword": ["<:iron_sword:821448555989696593>", "iron sword", "uncommon", None, 65, 250,
             "A pretty good sword. You can slay more enemies now due to how good this sword is."],
-        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", "iron pickaxe", "uncommon", None, 43, 250,
+        "iron_pickaxe": ["<:iron_pickaxe:820757966432632854>", "iron pickaxe", "uncommon", None, 65, 250,
             "A pretty good pickaxe. You may encounter some lucky stuffs with this pickaxe."],
-        "iron_axe": ["<:iron_axe:820758123714838559>", "iron axe", "uncommon", None, 45, 250,
+        "iron_axe": ["<:iron_axe:820758123714838559>", "iron axe", "uncommon", None, 63, 250,
             "A pretty good axe."],
-        "diamond_sword": ["<:diamond_sword:822530447715598396>", "diamond sword", "rare", None, 150, 1561,
+        "diamond_sword": ["<:diamond_sword:822530447715598396>", "diamond sword", "rare", None, 200, 1561,
             "The best sword in the world? Idk, it doesn't do much though..."],
-        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", "diamond pickaxe", "rare", None, 150, 1561,
+        "diamond_pickaxe": ["<:diamond_pickaxe:822530447481372703>", "diamond pickaxe", "rare", None, 250, 1561,
             "The best pickaxe in the world. You can mine anything :)"],
-        "diamond_axe": ["<:diamond_axe:822530447719268382>", "diamond axe", "rare", None, 140, 1561,
+        "diamond_axe": ["<:diamond_axe:822530447719268382>", "diamond axe", "rare", None, 195, 1561,
             "The best axe in the world. Chopping go brr."],
         
         "anvil": ["<:anvil:837478303862489108>", "anvil", "rare", None, 1200, None,
@@ -61,19 +61,19 @@ def get_item_info():
             "The hardest material in the world. It silently emits power that connects to another world."],
         "nether": ["⛩️", "nether portal", "???", None, None, 6,
             "A mysterious gate that travels to the deepest place in the world."],
-        "netherrack": ["<:netherrack:823592746865655868>", "netherrack", "common", None, 8, None,
+        "netherrack": ["<:netherrack:823592746865655868>", "netherrack", "common", None, 5, None,
             "A red-ish stone block only presents in the hottest place."],
-        "gold": ["<:gold:823592599314104331>", "gold", "uncommon", None, 35, None,
+        "gold": ["<:gold:823592599314104331>", "gold", "uncommon", None, 50, None,
             "Gold. How useful."],
-        "debris": ["<:debris:823622624118702081>", "ancient debris", "rare+", None, 200, None,
+        "debris": ["<:debris:823622624118702081>", "ancient debris", "rare+", None, 500, None,
             "A leftover of what was once the toughest metal in the universe. Such toughness is only achievable under the undying heat."],
-        "netherite": ["<:netherite:828129193275293706>", "netherite", "rare+", None, 500, None,
+        "netherite": ["<:netherite:828129193275293706>", "netherite", "rare+", None, 2000, None,
             "The toughest metal in the universe, recovered from its leftover."],
-        "nether_sword": ["<:nether_sword:828129193434939442>", "netherite sword", "rare+", None, 550, 2032,
+        "nether_sword": ["<:nether_sword:828129193434939442>", "netherite sword", "rare+", None, 2200, 2032,
             "A sword created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe. It can cut down even the toughest enemy."],
-        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", "netherite pickaxe", "rare+", None, 550, 2032,
+        "nether_pickaxe": ["<:nether_pickaxe:828129193254191144>", "netherite pickaxe", "rare+", None, 2200, 2032,
             "A pickaxe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
-        "nether_axe": ["<:nether_axe:828129193367175178>", "netherite axe", "rare+", None, 550, 2032,
+        "nether_axe": ["<:nether_axe:828129193367175178>", "netherite axe", "rare+", None, 2200, 2032,
             "An axe created from the shiniest thing on Earth, and enhanced with the toughest metal in the universe."],
 
         # Moon-related materials
@@ -85,15 +85,15 @@ def get_item_info():
             "A mysterious portal that travels beyond the sky."],
         "ender_eye": ["<:mysterious_eye:839207993391317003>", "mysterious eye", "rare", None, None, None,
             "This eye looks kinda weird. It seems to have some correlation to the space portal though..."],
-        "space_orb": ["☄️", "space orb", "legendary+", None, 1000, None,
+        "space_orb": ["☄️", "space orb", "legendary+", None, 10000, None,
             "An enchanting orb founded randomly during your adventure in the Space."],
-        "star_fragment": ["💫", "star fragment", "legendary+", None, 1000, None,
+        "star_fragment": ["💫", "star fragment", "legendary+", None, 10000, None,
             "A fragment of the star, once existed in the universe. It possesses hidden energies of the star."],
-        "star_gem": ["🌟", "star gem", "mythic", None, 10000, None,
+        "star_gem": ["🌟", "star gem", "mythic", None, 1000000, None,
             "A shiny gem created from its fragment, but is greatly enhanced by the space orb."],
-        "fragile_star_pickaxe": ["<:fragile_star_pickaxe:839925697463582792>", "fragile star pickaxe", "mythic", None, 15000, 5000,
+        "fragile_star_pickaxe": ["<:fragile_star_pickaxe:839925697463582792>", "fragile star pickaxe", "mythic", None, 125000, 5000,
             "A pickaxe created from the gem of the star. Unfortunately, it can't stand against extreme heat, and will break if brought into the Nether."],
-        "star_pickaxe": ["<:star_pickaxe:839930221314834483>", "steady star pickaxe", "mythic+", None, 20000, 5000,
+        "star_pickaxe": ["<:star_pickaxe:839930221314834483>", "steady star pickaxe", "mythic+", None, 150000, 5000,
             "A pickaxe created from the gem of the star, enhanced by the metal of the underworld. It can now stand against any kind of heat."],
         
 
@@ -108,7 +108,7 @@ def get_item_info():
             "A mysterious mystical flower. It is unknown what this flower truly is."],
         "string": ["<:string:820758307542401055>", "string", "common", 15, 10, None,
             "A useful drop for brewing potions."],
-        "spider_eye": ["<:spider_eye:820758868468301864>", "spider eye", "uncommon", 40, 25, None,
+        "spider_eye": ["<:spider_eye:820758868468301864>", "spider eye", "uncommon", 35, 25, None,
             "An uncommon drop for brewing potions."],
         "bone": ["<:bone2:828133597529374720>", "bone", "common", None, 20, None,
             "A common drop from skeletons. Hopefully it has some uses."],
@@ -116,21 +116,21 @@ def get_item_info():
             "A common drop from zombies. Don't eat it."],
         "gunpowder": ["<:gunpowder:821528688646160395>", "gunpowder", "uncommon", 50, 30, None,
             "An uncommon drop for some uhh __minor__ terrorism purposes."],
-        "magma_cream": ["<:magma_cream:823593239683924038>", "magma cream", "common", 30, 20, None,
+        "magma_cream": ["<:magma_cream:823593239683924038>", "magma cream", "common", 30, 25, None,
             "A common drop for brewing potions."],
-        "blaze": ["<:blaze_rod:826150261906472960>", "blaze rod", "uncommon", None, 45, None,
+        "blaze": ["<:blaze_rod:826150261906472960>", "blaze rod", "uncommon", None, 50, None,
             "An uncommon drop for brewing potions."],
         "nether_star": ["<:nether_star:828135277351534592>", "nether star", "legendary", None, None, None,
             "A legendary drop from a monster that can only be challenged with the sword created from its origin."],
         
         # Potions
-        "luck_potion": ["<a:luck_potion:826871436769493062>", "luck potion", "rare+", 100000, 100, 10,
+        "luck_potion": ["<a:luck_potion:826871436769493062>", "luck potion", "rare+", 100000, 1000, 10,
             "May the luck be with you."],
         "fire_potion": ["<a:fire_potion:828135033466126366>", "fire potion", "rare", 10000, 100, 10,
             "Reduce the chance of dying in the Nether."],
-        "haste_potion": ["<a:haste_potion:828135803812577330>", "haste potion", "rare+", 120000, 200, 10,
+        "haste_potion": ["<a:haste_potion:828135803812577330>", "haste potion", "rare+", 120000, 2000, 10,
             "Increase loot yield from a mining session. This potion's stack affects the loot yield rate."],
-        "looting_potion": ["<a:looting_potion:841783868860399719>", "looting potion", "rare+", 120000, 200, 10,
+        "looting_potion": ["<a:looting_potion:841783868860399719>", "looting potion", "rare+", 120000, 2000, 10,
             "Increase loot yield from adventuring. This potion's stack affects the loot yield rate."],
         "undying_potion": ["<:undying_potion:828136854657826836>", "undying potion", "???", None, None, 10000000,
             "To achieve immortal, one simply requires many many sacrifices."]
@@ -206,84 +206,84 @@ def get_mine_loot(pick : str, world : int):
             }
         elif pick == "iron_pickaxe":
             return {
-                "stone": 0.35, # 3.5 on average
+                "stone": 0.40, # 4 on average
                 "coal": 0.30, # 3 on average
-                "iron": 0.20, # 2 on average
+                "iron": 0.10, # 1 on average
                 "redstone": 0.10, # 1 on average
                 "diamond": 0.01, # 0.1 on average
                 "rolls": 10
             }
         elif pick == "diamond_pickaxe":
             return {
-                "stone": 0.26, # 5.2 on average
-                "coal": 0.15, # 3 on average
-                "iron": 0.15, # 3 on average
-                "redstone": 0.20, # 4 on average
-                "diamond": 0.05, # 1 on average
-                "obsidian": 0.10, # 2 on average
+                "stone": 0.40, # 8 on average
+                "coal": 0.30, # 6 on average
+                "iron": 0.12, # 2.4 on average
+                "redstone": 0.10, # 2 on average
+                "diamond": 0.01, # 0.2 on average
+                "obsidian": 0.05, # 1 on average
                 "rolls": 20
             }
         elif pick == "nether_pickaxe":
             return {
-                "stone": 0.20, # 5 on average
-                "coal": 0.10, # 2.5 on average
-                "iron": 0.20, # 5 on average
-                "redstone": 0.20, # 5 on average
-                "diamond": 0.1, # 2.5 on average
-                "obsidian": 0.15, # 3.75 on average
+                "stone": 0.38, # 9.5 on average
+                "coal": 0.25, # 6.25 on average
+                "iron": 0.15, # 3.75 on average
+                "redstone": 0.15, # 3.75 on average
+                "diamond": 0.02, # 0.5 on average
+                "obsidian": 0.05, # 1.25 on average
                 "rolls": 25
             }
         elif pick == "fragile_star_pickaxe" or pick == "star_pickaxe":
             return {
-                "stone": 0.20, # 10 on average
-                "coal": 0.10, # 5 on average
-                "iron": 0.15, # 7.5 on average
-                "redstone": 0.15, # 7.5 on average
-                "diamond": 0.20, # 10 on average
-                "obsidian": 0.15, # 7.5 on average
+                "stone": 0.38, # 9.5 on average
+                "coal": 0.25, # 6.25 on average
+                "iron": 0.15, # 3.75 on average
+                "redstone": 0.15, # 3.75 on average
+                "diamond": 0.02, # 0.5 on average
+                "obsidian": 0.05, # 1.25 on average
                 "rolls": 50
             }
     elif world == 1:
         if pick == "wood_pickaxe":
             return {
-                "netherrack": 0.90, # 2.7 on average
-                "gold": 0.10, # 0.3 on average
+                "netherrack": 0.99, # 2.97 on average
+                "gold": 0.01, # 0.03 on average
                 "rolls": 3
             }
         elif pick == "stone_pickaxe":
             return {
-                "netherrack": 0.90, # 7.2 on average
-                "gold": 0.10, # 0.8 on average
+                "netherrack": 0.99, # 7.92 on average
+                "gold": 0.01, # 0.08 on average
                 "rolls": 8
             }
         elif pick == "iron_pickaxe":
             return {
-                "netherrack": 0.80, # 8 on average
-                "gold": 0.20, # 2 on average
+                "netherrack": 0.98, # 9.8 on average
+                "gold": 0.02, # 0.2 on average
                 "rolls": 10
             }
         elif pick == "diamond_pickaxe":
             return {
-                "netherrack": 0.75, # 15 on average
-                "gold": 0.18, # 3.6 on average
-                "obsidian": 0.02, # 0.4 on average
+                "netherrack": 0.96, # 19.2 on average
+                "gold": 0.02, # 0.4 on average
+                "obsidian": 0.005, # 0.1 on average
                 "debris": 0.001, # 0.02 on average
                 "rolls": 20
             }
         elif pick == "nether_pickaxe":
             return {
-                "netherrack": 0.73, # 18.25 on average
-                "gold": 0.20, # 5 on average
-                "obsidian": 0.05, # 1.25 on average
-                "debris": 0.005, # 0.125 on average
+                "netherrack": 0.93, # 23.25 on average
+                "gold": 0.05, # 1.25 on average
+                "obsidian": 0.005, # 0.125 on average
+                "debris": 0.001, # 0.025 on average
                 "rolls": 25
             }
         elif pick == "star_pickaxe":
             return {
-                "netherrack": 0.50, # 25 on average
-                "gold": 0.35, # 17.5 on average
-                "obsidian": 0.15, # 7.5 on average
-                "debris": 0.05, # 2.5 on average
+                "netherrack": 0.93, # 46.5 on average
+                "gold": 0.05, # 2.5 on average
+                "obsidian": 0.01, # 0.5 on average
+                "debris": 0.002, # 0.1 on average
                 "rolls": 50
             }
     elif world == 2:
@@ -299,19 +299,19 @@ def get_mine_loot(pick : str, world : int):
             }
         elif pick == "iron_pickaxe":
             return {
-                "moonstone": 0.2, # 2 on average
+                "moonstone": 0.5, # 5 on average
                 "rolls": 10
             }
         elif pick == "diamond_pickaxe":
             return {
-                "moonstone": 0.4, # 8 on average
+                "moonstone": 0.5, # 10 on average
                 "obsidian": 0.2, # 4 on average
                 "star_fragment": 0.0001, # 0.002 on average
                 "rolls": 20
             }
         elif pick == "nether_pickaxe":
             return {
-                "moonstone": 0.4, # 10 on average
+                "moonstone": 0.7, # 17.5 on average
                 "obsidian": 0.2, # 5 on average
                 "star_fragment": 0.0005, # 0.0125 on average
                 "rolls": 25
@@ -320,7 +320,7 @@ def get_mine_loot(pick : str, world : int):
             return {
                 "moonstone": 0.5, # 25 on average
                 "obsidian": 0.4, # 20 on average
-                "star_fragment": 0.005, # 0.25 on average
+                "star_fragment": 0.001, # 0.05 on average
                 "rolls": 50
             }
     return None
@@ -397,8 +397,8 @@ def get_adventure_loot(sword : str, world : int):
     if world == 0:
         if sword == "wood_sword":
             return {
-                "zombie_meat": 0.30,  # 0.6 on average
-                "rolls": 2
+                "zombie_meat": 0.30,  # 0.9 on average
+                "rolls": 3
             }
         elif sword == "stone_sword":
             return {
@@ -462,21 +462,25 @@ def get_adventure_loot(sword : str, world : int):
             }
         elif sword == "diamond_sword":
             return {
-                "magma_cream": 0.65, # 13 on average
+                "magma_cream": 0.25, # 5 on average
+                "zombie_meat": 0.25, # 5 on average
+                "bone": 0.20, # 4 on average
                 "coal": 0.05, # 1 on average
                 "gunpowder": 0.10, # 2 on average
-                "blaze": 0.10, # 2 on average,
+                "blaze": 0.02, # 0.4 on average,
                 "pearl": 0.10, # 2 on average
                 "rolls": 20
             }
         elif sword == "nether_sword":
             return {
-                "magma_cream": 0.50, # 12.5 on average
+                "magma_cream": 0.20, # 5 on average
+                "zombie_meat": 0.20, # 5 on average
+                "bone": 0.20, # 5 on average
                 "coal": 0.10, # 2.5 on average
                 "gunpowder": 0.05, # 1.25 on average
-                "blaze": 0.10, # 2.25 on average
-                "pearl": 0.20, # 5 on average
-                "nether_star": 0.005, # 0.125 on average
+                "blaze": 0.05, # 1.25 on average
+                "pearl": 0.10, # 2.5 on average
+                "nether_star": 0.001, # 0.025 on average
                 "rolls": 25
             }
     elif world == 2:
