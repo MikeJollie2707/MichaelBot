@@ -31,3 +31,6 @@ lib/Lavalink3.3/logs
 
 # Deprecated files
 categories/utilityfun/
+
+# Website files
+docs/docs/site/
