@@ -998,6 +998,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     await ctx.reply(f"You don't have this tool in your inventory.", mention_author = False)
                     ctx.command.reset_cooldown(ctx)
                     return
+                if "fragile_" in exist_inv["id"] and await DB.User.get_world(conn, ctx.author.id) == 1:
+                    await ctx.reply("You can't equip fragile tools in the Nether because it'll then break!", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
+                    return
                 
                 tool_type = DB.User.ActiveTools.get_tool_type(tool_name)
                 
