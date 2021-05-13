@@ -5,7 +5,7 @@ This document will show, in details, the changes made to an item. Usually, this 
 
 <!-- omit in toc -->
 ## Table of Contents
-- [1.6.5.5](#1655)
+- [1.6.6](#166)
     - [Buffs](#buffs)
     - [Nerfs](#nerfs)
     - [Neutral changes](#neutral-changes)
@@ -20,7 +20,7 @@ This document will show, in details, the changes made to an item. Usually, this 
     - [Nerfs](#nerfs-2)
     - [Neutral changes](#neutral-changes-2)
 
-## 1.6.5.5
+## 1.6.6
 
 ### Buffs
 
