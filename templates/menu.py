@@ -4,6 +4,8 @@ from discord.ext import commands
 import asyncio
 import typing
 
+from templates.navigate import MinimalPages
+
 class Menu:
     def __init__(self, init_page : discord.Embed, terminate_emoji : str, return_emoji : str):
         """
@@ -157,6 +159,13 @@ class Menu:
                     else:
                         await message.remove_reaction(reaction, user)
 
+class MenuMinimalPages(MinimalPages):
+    def __init__(self, init_page = 0, **kwargs):
+        super().__init__(init_page, **kwargs)
+    
+    async def _on_terminate(self, message):
+        pass
+
 class Option:
     def __init__(self, options, terminate_emoji = '❌', return_emoji = '🔼'):
         """
@@ -221,13 +230,26 @@ class Option:
                             await message.edit(embed = option[0])
 
                             await message.clear_reactions()
-                            for sub_reactions in option[1]:
-                                await message.add_reaction(sub_reactions)
-                            await message.add_reaction(self.__return_emoji__)
-                            
-                            self.__previous_options__.append(self.__dynamic_options__)
-                            self.__embeds_route__.append(option[0])
-                            self.__dynamic_options__ = option[1]
+                            if isinstance(option[1], dict):
+                                for sub_reactions in option[1]:
+                                    await message.add_reaction(sub_reactions)
+
+                                await message.add_reaction(self.__return_emoji__)
+                                
+                                self.__previous_options__.append(self.__dynamic_options__)
+                                self.__embeds_route__.append(option[0])
+                                self.__dynamic_options__ = option[1]
+                            elif isinstance(option[1], discord.Embed):
+                                subpages = MenuMinimalPages(previous = '◀️', forward = '▶️', terminate = self.__return_emoji__)
+                                for page in option:
+                                    subpages.add_page(page)
+                                
+                                await subpages.start(ctx, message = message)
+
+                                self.__previous_options__.append(self.__dynamic_options__)
+                                self.__embeds_route__.append(option[0])
+                                self.__dynamic_options__ = {}
+                                await self._on_return(message)
                     else:
                         # It still needs to check if it's truly the terminate/return emoji or just
                         # some random emote added.
@@ -239,29 +261,33 @@ class Option:
                                 break
                         
                         if str(reaction.emoji) == self.__return_emoji__:
-                            # Pop out the current embed, and display the previous embed.
-                            self.__embeds_route__.pop()
-                            embed = self.__embeds_route__[-1]
-                            await message.edit(embed = embed)
-                            
-                            # __previous_options__ tracks the option for the previous embed only,
-                            # so we need to pop that and add those reactions.
-                            await message.clear_reactions()
-                            self.__dynamic_options__ = self.__previous_options__.pop()
-                            for sub_reactions in self.__dynamic_options__:
-                                await message.add_reaction(sub_reactions)
-                            
-
-                            if len(self.__embeds_route__) == 1:
-                                await message.add_reaction(self.__terminate_emoji__)
-                            else:
-                                await message.add_reaction(self.__return_emoji__)
+                            await self._on_return(message)
         except Exception as e:
             raise e
     
+    async def _on_return(self, message):
+        # Pop out the current embed, and display the previous embed.
+        self.__embeds_route__.pop()
+        embed = self.__embeds_route__[-1]
+        await message.edit(embed = embed)
+        
+        # __previous_options__ tracks the option for the previous embed only,
+        # so we need to pop that and add those reactions.
+        await message.clear_reactions()
+        self.__dynamic_options__ = self.__previous_options__.pop()
+        for sub_reactions in self.__dynamic_options__:
+            await message.add_reaction(sub_reactions)
+        
+
+        if len(self.__embeds_route__) == 1:
+            await message.add_reaction(self.__terminate_emoji__)
+        else:
+            await message.add_reaction(self.__return_emoji__)
     async def _on_stop__(self, message):
         await message.clear_reactions()
         await message.edit(content = ":white_check_mark:", embed = None)
     async def _on_timeout__(self, message):
         await message.clear_reactions()
         await message.add_reaction('🕛')
+
+
