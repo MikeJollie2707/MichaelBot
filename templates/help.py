@@ -19,8 +19,11 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
     - `ctx`: A `commands.Context`.
     - `cog`: A `commands.Cog` to display.
     """
+    MAX_COMMANDS = 10
+    cogs = []
     display = ""
-    for command in cog.get_commands():
+    commands = cog.get_commands()
+    for index, command in enumerate(commands):
         if command.hidden != True:
             command_title = command.name
             if command.signature != "":
@@ -37,18 +40,20 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
             
             display += '- ' + short_desc + '\n\n'
             #display += ctx.bot.__divider__
-    
-    title_str = f"{cog.qualified_name} ({len(cog.get_commands())} commands): "
-    
-    content = Facility.get_default_embed(
-        title = title_str,
-        description = display,
-        color = discord.Color.green(),
-        timestamp = datetime.datetime.utcnow(),
-        author = ctx.author
-    ).set_thumbnail(
-        url = ctx.bot.user.avatar_url
-    )
+        if index == MAX_COMMANDS - 1 or index == len(commands) - 1:
+            title_str = f"{cog.qualified_name} ({len(commands)} commands): "
+            
+            content = Facility.get_default_embed(
+                title = title_str,
+                description = display,
+                color = discord.Color.green(),
+                timestamp = datetime.datetime.utcnow(),
+                author = ctx.author
+            ).set_thumbnail(
+                url = ctx.bot.user.avatar_url
+            )
+            cogs.append(content)
+            display = ""
 
     #for command in cog.get_commands():
     #    if not command.hidden:
@@ -58,7 +63,7 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
     #            inline = False
     #        )
 
-    return content
+    return cogs
 
 def command_help_format(ctx : commands.Context, command : commands.Command) -> discord.Embed:
     """
@@ -167,7 +172,13 @@ class BigHelp(commands.HelpCommand):
 
     async def send_cog_help(self, cog):
         content = cog_help_format(self.context, cog)
-        await self.context.send(embed = content)
+        if len(content) > 1:
+            page = Pages()
+            for embed in content:
+                page.add_page(embed)
+            await page.start(self.context)
+        else:
+            await self.context.send(embed = content[0])
     
     async def send_group_help(self, group):
         content = command_help_format(self.context, group)
@@ -221,6 +232,8 @@ class SmallHelp():
         for category in cogs:
             if cog_info[category] > 0:
                 options[cogs[category].emoji] = cog_help_format(self.ctx, cogs[category])
+                if len(options[cogs[category].emoji]) == 1:
+                    options[cogs[category].emoji] = options[cogs[category].emoji][0]
         menu = Option([main_page, options])
         await menu.start(self.ctx)
     
@@ -233,7 +246,7 @@ class SmallHelp():
             page = command_help_format(self.ctx, command)
             paginate.add_page(page)
         
-        await paginate.event(self.ctx, interupt = False)
+        await paginate.start(self.ctx, interupt = False)
     
     async def send_command_help(self, command):
         await self.ctx.send(embed = command_help_format(self.ctx, command))
