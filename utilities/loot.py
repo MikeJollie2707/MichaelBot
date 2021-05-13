@@ -899,6 +899,18 @@ def get_brew_ingredient(item : str):
             "money": 10000,
             "quantity": 1
         },
+        "looting_potion": {
+            "nether_star": 1,
+
+            "redstone": 32,
+            "spider_eye": 32,
+            "gunpowder": 64,
+            "coal": 32,
+            "blaze": 2,
+
+            "money": 10000,
+            "quantity": 1
+        },
         "undying_potion": {
             "moyai": 1,
             "zombie_meat": 100000,
