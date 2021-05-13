@@ -309,7 +309,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 if embed is not None:
                     pages.add_page(embed)
 
-                await pages.event(ctx, interupt = False)
+                await pages.start(ctx, interupt = False)
 
     @roleme.command()
     @commands.check(has_database)

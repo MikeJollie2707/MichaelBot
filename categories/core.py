@@ -58,7 +58,7 @@ class Core(commands.Cog):
             )
             paginator.add_page(embed)
         
-        await paginator.event(ctx, interupt = False)
+        await paginator.start(ctx, interupt = False)
     @changelog.command()
     async def dev(self, ctx : commands.Context):
         '''
@@ -89,7 +89,7 @@ class Core(commands.Cog):
             )
             paginator.add_page(embed)
         
-        await paginator.event(ctx, interupt = False)
+        await paginator.start(ctx, interupt = False)
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, add_reactions = True, manage_messages = True, send_messages = True)

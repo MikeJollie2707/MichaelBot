@@ -88,7 +88,7 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
             title = "Subsub2"
         )
         
-        menu = Option([embed, {'1️⃣' : embed2, '2️⃣' : [embed3, {'🔰' : [embed11, {'<:redstone:822527280777396264>' : embed111, '🎃' : embed112}], '📛' : embed12}]}])
+        menu = Option([embed, {'1️⃣' : embed2, '2️⃣' : [embed3, {'🔰' : [embed11, embed111, embed112], '📛' : embed12}]}])
         await menu.start(ctx)
 
 def setup(bot):

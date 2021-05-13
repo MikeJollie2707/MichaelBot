@@ -710,7 +710,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if embed is not None:
                 page.add_page(embed)
             
-            await page.event(ctx, interupt = False) 
+            await page.start(ctx, interupt = False) 
         elif recipe is not None:
             async with self.bot.pool.acquire() as conn:
                 friendly_name = await DB.Items.get_friendly_name(conn, item)
@@ -844,7 +844,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             if embed is not None:
                 page.add_page(embed)
             
-            await page.event(ctx, interupt = False) 
+            await page.start(ctx, interupt = False) 
         elif recipe is not None:
             async with self.bot.pool.acquire() as conn:
                 friendly_name = await DB.Items.get_friendly_name(conn, potion)
@@ -1132,7 +1132,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             
             if embed is not None:
                 page.add_page(embed)
-            await page.event(ctx, interupt = False)
+            await page.start(ctx, interupt = False)
     
     @inventory.command(name = 'value')
     async def inv_value(self, ctx : commands.Context):
@@ -1197,7 +1197,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if embed is not None:
                     page.add_page(embed)
                 
-                await page.event(ctx, interupt = False)
+                await page.start(ctx, interupt = False)
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1425,7 +1425,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         embed = None
                 if embed is not None:
                     page.add_page(embed)
-                await page.event(ctx, interupt = False)
+                await page.start(ctx, interupt = False)
 
     @market.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1700,7 +1700,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     embed.add_field(
                         name = f"{ind + 1}. {LootTable.acapitalize(item['name'])}",
-                        value = f"*{item['description']}*\n{text}",
+                        value = f"{text}",
                         inline = False
                     )
                 

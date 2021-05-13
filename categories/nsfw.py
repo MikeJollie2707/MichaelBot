@@ -217,7 +217,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
             paginate.add_page(embed)
 
-        await paginate.event(ctx, interupt = False)
+        await paginate.start(ctx, interupt = False)
     @commands.group(invoke_without_command = True)
     @commands.bot_has_permissions(add_reactions = True, read_message_history = True, send_messages = True)
     async def nhentai(self, ctx):
