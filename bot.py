@@ -23,7 +23,7 @@ __discord_extension__ = [
     "categories.game",
     "categories.logger",
     "categories.moderation",
-    #"categories.music",
+    "categories.music",
     "categories.nsfw",
     "categories.server",
     "categories.utility"
@@ -87,6 +87,8 @@ async def get_prefix(bot : MichaelBot, message):
     #else:
     #    prefix = '$'
     prefix = None
+    if bot.user.id == 649822097492803584:
+        return '!'
     if message.guild is not None:
         prefix = bot._prefixes[message.guild.id]
     if prefix is None:
