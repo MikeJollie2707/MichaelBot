@@ -96,7 +96,7 @@ These are resources I use for this bot.
 
 - [Rapptz](https://github.com/Rapptz) (discord.py)
 - [discord.py Documentation](https://discordpy.readthedocs.io/en/latest/api.html)
-- [Frederikam](https://github.com/Frederikam) (Lavalink)
+- [Frederikam](https://github.com/freyacodes/Lavalink) (Lavalink)
 - [PythonistaGuild](https://github.com/PythonistaGuild) (WaveLink)
 - [Music advanced example](https://github.com/PythonistaGuild/Wavelink/blob/master/examples/advanced/advanced.py) (code used in music.py)
 - [discord.py Discord support server](https://discord.gg/r3sSKJJ)
