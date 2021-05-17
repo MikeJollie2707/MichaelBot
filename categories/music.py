@@ -253,7 +253,62 @@ class Music(commands.Cog):
                     value = "- 🔂: " + ('✅' if controller.is_single_loop else '❌') + "\n- 🔁: " + ('✅' if controller.is_queue_loop else '❌'),
                     inline = False
                 )
+                page.add_page(embed)
+            await page.start(ctx)
+    
+    @queue.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
+    async def loop(self, ctx):
+        '''
+        Toggle queue loop.
+        This will disable single song loop if it is enabled.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 3 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+        controller = self.get_controller(ctx)
+        controller.is_queue_loop = not controller.is_queue_loop
+        if controller.is_queue_loop and controller.is_single_loop:
+            await ctx.invoke(self.repeat)
         
+        if controller.is_queue_loop:
+            await ctx.reply("🔁 **Enabled!**", mention_author = False)
+        else:
+            await ctx.reply("🔁 **Disabled!**", mention_author = False)
+
+    @queue.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    async def clear(self, ctx):
+        '''
+        Clear queue, but keep the current song playing.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        controller = self.get_controller(ctx)
+        while not controller.queue.empty():
+            await controller.queue.get()
+        
+        await ctx.reply("Cleared song queue!", mention_author = False)
+
+    @queue.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    async def remove(self, ctx, index : int):
+        '''
+        Remove a song from the queue, using the order index.
+
         await ctx.reply(embed = embed, mention_author = False)
     
     @commands.command()
