@@ -5,8 +5,12 @@ import wavelink
 import datetime as dt
 import asyncio
 import typing
+import re
 
 import utilities.facility as Facility
+from templates.navigate import Pages
+
+URL_REG = re.compile(r'https?://(?:www\.)?.+')
 
 class MusicController:
     def __init__(self, bot, guild_id):
@@ -115,18 +119,20 @@ class Music(commands.Cog):
         if not controller.player.is_connected:
             await ctx.invoke(self.connect)
         await controller.queue.put(tracks[0])
+
+        if not URL_REG.match(track):
+            track = f'ytsearch:{track}'
+        tracks = await self.bot.wavelink.get_tracks(track)
+
+        if tracks is None:
+            await ctx.reply("Could not find any songs.")
+            return
         
-        await ctx.reply(f"Added {tracks[0]} to the queue.", mention_author = False)
-    
-    @commands.command()
-    async def loop(self, ctx):
-        controller = self.get_controller(ctx)
-        controller.is_queue_loop = not controller.is_queue_loop
-        if controller.is_queue_loop and controller.is_single_loop:
-            await ctx.invoke(self.repeat)
-        
-        if controller.is_queue_loop:
-            await ctx.reply("🔁 **Enabled!**", mention_author = False)
+        if isinstance(tracks, wavelink.TrackPlaylist):
+            for track in tracks.tracks:
+                track = wavelink.Track(track.id, track.info)
+                await controller.queue.put(track)
+            await ctx.reply(f"Added the playlist {tracks.data['playlistInfo']['name']} with {len(tracks.tracks)} songs to the queue.", mention_author = False)
         else:
             await ctx.reply("🔁 **Disabled!**", mention_author = False)
     
