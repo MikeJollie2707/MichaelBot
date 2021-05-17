@@ -309,8 +309,34 @@ class Music(commands.Cog):
         '''
         Remove a song from the queue, using the order index.
 
-        await ctx.reply(embed = embed, mention_author = False)
-    
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name} 3
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
+        controller = self.get_controller(ctx)
+        max_size = controller.queue.qsize()
+        index -= 1
+        if index < 0 or index > max_size - 1:
+            await ctx.reply("Index out of range.")
+            return
+        
+        fake_queue = asyncio.Queue()
+        removed_track = None
+        for i in range(0, max_size):
+            if i == index:
+                removed_track = await controller.queue.get()
+            else:
+                await fake_queue.put(await controller.queue.get())
+        max_size -= 1
+        for i in range(0, max_size):
+            await controller.queue.put(await fake_queue.get())
+        
+        await ctx.reply(f"**Track removed:** `{removed_track.title}`.", mention_author = False)
+
     @commands.command()
     async def pause(self, ctx):
         controller = self.get_controller(ctx)
