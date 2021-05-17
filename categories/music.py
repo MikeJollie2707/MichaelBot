@@ -134,8 +134,44 @@ class Music(commands.Cog):
                 await controller.queue.put(track)
             await ctx.reply(f"Added the playlist {tracks.data['playlistInfo']['name']} with {len(tracks.tracks)} songs to the queue.", mention_author = False)
         else:
-            await ctx.reply("🔁 **Disabled!**", mention_author = False)
+            await controller.queue.put(tracks[0])
+            await ctx.reply(f"Added {tracks[0]} to the queue.", mention_author = False)
     
+    @commands.command(aliases = ['search'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
+    async def search(self, ctx, *, track):
+        '''
+        Search the input track and return 10 results.
+        You can then copy the link of the one you want into `play`.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 3 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name} rickroll
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`
+        '''
+
+        tracks = await self.bot.wavelink.get_tracks(f'ytsearch:{track}')
+        if tracks is None:
+            await ctx.reply("Could not find any songs.")
+            return
+        
+        embed = Facility.get_default_embed(
+            title = "Top 10 search results",
+            description = "",
+            timestamp = dt.datetime.utcnow(),
+            author = ctx.author
+        )
+
+        for index, track in enumerate(tracks):
+            embed.description += f"**{index + 1}.** [{track.title}]({track.uri}) - {dt.timedelta(milliseconds = track.duration)}\n\n"
+            if index == 9:
+                break
+        
+        await ctx.reply(embed = embed, mention_author = False)
+
     @commands.command()
     async def repeat(self, ctx):
         controller = self.get_controller(ctx)
