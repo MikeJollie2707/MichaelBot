@@ -189,37 +189,70 @@ class Music(commands.Cog):
     @commands.command()
     async def queue(self, ctx):
         controller = self.get_controller(ctx)
-        embed = Facility.get_default_embed(timestamp = dt.datetime.utcnow())
-        if controller.queue.empty() or controller.player.is_playing == False:
+        if controller.queue.empty() and controller.player.is_playing == False:
+            embed = Facility.get_default_embed(timestamp = dt.datetime.utcnow())
             embed.description = "*There are no songs currently in queue.*"
-        else:
-            import itertools
-            current = controller.current_track
-            upcoming = list(itertools.islice(controller.queue._queue, 0, 5))
-
+            await ctx.reply(embed = embed, mention_author = False)
+        elif controller.queue.empty():
             embed = Facility.get_default_embed(
                 title = f"Queue for {ctx.guild}",
                 timestamp = dt.datetime.utcnow(),
                 author = ctx.author
             ).add_field(
                 name = "Now playing:",
-                value = f"[{current.title}]({current.uri}) - {dt.timedelta(milliseconds = current.duration)}",
+                value = f"[{controller.current_track.title}]({controller.current_track.uri}) - {dt.timedelta(milliseconds = controller.current_track.duration)}",
+                inline = False
+            ).add_field(
+                name = "Status:",
+                value = "- 🔂: " + ('✅' if controller.is_single_loop else '❌') + "\n- 🔁: " + ('✅' if controller.is_queue_loop else '❌'),
                 inline = False
             )
+            await ctx.reply(embed = embed, mention_author = False)
+        else:
+            current = controller.current_track
+            upcoming = list(controller.queue._queue)
+
+            page = Pages()
 
             text = ""
+            embed = None
             for index, track in enumerate(upcoming):
+                if index % 5 == 0:
+                    embed = Facility.get_default_embed(
+                        title = f"Queue for {ctx.guild}",
+                        timestamp = dt.datetime.utcnow(),
+                        author = ctx.author
+                    ).add_field(
+                        name = "Now playing:",
+                        value = f"[{current.title}]({current.uri}) - {dt.timedelta(milliseconds = current.duration)}",
+                        inline = False
+                    )
+                
                 text += f"`{index + 1}`. [{track.title}]({track.uri}) - {dt.timedelta(milliseconds = track.duration)}\n"
-            
-            embed.add_field(
-                name = "Up Next:",
-                value = text,
-                inline = False
-            )
-            embed.set_footer(
-                text = embed.footer.text + " | Queue Loop: " + ('✅' if controller.is_queue_loop else '❌'),
-                icon_url = embed.footer.icon_url
-            )
+
+                if index % 5 == 4:
+                    embed.add_field(
+                        name = "Up Next:",
+                        value = text,
+                        inline = False
+                    ).add_field(
+                        name = "Status:",
+                        value = "- 🔂: " + ('✅' if controller.is_single_loop else '❌') + "\n- 🔁: " + ('✅' if controller.is_queue_loop else '❌'),
+                        inline = False
+                    )
+                    page.add_page(embed)
+                    text = ""
+                    embed = None
+            if embed is not None:
+                embed.add_field(
+                    name = "Up Next:",
+                    value = text,
+                    inline = False
+                ).add_field(
+                    name = "Status:",
+                    value = "- 🔂: " + ('✅' if controller.is_single_loop else '❌') + "\n- 🔁: " + ('✅' if controller.is_queue_loop else '❌'),
+                    inline = False
+                )
         
         await ctx.reply(embed = embed, mention_author = False)
     
