@@ -388,6 +388,11 @@ class Music(commands.Cog):
         if not controller.player.is_playing:
             await ctx.reply("There's nothing to stop.")
             return
+        
+        await controller.player.stop()
+        controller.is_queue_loop = False
+        controller.is_single_loop = False
+        # Clear queue
         while not controller.queue.empty():
             await controller.queue.get()
         await controller.player.stop()
@@ -397,11 +402,13 @@ class Music(commands.Cog):
     @commands.command(aliases = ['dc'])
     async def disconnect(self, ctx):
         controller = self.get_controller(ctx)
+        await controller.player.stop()
         while not controller.queue.empty():
             await controller.queue.get()
-        await controller.player.stop()
         
         await controller.player.disconnect()
+        self.controllers.pop(ctx.guild.id)
+        await ctx.reply("**Successfully disconnected.**", mention_author = False)
 
 def setup(bot):
     bot.add_cog(Music(bot))
