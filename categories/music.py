@@ -76,6 +76,11 @@ class Music(commands.Cog):
         # Set our node hook callback
         node.set_hook(self.on_event_hook)
     
+    def cog_unload(self):
+        # Clear all controllers, as they're now invalid.
+        self.controllers = {}
+        return super().cog_unload()
+
     async def on_event_hook(self, event):
         """Node hook callback."""
         if isinstance(event, (wavelink.TrackEnd, wavelink.TrackException)):
