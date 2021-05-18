@@ -42,6 +42,7 @@ class MusicController:
 
             if not self.is_single_loop:
                 self.current_track = await self.queue.get()
+            
             await self.player.play(self.current_track)
             await self.channel.send(f"Now playing: `{self.current_track}`")
 
@@ -98,8 +99,23 @@ class Music(commands.Cog):
 
         return self.controllers[gid]
 
-    @commands.command()
+    @commands.command(aliases = ['join'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
     async def connect(self, ctx, *, voice_channel : discord.VoiceChannel = None):
+        '''
+        Connect to a voice channel.
+        If it is not provided, it'll connect to the VC you're in.
+
+        **Aliases:** `join`.
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 2 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name} discord got talents
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         if voice_channel is None:
             try:
                 voice_channel = ctx.author.voice.channel
@@ -109,21 +125,30 @@ class Music(commands.Cog):
         
         controller = self.get_controller(ctx)
         controller.channel = ctx.channel
-        await ctx.reply(f"Connecting to `{voice_channel}`", mention_author = False)
+        await ctx.reply(f"Connecting to `{voice_channel}`...", mention_author = False)
         await controller.player.connect(voice_channel.id)
     
     @commands.command(aliases = ['p'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 1.0, type = commands.BucketType.guild)
     async def play(self, ctx, *, track):
-        tracks = await self.bot.wavelink.get_tracks(f'ytsearch:{track}')
+        '''
+        Play a song from YouTube.
+        You can provide a link or the song's title/keywords. You can also use a playlist link.
 
-        if tracks is None:
-            await ctx.reply("Could not find any songs.")
-            return
-        
+        **Aliases:** `p`.
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 1 second per 1 use (guild)
+        **Example 1:** {prefix}{command_name} https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        **Example 2:** {prefix}{command_name} show yourself
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         if not controller.player.is_connected:
             await ctx.invoke(self.connect)
-        await controller.queue.put(tracks[0])
 
         if not URL_REG.match(track):
             track = f'ytsearch:{track}'
@@ -178,7 +203,20 @@ class Music(commands.Cog):
         await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
     async def repeat(self, ctx):
+        '''
+        Toggle single song looping.
+        
+        **Usage:** `<prefix>{command_name} {command_signature}`
+        **Cooldown:** 3 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         controller.is_single_loop = not controller.is_single_loop
         if controller.is_single_loop and not controller.player:
@@ -191,8 +229,22 @@ class Music(commands.Cog):
         else:
             await ctx.reply("🔂 **Disabled!**", mention_author = False)
     
-    @commands.command()
+    @commands.group(aliases = ['q'], invoke_without_command = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
     async def queue(self, ctx):
+        '''
+        Display the song queue.
+
+        **Aliases:** `q`.
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 3 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         if controller.queue.empty() and controller.player.is_playing == False:
             embed = Facility.get_default_embed(timestamp = dt.datetime.utcnow())
@@ -343,7 +395,20 @@ class Music(commands.Cog):
         await ctx.reply(f"**Track removed:** `{removed_track.title}`.", mention_author = False)
 
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 1.0, type = commands.BucketType.guild)
     async def pause(self, ctx):
+        '''
+        Toggle pausing the player.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 1 second per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         if not controller.player.is_playing:
             await ctx.reply("There's nothing to pause you dummy.")
@@ -356,7 +421,18 @@ class Music(commands.Cog):
             await ctx.reply("Paused!", mention_author = False)
     
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def resume(self, ctx):
+        '''
+        Resume the player from pausing.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         if not controller.player.is_playing:
             await ctx.reply("There's nothing to resume from.")
@@ -367,8 +443,23 @@ class Music(commands.Cog):
         else:
             await ctx.reply("Player is not paused.")
     
-    @commands.command()
+    @commands.command(aliases = ['vol'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
     async def volume(self, ctx, *, new_volume : int):
+        '''
+        Set the volume for the player.
+        Acceptable volume range is from 0-200. By default, the player has volume 50.
+
+        **Aliases:** `vol`.
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 3 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name} 100
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         
         new_volume = max(min(new_volume, 200), 0)
@@ -377,8 +468,20 @@ class Music(commands.Cog):
         await controller.player.set_volume(new_volume)
         await ctx.reply(f"Set volume to {new_volume}.", mention_author = False)
 
-    @commands.command()
+    @commands.command(aliases = ['s'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def skip(self, ctx):
+        '''
+        Skip the current song and play the next song in queue if there is one.
+        - If single loop is enabled, the next song will be the same.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         if not controller.player.is_playing:
             await ctx.reply("There are no songs to skip.")
@@ -388,7 +491,21 @@ class Music(commands.Cog):
         await ctx.reply("Skipped!", mention_author = False)
 
     @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
     async def stop(self, ctx):
+        '''
+        Stop the player and clear the queue.
+        This will stop the song, disable all loops, clear all songs in queue, but retains the volume.
+
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         if not controller.player.is_playing:
             await ctx.reply("There's nothing to stop.")
@@ -400,12 +517,26 @@ class Music(commands.Cog):
         # Clear queue
         while not controller.queue.empty():
             await controller.queue.get()
-        await controller.player.stop()
         
         await ctx.reply("Stopped the player.", mention_author = False)
     
     @commands.command(aliases = ['dc'])
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
     async def disconnect(self, ctx):
+        '''
+        Disconnect the player from the VC.
+        This will forget any configurations on the player, including loop, queue, volume, etc.
+
+        **Aliases:** `dc`.
+        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
+
         controller = self.get_controller(ctx)
         await controller.player.stop()
         while not controller.queue.empty():
