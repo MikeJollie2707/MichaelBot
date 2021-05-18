@@ -167,7 +167,7 @@ class Music(commands.Cog):
             await controller.queue.put(tracks[0])
             await ctx.reply(f"Added {tracks[0]} to the queue.", mention_author = False)
     
-    @commands.command(aliases = ['search'])
+    @commands.command(aliases = ['find'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
     async def search(self, ctx, *, track):
@@ -313,10 +313,10 @@ class Music(commands.Cog):
                 page.add_page(embed)
             await page.start(ctx)
     
-    @queue.command()
+    @queue.command(name = 'loop')
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
-    async def loop(self, ctx):
+    async def queue_loop(self, ctx):
         '''
         Toggle queue loop.
         This will disable single song loop if it is enabled.
@@ -338,10 +338,10 @@ class Music(commands.Cog):
         else:
             await ctx.reply("🔁 **Disabled!**", mention_author = False)
 
-    @queue.command()
+    @queue.command(name = 'clear')
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
-    async def clear(self, ctx):
+    async def queue_clear(self, ctx):
         '''
         Clear queue, but keep the current song playing.
 
@@ -359,10 +359,10 @@ class Music(commands.Cog):
         
         await ctx.reply("Cleared song queue!", mention_author = False)
 
-    @queue.command()
+    @queue.command(name = 'remove')
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
-    async def remove(self, ctx, index : int):
+    async def queue_remove(self, ctx, index : int):
         '''
         Remove a song from the queue, using the order index.
 
