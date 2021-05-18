@@ -311,12 +311,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
 
                 await pages.start(ctx, interupt = False)
 
-    @roleme.command()
+    @roleme.command('add')
     @commands.check(has_database)
     @commands.has_guild_permissions(manage_roles = True)
     @commands.bot_has_permissions(manage_roles = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
-    async def add(self, ctx, role : discord.Role, *, description : str = None):
+    async def roleme_add(self, ctx, role : discord.Role, *, description : str = None):
         '''
         Add a role for self-assigning.
         This role cannot be the default `everyone` role, nor roles that are above the bot.
@@ -346,12 +346,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 await ctx.reply("Role added to self-assign roles.", mention_author = False)
 
     # I don't consume rest to make it consistent with roleme add.
-    @roleme.command()
+    @roleme.command(name = 'remove')
     @commands.check(has_database)
     @commands.has_guild_permissions(manage_roles = True)
     @commands.bot_has_permissions(manage_roles = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
-    async def remove(self, ctx, role : discord.Role):
+    async def roleme_remove(self, ctx, role : discord.Role):
         '''
         Remove a role from self-assigning.
         

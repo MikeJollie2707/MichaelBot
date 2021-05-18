@@ -117,10 +117,10 @@ class Events(commands.Cog):
             await ctx.send("Hey there slow down! %s left!" % humanize.precisedelta(error.retry_after, "seconds", format = "%0.2f"))
         # May change to convert_roleperms due to Discord changes.
         elif isinstance(error, commands.MissingPermissions):
-            missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
+            missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
             await ctx.send("You are missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         elif isinstance(error, commands.BotMissingPermissions):
-            missing_perms = [f"`{Facility.convert_channelperms_dpy_discord(permission)}`" for permission in error.missing_perms]
+            missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
             await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         elif isinstance(error, commands.NSFWChannelRequired):
             await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
