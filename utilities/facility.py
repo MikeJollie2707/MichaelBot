@@ -124,43 +124,6 @@ def convert_roleperms_dpy_discord(role_permissions : str) -> str:
     }
     return permissions[role_permissions]
 
-def convert_channelperms_dpy_discord(channel_permissions : str) -> str:
-    permissions = {
-        # Community Server Permissions
-        # General Channel Permissions
-        "read_messages"        : "View Channel",
-        "manage_channels"      : "Manage Channels",
-        "manage_roles"         : "Manage Permissions",
-        "manage_webhooks"      : "Manage Webhooks",
-
-        # Membership Permissions
-        "create_instant_invite": "Create Invite",
-
-        # Text Channel Permissions
-        "send_messages"        : "Send Messages",
-        "embed_links"          : "Embed Links",
-        "attach_files"         : "Attach Files",
-        "add_reactions"        : "Add Reaction",
-        "external_emojis"      : "Use External Emojis",
-        "mention_everyone"     : "Mention @everyone, @here, and All Roles",
-        "manage_messages"      : "Manage Messages",
-        "read_message_history" : "Read Message History",
-        "send_tts_messages"    : "Send TTS Messages",
-        "use_slash_commands"   : "Use Slash Commands",
-
-        # Voice Channel Permissions
-        "connect"              : "Connect",
-        "speak"                : "Speak",
-        "stream"               : "Video",
-        "use_voice_activation" : "Use Voice Activity",
-        "priority_speaker"     : "Priority Speaker",
-        "mute_members"         : "Mute Members",
-        "deafen_members"       : "Deafen Members",
-        "move_members"         : "Move Members"
-    }
-
-    return permissions[channel_permissions]  
-
 def clean_signature(command_signature : str) -> str:
     """
     This method automatically convert a command's signature into a more friendly help message
