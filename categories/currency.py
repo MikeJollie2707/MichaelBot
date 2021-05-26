@@ -892,7 +892,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         too_early = False
         too_late = False
         old_streak = 0
-        member = {}
         daily_amount = 100
         daily_bonus = 0
         loot = None
@@ -935,9 +934,11 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     
                     daily_amount += daily_bonus
 
+                    # If it's too_late, then this will be 1
+                    member["streak_daily"] += 1
                     member["last_daily"] = datetime.datetime.utcnow()
                     
-                    await DB.User.inc_streak(conn, ctx.author.id)
+                    await DB.User.update_streak(conn, ctx.author.id, member["streak_daily"])
                     await DB.User.add_money(conn, ctx.author.id, daily_amount)
                     await DB.User.update_last_daily(conn, ctx.author.id, member["last_daily"])
 
