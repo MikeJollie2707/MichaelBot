@@ -12,6 +12,12 @@ from templates.navigate import Pages
 
 URL_REG = re.compile(r'https?://(?:www\.)?.+')
 
+class Track(wavelink.Track):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args)
+
+        self.requester = kwargs.get("requester")
+
 class MusicController:
     def __init__(self, bot, guild_id):
         self.bot = bot
@@ -25,9 +31,10 @@ class MusicController:
 
         self.is_single_loop = False
         self.is_queue_loop = False
-        self.current_track = None
+        self.current_track : Track = None
 
         self.player : wavelink.Player = self.bot.wavelink.get_player(self.guild_id)
+        self.menu = InteractiveMenu()
 
         self.bot.loop.create_task(self.controller_loop())
 
@@ -45,13 +52,122 @@ class MusicController:
             
             await self.player.play(self.current_track)
             await self.channel.send(f"Now playing: `{self.current_track}`")
+            if self.menu.message is not None:
+                await self.menu.update_menu(self)
 
             # Blocking await till the song is completed.
             await self.next.wait()
             if self.is_queue_loop:
                 await self.queue.put(self.current_track)
 
-class Music(commands.Cog):
+class InteractiveMenu(menus.Menu):
+    def __init__(self):
+        super().__init__(timeout = None)
+    
+    async def send_initial_message(self, ctx, channel):
+        embed = discord.Embed(title = "Placeholder")
+        return await ctx.send(embed = embed)
+    
+    def update_context(self, payload):
+        import copy
+        ctx = copy.copy(self.ctx)
+        ctx.author = payload.member
+        return ctx
+
+    async def update_menu(self, controller : MusicController):
+        current_track = controller.current_track
+
+        embed = discord.Embed(
+            title = "Music Controller",
+            description = "",
+            color = discord.Color.green()
+        ).add_field(
+            name = "Duration:",
+            value = str(dt.timedelta(milliseconds = current_track.duration))
+        ).add_field(
+            name = "Video URL:",
+            value = f"[Click here!]({current_track.uri})"
+        ).add_field(
+            name = "Requested By:",
+            value = current_track.requester.name
+        ).add_field(
+            name = "Queue Length:",
+            value = controller.queue.qsize()
+        ).add_field(
+            name = "Volume:",
+            value = f"**{controller.player.volume}**",
+        ).set_thumbnail(
+            url = current_track.thumb
+        )
+
+        if controller.queue.empty():
+            embed.add_field(
+                name = "Coming Up:",
+                value = "**-** `None`",
+                inline = False
+            )
+        else:
+            upcoming = list(controller.queue._queue)
+            embed.add_field(
+                name = "Coming Up:",
+                value = f"**-** `{upcoming[0].title}`",
+                inline = False
+            )
+        
+        embed.description = f"Now Playing: **{current_track.title}**"
+        
+        await self.message.edit(embed = embed)
+    
+    @menus.button('⏸')
+    async def on_pause_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('pause')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+    @menus.button('⏩')
+    async def on_skip_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('skip')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+    @menus.button('🔀')
+    async def on_shuffle_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('queue shuffle')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+    @menus.button('🔁')
+    async def on_qloop_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('queue loop')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+    @menus.button('🔂')
+    async def on_loop_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('repeat')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+    @menus.button('⏹')
+    async def on_stop_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('stop')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+        await self.message.delete()
+        self.message = None
+        self.stop()
+    @menus.button('❌')
+    async def on_disconnect_button(self, payload):
+        ctx = self.update_context(payload)
+        ctx.command = self.bot.get_command('disconnect')
+        await self.bot.invoke(ctx)
+        ctx.command.reset_cooldown(ctx)
+        await self.message.delete()
+        self.message = None
+        self.stop()
+
+class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '🎵'
@@ -166,12 +282,18 @@ class Music(commands.Cog):
         
         if isinstance(tracks, wavelink.TrackPlaylist):
             for track in tracks.tracks:
-                track = wavelink.Track(track.id, track.info)
+                track = Track(track.id, track.info, requester = ctx.author)
                 await controller.queue.put(track)
-            await ctx.reply(f"Added the playlist {tracks.data['playlistInfo']['name']} with {len(tracks.tracks)} songs to the queue.", mention_author = False)
+            await ctx.reply(f"Added the playlist {tracks.data['playlistInfo']['name']} with {len(tracks.tracks)} songs to the queue.", mention_author = False, delete_after = 5)
         else:
-            await controller.queue.put(tracks[0])
-            await ctx.reply(f"Added {tracks[0]} to the queue.", mention_author = False)
+            track = Track(tracks[0].id, tracks[0].info, requester = ctx.author)
+            await controller.queue.put(track)
+            await ctx.reply(f"Added {tracks[0]} to the queue.", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
     
     @commands.command(aliases = ['find'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -226,14 +348,19 @@ class Music(commands.Cog):
         controller = self.get_controller(ctx)
         controller.is_single_loop = not controller.is_single_loop
         if controller.is_single_loop and not controller.player:
-            await ctx.reply("There's nothing to loop.")
+            await ctx.reply("There's nothing to loop.", delete_after = 5)
             controller.is_single_loop = False
             return
         
         if controller.is_single_loop:
-            await ctx.reply("🔂 **Enabled!**", mention_author = False)
+            await ctx.reply("🔂 **Enabled!**", mention_author = False, delete_after = 5)
         else:
-            await ctx.reply("🔂 **Disabled!**", mention_author = False)
+            await ctx.reply("🔂 **Disabled!**", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
     
     @commands.group(aliases = ['q'], invoke_without_command = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -340,10 +467,15 @@ class Music(commands.Cog):
             await ctx.invoke(self.repeat)
         
         if controller.is_queue_loop:
-            await ctx.reply("🔁 **Enabled!**", mention_author = False)
+            await ctx.reply("🔁 **Enabled!**", mention_author = False, delete_after = 5)
         else:
-            await ctx.reply("🔁 **Disabled!**", mention_author = False)
-
+            await ctx.reply("🔁 **Disabled!**", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
+    
     @queue.command(name = 'clear')
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
@@ -417,14 +549,19 @@ class Music(commands.Cog):
 
         controller = self.get_controller(ctx)
         if not controller.player.is_playing:
-            await ctx.reply("There's nothing to pause you dummy.")
+            await ctx.reply("There's nothing to pause you dummy.", delete_after = 5)
             return
         if controller.player.paused:
             await controller.player.set_pause(False)
-            await ctx.reply("Resumed!", mention_author = False)
+            await ctx.reply("Resumed!", mention_author = False, delete_after = 5)
         else:
             await controller.player.set_pause(True)
-            await ctx.reply("Paused!", mention_author = False)
+            await ctx.reply("Paused!", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
     
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -441,13 +578,18 @@ class Music(commands.Cog):
 
         controller = self.get_controller(ctx)
         if not controller.player.is_playing:
-            await ctx.reply("There's nothing to resume from.")
+            await ctx.reply("There's nothing to resume from.", delete_after = 5)
             return
         if controller.player.paused:
             await controller.player.set_pause(False)
-            await ctx.reply("Resumed!", mention_author = False)
+            await ctx.reply("Resumed!", mention_author = False, delete_after = 5)
         else:
             await ctx.reply("Player is not paused.")
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
     
     @commands.command(aliases = ['vol'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
@@ -494,7 +636,12 @@ class Music(commands.Cog):
             return
         
         await controller.player.stop()
-        await ctx.reply("Skipped!", mention_author = False)
+        await ctx.reply("Skipped!", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
