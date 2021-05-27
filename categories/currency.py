@@ -873,6 +873,53 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.user)
+    async def badges(self, ctx, *, user : discord.User = None):
+        '''
+        Display a user's badges or your badges.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Cooldown:** 3 seconds per 1 use (user)
+        **Example 1:** {prefix}{command_name}
+        **Example 2:** {prefix}{command_name} MikeJollie
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
+        if user is None:
+            user = ctx.author
+        async with self.bot.pool.acquire() as conn:
+            badges = await DB.User.UserBadges.get_badges(conn, user.id)
+            if badges is not None:
+                MAX_PER_PAGE = 5
+                embed = None
+                page = Pages()
+                for index, badge in enumerate(badges):
+                    if embed is None:
+                        embed = Facility.get_default_embed(
+                            timestamp = datetime.datetime.utcnow()
+                        ).set_author(
+                            name = f"{user.name}'s Badges",
+                            icon_url = user.avatar_url
+                        )#.set_thumbnail(
+                        #    url = self.bot.user.avatar_url
+                        #)
+                    embed.add_field(
+                        name = f"{badge['emoji']} - {LootTable.acapitalize(badge['name'])}",
+                        value = f"*{badge['description']}*",
+                        inline = False
+                    )
+                    if index % MAX_PER_PAGE == MAX_PER_PAGE - 1:
+                        page.add_page(embed)
+                        embed = None
+                if embed is not None:
+                    page.add_page(embed)
+                
+                await page.start(ctx, interupt = False)
+
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
     async def daily(self, ctx : commands.Context):
         '''
         Get an amount of money every 24h.
@@ -1105,15 +1152,26 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await ctx.reply(await LootTable.get_friendly_reward(conn, inventory_dict, True), mention_author = False)
     
     @inventory.command(name = 'all')
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def inv_all(self, ctx : commands.Context):
+        '''
+        Display your inventory in a detailed manner.
+
+        **Usage:** {usage}
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+
         MAX_ITEMS = 5
-        cnt = 0
         page = Pages()
         embed = None
         async with self.bot.pool.acquire() as conn:
             inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
-            for item in inv:
-                if cnt == 0:
+            for index, item in enumerate(inv):
+                if index % MAX_ITEMS == 0:
                     embed = Facility.get_default_embed(
                         timestamp = datetime.datetime.utcnow(),
                         author = ctx.author
@@ -1126,13 +1184,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     value = f"*{item['description']}*",
                     inline = False
                 )
-                cnt += 1
-                if cnt == MAX_ITEMS:
+
+                if index % MAX_ITEMS == MAX_ITEMS - 1:
                     embed.set_thumbnail(
                         url = ctx.author.avatar_url
                     )
                     page.add_page(embed)
-                    cnt = 0
                     embed = None
             
             if embed is not None:
@@ -1140,7 +1197,18 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await page.start(ctx, interupt = False)
     
     @inventory.command(name = 'value')
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def inv_value(self, ctx : commands.Context):
+        '''
+        Display the value of your inventory.
+
+        **Usage:** {usage}
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
         value = 0
         async with self.bot.pool.acquire() as conn:
             inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
@@ -1156,53 +1224,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     @inventory.command(name = 'sort')
     async def inv_sort(self, ctx : commands.Context):
         await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
-
-    @commands.command()
-    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.user)
-    async def badges(self, ctx, *, user : discord.User = None):
-        '''
-        Display a user's badges or your badges.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Cooldown:** 3 seconds per 1 use (user)
-        **Example 1:** {prefix}{command_name}
-        **Example 2:** {prefix}{command_name} MikeJollie
-
-        **You need:** None.
-        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
-        '''
-
-        if user is None:
-            user = ctx.author
-        async with self.bot.pool.acquire() as conn:
-            badges = await DB.User.UserBadges.get_badges(conn, user.id)
-            if badges is not None:
-                MAX_PER_PAGE = 5
-                embed = None
-                page = Pages()
-                for index, badge in enumerate(badges):
-                    if embed is None:
-                        embed = Facility.get_default_embed(
-                            timestamp = datetime.datetime.utcnow()
-                        ).set_author(
-                            name = f"{user.name}'s Badges",
-                            icon_url = user.avatar_url
-                        )#.set_thumbnail(
-                        #    url = self.bot.user.avatar_url
-                        #)
-                    embed.add_field(
-                        name = f"{badge['emoji']} - {LootTable.acapitalize(badge['name'])}",
-                        value = f"*{badge['description']}*",
-                        inline = False
-                    )
-                    if index % MAX_PER_PAGE == MAX_PER_PAGE - 1:
-                        page.add_page(embed)
-                        embed = None
-                if embed is not None:
-                    page.add_page(embed)
-                
-                await page.start(ctx, interupt = False)
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1277,60 +1298,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         else:
             await ctx.reply("This item does not exist.", mention_author = False)    
     
-    @commands.command()
-    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
-    async def usepotion(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, potion : ItemConverter):
-        '''
-        Use a potion.
-        Note that you can only have at max 10 potions of the same potion at once.
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
-        **Example:** {prefix}{command_name} 5 luck potion
-
-        **You need:** None.
-        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
-        '''
-        if amount is None:
-            amount = 1
-        if potion is None:
-            await ctx.reply("This potion doesn't exist.")
-            ctx.command.reset_cooldown(ctx)
-            return
-        if "_potion" not in potion:
-            await ctx.reply("This is not a potion.")
-            ctx.command.reset_cooldown(ctx)
-            return
-        
-        async with self.bot.pool.acquire() as conn:
-            actual_potion = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, potion)
-            if actual_potion is not None:
-                pot_stack = await DB.User.ActivePotions.get_stack(conn, potion, actual_potion["remain_uses"])
-                if pot_stack == 10:
-                    await ctx.reply("You cannot stack a potion more than 10.", mention_author = False)
-                    ctx.command.reset_cooldown(ctx)
-                    return
-            else:
-                current_potions = await DB.User.ActivePotions.get_potions(conn, ctx.author.id)
-                if len(current_potions) == 3:
-                    await ctx.reply("You cannot have more than 3 different potions at the same time.", mention_author = False)
-                    return
-            
-            async with conn.transaction():
-                try:
-                    await DB.User.ActivePotions.set_potion_active(conn, ctx.author.id, potion, amount)
-                except DB.ItemNotPresent:
-                    await ctx.reply("You don't have such a potion.", mention_author = False)
-                    ctx.command.reset_cooldown(ctx)
-                    return
-                except DB.TooLargeRemoval:
-                    await ctx.reply("You don't have this many potion.", mention_author = False)
-                    ctx.command.reset_cooldown(ctx)
-                    return
-                
-                official_name = await DB.Items.get_friendly_name(conn, potion)
-                await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
-
     @commands.command(aliases = ['lb'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
@@ -1391,7 +1358,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def market(self, ctx : commands.Context):
         '''
         Display all items' value in terms of money.
-
         To buy or sell items, please use the command's subcommands.
 
         **Usage:** <prefix>**{command_name}** {command_signature}
@@ -1532,7 +1498,6 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def travelto(self, ctx, destination : str):
         '''
         Travel to another dimension.
-        You can travel to either `Overworld` or `Nether` currently.
 
         **Aliases:** `moveto`, `goto`
         **Usage:** <prefix>**{command_name}** {command_signature}
@@ -1848,6 +1813,61 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await DB.User.Inventory.remove(conn, ctx.author.id, "gold", total_gold)
                         friendly = await LootTable.get_friendly_reward(conn, {target["item"]: total_amount}, False)
                         await ctx.reply(f"Bartered {friendly} successfully with {total_gold}x Gold.", mention_author = False)
+
+    @commands.command()
+    @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
+    async def usepotion(self, ctx : commands.Context, amount : typing.Optional[int] = 1, *, potion : ItemConverter):
+        '''
+        Use a potion.
+        Note that you can only have at max 10 potions of the same potion at once.
+
+        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Example:** {prefix}{command_name} 5 luck potion
+
+        **You need:** None.
+        **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
+        '''
+        if amount is None:
+            amount = 1
+        if potion is None:
+            await ctx.reply("This potion doesn't exist.")
+            ctx.command.reset_cooldown(ctx)
+            return
+        if "_potion" not in potion:
+            await ctx.reply("This is not a potion.")
+            ctx.command.reset_cooldown(ctx)
+            return
+        
+        async with self.bot.pool.acquire() as conn:
+            actual_potion = await DB.User.ActivePotions.get_potion(conn, ctx.author.id, potion)
+            if actual_potion is not None:
+                pot_stack = await DB.User.ActivePotions.get_stack(conn, potion, actual_potion["remain_uses"])
+                if pot_stack == 10:
+                    await ctx.reply("You cannot stack a potion more than 10.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
+                    return
+            else:
+                current_potions = await DB.User.ActivePotions.get_potions(conn, ctx.author.id)
+                if len(current_potions) == 3:
+                    await ctx.reply("You cannot have more than 3 different potions at the same time.", mention_author = False)
+                    return
+            
+            async with conn.transaction():
+                try:
+                    await DB.User.ActivePotions.set_potion_active(conn, ctx.author.id, potion, amount)
+                except DB.ItemNotPresent:
+                    await ctx.reply("You don't have such a potion.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
+                    return
+                except DB.TooLargeRemoval:
+                    await ctx.reply("You don't have this many potion.", mention_author = False)
+                    ctx.command.reset_cooldown(ctx)
+                    return
+                
+                official_name = await DB.Items.get_friendly_name(conn, potion)
+                await ctx.reply(f"Used {LootTable.acapitalize(official_name)}.", mention_author = False)
+
 
 def setup(bot : MichaelBot):
     bot.add_cog(Currency(bot))
