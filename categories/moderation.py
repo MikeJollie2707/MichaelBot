@@ -25,6 +25,8 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
+        elif self.bot.pool is None:
+            raise commands.CheckFailure("Whoever is hosting this bot doesn't seems to have a database set up.")
         
         return True
     
@@ -53,7 +55,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
         Ban a member __in__ the server.
 
-        **Usage:** <prefix>**{command_name}** <name/ID/nickname/mention> [reason]
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example 1:** {prefix}{command_name} MikeJollie Spam too much
         **Example 2:** {prefix}{command_name} @MikeJollie Stop spamming!
@@ -99,7 +101,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
         Ban a user __outside__ the server.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example:** {prefix}{command_name} 472832990012243969 Develope a bot
 
@@ -141,7 +143,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
         Kick a member.
 
-        **Usage:** <prefix>**{command_name}** <ID/mention/name/nickname> [reason]
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example 1:** {prefix}{command_name} MikeJollie Dumb
         **Example 2:** {prefix}{command_name} <@472832990012243969> Still dumb
@@ -192,7 +194,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         If not existed, one will be created which will deny `Send Messages`, `Send TTS Messages`, `Add Reactions` and `Speak` by default.
         This is extremely spammy, especially if there are many channels.
 
-        **Usage:** <prefix>**{command_name}** <member> [reason]
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (guild).
         **Example:** {prefix}{command_name} MikeJollie stop boasting about lolis.
 
@@ -266,7 +268,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
 
         The `duration` must be in between 1 minute and 30 days.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} MikeJollie 1d Chill
         **Example 2:** {prefix}{command_name} "Hamza Khattab" 1m believed the earth is flat
 
@@ -323,7 +325,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         Unmute a member.
         This will just simply remove a role called `Muted` from the member, thus it is *not* recommended to use with another bot.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} MikeJollie you're good now
 
         **You need:** `Kick Members`.
@@ -355,7 +357,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         '''
         Unban a user.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 2 uses (guild).
         **Example:** {prefix}{command_name} 472832990012243969 You've redeemed your goodness.
 

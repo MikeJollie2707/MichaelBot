@@ -35,7 +35,7 @@ class Core(commands.Cog):
         '''
         Show the latest 10 changes of the bot.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -64,7 +64,7 @@ class Core(commands.Cog):
         '''
         Show the latest 10 changes of the bot *behind the scene*.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -98,7 +98,7 @@ class Core(commands.Cog):
         Show compact help about a command, or a category.
         Note: command name and category name is case sensitive; `Core` is different from `core`.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} info
         **Example 3:** {prefix}{command_name} Core
@@ -130,7 +130,7 @@ class Core(commands.Cog):
         Information about the bot.
 
         **Aliases:** `about`
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -200,7 +200,7 @@ class Core(commands.Cog):
         '''
         Provide syntax convention in `help` and `help-all`.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -226,7 +226,7 @@ class Core(commands.Cog):
         '''
         View and set the prefix for the bot.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 10 seconds per 1 use (guild).
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} %
@@ -254,7 +254,7 @@ class Core(commands.Cog):
         '''
         Information about yourself or another __member__.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} MikeJollie
         **Example 2:** {prefix}{command_name}
 
@@ -331,7 +331,7 @@ class Core(commands.Cog):
         Report a bug or suggest a feature for the bot.
         Provide constructive reports and suggestions are appreciated.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 30 seconds per use (user).
         **Example 1:** {prefix}{command_name} report This command has a bug.
         **Example 2:** {prefix}{command_name} suggest This command should be improved.
@@ -387,7 +387,7 @@ class Core(commands.Cog):
         Information about the server that invoke this command.
 
         **Aliases:** `server-info`
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.

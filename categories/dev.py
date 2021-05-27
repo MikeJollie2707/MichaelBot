@@ -35,7 +35,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         '''
         Display all the guilds the bot is currently in.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** `dev status`.
@@ -59,13 +59,9 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
     async def addmoney(self, ctx, amount : int, *, member : discord.Member = None):
         '''
         Add a certain amount of money to a user or to yourself.
-
         The limit range is `[1-25]`.
 
-        *Warning: This command is available only in beta. Once the currency is official, this command will
-        no longer available.*
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} 25
 
         **You need:** None
@@ -84,13 +80,9 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
     async def rmvmoney(self, ctx, amount : int, *, member: discord.Member = None):
         '''
         Remove a certain amount of money from a user or from yourself.
-
         The limit range is `[1-25]`. If the removal cause the target's money to drop below 0, it'll be 0.
 
-        *Warning: This command is available only in beta. Once the currency is official, this command will
-        no longer available.*
-
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} 25
 
         **You need:** None
@@ -154,7 +146,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Leave the current guild.
         Note: This does not delete the server's config file yet.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** `Owner of the server` OR `dev status`.
@@ -186,7 +178,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Reload a module.
         Useful when you don't want to disconnect the bot but still update your change.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per use (global cooldown).
         **Example:** {prefix}{command_name} categories.templates
 
@@ -213,7 +205,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Reload all modules.
         Useful for OCD people (like MikeJollie) because `reload` will mess up the order in `help` and `help-all`.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per use (global cooldown).
         **Example:** {prefix}{command_name}
 
@@ -247,7 +239,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         Note that the command will look over the last 100 messages in the report channel.
 
         **Aliases:** `suggest_response`
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 60 seconds per 1 use (global)
         **Examples:** {prefix}{command_name} 670493266629886002 I like this idea, but the library doesn't allow so.
 
@@ -290,7 +282,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         '''
         Self-explanatory.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         You need: `dev status`.
@@ -308,7 +300,7 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         '''
         Disconnect the bot from Discord.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         You need: `bot owner`.
@@ -318,10 +310,6 @@ class Dev(commands.Cog, command_attrs = {"cooldown_after_parsing" : True, "hidde
         await ctx.send("Disconnecting...")
         await self.bot.close()
         print("Bot shutdown from command.")
-
-
-        
-
 
 def setup(bot):
     bot.add_cog(Dev(bot))

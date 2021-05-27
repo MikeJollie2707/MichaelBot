@@ -33,7 +33,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         Enable logging in your server.
 
         **Aliases:** `log-enable`
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
@@ -60,7 +60,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         If this command is invoked but you haven't enabled logging, it'll automatically be enabled.
 
         **Aliases:** `log-setup`
-        **Usage:** <prefix>**{command_name}** [text channel mention/ID/name]
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} 649111117204815883
         **Example 2:** {prefix}{command_name} a-random-log-channel
         **Example 3:** {prefix}{command_name}
@@ -107,8 +107,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         Disable logging in your server.
         This doesn't remove the logging channel.
 
-
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
@@ -129,7 +128,8 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     async def welcome_enable(self, ctx):
         '''
         Enable welcoming new members in your server.
-        **Usage:** <prefix>**{command_name}**
+        
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
@@ -149,14 +149,14 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
-    async def welcome_setup(self, ctx, welcome_chan : discord.TextChannel = None, *, welcome_text : str = ""):
+    async def welcome_setup(self, ctx, welcome_channel : discord.TextChannel = None, *, welcome_text : str = ""):
         '''
         Set or view the welcome channel and message in your server.
         - If this command is invoked but you haven't enabled welcoming, it'll automatically be enabled.
         - If you don't provide a welcome text, it is default to `Hello [user.mention]! Welcome to **[guild.name]**! You're the [guild.count]th member in this server! Enjoy the fun!!! :tada:`.
 
         **Aliases:** `welcome-setup`
-        **Usage:** <prefix>**{command_name}** [text channel mention/ID/name] [welcome text]
+        **Usage:** {usage}
         **Argument:** `[user.mention]`, `[user.name]`, `[guild.name]`, `[guild.count]`
         **Example 1:** {prefix}{command_name} 644336991135072261 Welcome [user.mention] to [guild.name]!
         **Example 2:** {prefix}{command_name} a-random-welcome-channel You are the [guild.count]th member!
@@ -168,7 +168,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         '''
 
         config = await Facility.get_config(self.bot, ctx.guild.id)
-        if welcome_chan is None:
+        if welcome_channel is None:
             await ctx.reply(f"Current welcome channel ID: `{config['welcome_channel']}`\nCurrent welcome message: ", 
                 embed = discord.Embed(description = config["welcome_text"]),
                 mention_author = False
@@ -181,12 +181,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             config["welcome_text"] = welcome_text
 
             try:
-                await welcome_chan.send("Your welcome message is: %s" % welcome_text)
+                await welcome_channel.send("Your welcome message is: %s" % welcome_text)
             except discord.Forbidden:
-                await ctx.reply(f"I can't send message to {welcome_chan.mention}!", mention_author = False)
+                await ctx.reply(f"I can't send message to {welcome_channel.mention}!", mention_author = False)
             else:
-                config["welcome_channel"] = welcome_chan.id
-                await ctx.reply("Channel %s is now a welcome channel." % welcome_chan.mention, mention_author = False)
+                config["welcome_channel"] = welcome_channel.id
+                await ctx.reply("Channel %s is now a welcome channel." % welcome_channel.mention, mention_author = False)
 
                 await Facility.save_config(self.bot, config)
     @commands.Cog.listener("on_member_join")
@@ -229,7 +229,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         This doesn't remove the welcome channel.
 
         **Aliases:** `welcome-disable`
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         You need: `Manage Server`.
@@ -252,7 +252,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         If you already have the role, the role will be removed from you.
 
         **Aliases:** `giverole`, `assignrole`
-        **Usage:** <prefix>**{command_name}** {command_name}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} Weeb
 
@@ -321,7 +321,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         Add a role for self-assigning.
         This role cannot be the default `everyone` role, nor roles that are above the bot.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 2 seconds per 1 use (guild)
         **Example 1:** {prefix}{command_name} Weeb
         **Example 2:** {prefix}{command_name} "Weeb 2" Indicate you're a weeb. Lol.
@@ -355,7 +355,7 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         '''
         Remove a role from self-assigning.
         
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 2 seconds per 1 use (guild)
         **Example 1:** {prefix}{command_name} Weeb
         **Example 2:** {prefix}{command_name} "Weeb 2"

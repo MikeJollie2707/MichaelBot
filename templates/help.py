@@ -130,7 +130,7 @@ class BigHelp(commands.HelpCommand):
         docstring = '''Show help about the bot, a command, or a category.
                        Note: command name and category name is case sensitive; Core is different from core.
 
-                       **Usage:** <prefix>**{command_name}** [command/category]
+                       **Usage:** {usage}
                        **Example 1:** {prefix}{command_name}
                        **Example 2:** {prefix}{command_name} info
                        **Example 3:** {prefix}{command_name} Core

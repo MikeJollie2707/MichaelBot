@@ -38,7 +38,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         
         Visit [this page](https://konachan.net/tag) to see all the tags.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example 1:** {prefix}{command_name} safe blush long_hair
         **Example 2:** {prefix}{command_name} any
@@ -151,7 +151,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         '''
         Display top 10 popular tags in konachan.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example:** {prefix}{command_name}
 
@@ -231,13 +231,13 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         pass
     @nhentai.command(name = "random")
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def _random(self, ctx):
+    async def nhentai_random(self, ctx):
         '''
         Search and return a random doujin.
 
         This will show you an absolute random doujin, whether it's a piece of trash or a masterpiece.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example:** {prefix}{command_name}
 
@@ -248,15 +248,15 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         doujin = hentai.Hentai(hentai.Utils.get_random_id())
 
         await self.display_hentai(ctx, doujin)
-    @nhentai.command()
+    @nhentai.command(name = "search")
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.member)
-    async def search(self, ctx, id__tags : typing.Optional[int], *tags):
+    async def nhentai_search(self, ctx, id__tags : typing.Optional[int], *tags):
         '''
         Search and return a doujin based on its tag or ID.
 
         If search based on tags, it'll search based on `Most Popular`.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example 1:** {prefix}{command_name} 331228
         **Example 2:** {prefix}{command_name} sole-female sole-male
@@ -286,7 +286,6 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
                 await self.display_hentai(ctx, doujin)
             else:
                 await ctx.send("One of the tags doesn't exist. Please check again.")
-
 
 def setup(bot):
     bot.add_cog(NSFW(bot))

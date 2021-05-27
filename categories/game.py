@@ -26,8 +26,20 @@ class Game(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.check(has_database)
+    @commands.bot_has_permissions(send_messages = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.user)
     async def slots(self, ctx : commands.Context, amount : int = 50):
+        '''
+        Play a slot game for a chance to get money.
+        Place your bet (minimum of $50) to play!
+
+        **Usage:** {usage}
+        **Cooldown:** 5 seconds per 1 use (user).
+        **Example:** `{prefix}{command_name} 150`
+
+        **You need:** None.
+        **I need:** `Send Messages`.
+        '''
         # First, we have this set of items, with some of them repeat.
         # For the first rotation, we get a random subset of 3 in the list.
         # We then save the 2ND item of that SUBLIST to cache or sth.

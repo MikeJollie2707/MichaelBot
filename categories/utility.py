@@ -52,7 +52,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         A mini calculator that calculate almost everything.
         Note: Trigonometry functions return radian.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} 1+2
         **Example 2:** {prefix}{command_name} 5*(2 + 3)
         **Example 3:** {prefix}{command_name} sqrt(25)
@@ -77,7 +77,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Roll a dice for you.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -94,7 +94,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Send a full-featured rich embed.
         Note: It is recommended to use `embed info` to know more about how to use this command.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per use (user)
         *View `embed help` for examples*
 
@@ -114,8 +114,8 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 print(e)
                 await ctx.send("It seems you did something wrong. If you're not using a visualizer, use it (link in `embed info`). Otherwise, ask for support.")
     
-    @embed.command()
-    async def info(self, ctx):
+    @embed.command(name = "info")
+    async def embed_info(self, ctx):
         text = '''
         To create a full-featured rich embed, you must use the JSON format to achieve.
         Take a look at [this awesome page](https://embedbuilder.nadekobot.me/) that visualize the embed and make your life much easier when writing JSON. 
@@ -163,7 +163,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Send a simple embed message.
         Note: You'll respond to 3 questions to set the embed you want.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per use (user)
         **Example:** {prefix}{command_name}
 
@@ -240,7 +240,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         An ultimate measurement to measure everything except gayness.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 10 seconds per 5 uses (user)
         **Example 1:** {prefix}{command_name} smart Stranger.com
         **Example 2:** {prefix}{command_name} "stupidly dumb" "Nightmare monsters"
@@ -259,7 +259,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         An ultimate measurement of gayness.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 10 seconds per 5 uses (user)
         **Example 1:** {prefix}{command_name} MikeJollie
         **Example 2:** {prefix}{command_name} "iPhone 11"
@@ -294,7 +294,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         *The `time` minimum amount is at least 1 minute, and the maximum amount is at most 30 days.*
 
         **Aliases:** `remindme`, `timer`, `remind`, `notifyme`
-        **Usage:** <prefix>**{command_name}** <time> <message>
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name} 1d Yo collect your daily!
         **Example 2:** {prefix}{command_name} "1 day, 2 hours, 5 minutes, 10 seconds" The moment MikeJollie is gay.
@@ -348,7 +348,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Show the latency of the bot. It might take a while to update.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -432,7 +432,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Repeat what you say.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} MikeJollie is gay.
 
         **You need:** None.
@@ -449,7 +449,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Send a message to either a channel or a user that the bot can see.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 120 seconds per use (user)
         **Example 1:** {prefix}{command_name} 577663051722129427 Gay.
         **Example 2:** {prefix}{command_name} 400983101507108876 All of you are gay.
@@ -479,7 +479,7 @@ class Utility(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Make the bot speak!
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} MikeJollie is gay
 
         **You need:** None.

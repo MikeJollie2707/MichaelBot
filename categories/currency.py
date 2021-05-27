@@ -253,7 +253,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Watch out though, you might encounter unwanted enemies. Better bring a sword.
 
         **Aliases:** `adv`
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 minutes per 1 use (user)
         **Example:** {prefix}{command_name}
 
@@ -362,7 +362,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Chop some trees.
         The majority of reward is log, although you can also find some other things with a better axe.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 minutes per 1 use (user).
         **Example:** {prefix}{command_name}
 
@@ -459,7 +459,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Go mining to earn resources.
         You need to have a pickaxe equipped using the `equip` command.
 
-        **Usage:** <prefix>**{command_name}**
+        **Usage:** {usage}
         **Cooldown:** 5 minutes per 1 use (user).
         **Example:** {prefix}{command_name}
 
@@ -571,7 +571,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Display the amount of money you currently have.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 2 seconds per 1 use (user)
         **Example:** {prefix}{command_name}
 
@@ -591,7 +591,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Craft up to `amount` items.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} 2 stick
         **Example 2:** {prefix}{command_name} wooden pickaxe
 
@@ -667,7 +667,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Show the recipe for an item or all the recipes.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} wood
         **Example 2:** {prefix}{command_name}
 
@@ -739,7 +739,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Brew potion.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} luck potion
 
         **You need:** None.
@@ -800,7 +800,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Show the recipe for one potion or for all potions.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example 1:** {prefix}{command_name} luck potion
         **Example 2:** {prefix}{command_name}
 
@@ -878,7 +878,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Display a user's badges or your badges.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 3 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} MikeJollie
@@ -924,7 +924,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Get an amount of money every 24h.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -1019,7 +1019,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
         `tool name` must be an item existed in your inventory.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} wooden pickaxe
 
         **You need:** None.
@@ -1077,7 +1077,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Display your equipments and its durability.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -1132,7 +1132,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         View your inventory. Sorted by amount.
 
         **Aliases:** `inv`.
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user).
         **Example:** {prefix}{command_name}
 
@@ -1221,7 +1221,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         else:
             await ctx.reply("Your inventory is either empty, or filled with unsellable items.", mention_author = False)
     
-    @inventory.command(name = 'sort')
+    @inventory.command(name = 'sort', hidden = True)
     async def inv_sort(self, ctx : commands.Context):
         await ctx.reply("It seems you're trying to activate a command that is secretly developed. Don't tell anyone about this.", mention_author = False)
 
@@ -1232,7 +1232,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Display an item's information.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example:** {prefix}{command_name} diamond
 
@@ -1305,7 +1305,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Show the top 10 users with the most amount of money.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (member)
         **Example 1:** {prefix}{command_name} global
         **Example 2:** {prefix}{command_name}
@@ -1360,7 +1360,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Display all items' value in terms of money.
         To buy or sell items, please use the command's subcommands.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example:** {prefix}{command_name}
 
@@ -1406,7 +1406,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Buy an item with your money.
         Note that many items can't be bought.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name} wood
         **Example 2:** {prefix}{command_name} 10 wooden axe
@@ -1447,7 +1447,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Sell items in your inventory for money.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name} diamond
         **Example 2:** {prefix}{command_name} 5 wooden pickaxe
@@ -1500,7 +1500,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Travel to another dimension.
 
         **Aliases:** `moveto`, `goto`
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 1 day after 1 use (user)
         **Example:** {prefix}{command_name} nether
 
@@ -1633,7 +1633,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         - You can trade up to 50 times per trade.
         - Can only be performed while in the Overworld.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} 1
@@ -1752,7 +1752,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         - You can barter up to 50 times per barter.
         - Can only be performed while in the Nether.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (user)
         **Example 1:** {prefix}{command_name}
         **Example 2:** {prefix}{command_name} 2
@@ -1822,7 +1822,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Use a potion.
         Note that you can only have at max 10 potions of the same potion at once.
 
-        **Usage:** <prefix>**{command_name}** {command_signature}
+        **Usage:** {usage}
         **Example:** {prefix}{command_name} 5 luck potion
 
         **You need:** None.
