@@ -37,6 +37,7 @@ class MichaelBot(commands.Bot):
         self.version : typing.Optional[str] = kwargs.get("version")
         self.__divider__ = "----------------------------\n"
         self._prefixes = {}
+        self.usage_format = "`{prefix}{command_name} {command_signature}`"
 
         self.pool : typing.Optional[asyncpg.pool.Pool] = None
         

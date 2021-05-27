@@ -86,14 +86,22 @@ def command_help_format(ctx : commands.Context, command : commands.Command) -> d
 
     command_signature = command.signature
     command_signature = Facility.clean_signature(command.signature)
+    usage_string = ctx.bot.usage_format.format(
+        prefix = ctx.prefix,
+        command_name = embed_title,
+        command_signature = command_signature
+    )
+    # Remove empty space at the end. The string is "`precmd `"
+    if command_signature == "" and '`' in usage_string:
+        usage_string = usage_string[:-2] + '`'
 
     content = Facility.get_default_embed(
         title = embed_title,
         description = "*No help provided*" if command.help is None else
             command.help.format(
+                usage = usage_string,
                 prefix = ctx.prefix,
                 command_name = embed_title,
-                command_signature = command_signature
             ),
         
         color = discord.Color.green(),
