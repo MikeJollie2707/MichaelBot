@@ -8,6 +8,7 @@ import typing
 import re
 
 import utilities.facility as Facility
+from utilities.converters import IntervalConverter
 from templates.navigate import Pages
 
 URL_REG = re.compile(r'https?://(?:www\.)?.+')
@@ -334,6 +335,57 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
 
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    async def seek(self, ctx, *, position : IntervalConverter):
+        controller = self.get_controller(ctx)
+        if not controller.player.is_playing:
+            return await ctx.reply("There's no song to seek.")
+        
+        await controller.player.seek(position.seconds * 1000)
+        await ctx.reply(f"⏩ **Seek to `{position}`.**", mention_author = False)
+
+    @commands.command(aliases = ['np'])
+    async def now_playing(self, ctx):
+        controller = self.get_controller(ctx)
+        if not controller.player.is_playing:
+            return await ctx.reply("There's nothing playing.")
+        
+        ratio = float(controller.player.position) / float(controller.current_track.duration)
+        # Milliseconds have this format hh:mm:ss.somerandomstuffs, so just split at the first dot.
+        current_position = str(dt.timedelta(milliseconds = controller.player.position)).split('.')[0]
+        full_duration = str(dt.timedelta(milliseconds = controller.current_track.duration)).split('.')[0]
+        # We're using c-string here because when the dot is at the beginning and the end,
+        # I need to deal with some weird string concat, so no.
+        progress_cstring = ['-'] * 30
+
+        # [30, -1) to make sure the dot can appear as the first character
+        for i in range(30, -1, -1):
+            if i / 30.0 <= ratio:
+                progress_cstring[i] = '🔘'
+                break
+        
+        progress_string = ''.join(progress_cstring)
+
+        embed = Facility.get_default_embed(
+            title = "Now Playing",
+            description = f"""
+                [{controller.current_track.title}]({controller.current_track.uri})
+
+                `{progress_string}`
+
+                `{current_position}` / `{full_duration}`
+
+                **Requested by:** `{ctx.author}`
+            """,
+            author = ctx.author
+        ).set_thumbnail(
+            url = controller.current_track.thumb
+        )
+
+        await ctx.reply(embed = embed, mention_author = False)
+    
+    @commands.command()
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 3.0, type = commands.BucketType.guild)
     async def repeat(self, ctx):
         '''
@@ -533,6 +585,32 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             await controller.queue.put(await fake_queue.get())
         
         await ctx.reply(f"**Track removed:** `{removed_track.title}`.", mention_author = False)
+
+    @queue.command(name = 'move')
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    async def queue_move(self, ctx, source_index : int, destination_index : int):
+        controller = self.get_controller(ctx)
+        max_size = controller.queue.qsize()
+        source_index -= 1
+        destination_index -= 1
+        if source_index < 0 or source_index > max_size - 1 or destination_index < 0  or destination_index > max_size - 1:
+            return await ctx.reply("Index out of range.")
+        
+        fake_queue = asyncio.Queue()
+        removed_track = None
+        for i in range(0, max_size):
+            if i == source_index:
+                removed_track = await controller.queue.get()
+            else:
+                await fake_queue.put(await controller.queue.get())
+        max_size -= 1
+        for i in range(0, max_size):
+            await controller.queue.put(await fake_queue.get())
+        
+        controller.queue._queue.insert(destination_index, removed_track)
+
+        await ctx.reply(f"**Track** `{removed_track.title}` **moved from {source_index + 1} to {destination_index + 1}.**", mention_author = False)
 
     @queue.command(name = 'shuffle')
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
