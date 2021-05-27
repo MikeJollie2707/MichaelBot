@@ -6,6 +6,7 @@ import textwrap
 
 import utilities.facility as Facility
 import utilities.db as DB
+from utilities.checks import has_database
 from utilities.converters import IntervalConverter
 
 # For every tempmute, it is added into the db as an entry.
@@ -25,8 +26,6 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
-        elif self.bot.pool is None:
-            raise commands.CheckFailure("Whoever is hosting this bot doesn't seems to have a database set up.")
         
         return True
     
@@ -183,6 +182,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
             await ctx.reply("I cannot kick someone that's not in the guild! If you want someone not to join your guild, use `%shackban`." % ctx.prefix, mention_author = False)
     
     @commands.command()
+    @commands.check(has_database)
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_permissions(manage_permissions = True, read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(manage_roles = True)
@@ -258,6 +258,7 @@ class Moderation(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}
         # Perform DB actions here
 
     @commands.command()
+    @commands.check(has_database)
     @commands.has_permissions(kick_members = True)
     @commands.bot_has_permissions(manage_permissions = True, read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(manage_roles = True)

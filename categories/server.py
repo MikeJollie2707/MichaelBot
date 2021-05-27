@@ -19,11 +19,12 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
     async def cog_check(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
+        elif not has_database(ctx):
+            raise commands.CheckFailure("Whoever is hosting the bot doesn't seems to have a database set up.")
         
         return True
     
     @commands.command(aliases = ["log-enable"])
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(view_audit_log = True)
@@ -49,7 +50,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             await ctx.reply("Logging is enabled for this server. You should setup a log channel.", mention_author = False)
 
     @commands.command(aliases = ["log-setup"])
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.bot_has_guild_permissions(view_audit_log = True)
@@ -98,7 +98,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 await ctx.reply("Channel %s is now a logging channel." % log.mention, mention_author = False)
     
     @commands.command(aliases = ["log-disable"])
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True,send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -121,7 +120,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         await ctx.reply("Logging is disabled for this server.", mention_author = False)
 
     @commands.command(aliases = ["welcome-enable"])
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -145,7 +143,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
             await ctx.reply("Welcoming is enabled for this server. You should setup the welcome channel and message.", mention_author = False)
     
     @commands.command(aliases = ["welcome-setup"])
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -219,7 +216,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 return
 
     @commands.command(aliases = ["welcome-disable"])
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1,  per = 3.0, type = commands.BucketType.guild)
@@ -243,7 +239,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
         await ctx.reply("Welcoming is disabled for this server.", mention_author = False)
         
     @commands.group(aliases = ['giverole', 'assignrole'], invoke_without_command = True)
-    @commands.check(has_database)
     @commands.bot_has_permissions(manage_roles = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
     async def roleme(self, ctx, *, role : discord.Role = None):
@@ -312,7 +307,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                 await pages.start(ctx, interupt = False)
 
     @roleme.command('add')
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_roles = True)
     @commands.bot_has_permissions(manage_roles = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
@@ -347,7 +341,6 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
 
     # I don't consume rest to make it consistent with roleme add.
     @roleme.command(name = 'remove')
-    @commands.check(has_database)
     @commands.has_guild_permissions(manage_roles = True)
     @commands.bot_has_permissions(manage_roles = True)
     @commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)

@@ -204,7 +204,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         if isinstance(ctx.channel, discord.DMChannel):
             raise commands.NoPrivateMessage()
         if not has_database(ctx):
-            raise commands.CheckFailure("Bot doesn't have database.")
+            raise commands.CheckFailure("Whoever is hosting the bot doesn't seems to have a database set up.")
         return True
     
     @commands.Cog.listener("on_member_join")
