@@ -1,15 +1,21 @@
 import random
 import utilities.loot as Loot
 
-PICK_TYPE = "diamond_pickaxe"
-SELECT_ITEM = "debris"
-SIMULATION = 1000000
+PICK_TYPE = "nether_sword"
+WORLD = 2
+SELECT_ITEM = "space_orb"
+SIMULATION = 1000
+
+# Assuming the best possible situation: 100% proc chance, constant 10 stacks.
+EXTERNAL_BUFFS = []
 
 roll_total = 0
 item_total = 0
 
-r = Loot.get_mine_loot(PICK_TYPE, 1)
+r = Loot.get_adventure_loot(PICK_TYPE, WORLD)
 rolls = r.pop("rolls")
+if "luck_potion" in EXTERNAL_BUFFS:
+    rolls *= 10
 reward = {}
 
 for i in range(0, SIMULATION):
