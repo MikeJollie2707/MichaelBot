@@ -9,6 +9,7 @@ MichaelBeta.sh
 # Nothing to see here
 note
 .style.yapf
+driver2.py
 
 # Token
 setup/bot_secret.json
