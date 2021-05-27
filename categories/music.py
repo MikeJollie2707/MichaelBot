@@ -634,7 +634,12 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         controller.volume = new_volume
 
         await controller.player.set_volume(new_volume)
-        await ctx.reply(f"Set volume to {new_volume}.", mention_author = False)
+        await ctx.reply(f"Set volume to {new_volume}.", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
 
     @commands.command(aliases = ['s'])
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
