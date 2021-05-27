@@ -82,6 +82,12 @@ class Music(commands.Cog):
         self.controllers = {}
         return super().cog_unload()
     
+    async def cog_check(self, ctx : commands.Context):
+        if isinstance(ctx.channel, discord.DMChannel):
+            raise commands.NoPrivateMessage()
+        
+        return True
+
     async def on_event_hook(self, event):
         """Node hook callback."""
         if isinstance(event, (wavelink.TrackEnd, wavelink.TrackException)):
