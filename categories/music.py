@@ -532,6 +532,24 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         
         await ctx.reply(f"**Track removed:** `{removed_track.title}`.", mention_author = False)
 
+    @queue.command(name = 'shuffle')
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    async def queue_shuffle(self, ctx):
+        controller = self.get_controller(ctx)
+        if controller.queue.empty():
+            await ctx.reply("There's nothing to shuffle!")
+            return
+        
+        import random
+        random.shuffle(controller.queue._queue)
+        await ctx.reply("🔀 **Shuffled**!", mention_author = False, delete_after = 5)
+        if controller.menu.message is None:
+            await controller.menu.start(ctx)
+            await controller.menu.update_menu(controller)
+        else:
+            await controller.menu.update_menu(controller)
+
     @commands.command()
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     @commands.cooldown(rate = 1, per = 1.0, type = commands.BucketType.guild)
