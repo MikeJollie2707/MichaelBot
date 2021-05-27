@@ -271,6 +271,8 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         controller = self.get_controller(ctx)
         if not controller.player.is_connected:
             await ctx.invoke(self.connect)
+        if ctx.author.voice is None:
+            return
 
         if not URL_REG.match(track):
             track = f'ytsearch:{track}'
