@@ -3,8 +3,6 @@ from discord.ext import commands
 
 import datetime
 
-from discord.ext.commands.help import Paginator
-
 import utilities.facility as Facility
 import utilities.db as DB
 from templates.navigate import Pages
