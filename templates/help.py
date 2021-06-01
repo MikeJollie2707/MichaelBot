@@ -22,7 +22,7 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
     MAX_COMMANDS = 10
     cogs = []
     display = ""
-    commands = cog.get_commands()
+    commands = cog.get_commands().sort()
     for index, command in enumerate(commands):
         if command.hidden != True:
             command_title = command.name
@@ -86,11 +86,14 @@ def command_help_format(ctx : commands.Context, command : commands.Command) -> d
 
     command_signature = command.signature
     command_signature = Facility.clean_signature(command.signature)
-    usage_string = ctx.bot.usage_format.format(
-        prefix = ctx.prefix,
-        command_name = embed_title,
-        command_signature = command_signature
-    )
+    try:
+        usage_string = ctx.bot.usage_format.format(
+            prefix = ctx.prefix,
+            command_name = embed_title,
+            command_signature = command_signature
+        )
+    except KeyError:
+        pass
     # Remove empty space at the end. The string is "`precmd `"
     if command_signature == "" and '`' in usage_string:
         usage_string = usage_string[:-2] + '`'
@@ -113,7 +116,9 @@ def command_help_format(ctx : commands.Context, command : commands.Command) -> d
     # This is also the reason why group_help_format() doesn't exist.
     if isinstance(command, commands.Group):
         field_value = ""
-        for subcommand in command.commands:
+        def on_alphabetical(command):
+            return command.name
+        for subcommand in sorted(command.commands, key = on_alphabetical):
             field_value += f"`{subcommand.name}`: {subcommand.short_doc}\n"
         
         if len(command.commands) > 0:
@@ -223,7 +228,6 @@ class SmallHelp():
             commands = cogs[category].get_commands()
 
             actual_commands = [f"`{command.name}`" for command in commands if not command.hidden]
-            actual_commands.sort()
             num_of_commands = len(actual_commands)
             
             if num_of_commands != 0:
@@ -247,12 +251,10 @@ class SmallHelp():
     
     async def send_cog_help(self, cog):
         paginate = Pages()
-        for command in cog.get_commands():
-            if command.hidden:
-                continue
-
-            page = command_help_format(self.ctx, command)
-            paginate.add_page(page)
+        for command in cog.get_commands().sort():
+            if not command.hidden:
+                page = command_help_format(self.ctx, command)
+                paginate.add_page(page)
         
         await paginate.start(self.ctx, interupt = False)
     
