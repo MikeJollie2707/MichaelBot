@@ -1,288 +1,313 @@
 <!-- omit in toc -->
-# Music [OUTDATED] [DEPRECATED]
-
-*This section is labeled as [OUTDATED], will be updated in the future.*
-
-*This section is labeled as [DEPRECATED], which means it's possible to be removed in the future.*
+# Music
 
 *This document is missing many functions/methods due to the complexity. It is currently only shows the commands.*
 
 These are commands that play music in voice channel. It is currently support YouTube, SoundCloud, Twitch, Vimeo and Mixer.
 
-***Note: This section might be removed in the future. In the mean time, every information below is not correct.***
+This is recommended for 1-2 people per vc, due to no support in song voting (for example, a skip will skip indeterminately).
+
+<!-- omit in toc -->
+## Table of Contents
+- [connect](#connect)
+- [now_playing](#now_playing)
+- [pause](#pause)
+- [play](#play)
+- [queue](#queue)
+    - [queue clear](#queue-clear)
+    - [queue loop](#queue-loop)
+    - [queue move](#queue-move)
+    - [queue remove](#queue-remove)
+    - [queue shuffle](#queue-shuffle)
+- [repeat](#repeat)
+- [resume](#resume)
+- [search](#search)
+- [seek](#seek)
+- [skip](#skip)
+- [stop](#stop)
+- [volume](#volume)
 
 ## connect
 
-Connect to a voice channel. If the channel is not specified, it'll attempt to join the current voice channel you're in.
+Connect to a voice channel. If the channel is not specified, it'll connect to the voice channel you're in.
 
-This command is implicitly called if the user invoke [`play`](#play) without the bot inside a voice channel.
+*This command is implicitly called if the user invoke [`play`](#play) without the bot inside a voice channel.*
 
-**Full Signature:**
+**Aliases:** `join`
 
-```py
-@commands.command(aliases = ["join"])
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def connect(self, ctx, *, channel : discord.VoiceChannel = None):
-```
-
-**Simplified Signature:**
-
-```
-connect [voicechannel]
-join [voicechannel]
-```
+**Usage:** `<prefix>connect [voice channel]`
 
 **Parameters:**
 
-- `channel`: A Discord voice channel. This can be any of the following form: `<ID/name>`
+- `voice channel`: A Discord voice channel. Can be either `ID/name`.
+
+**Cooldown:** 2 seconds per 1 use (guild)
 
 **Example:** `$connect discord-got-talents`
 
-**Expected Output:** *No output*.
+**You need:** None.
 
-## play
-
-Play the audio provided by the query.
-
-More precisely, it streams the audio, because the bot does not download the video.
-
-This command implicitly call [`connect`](#connect) if the user invoke without the bot insdie a voice channel.
-
-**Full Signature:**
-
-```py
-@commands.command(aliases = ['p'])
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-@commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.user)
-async def play(self, ctx, *, query : str):
-```
-
-**Simplified Signature:**
-
-```
-play <query>
-p <query>
-```
-
-**Parameters:**
-
-- `query`: The resource to play. This can be any of the following form: `<link/name>`
-
-**Example:** `$play You've been gnomed`
-
-**Expected Output:** *an embed with information or reactions*
+**The bot needs:** `Read Message History`, `Send Messages`.
 
 ## now_playing
 
-Indicate what song is playing.
+Display the current playing song.
 
-**Full Signature:**
+**Aliases:** `np`
 
-```py
-@commands.command(aliases = ["np"])
-@commands.bot_has__guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-@commands.cooldown(rate = 2, per = 15.0, type = commands.BucketType.user)
-async def now_playing(self, ctx):
-```
+**Usage:** `<prefix>now_playing`
 
-**Simplified Signature:**
-
-```
-now_playing
-np
-```
+**Cooldown:** 3 seconds per 1 use (guild)
 
 **Example:** `$np`
 
-**Expected Output:** *an embed with information or reactions*
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
 
 ## pause
 
-Pause the currently playing song. If there are more than one person in the voice channel, a poll will be created.
-The admin/DJ reaction will cancel the vote and in favor of that person.
+Toggle pausing the player.
 
-**Full Signature:**
+**Usage:** `<prefix>pause`
 
-```py
-@commands.command()
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def pause(self, ctx):
-```
-
-**Simplified Signature:**
-
-```
-pause
-```
+**Cooldown:** 1 second per 1 use (guild)
 
 **Example:** `$pause`
 
-**Expected Output:** *a vote*
+**You need:** None.
 
-## resume
+**The bot needs:** `Read Message History`, `Send Messages`.
 
-Resume the currently paused song. If there are more than one person in the voice channel, a poll will be created.
-The admin/DJ reaction will cancel the vote and in favor of that person.
+## play
 
-**Full Signature:**
+Play a song from YouTube, SoundCloud, Twitch, Vimeo, and Mixer.
 
-```py
-@commands.command()
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def resume(self, ctx):
-```
+You can provide a link or the song's title/keywords. You can also use a playlist link.
 
-**Simplified Signature:**
+*This command implicitly call [`connect`](#connect) if the user invoke without the bot inside a voice channel.*
 
-```
-resume
-```
+**Aliases:** `p`
 
-**Example:** `$resume`
+**Usage:** `<prefix>play <track>`
 
-**Expected Output:** *a vote*
+**Parameters:**
 
-## skip
+- `track`: The resource to play. This can be either a valid link or keywords in the title.
 
-Skip the current song. If there are more than one person in the voice channel, a poll will be created.
-The admin/DJ reaction will cancel the vote and in favor of that person.
+**Example:** `$play white palace ost`
 
-**Full Signature:**
+**You need:** None.
 
-```py
-@commands.command()
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def skip(self, ctx):
-```
-
-**Simplified Signature:**
-
-```
-skip
-```
-
-**Example:** `$skip`
-
-**Expected Output:** *a vote*
-
-## stop
-
-Stop the player, disconnect and clear the queue. If there are more than one person in the voice channel, a poll will be created.
-The admin/DJ reaction will cancel the vote and in favor of that person.
-
-**Full Signature:**
-
-```py
-@commands.command(aliases = ["dc", "disconnect"])
-@commands.cooldown(rate = 1, per = 15.0, type = commands.BucketType.guild)
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def stop(self, ctx):
-```
-
-**Simplified Signature:**
-
-```
-stop
-```
-
-**Example:** `$stop`
-
-**Expected Output:** `*a vote, then the bot disconnects*
-
-## volume
-
-Adjust the player's volume.
-
-**Full Signature:**
-
-```py
-@commands.command(aliases = ["vol"])
-@commands.cooldown(rate = 1, per = 2.0, type = commands.BucketType.guild)
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def volume(self, ctx, *, value: int):
-```
-
-**Simplified Signature:**
-
-```
-volume <value>
-```
-
-**Parameter:**
-
-- `value`: The value you want the volume to be at. It is in the range 0 to 1000.
-
-**Example:** `$vol 100`
-
-**Expected Output:** *an embed with verification*
+**The bot needs:** `Add Reactions`, `Read Message History`, `Send Messages`.
 
 ## queue
 
-Retrieve a list of current queued songs.
+Display the song queue.
 
-**Full Signature:**
+**Aliases:** `q`
 
-```py
-@commands.command()
-@commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.user)
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def queue(self, ctx):
-```
+**Usage:** `<prefix>queue`
 
-**Simplified Signature:**
-
-```
-queue
-```
+**Cooldown:** 3 seconds per 1 use (guild)
 
 **Example:** `$queue`
 
-**Expected Output:** *an embed with songs*
+**You need:** None.
 
-## shuffle
+**The bot needs:** `Add Reactions`, `Read Message History`, `Send Messages`.
 
-Shuffle the current queue. If there are more than one person in the voice channel, a poll will be created.
-The admin/DJ reaction will cancel the vote and in favor of that person.
+***Subcommands:*** [`clear`](#queue-clear), [`loop`](#queue-loop), [`move`](#queue-move), [`remove`](#queue-remove), [`shuffle`](#queue-shuffle).
 
-**Full Signature:**
+### queue clear
 
-```py
-@commands.command(aliases = ["mix"])
-@commands.cooldown(rate = 2, per = 10.0, type = commands.BucketType.user)
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def shuffle(self, ctx):
-```
+Clear queue, but keep the current song playing.
 
-**Simplified Signature:**
+**Usage:** `<prefix>queue clear`
 
-```
-shuffle
-```
+**Cooldown:** 5 seconds per 1 use (guild)
 
-**Example:** `$shuffle`
+**Example:** `$queue clear`
 
-**Expected Output:** *a vote*
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+### queue loop
+
+Toggle queue loop. This will disable single song loop if it is enabled.
+
+**Usage:** `<prefix>queue loop`
+
+**Cooldown:** 5 seconds per 1 use (guild)
+
+**Example:** `$queue loop`
+
+**You need:** None.
+
+**The bot needs:** `Add Reactions`, `Read Message History`, `Send Messages`.
+
+### queue move
+
+Move a song in the queue to a new order index.
+
+**Usage:** `<prefix>queue move <src> <dest>`
+
+**Parameters:**
+
+- `src`: The index of the song you want to move.
+- `dest`: The index you want the new song to move to.
+
+**Cooldown:** 5 seconds per 1 use (guild)
+
+**Example:** `$queue move 3 1`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+### queue remove
+
+Remove a song from the queue using the order index.
+
+**Usage:** `<prefix>queue remove <index>`
+
+**Parameters:**
+
+- `index`: The index of the song you want to remove.
+
+**Cooldown:** 5 seconds per 1 use (guild)
+
+**Example:** `$queue remove 2`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+### queue shuffle
+
+Shuffle the queue.
+
+**Usage:** `<prefix>queue shuffle`
+
+**Cooldown:** 5 seconds per 1 use (guild)
+
+**Example:** `$queue shuffle`
+
+**You need:** None.
+
+**The bot needs:** `Add Reactions`, `Read Message History`, `Send Messages`.
 
 ## repeat
 
-Repeat the currently played song one more time.
+Toggle single song looping.
 
-**Full Signature:**
+**Usage:** `<prefix>repeat`
 
-```py
-@commands.command(aliases = ["loop"])
-@commands.bot_has_guild_permissions(connect = True, speak = True, add_reactions = True, manage_messages = True, send_messages = True)
-async def repeat(self, ctx):
-```
-
-**Simplified Signature:**
-
-```
-repeat
-```
+**Cooldown:** 3 seconds per 1 use (guild)
 
 **Example:** `$repeat`
 
-**Expected Output:** *nothing*
+**You need:** None.
 
-*This document is last updated on Oct 31st (PT) by MikeJollie#1067*
+**The bot needs:** `Add Reactions`, `Read Message History`, `Send Messages`.
+
+## resume
+
+Resume the currently paused song.
+
+**Usage:** `<prefix>resume`
+
+**Example:** `$resume`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+## search
+
+Search the input track and return 10 relevant results. You can then copy the link of the one you want into `play`.
+
+**Usage:** `<prefix>search <track>`
+
+**Parameter:**
+
+- `track`: Should be keywords related to the song you want to search.
+
+**Cooldown:** 3 seconds per 1 use (guild)
+
+**Example:** `$search resting grounds`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+## seek
+
+Seek to the provided timestamp. If the timestamp exceeds the track's duration, it'll play the next song in queue.
+
+**Usage:** `<prefix>seek <time>`
+
+**Parameter:**
+
+- `time`: A time interval. Should be in the general `hh:mm:ss` format, although `3m` also works (but it looks weird no?).
+
+**Cooldown:** 5 seconds per 1 use (guild)
+
+**Example:** `$seek 3:20`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+## skip
+
+Skip the current song.
+
+If single song loop is enabled, the next song will be the same as the current song.
+
+**Aliases:** `s`
+
+**Usage:** `<prefix>skip`
+
+**Example:** `$s`
+
+**You need:** None.
+
+**The bot needs:** `Add Reactions`, `Read Message History`, `Send Messages`.
+
+## stop
+
+Stop the player and clear the queue. It also resets single song loop and queue loop to default, but retains the volume.
+
+**Usage:** `<prefix>stop`
+
+**Cooldown:** 5 seconds per 1 use (guild)
+
+**Example:** `$stop`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+## volume
+
+Adjust the player's volume. By default, the player has a volume of 50.
+
+**Aliases:** `vol`
+
+**Usage:** `<prefix>volume <new volume>`
+
+**Parameter:**
+
+- `new volume`: The value you want the volume to be at. It is in the range 0 to 200.
+
+**Cooldown:** 3 seconds per 1 use (guild)
+
+**Example:** `$vol 100`
+
+**You need:** None.
+
+**The bot needs:** `Read Message History`, `Send Messages`.
+
+*This document is last updated on June 1st (PT) by MikeJollie#1067*

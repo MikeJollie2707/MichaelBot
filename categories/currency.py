@@ -105,7 +105,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def __remove_equipments_on_die__(self, conn, member):
         """
         Remove equipments and `DEATH_PENALTY` of user's money.
-        If the tool is netherite, there's a `NETHERITE_LOSE_CHANCE` chance it won't be removed.
+        If the tool is netherite, there's a `NETHERITE_SURVIVE_CHANCE` chance it won't be removed.
         """
         equipment = await DB.User.ActiveTools.get_tools(conn, member.id)
         for tool in equipment:
@@ -123,6 +123,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         await DB.User.remove_money(conn, member.id, int(money * MONEY_PENALTY_DIE))
 
     async def __remove_potions_on_die__(self, conn, member):
+        """
+        Remove all potions from the user.
+        """
         potions = await DB.User.ActivePotions.get_potions(conn, member.id)
         for potion in potions:
             try:
@@ -179,8 +182,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
     async def __attempt_looting__(self, conn, member):
         """
         Attempt to use looting potion.
-        - If it is successful AND haste potion is not expired, return the number of stacks.
-        - If it is successful AND haste potion is expired, throw `DB.ItemExpired`.
+        - If it is successful AND looting potion is not expired, return the number of stacks.
+        - If it is successful AND looting potion is expired, throw `DB.ItemExpired`.
         - If it is not successful, return `0`.
         """
         use_looting = random.random()
@@ -194,6 +197,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         return loot_stack
 
     async def __reduce_tool_durability__(self, conn, member, current_tool):
+        """
+        Reduce the tool's durability randomly, up to the maximum penalty.
+
+        Important Parameter:
+        - `current_tool`: A `dict` that has an `id` key of the tool.
+        """
         base_durability = (await DB.Items.get_item(conn, current_tool["id"]))["durability"]
         max_durability_loss = ceil(base_durability * DURABILITY_PENALTY)
         if max_durability_loss > DURABILITY_MAX_PENALTY:
