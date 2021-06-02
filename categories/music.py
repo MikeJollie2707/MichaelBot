@@ -232,7 +232,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         If it is not provided, it'll connect to the VC you're in.
 
         **Aliases:** `join`.
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 2 seconds per 1 use (guild)
         **Example:** {prefix}{command_name} discord got talents
 
@@ -261,7 +261,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         This will forget any configurations on the player, including loop, queue, volume, etc.
 
         **Aliases:** `dc`.
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (guild)
         **Example:** {prefix}{command_name}
 
@@ -341,7 +341,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         You can provide a link or the song's title/keywords. You can also use a playlist link.
 
         **Aliases:** `p`.
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 1 second per 1 use (guild)
         **Example 1:** {prefix}{command_name} https://www.youtube.com/watch?v=dQw4w9WgXcQ
         **Example 2:** {prefix}{command_name} show yourself
@@ -386,7 +386,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Toggle pausing the player.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 1 second per 1 use (guild)
         **Example:** {prefix}{command_name}
 
@@ -418,7 +418,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Search the input track and return 10 relevant results.
         You can then copy the link of the one you want into `play`.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 3 seconds per 1 use (guild)
         **Example:** {prefix}{command_name} rickroll
 
@@ -475,7 +475,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Toggle single song looping.
         
-        **Usage:** `<prefix>{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 3 seconds per 1 use (guild)
         **Example:** {prefix}{command_name}
 
@@ -591,7 +591,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Clear queue, but keep the current song playing.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (guild)
         **Example:** {prefix}{command_name}
 
@@ -613,7 +613,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Toggle queue loop.
         This will disable single song loop if it is enabled.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 3 seconds per 1 use (guild)
         **Example:** {prefix}{command_name}
 
@@ -741,7 +741,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
         Resume the player from pausing.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -772,7 +772,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Acceptable volume range is from 0-200. By default, the player has volume 50.
 
         **Aliases:** `vol`.
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 3 seconds per 1 use (guild)
         **Example:** {prefix}{command_name} 100
 
@@ -801,7 +801,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Skip the current song.
         If single loop is enabled, the next song will be the same.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Example:** {prefix}{command_name}
 
         **You need:** None.
@@ -829,7 +829,7 @@ class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Stop the player and clear the queue.
         This will stop the song, disable all loops, clear all songs in queue, but retains the volume.
 
-        **Usage:** `{prefix}{command_name} {command_signature}`
+        **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (guild)
         **Example:** {prefix}{command_name}
 
