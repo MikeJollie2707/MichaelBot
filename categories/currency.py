@@ -252,6 +252,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await DB.User.UserBadges.add(conn, ctx.author.id, "netherite1")
                         if slot["quantity"] >= 100:
                             await DB.User.UserBadges.add(conn, ctx.author.id, "netherite2")
+                
+                world = await DB.User.get_world(conn, ctx.author.id)
+                if world == 1:
+                    await DB.User.UserBadges.add(conn, ctx.author.id, "nether1")
 
     @commands.command(aliases = ['adv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
