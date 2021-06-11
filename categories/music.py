@@ -97,7 +97,10 @@ class InteractiveMenu(menus.Menu):
         ).add_field(
             name = "Volume:",
             value = f"**{controller.player.volume}**",
-        ).set_thumbnail(
+        )
+        
+        if current_track.thumb is not None:
+            embed.set_thumbnail(
             url = current_track.thumb
         )
 
