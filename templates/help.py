@@ -145,7 +145,8 @@ class BigHelp(commands.HelpCommand):
                        **I need:** `Send Messages`.'''
         super().__init__(command_attrs = {
             "help": docstring,
-            "name": "help-all"
+            "name": "help-all",
+            "aliases": ["man"]
         })
     
     async def send_bot_help(self, mapping):
