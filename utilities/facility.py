@@ -141,6 +141,53 @@ def clean_signature(command_signature : str) -> str:
 
     return command_signature.replace('__', '/').replace('_', ' ')
 
+def flag_parse(input : str, flags) -> dict:
+    """
+    Parse an input string and return possible flags.
+
+    A flag (or option) is usually denoted as something like `--message`, `-m`, `+m`, etc.
+    Whatever comes after it is considered to be the flag's argument.
+    
+    The return dictionary have the following traits:
+    - Key is the flags in `flags` arguments.
+    - Value of each key is the rest of the strings after the key (flag) that is not a flag.
+    - If there is no key presented in the string, the key will have `None` value.
+    - If there is no value for the flag, the key will have `True` value.
+    - If there is multiple of the same flag presented, the value will be the latest one.
+
+    There is a `leftover` key, indicating strings that does not belong to any flags.
+
+    Important Parameters:
+    - `input`: The input string.
+    - `flags`: A list of `str` containing all the flags that is "allowed" in the string.
+    """
+    input_list = input.split()
+    result = { "leftover": "" }
+    for flag in flags:
+        result[flag] = ""
+    
+    i = 0
+    for i in range(0, len(input_list)):
+        if input_list[i] not in flags:
+            result["leftover"] += input_list[i]
+        else:
+            flag = input_list[i]
+            # Override previous duplication flag.
+            result[flag] = ""
+            values = []
+            i += 1
+            while (i < len(input_list)) and (input_list[i] not in flags):
+                values.append(input_list[i])
+                i += 1
+            
+            if len(values) == 0:
+                result[flag] = True
+            else:
+                result[flag] = ' '.join(values)
+    
+    return result
+            
+
 def get_default_embed(title : str = "", url : str = "", description : str = "", color : discord.Color = discord.Color.green(), timestamp : datetime.datetime = datetime.datetime.utcnow(), author : discord.User = None) -> discord.Embed:
     """
     Generate a "default" embed with footer and the time.

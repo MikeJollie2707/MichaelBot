@@ -175,6 +175,20 @@ async def setup(secrets : dict):
             );
         ''')
         print("Done!")
+
+        print("Creating DGuilds_CCommand...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS DGuilds_CCommand (
+                guild_id INT8 NOT NULL REFERENCES DGuilds (id) ON UPDATE CASCADE ON DELETE CASCADE,
+                name TEXT NOT NULL,
+                description TEXT,
+                message TEXT,
+                addroles INT8[],
+                rmvroles INT8[],
+                PRIMARY KEY(guild_id, name)
+            );
+        ''')
+        print("Done!")
     
     print("Finished setting up tables.")
     await conn.close()

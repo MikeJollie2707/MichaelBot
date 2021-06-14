@@ -1,3 +1,4 @@
+from operator import add
 import discord
 from discord.ext import commands
 import humanize
@@ -67,8 +68,8 @@ class Events(commands.Cog):
             self.bot._prefixes[guild.id] = '$'
 
 
-    @commands.Cog.listener()
-    async def on_message(self, message : discord.Message):
+    @commands.Cog.listener("on_message")
+    async def _message(self, message : discord.Message):
         if message.author == self.bot.user:
             return
             
@@ -90,40 +91,58 @@ class Events(commands.Cog):
             import random
             await dm_chan.send(random.choice(RESPONSE_LIST))
         
+        else:
+            # This is custom command zone, not built-in command.
+            guild_prefix = self.bot._prefixes[message.guild.id] if self.bot.user.id != 649822097492803584 else '!'
+            if message.content.startswith(guild_prefix):
+                import utilities.db as DB
+                async with self.bot.pool.acquire() as conn:
+                    # The message have the format of <prefix>command some_random_bs
+                    # To get the command, split the content, and get the first, which will be
+                    # <prefix>command only.
+                    # To remove prefix, trim the string view based on the length of prefix.
+                    existed = await DB.CustomCommand.get_command(conn, message.guild.id, message.content.split()[0][len(guild_prefix):])
+                    if existed is not None:
+                        await message.channel.send(existed["message"])
+                        if len(existed["addroles"]) > 0:
+                            # Please check for permission here...
+                            addroles_list = [message.guild.get_role(role) for role in existed["addroles"]]
+                            await message.author.add_roles(*addroles_list)
+        
         #await bot.process_commands(message) # uncomment this if this event is outside of a cog.
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx : commands.Context, error : commands.CommandError):
+    @commands.Cog.listener("on_command_error")
+    async def _command_error(self, ctx : commands.Context, error : commands.CommandError):
         ERROR_SEPARATOR = "-----------------------------------------------------------------------"
-        is_complex = False    
         
         if isinstance(error, commands.CommandNotFound):
-            await ctx.trigger_typing()
-            return
+            return await ctx.trigger_typing()
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+            return await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
         elif isinstance(error, commands.BadArgument):
-            if ctx.command.name == "kick" or ctx.command.name == "ban":
-                return
-            else:
+            if ctx.command.name != "kick" and ctx.command.name != "ban":
                 await ctx.send("Wrong argument type. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+            return
         elif isinstance(error, commands.NoPrivateMessage):
             return
         elif isinstance(error, commands.DisabledCommand):
-            await ctx.send("Sorry, but this command is disabled for now, it'll be back soon :thumbsup:")
+            return await ctx.send("Sorry, but this command is disabled for now, it'll be back soon :thumbsup:")
         elif isinstance(error, commands.TooManyArguments):
-            await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+            return await ctx.send("Too many arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("Hey there slow down! %s left!" % humanize.precisedelta(error.retry_after, "seconds", format = "%0.2f"))
-        # May change to convert_roleperms due to Discord changes.
+            return await ctx.send("Hey there slow down! %s left!" % humanize.precisedelta(error.retry_after, "seconds", format = "%0.2f"))
         elif isinstance(error, commands.MissingPermissions):
             missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
-            await ctx.send("You are missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
+            return await ctx.send("You are missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         elif isinstance(error, commands.BotMissingPermissions):
+            if "send_messages" in error.missing_perms:
+                return await ctx.author.send("Hey! Sorry for disturbing, but I'm missing `Send Messages` permission.")
             missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
-            await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
+            return await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         elif isinstance(error, commands.NSFWChannelRequired):
-            await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
+            return await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
+        elif isinstance(error, commands.ChannelNotReadable):
+            return await ctx.send("It seems the channel you provided is not readable for me. Might want to do something about that.")
         
         else:
             error_text = "This command raised the following exception. Please copy and report it to the developer using `report`. Thank you and sorry for this inconvenience."
@@ -135,16 +154,9 @@ class Events(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file = sys.stderr)
             print(ERROR_SEPARATOR)
             print("\n\n")
-            is_complex = True
-        
-        if not is_complex:
-            pass
-            #print("It seems that this error isn't fatal (no traceback). Check the logging channel to know more.")
-            #print("\n\n")
 
-
-    @commands.Cog.listener()
-    async def on_command_completion(self, ctx : commands.Context):
+    @commands.Cog.listener("on_command_completion")
+    async def _command_completion(self, ctx : commands.Context):
         if ctx.cog.qualified_name == "Dev":
             print("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.datetime.today())))
             print("\n\n")

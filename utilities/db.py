@@ -114,6 +114,21 @@ async def insert_into(conn, table_name : str, *args):
         VALUES %s
     ''' % (table_name, arg_str), *args
     )
+
+def rec_to_dict(record : asyncpg.Record) -> typing.Optional[dict]:
+    """
+    Convert a record to a `dict`.
+
+    - If the record is `None`, `None` is returned.
+
+    Important Parameter:
+    - `record`: The record.
+    """
+    if record is None:
+        return None
+    else:
+        return dict(record)
+
 class User:
     """
     A group of methods dealing specifically with `dUsers` table.
@@ -1249,8 +1264,6 @@ class Member:
     
 # Currently we still need some sort of function that scan the db periodically for some schedule stuffs. 
 
-
-
 class Items:
     """A group of methods dealing specifically with `Items` table."""
     @classmethod
@@ -1472,17 +1485,56 @@ class Notify:
 
         await conn.execute(query, id)
 
-def rec_to_dict(record : asyncpg.Record) -> typing.Optional[dict]:
-    """
-    Convert a record to a `dict`.
+class CustomCommand:
+    @classmethod
+    async def get_commands(cls, conn, guild_id : int):
+        query = '''
+            SELECT* FROM DGuilds_CCommand
+            WHERE guild_id = ($1);
+        '''
 
-    - If the record is `None`, `None` is returned.
+        result = await conn.fetch(query, guild_id)
+        return [rec_to_dict(record) for record in result]
+    
+    @classmethod
+    async def get_command(cls, conn, guild_id : int, name : str):
+        query = '''
+            SELECT * FROM DGuilds_CCommand
+            WHERE guild_id = ($1) AND name = ($2);
+        '''
 
-    Important Parameter:
-    - `record`: The record.
-    """
-    if record is None:
-        return None
-    else:
-        return dict(record)
+        result = await conn.fetchrow(query, guild_id, name)
+        return rec_to_dict(result)
+
+    @classmethod
+    async def add(cls, conn, guild_id : int, name : str, config : dict):
+        existed = await cls.get_command(conn, guild_id, name)
+        if existed is None:
+            description = config.get("description")
+            message = config.get("message")
+            addroles = config.get("addroles")
+            rmvroles = config.get("rmvroles")
+            await insert_into(conn, "DGuilds_CCommand", [
+                (guild_id, name, description, message, addroles, rmvroles)
+            ])
+
+    @classmethod
+    async def remove(cls, conn, guild_id : int, name : str):
+        existed = await cls.get_command(conn, guild_id, name)
+        if existed is not None:
+            query = '''
+                DELETE FROM DGuilds_CCommand
+                WHERE guild_id = ($1) AND name = ($2);
+            '''
+
+            await conn.execute(query, guild_id, name)
+    
+    @classmethod
+    async def __update_generic__(cls, conn, col_name : str, guild_id : int, name : str, new_value):
+        await conn.execute('''
+            UPDATE DGuilds_CCommand
+            SET %s = ($1)
+            WHERE guild_id = ($2) AND name = ($3);
+        ''' % col_name, new_value, guild_id, name)
+    
 
