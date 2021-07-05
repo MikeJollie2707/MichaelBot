@@ -180,3 +180,29 @@ class MinimalPages(Pages):
     
     async def _on_terminate(self, message):
         pass
+        
+def listpage_generator(max_item, item_list, title_formatter, item_formatter):
+    """
+    Return a `Pages()` that split the items in the list into different pages.
+
+    Important Parameter:
+    - `max_item`: The maximum amount of items per page.
+    - `item_list`: List of items to display.
+    - `title_formatter`: A callback that accept a single item and return a `discord.Embed`.
+    - `item_formatter`: A callback that accept a `discord.Embed` and a single item. Returns nothing.
+    """
+    page = Pages()
+    import utilities.facility as Facility
+    embed = None
+    for index, item in enumerate(item_list):
+        if index % max_item == 0:
+            embed = title_formatter(item)
+
+        item_formatter(embed, item)
+
+        if index % max_item == max_item - 1:
+            page.add_page(embed)
+            embed = None
+    if embed is not None:
+        page.add_page(embed)
+    return page
