@@ -183,6 +183,8 @@ async def setup(secrets : dict):
                 name TEXT NOT NULL,
                 description TEXT,
                 message TEXT,
+                channel INT8,
+                is_reply BOOL DEFAULT FALSE,
                 addroles INT8[],
                 rmvroles INT8[],
                 PRIMARY KEY(guild_id, name)

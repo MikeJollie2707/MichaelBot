@@ -1512,10 +1512,12 @@ class CustomCommand:
         if existed is None:
             description = config.get("description")
             message = config.get("message")
+            channel = config.get("channel")
+            is_reply = config.get("is_reply")
             addroles = config.get("addroles")
             rmvroles = config.get("rmvroles")
             await insert_into(conn, "DGuilds_CCommand", [
-                (guild_id, name, description, message, addroles, rmvroles)
+                (guild_id, name, description, message, channel, is_reply, addroles, rmvroles)
             ])
 
     @classmethod
