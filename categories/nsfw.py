@@ -1,7 +1,12 @@
+# Before someone coming in here and flame at me for writing 18+ stuffs,
+# this is just for FUN. This entire module (except `konachan`, which is like 50/50 18+)
+# is written as a joke during NNN. Don't take this seriously ._.
+from NHentai.entities.doujin import Doujin
+from NHentai.entities.page import SearchPage
 import discord
 from discord.ext import commands
 import aiohttp
-import hentai
+from NHentai.nhentai_async import NHentaiAsync
 
 import random
 import datetime
@@ -177,14 +182,15 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
 
                         await ctx.reply(embed = embed, mention_author = False)
 
-    async def display_hentai(self, ctx, doujin : hentai.Hentai):
-        tag_list = [f"`{tag.name}`" for tag in doujin.tag]
-        author_list = [f"`{artist.name}`" for artist in doujin.artist]
+    async def display_hentai(self, ctx, doujin : Doujin):
+        NHENTAI_DEFAULT = "https://nhentai.net/g/"
+        tag_list = [f"`{tag}`" for tag in doujin.tags]
+        author_list = [f"`{artist}`" for artist in doujin.artists]
 
         first_page = Facility.get_default_embed(
-            title = doujin.title(),
+            title = doujin.title,
             description = "",
-            url = doujin.url,
+            url = f"{NHENTAI_DEFAULT}{doujin.id}",
             author = ctx.author
         ).add_field(
             name = "Tags:",
@@ -195,24 +201,28 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
             value = Facility.striplist(author_list),
             inline = False
         ).set_image(
-            url = doujin.image_urls[0]
+            url = doujin.images[0]
+            # No idea why the line below won't display the image
+            #url = f"{NHENTAI_DEFAULT}{doujin.id}/1/"
         )
+
         paginate = Pages()
         paginate.add_page(first_page)
         
-        for index, page in enumerate(doujin.pages):
+        for index, image_url in enumerate(doujin.images):
             if index == 0:
                 continue
             
             embed = Facility.get_default_embed(
                 title = "Page %d" % (index + 1),
-                url = page.url,
+                #url = image_url,
+                url = f"{NHENTAI_DEFAULT}{doujin.id}/{index + 1}/",
                 author = ctx.author
             )
             embed.set_footer(
-                text = embed.footer.text + " | Page %d/%d" % (index, len(doujin.pages))
+                text = embed.footer.text + " | Page %d/%d" % (index, doujin.total_pages)
             ).set_image(
-                url = page.url
+                url = image_url
             )
 
             paginate.add_page(embed)
@@ -245,7 +255,7 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
         '''
 
-        doujin = hentai.Hentai(hentai.Utils.get_random_id())
+        doujin = await NHentaiAsync().get_random()
 
         await self.display_hentai(ctx, doujin)
     @nhentai.command(name = "search")
@@ -266,24 +276,26 @@ class NSFW(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
         '''
 
         if isinstance(id__tags, int):
-            doujin = hentai.Hentai(id__tags)
+            doujin = await NHentaiAsync().get_doujin(id = str(id__tags))
 
             await self.display_hentai(ctx, doujin)
         else:
-            query_str = "tag:"
+            query_str = ""
             joiner = "+"
             tag_join = joiner.join(tags)
             query_str += tag_join
 
             doujin = None
 
-            doujin_list = hentai.Utils.search_by_query(
-                query_str, sort = hentai.Sort.Popular
+            doujin_list : SearchPage = await NHentaiAsync().search(
+                query = query_str,
+                sort = 'popular'
             )
 
-            if len(doujin_list) > 0:
-                doujin = random.choice(doujin_list)
-                await self.display_hentai(ctx, doujin)
+            if len(doujin_list.doujins) > 0:
+                doujin = random.choice(doujin_list.doujins)
+                print(doujin.id)
+                await self.display_hentai(ctx, await NHentaiAsync().get_doujin(id = doujin.id))
             else:
                 await ctx.send("One of the tags doesn't exist. Please check again.")
 
