@@ -20,35 +20,25 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         async with self.bot.pool.acquire() as conn:
             custom_commands = await DB.CustomCommand.get_commands(conn, ctx.guild.id)
             if custom_commands == [None] * len(custom_commands):
-                return
-            
-            from templates.navigate import Pages
-            page = Pages()
-            
-            MAX_COMMAND = 10
-            embed = None
-            for index, command in enumerate(custom_commands):
-                if index % MAX_COMMAND == 0:
-                    embed = Facility.get_default_embed(
-                        title = "Custom Commands",
-                        timestamp = dt.datetime.utcnow()
-                    ).set_author(
-                        name = ctx.guild.name,
-                        icon_url = ctx.guild.icon_url
-                    )
-                
+                return await ctx.reply("*Cricket noises*", mention_author = False)
+
+            from templates.navigate import listpage_generator
+            def title_formatter(command):
+                embed = Facility.get_default_embed(
+                    title = "Custom Commands",
+                    timestamp = dt.datetime.utcnow()
+                ).set_author(
+                    name = ctx.guild.name,
+                    icon_url = ctx.guild.icon_url
+                )
+                return embed
+            def item_formatter(embed, command):
                 embed.add_field(
                     name = command["name"],
-                    value = f"*{command['description']}*",
+                    value = f"*{command['description']}*" if command["description"] != "" else "*None*",
                     inline = False
                 )
-
-                if index % MAX_COMMAND == MAX_COMMAND - 1:
-                    page.add_page(embed)
-                    embed = None
-            if embed is not None:
-                page.add_page(embed)
-            
+            page = listpage_generator(3, custom_commands, title_formatter, item_formatter)
             await page.start(ctx)
     
     @ccommand.command()
