@@ -91,24 +91,6 @@ class Events(commands.Cog):
             import random
             await dm_chan.send(random.choice(RESPONSE_LIST))
         
-        else:
-            # This is custom command zone, not built-in command.
-            guild_prefix = self.bot._prefixes[message.guild.id] if self.bot.user.id != 649822097492803584 else '!'
-            if message.content.startswith(guild_prefix):
-                import utilities.db as DB
-                async with self.bot.pool.acquire() as conn:
-                    # The message have the format of <prefix>command some_random_bs
-                    # To get the command, split the content, and get the first, which will be
-                    # <prefix>command only.
-                    # To remove prefix, trim the string view based on the length of prefix.
-                    existed = await DB.CustomCommand.get_command(conn, message.guild.id, message.content.split()[0][len(guild_prefix):])
-                    if existed is not None:
-                        await message.channel.send(existed["message"])
-                        if len(existed["addroles"]) > 0:
-                            # Please check for permission here...
-                            addroles_list = [message.guild.get_role(role) for role in existed["addroles"]]
-                            await message.author.add_roles(*addroles_list)
-        
         #await bot.process_commands(message) # uncomment this if this event is outside of a cog.
 
     @commands.Cog.listener("on_command_error")

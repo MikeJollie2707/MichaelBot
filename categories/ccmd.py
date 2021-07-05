@@ -13,7 +13,54 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         self.bot : MichaelBot = bot
         self.emoji = '✨'
 
-        self.__flags__ = ["--message", "--description", "--addroles", "--rmvroles"]
+        self.__flags__ = [
+            "--description", 
+            "--message",
+            "--channel", 
+            "--reply", 
+            "--addroles", 
+            "--rmvroles"
+        ]
+
+    @commands.Cog.listener("on_message")
+    async def _message(self, message : discord.Message):
+        # This is kind of oofy, but whatever conditions within `events.py`, you'll need to filter them out here.
+        if message.author == self.bot.user or isinstance(message.channel, discord.DMChannel):
+            return
+        
+        guild_prefix = self.bot._prefixes[message.guild.id] if self.bot.user.id != 649822097492803584 else '!'
+        if message.content.startswith(guild_prefix):
+            import utilities.db as DB
+            async with self.bot.pool.acquire() as conn:
+                # The message have the format of <prefix>command some_random_bs
+                # To get the command, split the content, and get the first, which will be
+                # <prefix>command only.
+                # To remove prefix, trim the string view based on the length of prefix.
+                existed = await DB.CustomCommand.get_command(conn, message.guild.id, message.content.split()[0][len(guild_prefix):])
+                if existed is not None:
+                    if existed["channel"] is not None:
+                        channel = message.guild.get_channel(existed["channel"])
+                    else:
+                        channel = message.channel
+                    # Can only reply to the same channel
+                    reference = None
+                    if existed["is_reply"] and existed["channel"] == message.channel.id:
+                        reference = message
+                    else:
+                        reference = None
+                    await channel.send(existed["message"], reference = reference)
+                    if len(existed["addroles"]) > 0:
+                        addroles_list = [message.guild.get_role(role) for role in existed["addroles"]]
+                        try:
+                            await message.author.add_roles(*addroles_list)
+                        except discord.Forbidden:
+                            await message.channel.send("Failed to add roles.")
+                    if len(existed["rmvroles"]) > 0:
+                        rmvroles_list = [message.guild.get_role(role) for role in existed["rmvroles"]]
+                        try:
+                            await message.author.remove_roles(*rmvroles_list)
+                        except discord.Forbidden:
+                            await message.channel.send("Failed to remove roles.")
     
     @commands.group(aliases = ['ccmd', 'customcmd'], invoke_without_command = True)
     async def ccommand(self, ctx):
