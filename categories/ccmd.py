@@ -113,6 +113,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         - `--description`: The command's description.
         - **`--message`: This is required. The command's response.**
         - `--channel`: The channel the command will send the response to. Must be ID.
+        - `--reply`: A flag indicating whether the message will be a reply.
         - `--addroles`: The roles the bot will add to the command invoker. Must be IDs.
         - `--rmvroles`: The roles the bot will remove to the command invoker. Must be IDs.
         Order is not important.
@@ -120,7 +121,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         **Usage:** {usage}
         **Cooldown:** 5 seconds per 1 use (guild)
         **Example 1:** {prefix}{command_name} test --message Hello
-        **Example 2:** {prefix}{command_name} test2 --description Give some cool roles --message Enjoy :D --addroles 704527865173114900 644339804141518848
+        **Example 2:** {prefix}{command_name} test2 --description Give some cool roles --message Enjoy :D --reply --addroles 704527865173114900 644339804141518848
 
         **You need:** `Manage Server`.
         **I need:** `Read Message History`, `Send Messages`.
