@@ -151,7 +151,7 @@ def flag_parse(input : str, flags) -> dict:
     The return dictionary have the following traits:
     - Key is the flags in `flags` arguments.
     - Value of each key is the rest of the strings after the key (flag) that is not a flag.
-    - If there is no key presented in the string, the key will have `None` value.
+    - If there is no key presented in the string, the value will be `None`.
     - If there is no value for the flag, the key will have `True` value.
     - If there is multiple of the same flag presented, the value will be the latest one.
 
@@ -164,7 +164,7 @@ def flag_parse(input : str, flags) -> dict:
     input_list = input.split()
     result = { "leftover": "" }
     for flag in flags:
-        result[flag] = ""
+        result[flag] = None
     
     i = 0
     for i in range(0, len(input_list)):
