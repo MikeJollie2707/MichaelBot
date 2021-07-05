@@ -63,7 +63,19 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
                             await message.channel.send("Failed to remove roles.")
     
     @commands.group(aliases = ['ccmd', 'customcmd'], invoke_without_command = True)
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    @commands.bot_has_permissions(add_reactions = True, read_message_history = True, send_messages = True)
     async def ccommand(self, ctx):
+        '''
+        View custom commands for this guild.
+
+        **Usage:** {usage}
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name}
+
+        **You need:** None.
+        **I need:** `Add Reactions`, `Read Message History`, `Send Messages`.
+        '''
         async with self.bot.pool.acquire() as conn:
             custom_commands = await DB.CustomCommand.get_commands(conn, ctx.guild.id)
             if custom_commands == [None] * len(custom_commands):
@@ -89,7 +101,30 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
             await page.start(ctx)
     
     @ccommand.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    @commands.has_guild_permissions(manage_guild = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def add(self, ctx : commands.Context, name, *, input):
+        '''
+        Add a custom command to the guild.
+
+        The `input` is in the form of arguments commonly used within terminals.
+        There are 5 arguments, one of which is required:
+        - `--description`: The command's description.
+        - **`--message`: This is required. The command's response.**
+        - `--channel`: The channel the command will send the response to. Must be ID.
+        - `--addroles`: The roles the bot will add to the command invoker. Must be IDs.
+        - `--rmvroles`: The roles the bot will remove to the command invoker. Must be IDs.
+        Order is not important.
+
+        **Usage:** {usage}
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example 1:** {prefix}{command_name} test --message Hello
+        **Example 2:** {prefix}{command_name} test2 --description Give some cool roles --message Enjoy :D --addroles 704527865173114900 644339804141518848
+
+        **You need:** `Manage Server`.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
         builtin_existed = ctx.bot.get_command(name)
         if builtin_existed is not None:
             return await ctx.reply("This command's name already existed within the bot. Please choose a different one.")
@@ -166,7 +201,20 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
             await ctx.reply(f"Added command `{name}`.", mention_author = False)
     
     @ccommand.command()
+    @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
+    @commands.has_guild_permissions(manage_guild = True)
+    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def remove(self, ctx, name):
+        '''
+        Remove a custom command from the guild.
+
+        **Usage:** {usage}
+        **Cooldown:** 5 seconds per 1 use (guild)
+        **Example:** {prefix}{command_name} test
+
+        **You need:** `Manage Server`.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
         builtin_existed = ctx.bot.get_command(name)
         if builtin_existed is not None:
             return await ctx.reply("This command's name somehow matches the bot's default commands. Contact the developer.")
@@ -178,7 +226,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
 
             async with conn.transaction():
                 await DB.CustomCommand.remove(conn, ctx.guild.id, name)
-            await ctx.reply(f"Removed command `{name}`.")
+            await ctx.reply(f"Removed command `{name}`.", mention_author = False)
     
     @ccommand.group()
     async def edit(self, ctx):
@@ -189,5 +237,5 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         await ctx.send("Yo boi")
 
 
-def setup(bot):
+def setup(bot : MichaelBot):
     bot.add_cog(CustomCommand(bot))
