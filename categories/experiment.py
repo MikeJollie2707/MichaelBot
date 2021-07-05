@@ -41,10 +41,13 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
             add_reactions = False,
         )
     @commands.command()
-    async def wake_up_shiro(self, ctx):
+    async def wake_up_shiro(self, ctx, *, msg = None):
         '''
         A fun way to wake up <@391582107446804485> due to his shitty mobile notification.
         '''
+        message = None
+        if msg is not None:
+            message = await ctx.send(msg)
         while True:
             messages = [
                 "<@391582107446804485> wake up.",
@@ -63,7 +66,10 @@ class Experiment(commands.Cog, command_attrs = {"hidden" : True}):
             ]
             import random
             choose = random.randint(0, len(messages) - 1)
-            await ctx.send(messages[choose])
+            if message is not None:
+                await message.reply(messages[choose])
+            else:
+                await ctx.send(messages[choose])
             await asyncio.sleep(10)
 
     @commands.command()
