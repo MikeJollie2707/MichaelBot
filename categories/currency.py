@@ -12,7 +12,7 @@ import utilities.facility as Facility
 import utilities.loot as LootTable
 from utilities.converters import ItemConverter
 from utilities.checks import has_database
-from templates.navigate import Pages
+from templates.navigate import Pages, listpage_generator
 from bot import MichaelBot # IntelliSense purpose only
 
 MAX_TRADE = 4
@@ -904,32 +904,33 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             user = ctx.author
         async with self.bot.pool.acquire() as conn:
             badges = await DB.User.UserBadges.get_badges(conn, user.id)
-            if badges is not None:
-                MAX_PER_PAGE = 5
-                embed = None
-                page = Pages()
-                for index, badge in enumerate(badges):
-                    if embed is None:
-                        embed = Facility.get_default_embed(
-                            timestamp = datetime.datetime.utcnow()
-                        ).set_author(
-                            name = f"{user.name}'s Badges",
-                            icon_url = user.avatar_url
-                        )#.set_thumbnail(
-                        #    url = self.bot.user.avatar_url
-                        #)
+            if badges != [None] * len(badges):
+                def title_formatter(badge):
+                    embed = Facility.get_default_embed(
+                        timestamp = datetime.datetime.utcnow()
+                    ).set_author(
+                        name = f"{user.name}'s Badges",
+                        icon_url = user.avatar_url
+                    )
+                    return embed
+                def item_formatter(embed, badge):
                     embed.add_field(
                         name = f"{badge['emoji']} - {LootTable.acapitalize(badge['name'])}",
                         value = f"*{badge['description']}*",
                         inline = False
                     )
-                    if index % MAX_PER_PAGE == MAX_PER_PAGE - 1:
-                        page.add_page(embed)
-                        embed = None
-                if embed is not None:
-                    page.add_page(embed)
                 
+                page = listpage_generator(5, badges, title_formatter, item_formatter)
                 await page.start(ctx, interupt = False)
+            else:
+                embed = Facility.get_default_embed(
+                    description = "*Cricket noises*",
+                    timestamp = datetime.datetime.utcnow()
+                ).set_author(
+                    name = f"{user.name}'s Badges",
+                    icon_url = user.avatar_url
+                )
+                await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1156,8 +1157,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         async with self.bot.pool.acquire() as conn:
             inventory = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
             if inventory is None or inventory == [None] * len(inventory):
-                await ctx.reply("*Insert empty inventory here*", mention_author = False)
-                return
+                return await ctx.reply("*Insert empty inventory here*", mention_author = False)
 
             inventory_dict = {}
             for slot in inventory:
@@ -1178,13 +1178,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         **I need:** `Use External Emojis`, `Read Message History`, `Send Messages`.
         '''
 
-        MAX_ITEMS = 5
-        page = Pages()
-        embed = None
         async with self.bot.pool.acquire() as conn:
             inv = await DB.User.Inventory.get_whole_inventory(conn, ctx.author.id)
-            for index, item in enumerate(inv):
-                if index % MAX_ITEMS == 0:
+            if inv != [None] * len(inv):
+                def title_formatter(item):
                     embed = Facility.get_default_embed(
                         timestamp = datetime.datetime.utcnow(),
                         author = ctx.author
@@ -1192,22 +1189,17 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         name = f"{ctx.author.name}'s inventory",
                         icon_url = ctx.author.avatar_url
                     )
-                embed.add_field(
-                    name = f"{item['emoji']} **{LootTable.acapitalize(item['name'])} x {item['quantity']}**",
-                    value = f"*{item['description']}*",
-                    inline = False
-                )
-
-                if index % MAX_ITEMS == MAX_ITEMS - 1:
-                    embed.set_thumbnail(
-                        url = ctx.author.avatar_url
+                    return embed
+                def item_formatter(embed, item):
+                    embed.add_field(
+                        name = f"{item['emoji']} **{LootTable.acapitalize(item['name'])} x {item['quantity']}**",
+                        value = f"*{item['description']}*",
+                        inline = False
                     )
-                    page.add_page(embed)
-                    embed = None
-            
-            if embed is not None:
-                page.add_page(embed)
-            await page.start(ctx, interupt = False)
+                page = listpage_generator(5, inv, title_formatter, item_formatter)
+                await page.start(ctx, interupt = False)
+            else:
+                return await ctx.reply("*Insert empty inventory here*", mention_author = False)
     
     @inventory.command(name = 'value')
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
@@ -1382,19 +1374,15 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         '''
 
         if ctx.invoked_subcommand is None:
-            MAX_ITEMS = 4
-            page = Pages()
-            embed = None
             async with self.bot.pool.acquire() as conn:
                 items = await DB.Items.get_whole_items(conn)
-                for index, item in enumerate(items):
-                    if embed is None:
-                        embed = Facility.get_default_embed(
-                            title = "Market",
-                            timestamp = datetime.datetime.utcnow(),
-                            author = ctx.author
-                        )
-                    
+                def title_formatter(item):
+                    return Facility.get_default_embed(
+                        title = "Market",
+                        timestamp = datetime.datetime.utcnow(),
+                        author = ctx.author
+                    )
+                def item_formatter(embed, item):
                     embed.add_field(
                         name = "%s **%s**" % (item["emoji"], LootTable.acapitalize(item["name"])),
                         value = "*%s*\n**Prices:** 📥 %s 📤 %s" % (
@@ -1404,11 +1392,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         ),
                         inline = False
                     )
-                    if index % MAX_ITEMS == MAX_ITEMS - 1:
-                        page.add_page(embed)
-                        embed = None
-                if embed is not None:
-                    page.add_page(embed)
+                page = listpage_generator(4, items, title_formatter, item_formatter)
                 await page.start(ctx, interupt = False)
 
     @market.command()
