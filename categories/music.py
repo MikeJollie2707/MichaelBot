@@ -172,6 +172,7 @@ class InteractiveMenu(menus.Menu):
         self.stop()
 
 class Music(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
+    '''Commands related to music'''
     def __init__(self, bot):
         self.bot = bot
         self.emoji = '🎵'

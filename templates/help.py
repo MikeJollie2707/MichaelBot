@@ -22,7 +22,10 @@ def cog_help_format(ctx : commands.Context, cog : commands.Cog) -> discord.Embed
     MAX_COMMANDS = 10
     cogs = []
     display = ""
-    commands = cog.get_commands().sort()
+    commands = cog.get_commands()
+    def _on_name(command):
+        return command.name
+    commands.sort(key = _on_name)
     for index, command in enumerate(commands):
         if command.hidden != True:
             command_title = command.name
