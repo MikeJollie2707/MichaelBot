@@ -16,8 +16,8 @@ import utilities.db as DB
 
 __discord_extension__ = [
     "categories.core",
-    "categories.ccmd",
     "categories.currency",
+    "categories.customcommand",
     "categories.dev",
     "categories.events",
     "categories.experiment",

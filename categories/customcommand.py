@@ -9,6 +9,7 @@ import utilities.facility as Facility
 from bot import MichaelBot
 
 class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"cooldown_after_parsing": True}):
+    """Commands that support adding custom commands."""
     def __init__(self, bot):
         self.bot : MichaelBot = bot
         self.emoji = '✨'
