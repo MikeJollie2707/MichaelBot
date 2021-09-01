@@ -1845,6 +1845,16 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     ctx.command.reset_cooldown(ctx)
                     return
             else:
+                if potion == "bland_potion":
+                    bland_existed = await DB.User.Inventory.get_one_inventory(conn, ctx.author.id, "bland_potion")
+                    if bland_existed is not None:
+                        await self.__remove_potions_on_die__(conn, ctx.author)
+                        await DB.User.Inventory.remove(conn, ctx.author.id, "bland_potion")
+                        return await ctx.reply("Removed all potions effects.", mention_author = False)
+                    else:
+                        ctx.command.reset_cooldown(ctx)
+                        return await ctx.reply("You don't have such a potion.", mention_author = False)
+                
                 current_potions = await DB.User.ActivePotions.get_potions(conn, ctx.author.id)
                 if len(current_potions) == 3:
                     await ctx.reply("You cannot have more than 3 different potions at the same time.", mention_author = False)

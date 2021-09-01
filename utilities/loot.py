@@ -132,6 +132,8 @@ def get_item_info():
             "Increase loot yield from a mining session. This potion's stack affects the loot yield rate."],
         "looting_potion": ["<a:looting_potion:841783868860399719>", "looting potion", "rare+", 120000, 2000, 10,
             "Increase loot yield from adventuring. This potion's stack affects the loot yield rate."],
+        "bland_potion": ["<:bland_potion:882679421356630116>", "bland potion", "common", 1000, 10, 1,
+            "Erase all potions effects. Why would you need that?"],
         "undying_potion": ["<:undying_potion:828136854657826836>", "undying potion", "???", None, None, 10000000,
             "To achieve immortal, one simply requires many many sacrifices."]
     }
