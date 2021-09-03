@@ -69,8 +69,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             "nether", "gold", "debris", "netherite", "nether_sword", 
             "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
             "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
-            "moyai", "nether_star", "luck_potion", "haste_potion", 
-            "undying_potion"]
+            "moyai", "nether_star", "undying_potion"]
         
         self.refresh_trade.start()
         self.refresh_barter.start()
