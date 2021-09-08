@@ -57,8 +57,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             "nether", "debris", "netherite", "nether_sword", 
             "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
             "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
-            "moyai", "blaze", "nether_star", "luck_potion", "haste_potion", 
-            "undying_potion"]
+            "moyai", "blaze", "nether_star", 
+            "luck_potion", "fire_potion", "haste_potion", "looting_potion", "undying_potion"]
         # [{item, amount, gold_amount}]
         # item: The item's id
         # amount: The amount of item in this barter
@@ -69,7 +69,8 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
             "nether", "gold", "debris", "netherite", "nether_sword", 
             "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
             "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
-            "moyai", "nether_star", "undying_potion"]
+            "moyai", "nether_star", 
+            "luck_potion", "haste_potion", "looting_potion", "undying_potion"]
         
         self.refresh_trade.start()
         self.refresh_barter.start()
