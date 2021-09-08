@@ -566,10 +566,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     # Before it expires, the stack is 1.
                     haste_stack = 1
                 
-                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "oh_shiny") is not None:
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "diamond2") is not None:
                     if "diamond" in loot:
                         loot["diamond"] *= 2
-                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "heavy_metals") is not None:
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "netherite2") is not None:
                     if "debris" in loot:
                         loot["debris"] *= 2
                 if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "star1") is not None:
