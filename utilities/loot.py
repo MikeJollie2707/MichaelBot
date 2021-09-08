@@ -91,10 +91,18 @@ def get_item_info():
             "A fragment of the star, once existed in the universe. It possesses hidden energies of the star."],
         "star_gem": ["🌟", "star gem", "mythic", None, 1000000, None,
             "A shiny gem created from its fragment, but is greatly enhanced by the space orb."],
-        "fragile_star_pickaxe": ["<:fragile_star_pickaxe:839925697463582792>", "fragile star pickaxe", "mythic", None, 125000, 5000,
+        "fragile_star_sword": ["", "star sword (fragile)", "mythic", None, 125000, 5000,
+            "A sword created from the gem of the star. Unfortunately, it can't stand against extreme heat, and will break if brought into the Nether."],
+        "star_sword": ["", "star sword", "mythic+", None, 150000, 7500,
+            "A sword created from the gem of the star, enhanced by the metal of the underworld. It can now stand against any kind of heat."],
+        "fragile_star_pickaxe": ["<:fragile_star_pickaxe:839925697463582792>", "star pickaxe (fragile)", "mythic", None, 125000, 5000,
             "A pickaxe created from the gem of the star. Unfortunately, it can't stand against extreme heat, and will break if brought into the Nether."],
-        "star_pickaxe": ["<:star_pickaxe:839930221314834483>", "steady star pickaxe", "mythic+", None, 150000, 5000,
+        "star_pickaxe": ["<:star_pickaxe:839930221314834483>", "star pickaxe", "mythic+", None, 150000, 7500,
             "A pickaxe created from the gem of the star, enhanced by the metal of the underworld. It can now stand against any kind of heat."],
+        "fragile_star_axe": ["", "star axe (fragile)", "mythic", None, 125000, 5000,
+            "An axe created from the gem of the star. Unfortunately, it can't stand against extreme heat, and will break if brought into the Nether."],
+        "star_axe": ["", "star axe", "mythic+", None, 150000, 7500,
+            "An axe created from the gem of the star, enhanced by the metal of the underworld. It can now stand against any kind of heat."],
         
 
         # General purpose materials
@@ -235,7 +243,7 @@ def get_mine_loot(pick : str, world : int):
                 "obsidian": 0.05, # 1.25 on average
                 "rolls": 25
             }
-        elif pick == "fragile_star_pickaxe" or pick == "star_pickaxe":
+        elif "star_pickaxe" in pick:
             return {
                 "stone": 0.38, # 9.5 on average
                 "coal": 0.25, # 6.25 on average
@@ -318,7 +326,7 @@ def get_mine_loot(pick : str, world : int):
                 "star_fragment": 0.0005, # 0.0125 on average
                 "rolls": 25
             }
-        elif pick == "fragile_star_pickaxe" or pick == "star_pickaxe":
+        elif "star_pickaxe" in pick:
             return {
                 "moonstone": 0.5, # 25 on average
                 "obsidian": 0.4, # 20 on average
@@ -367,6 +375,15 @@ def get_chop_loot(axe : str, world : int):
                 "moyai": 0.00000001, # 0.00000025 on average
                 "rolls": 25
             }
+        elif "star_axe" in axe:
+            return {
+                "log": 0.50, # 25 on average
+                "stick": 0.05, # 2.5 on average
+                "apple": 0.20, # 10 on average
+                "flower": 0.15, # 7.5 on average
+                "moyai": 0.000001, # 0.00005 on average
+                "rolls": 50
+            }
     elif world == 1:
         if axe == "wood_axe":
             return {
@@ -392,6 +409,11 @@ def get_chop_loot(axe : str, world : int):
             return {
                 "log": 0.50, # 12.5 on average
                 "rolls": 25
+            }
+        elif axe == "star_axe":
+            return {
+                "log": 0.50, # 25 on average
+                "rolls": 50
             }
     return None
 
@@ -440,6 +462,16 @@ def get_adventure_loot(sword : str, world : int):
                 "pearl": 0.05, # 1.25 on average
                 "rolls": 25
             }
+        elif "star_sword" in sword:
+            return {
+                "string": 0.20, # 10 on average
+                "spider_eye": 0.20, # 10 on average
+                "zombie_meat": 0.20, # 10 on average
+                "bone": 0.20, # 10 on average
+                "gunpowder": 0.10, # 5 on average
+                "pearl": 0.10, # 5 on average
+                "rolls": 50
+            }
     elif world == 1:
         if sword == "wood_sword":
             return {
@@ -485,6 +517,18 @@ def get_adventure_loot(sword : str, world : int):
                 "nether_star": 0.001, # 0.025 on average
                 "rolls": 25
             }
+        elif sword == "star_sword":
+            return {
+                "magma_cream": 0.15, # 7.5 on average
+                "zombie_meat": 0.15, # 7.5 on average
+                "bone": 0.20, # 10 on average
+                "coal": 0.10, # 5 on average
+                "gunpowder": 0.03, # 1.5 on average
+                "blaze": 0.17, # 8.5 on average
+                "pearl": 0.10, # 5 on average
+                "nether_star": 0.001, # 0.05 on average
+                "rolls": 50
+            }
     elif world == 2:
         if sword == "wood_sword":
             return {
@@ -512,6 +556,12 @@ def get_adventure_loot(sword : str, world : int):
                 "pearl": 0.75, # 18.75 on average
                 "space_orb": 0.0005, # 0.0125 on average
                 "rolls": 25
+            }
+        elif "star_sword" in sword:
+            return {
+                "pearl": 0.50, # 25 on average
+                "space_orb": 0.001, # 0.05 on average
+                "rolls": 50
             }
     return None
 
@@ -831,6 +881,18 @@ def get_craft_ingredient(item : str):
             "star_fragment": 4,
             "quantity": 1
         },
+        "fragile_star_sword": {
+            "diamond_sword": 1,
+            "star_gem": 1,
+            "quantity": 1
+        },
+        "star_sword": {
+            "fragile_star_sword": 1,
+            "netherite": 50,
+            "star_gem": 1,
+            "anvil": 1,
+            "quantity": 1
+        },
         "fragile_star_pickaxe": {
             "diamond_pickaxe": 1,
             "star_gem": 1,
@@ -839,7 +901,19 @@ def get_craft_ingredient(item : str):
         "star_pickaxe": {
             "fragile_star_pickaxe": 1,
             "netherite": 50,
-            "star_gem": 2,
+            "star_gem": 1,
+            "anvil": 1,
+            "quantity": 1
+        },
+        "fragile_star_axe": {
+            "diamond_axe": 1,
+            "star_gem": 1,
+            "quantity": 1
+        },
+        "star_axe": {
+            "fragile_star_axe": 1,
+            "netherite": 50,
+            "star_gem": 1,
             "anvil": 1,
             "quantity": 1
         },

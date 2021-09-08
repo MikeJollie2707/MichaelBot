@@ -56,9 +56,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.__trade_exclude__ = [
             "nether", "debris", "netherite", "nether_sword", 
             "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
-            "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
-            "moyai", "blaze", "nether_star", 
-            "luck_potion", "fire_potion", "haste_potion", "looting_potion", "undying_potion"]
+            "star_fragment", "star_gem", "fragile_star_sword", "star_sword",
+            "fragile_star_pickaxe", "star_pickaxe", "fragile_star_axe", "star_axe", 
+            "moyai", "blaze", "nether_star", "luck_potion", 
+            "fire_potion", "haste_potion", "looting_potion", "undying_potion"]
         # [{item, amount, gold_amount}]
         # item: The item's id
         # amount: The amount of item in this barter
@@ -68,9 +69,10 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         self.__barter_exclude__ = [
             "nether", "gold", "debris", "netherite", "nether_sword", 
             "nether_pickaxe", "nether_axe", "end", "ender_eye", "space_orb", 
-            "star_fragment", "star_gem", "fragile_star_pickaxe", "star_pickaxe", 
-            "moyai", "nether_star", 
-            "luck_potion", "haste_potion", "looting_potion", "undying_potion"]
+            "star_fragment", "star_gem", "fragile_star_sword", "star_sword",
+            "fragile_star_pickaxe", "star_pickaxe", "fragile_star_axe", "star_axe", 
+            "moyai", "nether_star", "luck_potion", "haste_potion", 
+            "looting_potion", "undying_potion"]
         
         self.refresh_trade.start()
         self.refresh_barter.start()
@@ -114,6 +116,9 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 rng = random.random()
                 if rng <= NETHERITE_SURVIVE_CHANCE:
                     continue
+            # Star tools cannot be lost on death.
+            elif "star_" in tool:
+                continue
             
             try:
                 await DB.User.ActiveTools.unequip_tool(conn, member.id, tool["id"], False)
