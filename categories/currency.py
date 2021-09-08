@@ -1570,6 +1570,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if eye_exist is None:
                     await ctx.reply(f"You have no **Mysterious Eye** to travel.", mention_author = False)
                     return
+                # Might remove this part since it's harsh lesson ;)
                 if eye_exist["quantity"] < 2 and blaze_exist is None:
                     await ctx.reply(f"You might not be able to return, so no I won't allow you.", mention_author = False)
                     return
@@ -1846,6 +1847,7 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         Note that you can only have at max 10 potions of the same potion at once.
 
         **Usage:** {usage}
+        **Cooldown:** 10 seconds per 1 use (user)
         **Example:** {prefix}{command_name} 5 luck potion
 
         **You need:** None.
