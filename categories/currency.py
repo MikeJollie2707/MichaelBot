@@ -355,6 +355,13 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                     message += "**Looting Potion** expired.\n"
                     # Before it expires, the stack is 1.
                     looting_stack = 1
+                
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "star1") is not None:
+                    if "space_orb" in loot:
+                        loot["space_orb"] *= 1.5
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "star2") is not None:
+                    if "space_orb" in loot:
+                        loot["space_orb"] *= 1.5
 
                 # A dict of {"item": amount}
                 final_reward = self.__get_reward__(loot, looting_stack)
@@ -565,6 +572,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                 if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "heavy_metals") is not None:
                     if "debris" in loot:
                         loot["debris"] *= 2
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "star1") is not None:
+                    if "star_fragment" in loot:
+                        loot["star_fragment"] *= 1.5
+                if await DB.User.UserBadges.get_badge(conn, ctx.author.id, "star2") is not None:
+                    if "star_fragment" in loot:
+                        loot["star_fragment"] *= 1.5
                 
                 # A dict of {"item": amount}
                 final_reward = self.__get_reward__(loot, haste_stack)
