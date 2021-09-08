@@ -162,6 +162,10 @@ def get_badge_info():
             "A decorative badge. Earned from getting Ancient Debris."],
         "netherite1": ["<:netherite:828129193275293706>", "restoration",
             "A decorative badge. Earned from crafting Netherite."],
+        "brew1": ["<a:fire_potion:828135033466126366>", "local brewery",
+            "A decorative badge. Earned from brewing your first potion."],
+        "space1": ["🌙", "space travel",
+            "A decorative badge. Earned from entering the Space."],
 
         "wooden_age": ["🪵", "wooden age",
             "After chopping quite an amount of logs, the merchant decides to buy your wood for a higher price."],
@@ -172,7 +176,11 @@ def get_badge_info():
         "diamond2": ["🍀", "oh shiny!",
             "After mining quite an amount of diamonds, you now know the strategy to greatly improve your chance of finding diamonds."],
         "netherite2": ["<:netherite:828129193275293706>", "heavy metals",
-            "After obtaining quite an amount of netherites, you now know the strategy to greatly improve your chance of finding ancient debris."]
+            "After obtaining quite an amount of netherites, you now know the strategy to greatly improve your chance of finding ancient debris."],
+        "star1": ["✨", "shiny star",
+            "The blessing of the star allows you to find them easier than before."],
+        "star2": ["🌟", "star blessing",
+            "It seems the stars took a liking to you. You'll find them more often now."]
     }
 
 def get_world(world : int) -> str:
@@ -731,7 +739,11 @@ def get_adventure_msg(type : str, world : int, reward_string : str = "") -> str:
     return random.choice(messages)
 
 def get_daily_loot(streak : int):
-    if streak < 10:
+    if streak <= 1:
+        return {
+            "log": 5
+        }
+    elif streak < 10:
         return {
             "log": random.randint(2, 5),
             "wood": random.randint(0, 3),

@@ -257,10 +257,18 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
                         await DB.User.UserBadges.add(conn, ctx.author.id, "netherite1")
                         if slot["quantity"] >= 100:
                             await DB.User.UserBadges.add(conn, ctx.author.id, "netherite2")
+                    elif slot["id"] == "star_gem":
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "star1")
+                        if slot["quantity"] >= 50:
+                            await DB.User.UserBadges.add(conn, ctx.author.id, "star2")
+                    elif slot["id"] != "bland_potion" and "_potion" in slot["id"]:
+                        await DB.User.UserBadges.add(conn, ctx.author.id, "brew1")
                 
                 world = await DB.User.get_world(conn, ctx.author.id)
                 if world == 1:
                     await DB.User.UserBadges.add(conn, ctx.author.id, "nether1")
+                elif world == 2:
+                    await DB.User.UserBadges.add(conn, ctx.author.id, "space1")
 
     @commands.command(aliases = ['adv'])
     @commands.bot_has_permissions(external_emojis = True, read_message_history = True, send_messages = True)
