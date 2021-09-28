@@ -112,12 +112,12 @@ class Currency(commands.Cog, command_attrs = {"cooldown_after_parsing" : True}):
         equipment = await DB.User.ActiveTools.get_tools(conn, member.id)
         for tool in equipment:
             # Netherite tools have a chance to not lose.
-            if "nether_" in tool:
+            if "nether_" in tool["id"]:
                 rng = random.random()
                 if rng <= NETHERITE_SURVIVE_CHANCE:
                     continue
             # Star tools cannot be lost on death.
-            elif "star_" in tool:
+            elif "star_" in tool["id"]:
                 continue
             
             try:
