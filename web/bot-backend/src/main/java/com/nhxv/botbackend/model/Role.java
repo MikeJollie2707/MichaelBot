@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * The persistent class for the role database table.
- * 
+ *
  */
 @Entity
 @Getter

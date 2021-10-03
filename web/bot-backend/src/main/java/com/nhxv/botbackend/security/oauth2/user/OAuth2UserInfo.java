@@ -1,4 +1,4 @@
-package com.nhxv.botbackend.security.oauth.user;
+package com.nhxv.botbackend.security.oauth2.user;
 
 import java.util.Map;
 

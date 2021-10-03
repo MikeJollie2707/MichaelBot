@@ -1,4 +1,4 @@
-package com.nhxv.botbackend.utility;
+package com.nhxv.botbackend.util;
 
 import org.springframework.util.SerializationUtils;
 

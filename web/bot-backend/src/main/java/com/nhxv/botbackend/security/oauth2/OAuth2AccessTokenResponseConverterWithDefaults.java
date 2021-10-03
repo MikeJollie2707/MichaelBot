@@ -1,4 +1,4 @@
-package com.nhxv.botbackend.security.oauth;
+package com.nhxv.botbackend.security.oauth2;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;

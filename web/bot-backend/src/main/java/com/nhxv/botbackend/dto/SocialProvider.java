@@ -11,6 +11,7 @@ public enum SocialProvider {
 	LINKEDIN("linkedin"),
 	GOOGLE("google"),
 	GITHUB("github"),
+	DISCORD("discord"),
 	LOCAL("local");
 
 	private String providerType;

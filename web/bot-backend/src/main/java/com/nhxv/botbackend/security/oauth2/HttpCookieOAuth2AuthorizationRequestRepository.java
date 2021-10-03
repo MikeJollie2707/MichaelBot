@@ -1,5 +1,6 @@
-package com.nhxv.botbackend.security.oauth;
+package com.nhxv.botbackend.security.oauth2;
 
+import com.nhxv.botbackend.util.CookieUtils;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;

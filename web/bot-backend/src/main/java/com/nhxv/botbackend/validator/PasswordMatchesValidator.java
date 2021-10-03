@@ -1,6 +1,5 @@
 package com.nhxv.botbackend.validator;
 
-
 import com.nhxv.botbackend.dto.SignUpRequest;
 
 import javax.validation.ConstraintValidator;

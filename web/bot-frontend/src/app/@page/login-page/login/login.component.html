@@ -1,8 +1,13 @@
-<div class="container p-mt-5">
-  <p-card>
-    <div class="p-text-center p-mb-4">
+<div class="mt-5">
+  <p-card *ngIf="!(isLoggedIn | async)">
+    <div class="text-center mb-4">
       <h5>Welcome, please login</h5>
-      <a href="{{githubURL}}">Login with github</a>
+      <button pButton class="p-button mr-md-2 mb-0 mb-md-0 mb-2" type="button" label="Login with discord"
+              (click)="onLogin()" icon="pi pi-discord"></button>
     </div>
   </p-card>
+  <div class="text-center" *ngIf="isLoggedIn | async">
+    <p-message severity="success" text="Login success"></p-message>
+  </div>
 </div>
+

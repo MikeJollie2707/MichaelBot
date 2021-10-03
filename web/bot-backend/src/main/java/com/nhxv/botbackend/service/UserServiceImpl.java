@@ -7,11 +7,11 @@ import com.nhxv.botbackend.exception.OAuth2AuthenticationProcessingException;
 import com.nhxv.botbackend.exception.UserAlreadyExistAuthenticationException;
 import com.nhxv.botbackend.model.Role;
 import com.nhxv.botbackend.model.User;
-import com.nhxv.botbackend.repository.RoleRepository;
-import com.nhxv.botbackend.repository.UserRepository;
-import com.nhxv.botbackend.security.oauth.user.OAuth2UserInfo;
-import com.nhxv.botbackend.security.oauth.user.OAuth2UserInfoFactory;
-import com.nhxv.botbackend.utility.GeneralUtils;
+import com.nhxv.botbackend.repo.RoleRepository;
+import com.nhxv.botbackend.repo.UserRepository;
+import com.nhxv.botbackend.security.oauth2.user.OAuth2UserInfo;
+import com.nhxv.botbackend.security.oauth2.user.OAuth2UserInfoFactory;
+import com.nhxv.botbackend.util.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -78,6 +78,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
 		OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
+		System.out.println(attributes.keySet());
 		if (StringUtils.isEmpty(oAuth2UserInfo.getName())) {
 			throw new OAuth2AuthenticationProcessingException("Name not found from OAuth2 provider");
 		} else if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {

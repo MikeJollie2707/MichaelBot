@@ -16,6 +16,7 @@
 }
 
 .p-float-label input:focus ~ label,
+.p-float-label textarea:focus ~ label,
 .p-float-label .p-inputwrapper-focus ~ label {
   color: $inputFocusBorderColor;
 }

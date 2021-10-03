@@ -1,5 +1,7 @@
-package com.nhxv.botbackend.security.oauth;
+package com.nhxv.botbackend.security.oauth2;
 
+import com.nhxv.botbackend.exception.OAuth2AuthenticationProcessingException;
+import com.nhxv.botbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;

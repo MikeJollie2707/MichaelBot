@@ -1,8 +1,8 @@
 package com.nhxv.botbackend.dto;
 
-import com.nhxv.botbackend.utility.GeneralUtils;
-import org.springframework.security.core.userdetails.User;
+import com.nhxv.botbackend.util.GeneralUtils;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -12,14 +12,14 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * 
+ *
  * @author Chinna
  *
  */
 public class LocalUser extends User implements OAuth2User, OidcUser {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -2845160792248762779L;
 	private final OidcIdToken idToken;
@@ -79,5 +79,15 @@ public class LocalUser extends User implements OAuth2User, OidcUser {
 
 	public com.nhxv.botbackend.model.User getUser() {
 		return user;
+	}
+
+	@Override
+	public String toString() {
+		return "LocalUser{" +
+				"idToken=" + idToken +
+				", userInfo=" + userInfo +
+				", attributes=" + attributes +
+				", user=" + user +
+				'}';
 	}
 }

@@ -1,19 +1,19 @@
-package com.nhxv.botbackend.utility;
+package com.nhxv.botbackend.util;
 
+import com.nhxv.botbackend.dto.LocalUser;
+import com.nhxv.botbackend.dto.SocialProvider;
+import com.nhxv.botbackend.dto.UserInfo;
+import com.nhxv.botbackend.model.Role;
+import com.nhxv.botbackend.model.User;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.nhxv.botbackend.dto.LocalUser;
-import com.nhxv.botbackend.dto.SocialProvider;
-import com.nhxv.botbackend.dto.UserInfo;
-import com.nhxv.botbackend.model.Role;
-import com.nhxv.botbackend.model.User;
 
 /**
- * 
+ *
  * @author Chinna
  *
  */

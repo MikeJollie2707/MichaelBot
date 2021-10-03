@@ -1,0 +1,49 @@
+<a class="d-flex align-items-center mb-lg-3 me-md-auto">
+  <span class="ml-3 d-none d-lg-inline"><h5>Logo</h5></span>
+</a>
+<ul class="nav flex-column mb-auto">
+  <li class="nav-link text-center mb-2 text-lg-left" routerLink="home" routerLinkActive="nav-active">
+    <a class="nav-item d-flex flex-column d-lg-block">
+      <i class="pi pi-home"></i>
+      <small class="d-lg-none">Home</small>
+      <span class="ml-2 d-lg-inline d-none">Home</span>
+    </a>
+  </li>
+
+  <li class="nav-link text-center mb-2 text-lg-left">
+    <a class="nav-item d-flex flex-column d-lg-block">
+      <i class="pi pi-book"></i>
+      <small class="d-lg-none">Docs</small>
+      <span class="ml-2 d-lg-inline d-none">Docs</span>
+    </a>
+  </li>
+
+  <li class="nav-link text-center mb-2 text-lg-left"
+      routerLink="profile" routerLinkActive="nav-active" *ngIf="isLoggedIn | async">
+    <a class="nav-item d-flex flex-column d-lg-block">
+      <i class="pi pi-user"></i>
+      <small class="d-lg-none">{{getUsername()}}</small>
+      <span class="ml-2 d-lg-inline d-none">{{getUsername()}}</span>
+    </a>
+  </li>
+</ul>
+
+<div class="nav flex-column">
+  <li class="nav-link text-center mb-2 text-lg-left" routerLink="login" routerLinkActive="nav-active" *ngIf="!(isLoggedIn | async)">
+    <a class="nav-item d-flex flex-column d-lg-block">
+      <i class="pi pi-sign-in"></i>
+      <small class="d-lg-none">Sign in</small>
+      <span class="ml-2 d-lg-inline d-none">Sign in</span>
+    </a>
+  </li>
+
+  <li class="nav-link text-center mb-2 text-lg-left" *ngIf="isLoggedIn | async" (click)="onSignOut()">
+    <a class="nav-item d-flex flex-column d-lg-block">
+      <i class="pi pi-sign-in"></i>
+      <small class="d-lg-none">Sign out</small>
+      <span class="ml-2 d-lg-inline d-none">Sign out</span>
+    </a>
+  </li>
+</div>
+
+

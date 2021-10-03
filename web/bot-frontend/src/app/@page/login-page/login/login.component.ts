@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {TokenService} from '../../../@service/security/token.service';
+import {AuthService} from '../../../@service/security/auth.service';
 import {ActivatedRoute} from '@angular/router';
 import {UserApiService} from '../../../@service/api/user-api.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -9,44 +10,42 @@ import {UserApiService} from '../../../@service/api/user-api.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  isLoggedIn = false;
-  isLoginFailed = false;
+  isLoggedIn: Observable<boolean> = new Observable<boolean>();
   errorMessage = '';
   currentUser: any;
-  githubURL = 'http://localhost:8080/oauth2/authorization/github?redirect_uri=http://localhost:4200';
+  discordURL = 'http://localhost:8080/oauth2/authorization/discord?redirect_uri=http://localhost:4200/login';
 
-  constructor(private tokenService: TokenService,
+  constructor(private authService: AuthService,
               private userApiService: UserApiService,
               private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.isLoggedIn = this.authService.isAuthChanged.asObservable();
+
     const token: string | null = this.route.snapshot.queryParamMap.get('token');
     const error: string | null = this.route.snapshot.queryParamMap.get('error');
-    if (this.tokenService.getToken()) {
-      this.isLoggedIn = true;
-      this.currentUser = this.tokenService.getUser();
-    } else if (token) {
-      this.tokenService.saveToken(token);
+
+    if (token) {
+      this.authService.saveToken(token);
       this.userApiService.getCurrentUser().subscribe(
         data => {
           this.login(data);
         },
         err => {
           this.errorMessage = err.error.message;
-          this.isLoginFailed = true;
         }
       );
     } else if (error) {
       this.errorMessage = error;
-      this.isLoginFailed = true;
     }
   }
 
   login(user: any): void {
-    this.tokenService.saveUser(user);
-    this.isLoginFailed = false;
-    this.isLoggedIn = true;
-    this.currentUser = this.tokenService.getUser();
-    window.location.reload();
+    this.authService.saveUser(user);
+    this.currentUser = this.authService.getUser();
+  }
+
+  onLogin(): void {
+    document.location.href = this.discordURL;
   }
 }

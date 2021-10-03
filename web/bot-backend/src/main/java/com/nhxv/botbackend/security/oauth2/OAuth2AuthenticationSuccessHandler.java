@@ -1,9 +1,13 @@
-package com.nhxv.botbackend.security.oauth;
+package com.nhxv.botbackend.security.oauth2;
 
 import com.nhxv.botbackend.config.AppProperties;
 import com.nhxv.botbackend.exception.BadRequestException;
 import com.nhxv.botbackend.security.jwt.TokenProvider;
-import com.nhxv.botbackend.utility.CookieUtils;
+import com.nhxv.botbackend.util.CookieUtils;
+import com.nhxv.botbackend.config.AppProperties;
+import com.nhxv.botbackend.exception.BadRequestException;
+import com.nhxv.botbackend.security.jwt.TokenProvider;
+import com.nhxv.botbackend.util.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -18,7 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-import static com.nhxv.botbackend.security.oauth.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
+import static com.nhxv.botbackend.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -27,9 +31,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
 	@Autowired
-	OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider,
-									   AppProperties appProperties,
-									   HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+	OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider, AppProperties appProperties,
+			HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
 		this.tokenProvider = tokenProvider;
 		this.appProperties = appProperties;
 		this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
@@ -51,11 +54,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	@Override
 	protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 		Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
+
 		if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
 			throw new BadRequestException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
 		}
+
 		String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+
 		String token = tokenProvider.createToken(authentication);
+
+		logger.info(targetUrl);
+
 		return UriComponentsBuilder.fromUriString(targetUrl).queryParam("token", token).build().toUriString();
 	}
 
@@ -66,6 +75,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 	private boolean isAuthorizedRedirectUri(String uri) {
 		URI clientRedirectUri = URI.create(uri);
+
 		return appProperties.getOauth2().getAuthorizedRedirectUris().stream().anyMatch(authorizedRedirectUri -> {
 			// Only validate host and port. Let the clients use different paths if they want to
 			URI authorizedURI = URI.create(authorizedRedirectUri);

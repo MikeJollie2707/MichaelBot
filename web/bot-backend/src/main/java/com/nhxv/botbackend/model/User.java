@@ -12,7 +12,7 @@ import java.util.Set;
 
 /**
  * The persistent class for the user database table.
- * 
+ *
  */
 @Entity
 @NoArgsConstructor
@@ -21,7 +21,7 @@ import java.util.Set;
 public class User implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 65981149772133526L;
 

@@ -3,7 +3,7 @@ package com.nhxv.botbackend.service;
 import com.nhxv.botbackend.dto.LocalUser;
 import com.nhxv.botbackend.exception.ResourceNotFoundException;
 import com.nhxv.botbackend.model.User;
-import com.nhxv.botbackend.utility.GeneralUtils;
+import com.nhxv.botbackend.util.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
+ *
  * @author Chinna
  *
  */

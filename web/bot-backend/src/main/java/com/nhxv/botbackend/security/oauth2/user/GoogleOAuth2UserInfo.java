@@ -1,16 +1,16 @@
-package com.nhxv.botbackend.security.oauth.user;
+package com.nhxv.botbackend.security.oauth2.user;
 
 import java.util.Map;
 
-public class GithubOAuth2UserInfo extends OAuth2UserInfo {
+public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
 
-	public GithubOAuth2UserInfo(Map<String, Object> attributes) {
+	public GoogleOAuth2UserInfo(Map<String, Object> attributes) {
 		super(attributes);
 	}
 
 	@Override
 	public String getId() {
-		return ((Integer) attributes.get("id")).toString();
+		return (String) attributes.get("sub");
 	}
 
 	@Override
@@ -25,6 +25,6 @@ public class GithubOAuth2UserInfo extends OAuth2UserInfo {
 
 	@Override
 	public String getImageUrl() {
-		return (String) attributes.get("avatar_url");
+		return (String) attributes.get("picture");
 	}
 }

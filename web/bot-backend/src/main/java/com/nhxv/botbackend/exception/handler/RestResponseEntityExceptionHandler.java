@@ -1,4 +1,4 @@
-package com.nhxv.botbackend.exception;
+package com.nhxv.botbackend.exception.handler;
 
 import com.nhxv.botbackend.dto.ApiResponse;
 import org.springframework.http.HttpHeaders;

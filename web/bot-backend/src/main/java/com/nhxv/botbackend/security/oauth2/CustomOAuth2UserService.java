@@ -1,4 +1,4 @@
-package com.nhxv.botbackend.security.oauth;
+package com.nhxv.botbackend.security.oauth2;
 
 import com.nhxv.botbackend.dto.SocialProvider;
 import com.nhxv.botbackend.exception.OAuth2AuthenticationProcessingException;

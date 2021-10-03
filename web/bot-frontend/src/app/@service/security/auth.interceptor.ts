@@ -2,17 +2,17 @@ import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Router} from '@angular/router';
-import {TokenService} from './token.service';
+import {AuthService} from './auth.service';
 import {tap} from 'rxjs/operators';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private tokenService: TokenService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let authReq = req;
     const loginPath = '/login';
-    const token = this.tokenService.getToken();
+    const token = this.authService.getToken();
     if (token) {
       authReq = req.clone({
         setHeaders: {
@@ -26,7 +26,7 @@ export class AuthInterceptor implements HttpInterceptor {
         if (err.status !== 401 || window.location.pathname === loginPath) {
           return;
         }
-        this.tokenService.signOut();
+        this.authService.signOut();
         window.location.href = loginPath;
       }
     }
