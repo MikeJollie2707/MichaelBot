@@ -8,10 +8,20 @@ import com.nhxv.botbackend.config.AppProperties;
 import com.nhxv.botbackend.exception.BadRequestException;
 import com.nhxv.botbackend.security.jwt.TokenProvider;
 import com.nhxv.botbackend.util.CookieUtils;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
@@ -20,7 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
+import java.net.URISyntaxException;
+import java.util.*;
 
 import static com.nhxv.botbackend.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
@@ -29,15 +40,20 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private TokenProvider tokenProvider;
 	private AppProperties appProperties;
 	private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+	private OAuth2AuthorizedClientService clientService;
 
 	@Autowired
-	OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider, AppProperties appProperties,
+	OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider,
+									   AppProperties appProperties,
+			                           OAuth2AuthorizedClientService clientService,
 			HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
 		this.tokenProvider = tokenProvider;
 		this.appProperties = appProperties;
+		this.clientService = clientService;
 		this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
 	}
 
+	@SneakyThrows
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		String targetUrl = determineTargetUrl(request, response, authentication);
@@ -46,7 +62,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
 			return;
 		}
-
+		getGuilds(authentication);
 		clearAuthenticationAttributes(request, response);
 		getRedirectStrategy().sendRedirect(request, response, targetUrl);
 	}
@@ -62,8 +78,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
 		String token = tokenProvider.createToken(authentication);
-
-		logger.info(targetUrl);
+		logger.info(targetUrl + "/?token=" + token);
 
 		return UriComponentsBuilder.fromUriString(targetUrl).queryParam("token", token).build().toUriString();
 	}
@@ -84,5 +99,23 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			}
 			return false;
 		});
+	}
+
+	// get guilds when login successfully
+	private void getGuilds(Authentication authentication) throws URISyntaxException {
+		OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+		OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(
+				oauthToken.getAuthorizedClientRegistrationId(),
+				oauthToken.getName());
+		String accessToken = client.getAccessToken().getTokenValue();
+		RestTemplate restTemplate = new RestTemplate();
+		final String guildUrl = "https://discord.com/api/users/@me/guilds";
+		URI uri = new URI(guildUrl);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+		headers.set(HttpHeaders.USER_AGENT, "Discord app");
+		HttpEntity<String> request = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+		System.out.println("guild response: " + response.getBody());
 	}
 }

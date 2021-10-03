@@ -16,11 +16,13 @@ import java.util.Optional;
  */
 public interface UserService {
 
-	public User registerNewUser(SignUpRequest signUpRequest) throws UserAlreadyExistAuthenticationException;
+	User registerNewUser(SignUpRequest signUpRequest) throws UserAlreadyExistAuthenticationException;
 
 	User findUserByEmail(String email);
 
 	Optional<User> findUserById(Long id);
+
+	User updateGuilds();
 
 	LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo);
 }
