@@ -49,19 +49,25 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
                         reference = message
                     else:
                         reference = None
-                    await channel.send(existed["message"], reference = reference)
+                    try:
+                        await channel.send(existed["message"], reference = reference)
+                    except discord.Forbidden:
+                        # For now, we're just silently ignore this.
+                        # Might change to raising a command error though.
+                        pass
+                    
                     if len(existed["addroles"]) > 0:
                         addroles_list = [message.guild.get_role(role) for role in existed["addroles"]]
                         try:
                             await message.author.add_roles(*addroles_list)
                         except discord.Forbidden:
-                            await message.channel.send("Failed to add roles.")
+                            await channel.send("Failed to add roles.")
                     if len(existed["rmvroles"]) > 0:
                         rmvroles_list = [message.guild.get_role(role) for role in existed["rmvroles"]]
                         try:
                             await message.author.remove_roles(*rmvroles_list)
                         except discord.Forbidden:
-                            await message.channel.send("Failed to remove roles.")
+                            await channel.send("Failed to remove roles.")
     
     @commands.group(aliases = ['ccmd', 'customcmd'], invoke_without_command = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
@@ -127,6 +133,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         **You need:** `Manage Server`.
         **I need:** `Read Message History`, `Send Messages`.
         '''
+
         builtin_existed = ctx.bot.get_command(name)
         if builtin_existed is not None:
             return await ctx.reply("This command's name already existed within the bot. Please choose a different one.")
@@ -217,6 +224,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         **You need:** `Manage Server`.
         **I need:** `Read Message History`, `Send Messages`.
         '''
+        
         builtin_existed = ctx.bot.get_command(name)
         if builtin_existed is not None:
             return await ctx.reply("This command's name somehow matches the bot's default commands. Contact the developer.")
@@ -230,13 +238,14 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
                 await DB.CustomCommand.remove(conn, ctx.guild.id, name)
             await ctx.reply(f"Removed command `{name}`.", mention_author = False)
     
-    @ccommand.group()
+    @ccommand.command()
     async def edit(self, ctx):
+        # Make edit the same as creation with a few catch:
+        # - name is not changeable; it'll be ignored if provided.
+        # - if any arguments is not provided, it'll retain the old behavior.
+        # - to clear an optional argument (say --addroles), you need to provide the string "clear" (case-insensitive).
+        # - to toggle, simply provide the argument again.
         pass
-
-    @edit.command(name = "description")
-    async def desc(self, ctx, *, new_description):
-        await ctx.send("Yo boi")
 
 
 def setup(bot : MichaelBot):
