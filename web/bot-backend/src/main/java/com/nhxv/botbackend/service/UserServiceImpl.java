@@ -112,4 +112,9 @@ public class UserServiceImpl implements UserService {
 	public Optional<User> findUserById(Long id) {
 		return userRepository.findById(id);
 	}
+
+	@Override
+	public User updateGuilds() {
+		return null;
+	}
 }
