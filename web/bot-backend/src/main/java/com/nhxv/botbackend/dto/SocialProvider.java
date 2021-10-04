@@ -5,12 +5,6 @@ package com.nhxv.botbackend.dto;
  * @since 26/3/18
  */
 public enum SocialProvider {
-
-	FACEBOOK("facebook"),
-	TWITTER("twitter"),
-	LINKEDIN("linkedin"),
-	GOOGLE("google"),
-	GITHUB("github"),
 	DISCORD("discord"),
 	LOCAL("local");
 

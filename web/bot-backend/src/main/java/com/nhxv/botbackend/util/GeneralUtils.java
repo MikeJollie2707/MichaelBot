@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,9 +37,9 @@ public class GeneralUtils {
 		return SocialProvider.LOCAL;
 	}
 
-	public static UserInfo buildUserInfo(LocalUser localUser) {
+	public static UserInfo buildUserInfo(LocalUser localUser, String guilds) {
 		List<String> roles = localUser.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
 		User user = localUser.getUser();
-		return new UserInfo(user.getId().toString(), user.getDisplayName(), user.getEmail(), roles);
+		return new UserInfo(user.getId().toString(), user.getDisplayName(), user.getEmail(), roles, guilds);
 	}
 }
