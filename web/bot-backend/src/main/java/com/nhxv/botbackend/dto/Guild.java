@@ -1,17 +1,18 @@
 package com.nhxv.botbackend.dto;
 
-import java.util.List;
-
 public class Guild {
-    private String id;
-    private String name;
-    private String icon;
-    private List<String> features;
+    private String id, name, icon, permissions;
     private boolean isOwner;
-    private String permissions;
-    private String permissionsNew;
 
     public Guild() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -21,24 +22,12 @@ public class Guild {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public String getIcon() {
         return icon;
     }
 
     public void setIcon(String icon) {
         this.icon = icon;
-    }
-
-    public List<String> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<String> features) {
-        this.features = features;
     }
 
     public boolean isOwner() {
@@ -54,15 +43,11 @@ public class Guild {
     }
 
     public void setPermissions(String permissions) {
-        this.permissions = permissions;
-    }
-
-    public String getPermissionsNew() {
-        return permissionsNew;
-    }
-
-    public void setPermissionsNew(String permissionsNew) {
-        this.permissionsNew = permissionsNew;
+        if ((Long.parseLong(permissions) & 0x20) == 0x20) {
+            this.permissions = "MANAGE_GUILD";
+        } else if ((Long.parseLong(permissions) & 0x8) == 0x8) {
+            this.permissions = "ADMINISTRATOR";
+        }
     }
 
     @Override
@@ -71,10 +56,8 @@ public class Guild {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", icon='" + icon + '\'' +
-                ", features=" + features +
                 ", isOwner=" + isOwner +
                 ", permissions='" + permissions + '\'' +
-                ", permissionsNew='" + permissionsNew + '\'' +
                 '}';
     }
 }

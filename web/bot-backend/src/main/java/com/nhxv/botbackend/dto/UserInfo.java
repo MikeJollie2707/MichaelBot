@@ -3,10 +3,11 @@ package com.nhxv.botbackend.dto;
 import java.util.List;
 
 public class UserInfo {
-	private String id, displayName, email, guilds;
+	private String id, displayName, email;
 	private List<String> roles;
+	private List<Guild> guilds;
 
-	public UserInfo(String id, String displayName, String email, List<String> roles, String guilds) {
+	public UserInfo(String id, String displayName, String email, List<String> roles, List<Guild> guilds) {
 		this.id = id;
 		this.displayName = displayName;
 		this.email = email;
@@ -46,11 +47,11 @@ public class UserInfo {
 		this.roles = roles;
 	}
 
-	public String getGuilds() {
+	public List<Guild> getGuilds() {
 		return guilds;
 	}
 
-	public void setGuilds(String guilds) {
+	public void setGuilds(List<Guild> guilds) {
 		this.guilds = guilds;
 	}
 
@@ -60,8 +61,8 @@ public class UserInfo {
 				"id='" + id + '\'' +
 				", displayName='" + displayName + '\'' +
 				", email='" + email + '\'' +
-				", guilds='" + guilds + '\'' +
 				", roles=" + roles +
+				", guilds=" + guilds +
 				'}';
 	}
 }

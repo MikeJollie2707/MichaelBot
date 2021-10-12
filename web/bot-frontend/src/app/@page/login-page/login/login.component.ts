@@ -29,10 +29,8 @@ export class LoginComponent implements OnInit {
       this.authService.saveToken(token);
       this.userApiService.getCurrentUser().subscribe(
         data => {
-          console.log(data);
           this.login(data);
-        },
-        err => {
+        }, err => {
           this.errorMessage = err.error.message;
         }
       );

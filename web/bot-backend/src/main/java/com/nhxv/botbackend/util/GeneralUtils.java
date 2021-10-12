@@ -1,5 +1,6 @@
 package com.nhxv.botbackend.util;
 
+import com.nhxv.botbackend.dto.Guild;
 import com.nhxv.botbackend.dto.LocalUser;
 import com.nhxv.botbackend.dto.SocialProvider;
 import com.nhxv.botbackend.dto.UserInfo;
@@ -37,9 +38,12 @@ public class GeneralUtils {
 		return SocialProvider.LOCAL;
 	}
 
-	public static UserInfo buildUserInfo(LocalUser localUser, String guilds) {
+	public static UserInfo buildUserInfo(LocalUser localUser, List<Guild> guilds) {
 		List<String> roles = localUser.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
 		User user = localUser.getUser();
+		for (Guild g : guilds) {
+			System.out.println(g);
+		}
 		return new UserInfo(user.getId().toString(), user.getDisplayName(), user.getEmail(), roles, guilds);
 	}
 }

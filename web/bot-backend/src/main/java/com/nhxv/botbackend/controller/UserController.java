@@ -1,6 +1,11 @@
 package com.nhxv.botbackend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhxv.botbackend.config.CurrentUser;
+import com.nhxv.botbackend.dto.Guild;
 import com.nhxv.botbackend.dto.LocalUser;
 import com.nhxv.botbackend.util.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +38,7 @@ public class UserController {
 
 	@GetMapping("/user/me")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<?> getCurrentUser(@CurrentUser LocalUser user) throws URISyntaxException {
+	public ResponseEntity<?> getCurrentUser(@CurrentUser LocalUser user) throws URISyntaxException, JsonProcessingException {
 		OAuth2AuthorizedClient client = this.clientService.loadAuthorizedClient(
 				user.getUser().getProvider(),
 				user.getUser().getEmail()
@@ -46,6 +52,12 @@ public class UserController {
 		headers.set(HttpHeaders.USER_AGENT, "Discord app");
 		HttpEntity<String> request = new HttpEntity<>(headers);
 		ResponseEntity<String> guilds = restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
-		return ResponseEntity.ok(GeneralUtils.buildUserInfo(user, guilds.getBody()));
+		return ResponseEntity.ok(GeneralUtils.buildUserInfo(user, processGuilds(guilds.getBody())));
+	}
+
+	private List<Guild> processGuilds(String guildStr) throws JsonProcessingException {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return objectMapper.readValue(guildStr, new TypeReference<List<Guild>>(){});
 	}
 }

@@ -48,11 +48,11 @@ $dialogFooterPadding: 1.5rem;
 
 /// Background of a tooltip
 /// @group overlay
-$tooltipBg: $textColor;
+$tooltipBg: $gray-900;
 
 /// Text color of a tooltip
 /// @group overlay
-$tooltipTextColor: #ffffff;
+$tooltipTextColor: $textColor;
 
 /// Padding of a tooltip
 /// @group overlay

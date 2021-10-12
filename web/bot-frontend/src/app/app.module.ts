@@ -17,6 +17,9 @@ import { LoginComponent } from './@page/login-page/login/login.component';
 import {SidebarComponent} from './@shared/sidebar/sidebar.component';
 import {MessageModule} from 'primeng/message';
 import { ProfilePageComponent } from './@page/profile-page/profile-page.component';
+import { ProfileComponent } from './@page/profile-page/profile/profile.component';
+import {SidebarModule} from 'primeng/sidebar';
+import {TooltipModule} from 'primeng/tooltip';
 
 @NgModule({
   declarations: [
@@ -26,19 +29,22 @@ import { ProfilePageComponent } from './@page/profile-page/profile-page.componen
     SidebarComponent,
     LoginPageComponent,
     LoginComponent,
-    ProfilePageComponent
+    ProfilePageComponent,
+    ProfileComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    ButtonModule,
-    DividerModule,
-    NgbModule, // ng bootstrap
-    AppRoutingModule,
-    CardModule,
-    MessageModule,
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        ButtonModule,
+        DividerModule,
+        NgbModule, // ng bootstrap
+        AppRoutingModule,
+        CardModule,
+        MessageModule,
+        SidebarModule,
+        TooltipModule,
+    ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
