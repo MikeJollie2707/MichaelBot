@@ -3,6 +3,7 @@ import {AuthService} from '../../../@service/security/auth.service';
 import {ActivatedRoute} from '@angular/router';
 import {UserApiService} from '../../../@service/api/user-api.service';
 import {Observable} from 'rxjs';
+import {Constant} from '../../../@shared/app.constant';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ export class LoginComponent implements OnInit {
   isLoggedIn: Observable<boolean> = new Observable<boolean>();
   errorMessage = '';
   currentUser: any;
-  discordURL = 'http://localhost:8080/oauth2/authorization/discord?redirect_uri=http://localhost:4200/login';
+  discordURL = Constant.DISCORD_AUTH_URL;
 
   constructor(private authService: AuthService,
               private userApiService: UserApiService,

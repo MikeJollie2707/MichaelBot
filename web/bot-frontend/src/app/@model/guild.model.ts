@@ -5,6 +5,5 @@ export class Guild {
     public icon: string,
     public permissions: string,
     public owner: boolean,
-    public isManage: boolean,
   ) {}
 }

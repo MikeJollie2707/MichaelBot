@@ -1,8 +1,8 @@
 <div class="mt-5">
   <p-card *ngIf="!(isLoggedIn | async) && !errorMessage">
-    <div class="text-center mb-4">
+    <div class="text-center p-3">
       <h5>Welcome, please login</h5>
-      <button pButton class="p-button mr-md-2 mb-0 mb-md-0 mb-2" type="button" label="Login with discord"
+      <button pButton class="p-button mr-md-2" type="button" label="Discord login"
               (click)="onLogin()" icon="pi pi-discord"></button>
     </div>
   </p-card>

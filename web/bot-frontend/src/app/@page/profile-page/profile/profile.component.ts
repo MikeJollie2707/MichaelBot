@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {AuthService} from '../../../@service/security/auth.service';
 import {User} from '../../../@model/user.model';
 import {Guild} from '../../../@model/guild.model';
+import {Constant} from '../../../@shared/app.constant';
 
 @Component({
   selector: 'app-profile',
@@ -10,7 +11,7 @@ import {Guild} from '../../../@model/guild.model';
 })
 export class ProfileComponent implements OnInit {
   user?: User;
-  managedGuilds: Guild[] = [];
+  guilds: Guild[] = [];
 
   constructor(private authService: AuthService) { }
 
@@ -21,8 +22,18 @@ export class ProfileComponent implements OnInit {
 
   filterManageGuild(): void {
     // @ts-ignore
-    this.managedGuilds = this.user.guilds.filter((guild) => guild.owner
-      || guild.permissions === 'MANAGE_GUILD' || guild.permissions === 'ADMINISTRATOR');
+    this.guilds = this.user.guilds
+      .filter((guild: Guild) =>
+      guild.owner || guild.permissions === 'MANAGE_GUILD' || guild.permissions === 'ADMINISTRATOR'
+    ).map((guild: Guild) => {
+      if (guild.icon != null) {
+        const newGuild = {...guild};
+        newGuild.icon = Constant.DISCORD_BASE_IMG + 'icons/' + guild.id + '/' + guild.icon + '.png';
+        return newGuild;
+      } else {
+        return guild;
+      }
+    });
   }
 
 }
