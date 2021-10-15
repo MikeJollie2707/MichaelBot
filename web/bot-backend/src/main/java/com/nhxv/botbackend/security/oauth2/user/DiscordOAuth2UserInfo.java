@@ -24,7 +24,7 @@ public class DiscordOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
-    public String getImageUrl() {
-        return (String) attributes.get("avatar_url");
+    public String getImage() {
+        return (String) attributes.get("avatar");
     }
 }

@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AuthService} from '../../@service/security/auth.service';
 import {Observable} from 'rxjs';
+import {User} from '../../@model/user.model';
+import {Constant} from '../app.constant';
 
 @Component({
   selector: 'app-navbar',
@@ -25,8 +27,13 @@ export class NavbarComponent implements OnInit {
   }
 
   getUsername(): string {
-    const user = this.authService.getUser();
+    const user: User = this.authService.getUser() as User;
     return user ? user.displayName : '';
+  }
+
+  getUserAvatar(): string {
+    const user: User = this.authService.getUser() as User;
+    return Constant.DISCORD_BASE_IMG + 'avatars/' + user.providerUserId + '/' + user.avatar + '.png';
   }
 
   onSignOut(): void {

@@ -15,6 +15,7 @@ import java.util.Set;
  *
  */
 @Entity
+@Table(name = "account")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -33,6 +34,7 @@ public class User implements Serializable {
 	@Column(name = "PROVIDER_USER_ID")
 	private String providerUserId;
 
+	@Column
 	private String email;
 
 	@Column(name = "enabled", columnDefinition = "BIT", length = 1)
@@ -48,14 +50,19 @@ public class User implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	protected Date modifiedDate;
 
+	@Column
 	private String password;
 
+	@Column
 	private String provider;
+
+	@Column
+	private String avatar;
 
 	// bi-directional many-to-many association to Role
 	@JsonIgnore
 	@ManyToMany
-	@JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") })
+	@JoinTable(name = "account_role", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") })
 	private Set<Role> roles;
 
 	@Override
@@ -70,6 +77,7 @@ public class User implements Serializable {
 				", modifiedDate=" + modifiedDate +
 				", password='" + password + '\'' +
 				", provider='" + provider + '\'' +
+				", avatar='" + avatar + '\'' +
 				'}';
 	}
 }

@@ -19,7 +19,12 @@
         <a class="nav-link" routerLink="login" routerLinkActive="nav-active">Login</a>
       </li>
       <li class="nav-item" *ngIf="isLoggedIn | async">
-        <a class="nav-link">{{getUsername()}}</a>
+        <a class="nav-link" routerLink="profile" routerLinkActive="nav-active">
+          <img src="{{getUserAvatar()}}" class="img-fluid rounded-circle mr-1" alt="avatar" width="20" height="20">
+          <span>
+            {{getUsername()}}
+          </span>
+        </a>
       </li>
       <li class="nav-item" *ngIf="isLoggedIn | async">
         <a class="nav-link" (click)="onSignOut()">Sign out</a>

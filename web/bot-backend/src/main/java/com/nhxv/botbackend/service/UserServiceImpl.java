@@ -40,13 +40,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(value = "transactionManager")
-	public User registerNewUser(final SignUpRequest signUpRequest) throws UserAlreadyExistAuthenticationException {
+	public User registerNewUser(final SignUpRequest signUpRequest, String image) throws UserAlreadyExistAuthenticationException {
 		if (signUpRequest.getUserID() != null && userRepository.existsById(signUpRequest.getUserID())) {
 			throw new UserAlreadyExistAuthenticationException("User with User id " + signUpRequest.getUserID() + " already exist");
 		} else if (userRepository.existsByEmail(signUpRequest.getEmail())) {
 			throw new UserAlreadyExistAuthenticationException("User with email id " + signUpRequest.getEmail() + " already exist");
 		}
 		User user = buildUser(signUpRequest);
+		user.setAvatar(image);
 		Date now = Calendar.getInstance().getTime();
 		user.setCreatedDate(now);
 		user.setModifiedDate(now);
@@ -78,6 +79,10 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
 		OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
+		System.out.println("Email: " + oAuth2UserInfo.getEmail());
+		System.out.println("Id: " + oAuth2UserInfo.getId());
+		System.out.println("Avatar: " + oAuth2UserInfo.getImage());
+		System.out.println("Attr from discord obj: " + oAuth2UserInfo.getAttributes());
 		if (StringUtils.isEmpty(oAuth2UserInfo.getName())) {
 			throw new OAuth2AuthenticationProcessingException("Name not found from OAuth2 provider");
 		} else if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
@@ -92,14 +97,20 @@ public class UserServiceImpl implements UserService {
 			}
 			user = updateExistingUser(user, oAuth2UserInfo);
 		} else {
-			user = registerNewUser(userDetails);
+			user = registerNewUser(userDetails, oAuth2UserInfo.getImage());
 		}
 
 		return LocalUser.create(user, attributes, idToken, userInfo);
 	}
 
 	private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
-		existingUser.setDisplayName(oAuth2UserInfo.getName());
+		if (!existingUser.getDisplayName().equals(oAuth2UserInfo.getName())) {
+			existingUser.setDisplayName(oAuth2UserInfo.getName());
+		} else if (existingUser.getAvatar().equals(oAuth2UserInfo.getImage())) {
+			existingUser.setAvatar(oAuth2UserInfo.getImage());
+		} else {
+			return existingUser;
+		}
 		return userRepository.save(existingUser);
 	}
 

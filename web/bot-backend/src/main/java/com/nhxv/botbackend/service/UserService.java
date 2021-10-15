@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public interface UserService {
 
-	User registerNewUser(SignUpRequest signUpRequest) throws UserAlreadyExistAuthenticationException;
+	User registerNewUser(SignUpRequest signUpRequest, String image) throws UserAlreadyExistAuthenticationException;
 
 	User findUserByEmail(String email);
 

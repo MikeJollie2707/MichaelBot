@@ -11,7 +11,7 @@ import {Constant} from '../../../@shared/app.constant';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  isLoggedIn: Observable<boolean> = new Observable<boolean>();
+  isLoggedIn$: Observable<boolean> = new Observable<boolean>();
   errorMessage = '';
   currentUser: any;
   discordURL = Constant.DISCORD_AUTH_URL;
@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
               private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isAuthChanged.asObservable();
+    this.isLoggedIn$ = this.authService.isAuthChanged.asObservable();
 
     const token: string | null = this.route.snapshot.queryParamMap.get('token');
     const error: string | null = this.route.snapshot.queryParamMap.get('error');

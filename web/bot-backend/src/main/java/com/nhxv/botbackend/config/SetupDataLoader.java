@@ -19,17 +19,10 @@ import java.util.Set;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
-
 	private boolean alreadySetup = false;
 
 	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
 	private RoleRepository roleRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 
 	@Override
 	@Transactional
@@ -39,33 +32,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		}
 		// Create initial roles
 		Role userRole = createRoleIfNotFound(Role.ROLE_USER);
-		Role adminRole = createRoleIfNotFound(Role.ROLE_ADMIN);
-		Role modRole = createRoleIfNotFound(Role.ROLE_MODERATOR);
 		Set<Role> roles = new HashSet<>();
 		roles.add(userRole);
-		roles.add(adminRole);
-		roles.add(modRole);
-		createUserIfNotFound("admin@nhxv.botbackend.com", roles);
 		alreadySetup = true;
-	}
-
-	@Transactional
-	public User createUserIfNotFound(final String email, Set<Role> roles) {
-		User user = userRepository.findByEmail(email);
-		if (user == null) {
-			user = new User();
-			user.setDisplayName("Admin");
-			user.setEmail(email);
-			user.setPassword(passwordEncoder.encode("admin@"));
-			user.setRoles(roles);
-			user.setProvider(SocialProvider.LOCAL.getProviderType());
-			user.setEnabled(true);
-			Date now = Calendar.getInstance().getTime();
-			user.setCreatedDate(now);
-			user.setModifiedDate(now);
-			user = userRepository.save(user);
-		}
-		return user;
 	}
 
 	@Transactional

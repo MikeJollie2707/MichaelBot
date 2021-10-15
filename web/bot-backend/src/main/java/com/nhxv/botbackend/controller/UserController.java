@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhxv.botbackend.config.CurrentUser;
 import com.nhxv.botbackend.dto.Guild;
 import com.nhxv.botbackend.dto.LocalUser;
+import com.nhxv.botbackend.dto.UserInfo;
 import com.nhxv.botbackend.util.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -34,7 +35,7 @@ public class UserController {
 
 	@GetMapping("/user/me")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<?> getCurrentUser(@CurrentUser LocalUser user) throws URISyntaxException, JsonProcessingException {
+	public ResponseEntity<UserInfo> getCurrentUser(@CurrentUser LocalUser user) throws URISyntaxException, JsonProcessingException {
 		OAuth2AuthorizedClient client = this.clientService.loadAuthorizedClient(
 				user.getUser().getProvider(),
 				user.getUser().getEmail()

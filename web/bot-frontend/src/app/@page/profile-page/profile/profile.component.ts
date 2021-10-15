@@ -11,16 +11,20 @@ import {Constant} from '../../../@shared/app.constant';
 })
 export class ProfileComponent implements OnInit {
   user?: User;
+  avatar = '';
   guilds: Guild[] = [];
 
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     this.user = this.authService.getUser() as User;
-    this.filterManageGuild();
+    this.avatar = Constant.DISCORD_BASE_IMG + 'avatars/' + this.user.providerUserId + '/' + this.user.avatar + '.png';
+    console.log(this.user);
+    console.log(this.avatar);
+    this.filterGuild();
   }
 
-  filterManageGuild(): void {
+  filterGuild(): void {
     // @ts-ignore
     this.guilds = this.user.guilds
       .filter((guild: Guild) =>

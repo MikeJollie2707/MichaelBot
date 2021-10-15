@@ -41,9 +41,12 @@ public class GeneralUtils {
 	public static UserInfo buildUserInfo(LocalUser localUser, List<Guild> guilds) {
 		List<String> roles = localUser.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
 		User user = localUser.getUser();
-		for (Guild g : guilds) {
-			System.out.println(g);
-		}
-		return new UserInfo(user.getId().toString(), user.getDisplayName(), user.getEmail(), roles, guilds);
+		return new UserInfo(user.getId().toString(),
+				user.getDisplayName(),
+				user.getEmail(),
+				user.getAvatar(),
+				user.getProviderUserId(),
+				roles,
+				guilds);
 	}
 }

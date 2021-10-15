@@ -9,13 +9,13 @@ import {Observable} from 'rxjs';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  isLoggedIn: Observable<boolean> = new Observable<boolean>();
+  isLoggedIn$: Observable<boolean> = new Observable<boolean>();
 
   constructor(private router: Router,
               private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isAuthChanged.asObservable();
+    this.isLoggedIn$ = this.authService.isAuthChanged.asObservable();
   }
 
   getUsername(): string {
