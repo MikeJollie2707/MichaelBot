@@ -39,6 +39,9 @@ public class UserController {
 	@Value("${spring.security.oauth2.client.registration.discord.clientId}")
 	private String clientId;
 
+	@Value("${bot.token}")
+	private String botToken;
+
 	@GetMapping("/user/me")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<UserInfo> getCurrentUser(@CurrentUser LocalUser user) throws URISyntaxException, JsonProcessingException {
@@ -78,7 +81,7 @@ public class UserController {
 		RestTemplate restTemplate = new RestTemplate();
 		final String url = "https://discord.com/api";
 		HttpHeaders headers = new HttpHeaders();
-		headers.set(HttpHeaders.AUTHORIZATION, "Bot " + "NjQ5ODIyMDk3NDkyODAzNTg0.XeCX_Q.-uKX2oHrDWVBYivZHz888T9AbM0");
+		headers.set(HttpHeaders.AUTHORIZATION, "Bot " + botToken);
 		headers.set(HttpHeaders.USER_AGENT, "Discord app");
 		HttpEntity<String> request = new HttpEntity<>(headers);
 
