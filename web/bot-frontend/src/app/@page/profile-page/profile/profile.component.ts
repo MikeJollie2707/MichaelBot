@@ -18,18 +18,13 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.authService.getUser() as User;
-    this.avatar = Constant.DISCORD_BASE_IMG + 'avatars/' + this.user.providerUserId + '/' + this.user.avatar + '.png';
-    console.log(this.user);
-    console.log(this.avatar);
     this.filterGuild();
   }
 
   filterGuild(): void {
     // @ts-ignore
     this.guilds = this.user.guilds
-      .filter((guild: Guild) =>
-      guild.owner || guild.permissions === 'MANAGE_GUILD' || guild.permissions === 'ADMINISTRATOR'
-    ).map((guild: Guild) => {
+    .map((guild: Guild) => {
       if (guild.icon != null) {
         const newGuild = {...guild};
         newGuild.icon = Constant.DISCORD_BASE_IMG + 'icons/' + guild.id + '/' + guild.icon + '.png';

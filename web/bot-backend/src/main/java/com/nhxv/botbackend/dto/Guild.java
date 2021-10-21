@@ -47,6 +47,8 @@ public class Guild {
             this.permissions = "MANAGE_GUILD";
         } else if ((Long.parseLong(permissions) & 0x8) == 0x8) {
             this.permissions = "ADMINISTRATOR";
+        } else {
+            this.permissions = "";
         }
     }
 

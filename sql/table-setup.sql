@@ -4,7 +4,7 @@
 
 -- DROP TABLE dguilds;
 
-CREATE schema bot;
+CREATE schema if not exists bot;
 
 CREATE TABLE bot.dguilds (
 	id int8 NOT NULL,

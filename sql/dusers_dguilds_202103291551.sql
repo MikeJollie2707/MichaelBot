@@ -1,4 +1,4 @@
-INSERT INTO public.dusers_dguilds (user_id,guild_id,tempmute_end) VALUES
+INSERT INTO bot.dusers_dguilds (user_id,guild_id,tempmute_end) VALUES
 	 (462726152377860109,538946868214890516,NULL),
 	 (472832990012243969,538946868214890516,NULL),
 	 (481934034130174010,538946868214890516,NULL),
@@ -9,5 +9,5 @@ INSERT INTO public.dusers_dguilds (user_id,guild_id,tempmute_end) VALUES
 	 (504005814906912799,644336990698995712,NULL),
 	 (671836073453944853,644336990698995712,NULL),
 	 (787303725701791744,644336990698995712,NULL);
-INSERT INTO public.dusers_dguilds (user_id,guild_id,tempmute_end) VALUES
+INSERT INTO bot.dusers_dguilds (user_id,guild_id,tempmute_end) VALUES
 	 (391582107446804485,705270581184167987,NULL);

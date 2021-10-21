@@ -15,15 +15,11 @@ import java.util.Set;
  *
  */
 @Entity
-@Table(name = "account")
+@Table(name = "wuser")
 @NoArgsConstructor
 @Getter
 @Setter
 public class User implements Serializable {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 65981149772133526L;
 
 	@Id
@@ -37,7 +33,7 @@ public class User implements Serializable {
 	@Column
 	private String email;
 
-	@Column(name = "enabled", columnDefinition = "BIT", length = 1)
+	@Column(name = "enabled")
 	private boolean enabled;
 
 	@Column(name = "DISPLAY_NAME")
@@ -62,7 +58,7 @@ public class User implements Serializable {
 	// bi-directional many-to-many association to Role
 	@JsonIgnore
 	@ManyToMany
-	@JoinTable(name = "account_role", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") })
+	@JoinTable(name = "wuser_wrole", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") })
 	private Set<Role> roles;
 
 	@Override
