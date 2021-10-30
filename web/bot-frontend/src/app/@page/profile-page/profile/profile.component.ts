@@ -3,6 +3,7 @@ import {AuthService} from '../../../@service/security/auth.service';
 import {User} from '../../../@model/user.model';
 import {Guild} from '../../../@model/guild.model';
 import {Constant} from '../../../@shared/app.constant';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -11,10 +12,11 @@ import {Constant} from '../../../@shared/app.constant';
 })
 export class ProfileComponent implements OnInit {
   user?: User;
-  avatar = '';
   guilds: Guild[] = [];
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService,
+              private router: Router,
+              private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.user = this.authService.getUser() as User;
@@ -33,6 +35,10 @@ export class ProfileComponent implements OnInit {
         return guild;
       }
     });
+  }
+
+  onOpenGuild(id: string): void {
+    this.router.navigate([`guild-bot-edit/${id}`], {relativeTo: this.route});
   }
 
 }

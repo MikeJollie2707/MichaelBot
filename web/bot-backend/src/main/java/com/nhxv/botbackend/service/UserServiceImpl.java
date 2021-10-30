@@ -79,10 +79,6 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes, OidcIdToken idToken, OidcUserInfo userInfo) {
 		OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
-		System.out.println("Email: " + oAuth2UserInfo.getEmail());
-		System.out.println("Id: " + oAuth2UserInfo.getId());
-		System.out.println("Avatar: " + oAuth2UserInfo.getImage());
-		System.out.println("Attr from discord obj: " + oAuth2UserInfo.getAttributes());
 		if (StringUtils.isEmpty(oAuth2UserInfo.getName())) {
 			throw new OAuth2AuthenticationProcessingException("Name not found from OAuth2 provider");
 		} else if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {

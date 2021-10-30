@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
 	@Autowired
@@ -42,7 +42,9 @@ public class UserController {
 	@Value("${bot.token}")
 	private String botToken;
 
-	@GetMapping("/user/me")
+	private final String url = "https://discord.com/api";
+
+	@GetMapping("/me")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<UserInfo> getCurrentUser(@CurrentUser LocalUser user) throws URISyntaxException, JsonProcessingException {
 		OAuth2AuthorizedClient client = this.clientService.loadAuthorizedClient(
@@ -51,7 +53,6 @@ public class UserController {
 		);
 		String accessToken = client.getAccessToken().getTokenValue();
 		RestTemplate restTemplate = new RestTemplate();
-		final String url = "https://discord.com/api";
 		final String myGuildUrl =  url + "/users/@me/guilds";
 		URI myGuildUri = new URI(myGuildUrl);
 		HttpHeaders headers = new HttpHeaders();
@@ -59,7 +60,6 @@ public class UserController {
 		headers.set(HttpHeaders.USER_AGENT, "Discord app");
 		HttpEntity<String> request = new HttpEntity<>(headers);
 		ResponseEntity<String> guildsRes = restTemplate.exchange(myGuildUri, HttpMethod.GET, request, String.class);
-		System.out.println(guildsRes.getBody());
 		List<Guild> managedGuilds = filterBot(filterPermission(processGuilds(guildsRes.getBody())));
 		return ResponseEntity.ok(GeneralUtils.buildUserInfo(user, managedGuilds));
 	}
@@ -77,9 +77,11 @@ public class UserController {
 						guild.getPermissions().equals("MANAGE_GUILD")).collect(Collectors.toList());
 	}
 
+	/*
+	** filter guild that has MichaelBot
+	 */
 	private List<Guild> filterBot(List<Guild> managedGuilds) throws URISyntaxException {
 		RestTemplate restTemplate = new RestTemplate();
-		final String url = "https://discord.com/api";
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, "Bot " + botToken);
 		headers.set(HttpHeaders.USER_AGENT, "Discord app");

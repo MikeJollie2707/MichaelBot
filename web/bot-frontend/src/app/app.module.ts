@@ -20,6 +20,11 @@ import { ProfilePageComponent } from './@page/profile-page/profile-page.componen
 import { ProfileComponent } from './@page/profile-page/profile/profile.component';
 import {SidebarModule} from 'primeng/sidebar';
 import {TooltipModule} from 'primeng/tooltip';
+import { GuildBotEditPageComponent } from './@page/guild-bot-edit-page/guild-bot-edit-page.component';
+import {FormsModule} from '@angular/forms';
+import {InputSwitchModule} from 'primeng/inputswitch';
+import {InputTextModule} from 'primeng/inputtext';
+import {GuildBotEditComponent} from './@page/guild-bot-edit-page/guild-bot-edit/guild-bot-edit.component';
 
 @NgModule({
   declarations: [
@@ -30,21 +35,26 @@ import {TooltipModule} from 'primeng/tooltip';
     LoginPageComponent,
     LoginComponent,
     ProfilePageComponent,
-    ProfileComponent
+    ProfileComponent,
+    GuildBotEditPageComponent,
+    GuildBotEditComponent
   ],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        ButtonModule,
-        DividerModule,
-        NgbModule, // ng bootstrap
-        AppRoutingModule,
-        CardModule,
-        MessageModule,
-        SidebarModule,
-        TooltipModule,
-    ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    ButtonModule,
+    DividerModule,
+    NgbModule, // ng bootstrap
+    AppRoutingModule,
+    CardModule,
+    MessageModule,
+    SidebarModule,
+    TooltipModule,
+    FormsModule,
+    InputSwitchModule,
+    InputTextModule,
+  ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })

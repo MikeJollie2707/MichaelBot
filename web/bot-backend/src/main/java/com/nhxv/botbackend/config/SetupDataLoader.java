@@ -1,19 +1,14 @@
 package com.nhxv.botbackend.config;
 
-import com.nhxv.botbackend.dto.SocialProvider;
 import com.nhxv.botbackend.model.Role;
-import com.nhxv.botbackend.model.User;
+import com.nhxv.botbackend.repo.GuildBotRepository;
 import com.nhxv.botbackend.repo.RoleRepository;
-import com.nhxv.botbackend.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +18,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@Autowired
+	private GuildBotRepository dGuildRepository;
 
 	@Override
 	@Transactional
@@ -34,6 +32,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		Role userRole = createRoleIfNotFound(Role.ROLE_USER);
 		Set<Role> roles = new HashSet<>();
 		roles.add(userRole);
+
 		alreadySetup = true;
 	}
 

@@ -1,0 +1,29 @@
+<!--<p-card>-->
+<!--  <div class="p-3">-->
+
+<!--  </div>-->
+<!--</p-card>-->
+
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <h6 class="mt-4">Prefix:</h6>
+    <input type="text" pInputText [(ngModel)]="guildBot.prefix">
+    <h6 class="mt-4 mb-1">Enable log:</h6>
+    <p-inputSwitch [(ngModel)]="enableLog"></p-inputSwitch>
+    <h6 class="mt-4" [class]="{'p-disabled' : !enableLog}">Log channel:</h6>
+    <input [class]="{'p-disabled' : !enableLog}" type="text" pInputText [(ngModel)]="guildBot.logChannel">
+
+    <h6 class="mt-4 mb-1">Enable Welcome:</h6>
+    <p-inputSwitch [(ngModel)]="enableWelcome"></p-inputSwitch>
+    <h6 class="mt-4" [class]="{'p-disabled' : !enableWelcome}">Welcome channel:</h6>
+    <input [class]="{'p-disabled' : !enableWelcome}" type="text" pInputText [(ngModel)]="guildBot.welcomeChannel">
+    <h6 class="mt-4" [class]="{'p-disabled' : !enableWelcome}">Welcome message:</h6>
+    <input [class]="{'p-disabled' : !enableWelcome}" type="text" pInputText [(ngModel)]="guildBot.welcomeText">
+
+    <p class="mt-5">
+      <button pButton type="button" label="Save" class="p-button-help"></button>
+    </p>
+
+  </div>
+</div>
+
