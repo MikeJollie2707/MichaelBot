@@ -255,7 +255,9 @@ class SmallHelp():
     
     async def send_cog_help(self, cog):
         paginate = Pages()
-        for command in cog.get_commands().sort():
+        def _on_alphabetical(command):
+            return command.name
+        for command in sorted(cog.get_commands(), key = _on_alphabetical):
             if not command.hidden:
                 page = command_help_format(self.ctx, command)
                 paginate.add_page(page)
