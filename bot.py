@@ -42,9 +42,9 @@ class MichaelBot(commands.Bot):
 
         self.pool : typing.Optional[asyncpg.pool.Pool] = None
         
-    def debug(self, message : str):
+    def debug(self, value : object):
         if self.DEBUG:
-            print(message)
+            print(value)
 
 def load_info(bot_name):
     bot_info = None # A dict
@@ -74,11 +74,13 @@ def setup_logger(enable : bool = True):
 def get_info():
     bot_info = secrets = None
     argc = len(sys.argv)
-
-    if (argc == 2):
-        bot_info, secrets = load_info(sys.argv[1])
-    else:
-        print("Incorrect amount of arguments. The first argument should be the bot index in 'config.json'")
+    
+    bot_info, secrets = load_info(sys.argv[1])
+    if argc > 2:
+        if sys.argv[2] == "--nomusic":
+            __discord_extension__.remove("categories.music")
+        elif sys.argv[2] == "--debug":
+            bot_info["debug"] = True
     
     return bot_info, secrets
     
