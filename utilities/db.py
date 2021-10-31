@@ -88,7 +88,7 @@ async def update_db(bot):
                 badges[key].insert(2, count)
                 count += 1
                 await Badges.create_badge(conn, badges[key])
-                          
+
 async def insert_into(conn, table_name : str, *args):
     """
     Insert values into `table_name`.
@@ -1539,4 +1539,23 @@ class CustomCommand:
             WHERE guild_id = ($2) AND name = ($3);
         ''' % col_name, new_value, guild_id, name)
     
+    @classmethod
+    async def bulk_update(cls, conn, guild_id : int, name : str, new_values : dict):
+        print(new_values)
+        update_str = ""
+        update_arg = []
+        count = 1
+        for column in new_values:
+            update_str += f"{column} = (${count}), "
+            update_arg.append(new_values[column])
+            count += 1
+        update_str = update_str[:-2]
+
+        print(update_arg)
+
+        await conn.execute('''
+            UPDATE DGuilds_CCommand
+            SET %s
+            WHERE guild_id = %d AND name = '%s';
+        ''' % (update_str, guild_id, name), *update_arg)
 

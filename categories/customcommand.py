@@ -61,13 +61,13 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
                         try:
                             await message.author.add_roles(*addroles_list)
                         except discord.Forbidden:
-                            await channel.send("Failed to add roles.")
+                            await message.channel.send("Failed to add roles.")
                     if len(existed["rmvroles"]) > 0:
                         rmvroles_list = [message.guild.get_role(role) for role in existed["rmvroles"]]
                         try:
                             await message.author.remove_roles(*rmvroles_list)
                         except discord.Forbidden:
-                            await channel.send("Failed to remove roles.")
+                            await message.channel.send("Failed to remove roles.")
     
     @commands.group(aliases = ['ccmd', 'customcmd'], invoke_without_command = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
@@ -111,7 +111,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def add(self, ctx : commands.Context, name, *, input):
+    async def add(self, ctx : commands.Context, name, *, arguments):
         '''
         Add a custom command to the guild.
 
@@ -143,11 +143,11 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
             if existed is not None:
                 return await ctx.reply(f"This guild already has a command with the name `{name}`. Please choose a different one.")
         
-            arguments = Facility.flag_parse(input, self.__flags__)
+            arguments = Facility.flag_parse(arguments, self.__flags__)
             description = arguments["--description"]
             message = arguments["--message"]
             channel = arguments["--channel"]
-            is_reply = arguments["--reply"]
+            is_reply = bool(arguments["--reply"])
             addroles = arguments["--addroles"]
             rmvroles = arguments["--rmvroles"]
 
@@ -171,11 +171,6 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
                 dchannel = ctx.guild.get_channel(channel)
                 if dchannel is None:
                     return await ctx.reply("`--channel` must be an existed channel's ID.")
-            # I decide to make `--reply` both a flag and argument (although there will be no info in argument).
-            if is_reply is not None:
-                is_reply = True
-            else:
-                is_reply = False
             if isinstance(addroles, bool) or isinstance(rmvroles, bool):
                 return await ctx.reply("`--addroles`/`--rmvroles` is not a flag but rather an argument.")
             if isinstance(addroles, str):
@@ -239,13 +234,84 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
             await ctx.reply(f"Removed command `{name}`.", mention_author = False)
     
     @ccommand.command()
-    async def edit(self, ctx):
+    async def edit(self, ctx, name, *, arguments):
         # Make edit the same as creation with a few catch:
         # - name is not changeable; it'll be ignored if provided.
         # - if any arguments is not provided, it'll retain the old behavior.
         # - to clear an optional argument (say --addroles), you need to provide the string "clear" (case-insensitive).
         # - to toggle, simply provide the argument again.
-        pass
+        builtin_existed = ctx.bot.get_command(name)
+        if builtin_existed is not None:
+            return await ctx.reply("This is a built-in bot command, not a custom command.")
+        
+        async with self.bot.pool.acquire() as conn:
+            existed = await DB.CustomCommand.get_command(conn, ctx.guild.id, name)
+            if existed is None:
+                return await ctx.reply(f"There's no custom command with the name {name}.")
+            existed.pop("name")
+            existed.pop("guild_id")
+        
+            arguments = Facility.flag_parse(arguments, self.__flags__)
+            description = arguments["--description"]
+            message = arguments["--message"]
+            channel = arguments["--channel"]
+            is_reply = arguments["--reply"]
+            addroles = arguments["--addroles"]
+            rmvroles = arguments["--rmvroles"]
+
+            if isinstance(description, bool):
+                return await ctx.reply("`--description` is not a flag but rather an argument.")
+            elif description is not None:
+                existed["description"] = description
+            
+            if isinstance(message, bool):
+                return await ctx.reply("`--message` is not a flag but rather an argument.")
+            elif message is not None:
+                existed["message"] = message
+            
+            if isinstance(channel, bool):
+                return await ctx.reply("`--channel` must be an existed channel's ID.")
+            elif channel is not None:
+                try:
+                    channel = int(channel)
+                except ValueError:
+                    return await ctx.reply("`--channel` must be an existed channel's ID.")
+                
+                dchannel = ctx.guild.get_channel(channel)
+                if dchannel is None:
+                    return await ctx.reply("`--channel` must be an existed channel's ID.")
+                existed["channel"] = channel
+            
+            if isinstance(is_reply, bool):
+                existed["is_reply"] = not existed["is_reply"]
+            
+            if isinstance(addroles, bool) or isinstance(rmvroles, bool):
+                return await ctx.reply("`--addroles`/`--rmvroles` is not a flag but rather an argument.")
+            if isinstance(addroles, str):
+                existed["addroles"] = []
+                if addroles != "clear":
+                    for role in addroles.split():
+                        try:
+                            drole = ctx.guild.get_role(int(role))
+                        except ValueError:
+                            return await ctx.reply("`--addroles` must contain existed roles' ID.")
+                        if drole is not None and drole < ctx.guild.get_member(self.bot.user.id).top_role:
+                            existed["addroles"].append(int(role))
+            if isinstance(rmvroles, str):
+                existed["rmvroles"] = []
+                if rmvroles != "clear":
+                    for role in rmvroles.split():
+                        try:
+                            drole = ctx.guild.get_role(int(role))
+                        except ValueError:
+                            return await ctx.reply("`--rmvroles` must contain existed roles' ID.")
+                        if drole is not None and drole < ctx.guild.get_member(self.bot.user.id).top_role:
+                            existed["rmvroles"].append(int(role))
+            
+            async with conn.transaction():
+                await DB.CustomCommand.bulk_update(conn, ctx.guild.id, name, existed)
+
+            await ctx.reply(f"Updated command `{name}`.", mention_author = False)
 
 
 def setup(bot : MichaelBot):
