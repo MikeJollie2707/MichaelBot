@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.nhxv.botbackend.config.CurrentUser;
-import com.nhxv.botbackend.dto.Guild;
-import com.nhxv.botbackend.dto.LocalUser;
-import com.nhxv.botbackend.dto.UserInfo;
+import com.nhxv.botbackend.dto.*;
 import com.nhxv.botbackend.util.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,45 +59,176 @@ public class UserController {
 		headers.set(HttpHeaders.USER_AGENT, "Discord app");
 		HttpEntity<String> request = new HttpEntity<>(headers);
 		ResponseEntity<String> guildsRes = restTemplate.exchange(myGuildUri, HttpMethod.GET, request, String.class);
-		List<Guild> managedGuilds = filterBot(filterPermission(processGuilds(guildsRes.getBody())));
-		return ResponseEntity.ok(GeneralUtils.buildUserInfo(user, managedGuilds));
+		List<DiscordGuild> managedDiscordGuilds = filterBot(filterPermission(processGuilds(guildsRes.getBody())));
+		return ResponseEntity.ok(GeneralUtils.buildUserInfo(user, managedDiscordGuilds));
 	}
 
-	private List<Guild> processGuilds(String guildStr) throws JsonProcessingException {
+	private List<DiscordGuild> processGuilds(String guildStr) throws JsonProcessingException {
 		final ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		return objectMapper.readValue(guildStr, new TypeReference<List<Guild>>(){});
+		return objectMapper.readValue(guildStr, new TypeReference<List<DiscordGuild>>(){});
 	}
 
-	private List<Guild> filterPermission(List<Guild> guilds) {
-		return guilds.stream().filter(
-				guild -> guild.isOwner() ||
-						guild.getPermissions().equals("ADMINISTRATOR") ||
-						guild.getPermissions().equals("MANAGE_GUILD")).collect(Collectors.toList());
+	private List<DiscordGuild> filterPermission(List<DiscordGuild> discordGuilds) {
+		return discordGuilds.stream().filter(
+				discordGuild -> discordGuild.isOwner() ||
+						discordGuild.getPermissions().equals("ADMINISTRATOR") ||
+						discordGuild.getPermissions().equals("MANAGE_GUILD")).collect(Collectors.toList());
 	}
 
 	/*
 	** filter guild that has MichaelBot
 	 */
-	private List<Guild> filterBot(List<Guild> managedGuilds) throws URISyntaxException {
+	private List<DiscordGuild> filterBot(List<DiscordGuild> managedDiscordGuilds) throws URISyntaxException {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.AUTHORIZATION, "Bot " + botToken);
 		headers.set(HttpHeaders.USER_AGENT, "Discord app");
 		HttpEntity<String> request = new HttpEntity<>(headers);
 
-		List<Guild> filteredGuilds = new ArrayList<>();
+		List<DiscordGuild> filteredDiscordGuilds = new ArrayList<>();
 
-		for (Guild g : managedGuilds) {
+		for (DiscordGuild g : managedDiscordGuilds) {
 			final String checkBotUrl = url + "/guilds/" + g.getId() + "/members/" + clientId;
 			URI checkBotUri = new URI(checkBotUrl);
 			try {
-				ResponseEntity<String> checkBotRes = restTemplate.exchange(checkBotUri, HttpMethod.GET, request, String.class);
-				filteredGuilds.add(g);
-			} catch(HttpStatusCodeException e) {
-				System.out.println("Error type: " + e.getStatusCode());
+				ResponseEntity<String> botRes = restTemplate.exchange(checkBotUri, HttpMethod.GET, request, String.class);
+				DiscordBot discordBot = processBot(botRes.getBody());
+				System.out.println("Guild: " + g.getName() + " " + g.getId());
+				DiscordGuild discordGuild = getChannels(g, restTemplate, request, discordBot.getRoles(), discordBot.getDiscordBotUser().getId());
+				filteredDiscordGuilds.add(discordGuild);
+			} catch(HttpStatusCodeException | JsonProcessingException e) {
+				if (e instanceof HttpStatusCodeException) {
+					System.out.println(((HttpStatusCodeException) e).getStatusCode());
+				} else {
+					e.printStackTrace();
+				}
 			}
 		}
-		return filteredGuilds;
+		return filteredDiscordGuilds;
+	}
+
+	private DiscordBot processBot(String botStr) throws JsonProcessingException {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return objectMapper.readValue(botStr, new TypeReference<DiscordBot>(){});
+	}
+
+	// get guild channels that MichaelBot can send message to
+	private DiscordGuild getChannels(DiscordGuild g,
+									 RestTemplate restTemplate,
+									 HttpEntity<String> request,
+									 List<String> botRoles,
+									 String botId) throws JsonProcessingException, URISyntaxException {
+		final String channelUrl = url + "/guilds/" + g.getId() + "/channels";
+		URI channelUri = new URI(channelUrl);
+		ResponseEntity<String> channelRes = restTemplate.exchange(channelUri, HttpMethod.GET, request, String.class);
+		List<DiscordChannel> discordChannels = processChannels(channelRes.getBody());
+		List<DiscordChannel> filteredDiscordChannels = discordChannels.stream().filter(
+				discordChannel ->
+						discordChannel.getType() == 0
+						&& checkPermissionOverwrite(discordChannel.getPermissionOverwrites(), g.getId(), botRoles, botId)
+				).collect(Collectors.toList());
+
+		for (DiscordChannel channel : filteredDiscordChannels) {
+			System.out.println(channel);
+		}
+
+		g.setChannels(filteredDiscordChannels);
+		return g;
+	}
+
+	private List<DiscordChannel> processChannels(String channelStr) throws JsonProcessingException {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return objectMapper.readValue(channelStr, new TypeReference<List<DiscordChannel>>(){});
+	}
+
+	/*
+	* filter allow and deny from overwrite
+	* prioritize allow and deny from: bot as a member -> bot as a role -> @everyone
+	* at the same role level, allow > deny
+	* @everyone overwrite id = guild id
+	* get bot role_id and member_id from bot role and bot id
+	*/
+	private boolean checkPermissionOverwrite(List<DiscordOverwrite> discordOverwrites,
+											 String everyoneId,
+											 List<String> botRolesId,
+											 String botId) {
+		if (discordOverwrites == null || discordOverwrites.isEmpty()) {
+			return true;
+		}
+		DiscordOverwrite botMemberOverwrite;
+		List<DiscordOverwrite> botRoleOverwrites = new ArrayList<>();
+		DiscordOverwrite everyoneOverwrite = null;
+		for (DiscordOverwrite discordOverwrite : discordOverwrites) {
+			if (discordOverwrite.getId().equals(botId)) {
+				botMemberOverwrite = discordOverwrite;
+				return canBotSendMessage(botMemberOverwrite.getDeny());
+			} else if (botRolesId.contains(discordOverwrite.getId())) {
+				botRoleOverwrites.add(discordOverwrite);
+			} else if (discordOverwrite.getId().equals(everyoneId)) {
+				everyoneOverwrite = discordOverwrite;
+			}
+		}
+		if (!botRoleOverwrites.isEmpty()) {
+			// false = untouched, true = enabled - like a switch
+			boolean allowView = false;
+			boolean denyView = false;
+			boolean allowSend = false;
+			boolean denySend = false;
+			for (DiscordOverwrite botRoleOverwrite : botRoleOverwrites) {
+				if (isAllowView(botRoleOverwrite.getAllow())) allowView = true;
+				if (isDenyView(botRoleOverwrite.getDeny())) denyView = true;
+				if (isAllowSend(botRoleOverwrite.getAllow())) allowSend = true;
+				if (isDenySend(botRoleOverwrite.getDeny())) denySend = true;
+			}
+			boolean canView = false;
+			boolean canSend = false;
+			if (allowView) {
+				canView = true;
+			} else if (!denyView) { // when allow view and deny view are untouched -> can view
+				canView = true;
+			}
+			if (allowSend) {
+				canSend = true;
+			} else if (!denySend) { // when allow send and deny send are untouched -> can send
+				canSend = true;
+			}
+			if (canView) {
+				return canSend;
+			} else {
+				return false;
+			}
+		} else if (everyoneOverwrite != null) {
+			return canBotSendMessage(everyoneOverwrite.getDeny());
+		}
+		return true;
+	}
+
+	// for one overwrite
+	private boolean canBotSendMessage(String deny) {
+		return !isDenyView(deny) && !isDenySend(deny);
+	}
+
+	/*
+	** for multiple overwrites at the same level
+	 */
+	private boolean isAllowView(String allow) {
+		return (Long.parseLong(allow) & 0x400) == 0x400;
+	}
+
+	private boolean isDenyView(String deny) {
+		return (Long.parseLong(deny) & 0x400) == 0x400;
+	}
+
+	private boolean isAllowSend(String allow) {
+		return (Long.parseLong(allow) & 0x800) == 0x800;
+	}
+
+	private boolean isDenySend(String deny) {
+		return (Long.parseLong(deny) & 0x800) == 0x800;
 	}
 }

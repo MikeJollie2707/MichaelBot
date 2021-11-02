@@ -5,7 +5,7 @@ import java.util.List;
 public class UserInfo {
 	private String id, displayName, email, avatar, providerUserId;
 	private List<String> roles;
-	private List<Guild> guilds;
+	private List<DiscordGuild> discordGuilds;
 
 	public UserInfo(String id,
 					String displayName,
@@ -13,14 +13,14 @@ public class UserInfo {
 					String avatar,
 					String providerUserId,
 					List<String> roles,
-					List<Guild> guilds) {
+					List<DiscordGuild> discordGuilds) {
 		this.id = id;
 		this.displayName = displayName;
 		this.email = email;
 		this.avatar = avatar;
 		this.providerUserId = providerUserId;
 		this.roles = roles;
-		this.guilds = guilds;
+		this.discordGuilds = discordGuilds;
 	}
 
 	public String getId() {
@@ -55,12 +55,12 @@ public class UserInfo {
 		this.roles = roles;
 	}
 
-	public List<Guild> getGuilds() {
-		return guilds;
+	public List<DiscordGuild> getGuilds() {
+		return discordGuilds;
 	}
 
-	public void setGuilds(List<Guild> guilds) {
-		this.guilds = guilds;
+	public void setGuilds(List<DiscordGuild> discordGuilds) {
+		this.discordGuilds = discordGuilds;
 	}
 
 	public String getAvatar() {
@@ -88,7 +88,7 @@ public class UserInfo {
 				", roles=" + roles +
 				", avatar=" + avatar +
 				", providerUserId=" + providerUserId +
-				", guilds=" + guilds +
+				", guilds=" + discordGuilds +
 				'}';
 	}
 }

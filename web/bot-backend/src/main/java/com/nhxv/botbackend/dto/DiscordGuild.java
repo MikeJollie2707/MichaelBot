@@ -1,10 +1,13 @@
 package com.nhxv.botbackend.dto;
 
-public class Guild {
+import java.util.List;
+
+public class DiscordGuild {
     private String id, name, icon, permissions;
     private boolean isOwner;
+    private List<DiscordChannel> discordChannels;
 
-    public Guild() {}
+    public DiscordGuild() {}
 
     public String getId() {
         return id;
@@ -52,14 +55,23 @@ public class Guild {
         }
     }
 
+    public List<DiscordChannel> getChannels() {
+        return discordChannels;
+    }
+
+    public void setChannels(List<DiscordChannel> discordChannels) {
+        this.discordChannels = discordChannels;
+    }
+
     @Override
     public String toString() {
         return "Guild{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", icon='" + icon + '\'' +
-                ", isOwner=" + isOwner +
                 ", permissions='" + permissions + '\'' +
+                ", isOwner=" + isOwner +
+                ", channels=" + discordChannels +
                 '}';
     }
 }
