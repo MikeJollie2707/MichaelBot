@@ -265,7 +265,7 @@ class Core(commands.Cog):
         member = ctx.author if member is None else member
 
         embed = Facility.get_default_embed(
-            author = member,
+            author = ctx.author,
             color = discord.Color.green(),
             timestamp = datetime.datetime.utcnow()
         ).set_author(
