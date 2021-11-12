@@ -1,29 +1,38 @@
-<!--<p-card>-->
-<!--  <div class="p-3">-->
-
-<!--  </div>-->
-<!--</p-card>-->
-
 <div class="row justify-content-center">
   <div class="col-lg-9">
-    <h6 class="mt-4">Prefix:</h6>
-    <input type="text" pInputText [(ngModel)]="guildBot.prefix">
-    <h6 class="mt-4 mb-1">Enable log:</h6>
-    <p-inputSwitch [(ngModel)]="enableLog"></p-inputSwitch>
-    <h6 class="mt-4" [class]="{'p-disabled' : !enableLog}">Log channel:</h6>
-    <input [class]="{'p-disabled' : !enableLog}" type="text" pInputText [(ngModel)]="guildBot.logChannel">
+    <form #f="ngForm" (ngSubmit)="onSubmit()">
+      <h6 class="mt-4">Prefix:</h6>
+      <input type="text" pInputText [(ngModel)]="guildBot.prefix" name="prefix" #prefix="ngModel"
+             [ngClass]="{'ng-invalid ng-dirty' : prefix.invalid && (prefix.dirty || prefix.touched)}"
+             required maxlength="5">
 
-    <h6 class="mt-4 mb-1">Enable Welcome:</h6>
-    <p-inputSwitch [(ngModel)]="enableWelcome"></p-inputSwitch>
-    <h6 class="mt-4" [class]="{'p-disabled' : !enableWelcome}">Welcome channel:</h6>
-    <input [class]="{'p-disabled' : !enableWelcome}" type="text" pInputText [(ngModel)]="guildBot.welcomeChannel">
-    <h6 class="mt-4" [class]="{'p-disabled' : !enableWelcome}">Welcome message:</h6>
-    <input [class]="{'p-disabled' : !enableWelcome}" type="text" pInputText [(ngModel)]="guildBot.welcomeText">
+      <h6 class="mt-4 mb-1">Enable log:</h6>
+      <p-inputSwitch [(ngModel)]="enableLog" name="enableLog" ngModel></p-inputSwitch>
 
-    <p class="mt-5">
-      <button pButton type="button" label="Save" class="p-button-help"></button>
-    </p>
+      <h6 class="mt-4" [ngClass]="{'p-disabled' : !enableLog}">Log channel:</h6>
+      <p-dropdown [options]="channels" [ngClass]="{'p-disabled' : !enableLog}"
+                  [(ngModel)]="selectedLogChannel" optionLabel="name" optionValue="id"
+                  name="logChannel"></p-dropdown>
 
+      <h6 class="mt-4 mb-1">Enable Welcome:</h6>
+      <p-inputSwitch [(ngModel)]="enableWelcome" name="enableWelcome" ngModel></p-inputSwitch>
+
+      <h6 class="mt-4" [class]="{'p-disabled' : !enableWelcome}">Welcome channel:</h6>
+      <p-dropdown [options]="channels" [ngClass]="{'p-disabled' : !enableWelcome}"
+                  [(ngModel)]="selectedWelcomeChannel" optionLabel="name" optionValue="id"
+                  name="welcomeChannel" ngModel></p-dropdown>
+
+      <h6 class="mt-4" [class]="{'p-disabled' : !enableWelcome}">Welcome message:</h6>
+      <input [ngClass]="{'p-disabled' : !enableWelcome}" type="text" pInputText
+             [(ngModel)]="guildBot.welcomeText" name="welcomeMessage" ngModel>
+
+      <p class="mt-5">
+        <button pButton type="submit" label="Save" class="p-button-help"></button>
+      </p>
+    </form>
+    <pre>{{f.value | json}}</pre>
   </div>
 </div>
+
+<p-toast position="bottom-center" key="bc"></p-toast>
 

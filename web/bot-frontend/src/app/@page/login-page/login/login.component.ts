@@ -4,6 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import {UserApiService} from '../../../@service/api/user-api.service';
 import {Observable} from 'rxjs';
 import {Constant} from '../../../@shared/app.constant';
+import {User} from '../../../@model/user.model';
 
 @Component({
   selector: 'app-login',
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  login(user: any): void {
+  login(user: User): void {
     this.authService.saveUser(user);
     this.currentUser = this.authService.getUser();
   }

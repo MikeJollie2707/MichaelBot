@@ -4,7 +4,7 @@ $inputPadding: .625rem .75rem;
 
 /// Background of an input field
 /// @group form
-$inputBg: $cardBg;
+$inputBg: $inputBg;
 
 /// Font size of an input field
 /// @group form
@@ -64,7 +64,7 @@ $inputGroupAddOnMinWidth: 2.357rem;
 
 /// Background of an input list such as dropdown, listbox, multiselect
 /// @group form
-$inputListBg: $bodyColor;
+$inputListBg: $inputBg;
 
 /// Text color of an input list
 /// @group form

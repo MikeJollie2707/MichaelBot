@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/guildBot")
 public class GuildBotController {
     @Autowired
-    private GuildBotRepository dGuildRepository;
+    private GuildBotRepository guildBotRepository;
 
     @GetMapping("/{guildBotId}")
-    private ResponseEntity<GuildBot> getDGuild(@PathVariable Long guildBotId) throws Exception {
-        GuildBot guildBot = this.dGuildRepository.findById(guildBotId).orElseThrow(() -> new Exception("Guild bot not found for id: " + guildBotId));
+    private ResponseEntity<GuildBot> getGuildBot(@PathVariable Long guildBotId) throws Exception {
+        GuildBot guildBot = this.guildBotRepository.findById(guildBotId).orElseThrow(() -> new Exception("Guild bot not found for id: " + guildBotId));
         return ResponseEntity.ok().body(guildBot);
     }
 }

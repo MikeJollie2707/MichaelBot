@@ -135,7 +135,7 @@ public class UserController {
 			System.out.println(channel);
 		}
 
-		g.setChannels(filteredDiscordChannels);
+		g.setChannels(filteredDiscordChannels); // set channel that bot can send message to
 		return g;
 	}
 
@@ -148,10 +148,6 @@ public class UserController {
 
 	/*
 	* filter allow and deny from overwrite
-	* prioritize allow and deny from: bot as a member -> bot as a role -> @everyone
-	* at the same role level, allow > deny
-	* @everyone overwrite id = guild id
-	* get bot role_id and member_id from bot role and bot id
 	*/
 	private boolean checkPermissionOverwrite(List<DiscordOverwrite> discordOverwrites,
 											 String everyoneId,

@@ -21,10 +21,12 @@ import { ProfileComponent } from './@page/profile-page/profile/profile.component
 import {SidebarModule} from 'primeng/sidebar';
 import {TooltipModule} from 'primeng/tooltip';
 import { GuildBotEditPageComponent } from './@page/guild-bot-edit-page/guild-bot-edit-page.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {InputSwitchModule} from 'primeng/inputswitch';
 import {InputTextModule} from 'primeng/inputtext';
 import {GuildBotEditComponent} from './@page/guild-bot-edit-page/guild-bot-edit/guild-bot-edit.component';
+import {DropdownModule} from 'primeng/dropdown';
+import {ToastModule} from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import {GuildBotEditComponent} from './@page/guild-bot-edit-page/guild-bot-edit/
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    FormsModule,
     ButtonModule,
     DividerModule,
     NgbModule, // ng bootstrap
@@ -51,9 +54,10 @@ import {GuildBotEditComponent} from './@page/guild-bot-edit-page/guild-bot-edit/
     MessageModule,
     SidebarModule,
     TooltipModule,
-    FormsModule,
     InputSwitchModule,
     InputTextModule,
+    DropdownModule,
+    ToastModule,
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap: [AppComponent]

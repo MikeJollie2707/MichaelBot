@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+// guild id = guild bot id
 @Entity
 @Table(name = "dguilds")
 @NoArgsConstructor
@@ -36,7 +37,7 @@ public class GuildBot {
     private boolean enableWelcome;
 
     @Column(name = "welcome_channel")
-    private Long welcomeChannel;
+    private String welcomeChannel; // need to convert string to number before saving to db
 
     @Column(name = "welcome_text")
     private String welcomeText;

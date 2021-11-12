@@ -1,3 +1,5 @@
+import {Channel} from './channel.model';
+
 export class Guild {
   constructor(
     public id: string,
@@ -5,5 +7,6 @@ export class Guild {
     public icon: string,
     public permissions: string,
     public owner: boolean,
+    public channels: Channel[]
   ) {}
 }

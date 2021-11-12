@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
+import {User} from '../../@model/user.model';
 
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
+const GUILD_KEY = 'guilds';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -19,9 +21,12 @@ export class AuthService {
     this.isAuthChanged.next(!!sessionStorage.getItem(TOKEN_KEY));
   }
 
-  public saveUser(user: any): void {
+  public saveUser(user: User): void {
     window.sessionStorage.removeItem(USER_KEY);
     window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+
+    window.sessionStorage.removeItem(GUILD_KEY);
+    window.sessionStorage.setItem(GUILD_KEY, JSON.stringify(user.guilds));
     this.isAuthChanged.next(!!sessionStorage.getItem(TOKEN_KEY));
   }
 

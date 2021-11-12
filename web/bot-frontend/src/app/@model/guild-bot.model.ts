@@ -6,8 +6,8 @@ export class GuildBot {
     public enableLog: boolean,
     public logChannel: number,
     public enableWelcome: boolean,
-    public welcomeChannel: number,
+    public welcomeChannel: string,
     public welcomeText: string,
-    public id?: number,
+    public id?: string,
   ) {}
 }
