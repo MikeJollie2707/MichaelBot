@@ -9,6 +9,3 @@ OAuth login
 Guild Bot edit
 
     - sidebar and submenu to quick scroll on bot edit page
-    - prefix edit (5 character max, no space) 
-    - save edit changes (form template driven - prime doesn't support reactive :D...)
-    - display toast to notify save status (success/failure message)

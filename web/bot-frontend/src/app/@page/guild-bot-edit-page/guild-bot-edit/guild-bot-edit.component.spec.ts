@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GuildBotEditComponent } from './guild-bot-edit.component.ts';
+import { GuildBotEditComponent } from './guild-bot-edit.component';
 
 describe('GuildEditComponent', () => {
   let component: GuildBotEditComponent;

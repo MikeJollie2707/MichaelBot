@@ -62,60 +62,21 @@ $inputGroupTextColor: $textSecondaryColor;
 /// @group form
 $inputGroupAddOnMinWidth: 2.357rem;
 
-/// Background of an input list such as dropdown, listbox, multiselect
-/// @group form
 $inputListBg: $inputBg;
-
-/// Text color of an input list
-/// @group form
 $inputListTextColor: $textColor;
-
-/// Border of an input list
-/// @group form
 $inputListBorder: $inputBorder;
-
-/// Padding of an input list
-/// @group form
 $inputListPadding: .5rem 0;
 
-/// Padding for an individual item of an input list
-/// @group form
 $inputListItemPadding: .625rem 1rem;
-
-/// Background for an individual itrem of an input list
-/// @group form
 $inputListItemBg: transparent;
-
-/// Text color for an individual itrem of an input list
-/// @group form
 $inputListItemTextColor: $textColor;
-
-/// Hover state background for an individual itrem of an input list
-/// @group form
 $inputListItemHoverBg: $fadeSecondaryHoverColor;
-
-/// Hover state text color for an individual itrem of an input list
-/// @group form
 $inputListItemTextHoverColor: $textColor;
-
-/// Border for an individual itrem of an input list
-/// @group form
 $inputListItemBorder: 0 none;
-
-/// Border radius for an individual itrem of an input list
-/// @group form
-$inputListItemBorderRadius: 0;
-
-/// Margin for an individual item of an input list
-/// @group form
-$inputListItemMargin: 0;
-
-/// Box shadow for an individual item of an input list in focused state
-/// @group form
+$inputListItemBorderRadius: $borderRadius;
+$inputListItemMargin: 0.375rem;
 $inputListItemFocusShadow: inset 0 0 0 0.15rem $focusOutlineColor;
 
-/// Padding for a header of an input list
-/// @group form
 $inputListHeaderPadding: .5rem 1rem;
 
 /// Margin for a header of an input list

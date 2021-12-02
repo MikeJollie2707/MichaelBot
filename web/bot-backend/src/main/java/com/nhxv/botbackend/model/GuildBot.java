@@ -22,7 +22,7 @@ public class GuildBot {
     private String name;
 
     @Column(name = "is_whitelist")
-    private boolean isWhitelist;
+    private boolean isWhitelist; // ignore for now
 
     @Column(name = "prefix")
     private String prefix;
@@ -31,13 +31,13 @@ public class GuildBot {
     private boolean enableLog;
 
     @Column(name = "log_channel")
-    private Long logChannel;
+    private Long logChannel; // it's a string from frontend
 
     @Column(name = "enable_welcome")
     private boolean enableWelcome;
 
     @Column(name = "welcome_channel")
-    private String welcomeChannel; // need to convert string to number before saving to db
+    private Long welcomeChannel; // it's a string from frontend
 
     @Column(name = "welcome_text")
     private String welcomeText;

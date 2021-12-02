@@ -1,13 +1,12 @@
 export class GuildBot {
   constructor(
-    public name: string,
-    public whitelist: boolean,
+    public id: string,
     public prefix: string,
+    public name: string,
     public enableLog: boolean,
-    public logChannel: number,
     public enableWelcome: boolean,
-    public welcomeChannel: string,
-    public welcomeText: string,
-    public id?: string,
+    public logChannel?: string,
+    public welcomeChannel?: string,
+    public welcomeText?: string,
   ) {}
 }
