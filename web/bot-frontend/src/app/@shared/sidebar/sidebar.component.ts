@@ -15,7 +15,7 @@ export class SidebarComponent implements OnInit {
               private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.isLoggedIn$ = this.authService.isAuthChanged.asObservable();
+    this.isLoggedIn$ = this.authService.loginState.asObservable();
   }
 
   getUsername(): string {

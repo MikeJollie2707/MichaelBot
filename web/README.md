@@ -5,6 +5,7 @@ A web application to manage and customize guilds & bots from Discord
 OAuth login
 
     - loading animation before loading user avatar
+    - lazy loading after completing all features
 
 Guild Bot edit
 

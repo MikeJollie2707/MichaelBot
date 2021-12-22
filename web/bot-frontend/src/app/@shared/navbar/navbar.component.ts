@@ -14,11 +14,12 @@ export class NavbarComponent implements OnInit {
   isOpen = false;
   isNavbarCollapsed = true;
   isLoggedIn: Observable<boolean> = new Observable<boolean>();
+  discordURL = Constant.DISCORD_AUTH_URL;
 
   constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isAuthChanged.asObservable();
+    this.isLoggedIn = this.authService.loginState.asObservable();
   }
 
   onMenu(): void {
@@ -36,8 +37,12 @@ export class NavbarComponent implements OnInit {
     return Constant.DISCORD_BASE_IMG + 'avatars/' + user.providerUserId + '/' + user.avatar + '.png';
   }
 
+  onLogin(): void {
+    document.location.href = this.discordURL;
+  }
+
   onSignOut(): void {
     this.authService.signOut();
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/home');
   }
 }

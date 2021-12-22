@@ -27,6 +27,7 @@ import {InputTextModule} from 'primeng/inputtext';
 import {GuildBotEditComponent} from './@page/guild-bot-edit-page/guild-bot-edit/guild-bot-edit.component';
 import {DropdownModule} from 'primeng/dropdown';
 import {ToastModule} from 'primeng/toast';
+import { NotFoundPageComponent } from './@page/not-found-page/not-found-page.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import {ToastModule} from 'primeng/toast';
     ProfilePageComponent,
     ProfileComponent,
     GuildBotEditPageComponent,
-    GuildBotEditComponent
+    GuildBotEditComponent,
+    NotFoundPageComponent
   ],
   imports: [
     BrowserModule,

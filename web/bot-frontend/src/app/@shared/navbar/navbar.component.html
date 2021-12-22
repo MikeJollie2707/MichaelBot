@@ -8,15 +8,15 @@
   <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" routerLink="home" routerLinkActive="nav-active">Home</a>
+        <a class="nav-link" routerLink="home" routerLinkActive="nav-active"><i class="pi pi-home mr-2"></i>Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link">Docs</a>
+        <a class="nav-link"><i class="pi pi-paperclip mr-2"></i>Docs</a>
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item" *ngIf="!(isLoggedIn | async)">
-        <a class="nav-link" routerLink="login" routerLinkActive="nav-active">Login</a>
+        <a class="nav-link" (click)="onLogin()"><i class="pi pi-discord mr-2"></i>Login</a>
       </li>
       <li class="nav-item" *ngIf="isLoggedIn | async">
         <a class="nav-link" routerLink="profile" routerLinkActive="nav-active">

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from '../../../@service/security/auth.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UserApiService} from '../../../@service/api/user-api.service';
 import {Observable} from 'rxjs';
 import {Constant} from '../../../@shared/app.constant';
@@ -19,10 +19,11 @@ export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService,
               private userApiService: UserApiService,
-              private route: ActivatedRoute) {}
+              private route: ActivatedRoute,
+              private router: Router) {}
 
   ngOnInit(): void {
-    this.isLoggedIn$ = this.authService.isAuthChanged.asObservable();
+    this.isLoggedIn$ = this.authService.loginState.asObservable();
 
     const token: string | null = this.route.snapshot.queryParamMap.get('token');
     const error: string | null = this.route.snapshot.queryParamMap.get('error');
@@ -44,9 +45,6 @@ export class LoginComponent implements OnInit {
   login(user: User): void {
     this.authService.saveUser(user);
     this.currentUser = this.authService.getUser();
-  }
-
-  onLogin(): void {
-    document.location.href = this.discordURL;
+    this.router.navigateByUrl('/home');
   }
 }

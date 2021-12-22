@@ -8,17 +8,17 @@ const GUILD_KEY = 'guilds';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-  isAuthChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!sessionStorage.getItem(TOKEN_KEY));
+  loginState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(!!sessionStorage.getItem(TOKEN_KEY));
 
   signOut(): void {
     sessionStorage.clear();
-    this.isAuthChanged.next(!!sessionStorage.getItem(TOKEN_KEY));
+    this.loginState.next(!!sessionStorage.getItem(TOKEN_KEY));
   }
 
   public saveToken(token: string): void {
     window.sessionStorage.removeItem(TOKEN_KEY);
     window.sessionStorage.setItem(TOKEN_KEY, token);
-    this.isAuthChanged.next(!!sessionStorage.getItem(TOKEN_KEY));
+    this.loginState.next(!!sessionStorage.getItem(TOKEN_KEY));
   }
 
   public saveUser(user: User): void {
@@ -27,7 +27,7 @@ export class AuthService {
 
     window.sessionStorage.removeItem(GUILD_KEY);
     window.sessionStorage.setItem(GUILD_KEY, JSON.stringify(user.guilds));
-    this.isAuthChanged.next(!!sessionStorage.getItem(TOKEN_KEY));
+    this.loginState.next(!!sessionStorage.getItem(TOKEN_KEY));
   }
 
   public getToken(): string {
