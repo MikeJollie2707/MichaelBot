@@ -10,3 +10,4 @@ OAuth login
 Guild Bot edit
 
     - sidebar and submenu to quick scroll on bot edit page
+    - form validation in backend

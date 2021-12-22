@@ -15,10 +15,10 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item" *ngIf="!(isLoggedIn | async)">
+      <li class="nav-item" *ngIf="!(isLogin$ | async)">
         <a class="nav-link" (click)="onLogin()"><i class="pi pi-discord mr-2"></i>Login</a>
       </li>
-      <li class="nav-item" *ngIf="isLoggedIn | async">
+      <li class="nav-item" *ngIf="isLogin$ | async">
         <a class="nav-link" routerLink="profile" routerLinkActive="nav-active">
           <img src="{{getUserAvatar()}}" class="img-fluid rounded-circle mr-1" alt="avatar" width="20" height="20">
           <span>
@@ -26,7 +26,7 @@
           </span>
         </a>
       </li>
-      <li class="nav-item" *ngIf="isLoggedIn | async">
+      <li class="nav-item" *ngIf="isLogin$ | async">
         <a class="nav-link" (click)="onSignOut()">Sign out</a>
       </li>
     </ul>

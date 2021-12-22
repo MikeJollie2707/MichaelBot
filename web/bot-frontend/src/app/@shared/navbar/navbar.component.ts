@@ -13,13 +13,13 @@ import {Constant} from '../app.constant';
 export class NavbarComponent implements OnInit {
   isOpen = false;
   isNavbarCollapsed = true;
-  isLoggedIn: Observable<boolean> = new Observable<boolean>();
+  isLogin$: Observable<boolean> = new Observable<boolean>();
   discordURL = Constant.DISCORD_AUTH_URL;
 
   constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.loginState.asObservable();
+    this.isLogin$ = this.authService.loginState.asObservable();
   }
 
   onMenu(): void {

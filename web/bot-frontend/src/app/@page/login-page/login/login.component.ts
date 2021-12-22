@@ -12,7 +12,7 @@ import {User} from '../../../@model/user.model';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  isLoggedIn$: Observable<boolean> = new Observable<boolean>();
+  isLogin$: Observable<boolean> = new Observable<boolean>();
   errorMessage = '';
   currentUser: any;
   discordURL = Constant.DISCORD_AUTH_URL;
@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
               private router: Router) {}
 
   ngOnInit(): void {
-    this.isLoggedIn$ = this.authService.loginState.asObservable();
+    this.isLogin$ = this.authService.loginState.asObservable();
 
     const token: string | null = this.route.snapshot.queryParamMap.get('token');
     const error: string | null = this.route.snapshot.queryParamMap.get('error');

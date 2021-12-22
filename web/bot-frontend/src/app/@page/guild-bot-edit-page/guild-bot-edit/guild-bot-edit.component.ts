@@ -96,13 +96,6 @@ export class GuildBotEditComponent implements OnInit {
     }
   }
 
-  selectLogChannel(e): void {
-    console.log(e);
-    if (e && !this.selectedLogChannel) {
-      this.selectedLogChannel = this.channels[0];
-    }
-  }
-
   selectWelcomeChannel(e): void {
     if (e && !this.selectedWelcomeChannel) {
       this.selectedWelcomeChannel = this.channels[0];
