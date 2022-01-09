@@ -8,7 +8,7 @@ import utilities.db as DB
 from templates.navigate import Pages
 from utilities.checks import has_database
 
-class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_parsing": True}):
+class Settings(commands.Cog, command_attrs = {"cooldown_after_parsing": True}):
     '''Commands related to the bot setting in the server.'''
     def __init__(self, bot):
         self.bot = bot
@@ -374,4 +374,4 @@ class Server(commands.Cog, name = "Settings", command_attrs = {"cooldown_after_p
                         await DB.Guild.Role.remove_role(conn, role.guild.id, role.id)
 
 def setup(bot):
-    bot.add_cog(Server(bot))
+    bot.add_cog(Settings(bot))
