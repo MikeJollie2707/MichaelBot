@@ -1559,3 +1559,32 @@ class CustomCommand:
             WHERE guild_id = %d AND name = '%s';
         ''' % (update_str, guild_id, name), *update_arg)
 
+class BotCommands:
+    @classmethod
+    async def get_command(cls, conn, name : str):
+        query = '''
+            SELECT * FROM BotCommands
+            WHERE name = ($1);
+        '''
+
+        result = await conn.fetchrow(query, name)
+        return rec_to_dict(result)
+
+    @classmethod
+    async def add(cls, conn, name : str, aliases : typing.List[str]):
+        existed = await cls.get_command(conn, name)
+        if existed is None:
+            await insert_into(conn, "BotCommands", [
+                (name, aliases)
+            ])
+    
+    @classmethod
+    async def remove(cls, conn, name : str):
+        existed = await cls.get_command(conn, name)
+        if existed is not None:
+            query = '''
+                DELETE FROM BotCommands
+                WHERE name = ($1);
+            '''
+
+            await conn.execute(query, name)

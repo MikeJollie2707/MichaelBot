@@ -21,6 +21,15 @@ async def setup(secrets : dict):
     )
 
     async with conn.transaction():
+        print("Creating BotCommands table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS BotCommands (
+                name TEXT UNIQUE NOT NULL,
+                aliases TEXT[]
+            );
+        ''')
+        print("Done!")
+
         print("Creating DUsers table...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS DUsers (

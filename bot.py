@@ -150,6 +150,15 @@ async def main():
     for extension in sorted(__discord_extension__):
         bot.load_extension(extension)
 
+    # Add commands to database.
+    if bot.pool is not None:
+        async with bot.pool.acquire() as conn:
+            async with conn.transaction():
+                cogs = bot.cogs
+                for cog_name in cogs:
+                    for command in cogs[cog_name].walk_commands():
+                        await DB.BotCommands.add(conn, command.qualified_name, command.aliases)
+    
     try:
         await bot.start(secrets["token"])
     except Exception:
