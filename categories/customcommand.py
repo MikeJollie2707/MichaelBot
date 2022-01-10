@@ -7,6 +7,7 @@ import utilities.db as DB
 import utilities.facility as Facility
 
 from bot import MichaelBot
+from templates.navigate import listpage_generator
 
 class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"cooldown_after_parsing": True}):
     """Commands that support adding custom commands."""
