@@ -26,7 +26,7 @@ __discord_extension__ = [
     "categories.moderation",
     "categories.music",
     "categories.nsfw",
-    "categories.server",
+    "categories.settings",
     "categories.utility"
 ]
 
