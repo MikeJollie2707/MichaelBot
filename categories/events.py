@@ -100,7 +100,7 @@ class Events(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             return await ctx.trigger_typing()
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.send("Missing arguments. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
+            return await ctx.send("Missing the following required argument: %s. Please use `%shelp %s` for more information." % (f"`{error.param.name}`", ctx.prefix, ctx.command))
         elif isinstance(error, commands.BadArgument):
             if ctx.command.name != "kick" and ctx.command.name != "ban":
                 await ctx.send("Wrong argument type. Please use `%shelp %s` for more information." % (ctx.prefix, ctx.command))
@@ -119,8 +119,8 @@ class Events(commands.Cog):
         elif isinstance(error, commands.BotMissingPermissions):
             if "send_messages" in error.missing_perms:
                 return await ctx.author.send("Hey! Sorry for disturbing, but I'm missing `Send Messages` permission.")
-            missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
-            return await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
+                missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
+                return await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         elif isinstance(error, commands.NSFWChannelRequired):
             return await ctx.send("This command is NSFW! Either find a NSFW channel to use this or don't use this at all!")
         elif isinstance(error, commands.ChannelNotReadable):
@@ -130,18 +130,19 @@ class Events(commands.Cog):
             error_text = "This command raised the following exception. Please copy and report it to the developer using `report`. Thank you and sorry for this inconvenience."
             error_text += "```%s```" % error
             await ctx.send(error_text)
-            print(ERROR_SEPARATOR)
-            print("%s raised a fatal error!\n" % ctx.command.name)
-            print("Ignoring exception in command {}:".format(ctx.command), file = sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file = sys.stderr)
-            print(ERROR_SEPARATOR)
-            print("\n\n")
+            self.bot.debug(ERROR_SEPARATOR)
+            self.bot.debug("%s raised a fatal error!\n" % ctx.command.name)
+            self.bot.debug("Ignoring exception in command {}:".format(ctx.command), file = sys.stderr)
+            if self.bot.DEBUG:
+                traceback.print_exception(type(error), error, error.__traceback__, file = sys.stderr)
+            self.bot.debug(ERROR_SEPARATOR)
+            self.bot.debug("\n\n")
 
     @commands.Cog.listener("on_command_completion")
     async def _command_completion(self, ctx : commands.Context):
         if ctx.cog.qualified_name == "Dev":
-            print("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.datetime.today())))
-            print("\n\n")
+            self.bot.debug("%s used %s at %s." % (str(ctx.author), ctx.command.name, str(datetime.datetime.today())))
+            self.bot.debug("\n\n")
 
 def setup(bot : MichaelBot):
     bot.add_cog(Events(bot))
