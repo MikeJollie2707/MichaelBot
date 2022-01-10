@@ -126,7 +126,7 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
         '''
         Add a custom command to the guild.
 
-        The `input` is in the form of arguments commonly used within terminals.
+        The `arguments` is in the form of arguments commonly used within terminals.
         There are 5 arguments, one of which is required:
         - `--description`: The command's description.
         - **`--message`: This is required. The command's response.**
@@ -249,6 +249,21 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
     @commands.has_guild_permissions(manage_guild = True)
     @commands.bot_has_permissions(read_message_history = True, send_messages = True)
     async def edit(self, ctx, name, *, arguments):
+        '''
+        Edit a custom command in the guild.
+
+        The `arguments` function similarly to the `add` command with some minor differences:
+        - `--reply` will toggle the option to reply.
+        - To clear the role list, simply provide `clear` (case-sensitive). Ex: `--addroles clear`.
+        - `--message` is not required.
+
+        **Usage:** {usage}
+        **Cooldown:** 20 seconds per 1 use (guild).
+        **Example:** {prefix}{command_name} test --description Forgot to add a description.
+
+        **You need:** `Manage Server`.
+        **I need:** `Read Message History`, `Send Messages`.
+        '''
         builtin_existed = ctx.bot.get_command(name)
         if builtin_existed is not None:
             return await ctx.reply("This is a built-in bot command, not a custom command.")
