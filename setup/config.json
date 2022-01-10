@@ -1,7 +1,7 @@
 {
     "MichaelBot": {
         "name": "MichaelBot",
-        "version": "1.6.7",
+        "version": "1.6.8",
         "description": "A utility bot",
         "prefix": "$",
 
@@ -9,7 +9,7 @@
     },
     "MichaelBeta": {
         "name": "MichaelBeta",
-        "version": "1.6.7.3",
+        "version": "1.6.8",
         "description": "A testing bot for MichaelBot :)",
         "prefix": "!",
 
