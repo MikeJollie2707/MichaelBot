@@ -56,18 +56,26 @@ class CustomCommand(commands.Cog, name = "Custom Commands", command_attrs = {"co
                         # Might change to raising a command error though.
                         pass
                     
-                    if len(existed["addroles"]) > 0:
-                        addroles_list = [message.guild.get_role(role) for role in existed["addroles"]]
-                        try:
-                            await message.author.add_roles(*addroles_list)
-                        except discord.Forbidden:
-                            await message.channel.send("Failed to add roles.")
-                    if len(existed["rmvroles"]) > 0:
-                        rmvroles_list = [message.guild.get_role(role) for role in existed["rmvroles"]]
-                        try:
-                            await message.author.remove_roles(*rmvroles_list)
-                        except discord.Forbidden:
-                            await message.channel.send("Failed to remove roles.")
+                    # Simply ignore if bot doesn't have role. Might change to raising a command error though.
+                    if len(existed["addroles"]) > 0 and guild.me.guild_permissions.manage_roles:
+                        addroles_list = []
+                        for role_id in existed["addroles"]:
+                            role = message.guild.get_role(role_id)
+                            if role is not None and guild.me.top_role > role:
+                                addroles_list.append(role)
+                            else:
+                                return channel.send("The following role ID cannot be added by the bot: %d." % (role_id))
+                        # Since we filter out the possibility of discord.Forbidden, all that's left is discord.HTTPException, which I have 0 idea how to handle.
+                        await message.author.add_roles(*addroles_list)
+                    if len(existed["rmvroles"]) > 0 and guild.me.guild_permissions.manage_roles:
+                        rmvroles_list = []
+                        for role_id in existed["addroles"]:
+                            role = message.guild.get_role(role_id)
+                            if role is not None and guild.me.top_role > role:
+                                rmvroles_list.append(role)
+                            else:
+                                return channel.send("The following role ID cannot be added by the bot: %d." % (role_id))
+                        await message.author.add_roles(*rmvroles_list)
     
     @commands.group(aliases = ['ccmd', 'customcmd'], invoke_without_command = True)
     @commands.cooldown(rate = 1, per = 5.0, type = commands.BucketType.guild)
