@@ -15,7 +15,7 @@ class Pages:
     - `previous`: Return to previous page if possible.
     - `forward`: Move 1 page forward if possible.
     - `fast_forward`: Move to the last page.
-    - `terminate`: Exist the paginator.
+    - `terminate`: Exit the paginator.
     
     You can customize the emojis for each functionality in the constructor.
     To remove a functionality, override `_emoji_list` and override `_on_reaction()`.
