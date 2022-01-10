@@ -164,7 +164,7 @@ class Core(commands.Cog):
             value = textwrap.dedent('''
                     **Language:** Python
                     **Created on:** *Around Nov 13, 2019*
-                    **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/Frederikam/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
+                    **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/freyacodes/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
                     **Repo:** [Click here](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\")
                     '''), 
             inline = False
