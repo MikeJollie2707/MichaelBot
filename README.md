@@ -52,7 +52,6 @@ Alternatively, you may find what you need in the [bot documentation](https://mik
 
 - Not bug-free ie. a lot of bugs.
 - No support for multi-server yet.
-
   - By this, I mean that not all commands and features are guaranteed to work properly on multiple servers.
 
 - Uptime not 24/7.

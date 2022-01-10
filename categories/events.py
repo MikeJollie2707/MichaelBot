@@ -1,4 +1,3 @@
-from operator import add
 import discord
 from discord.ext import commands
 import humanize
@@ -6,7 +5,6 @@ import humanize
 import traceback
 import sys
 import datetime
-import typing # IntelliSense purpose only
 
 import utilities.facility as Facility
 import utilities.db as DB
@@ -27,7 +25,7 @@ class Events(commands.Cog):
                     prefix = await DB.Guild.get_prefix(conn, guild.id)
                     if prefix is None:
                         prefix = '$'
-                    self.bot._prefixes[guild.id] = prefix
+                    self.bot.prefixes[guild.id] = prefix
             
         
         print("Logged in as")
@@ -43,11 +41,11 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_disconnect(self):
-        print(f"Bot logged out on {datetime.datetime.now()}")
+        self.bot.debug(f"Bot logged out on {datetime.datetime.now()}")
 
     @commands.Cog.listener()
     async def on_resumed(self):
-        print(f"Bot reconnected on {datetime.datetime.now()}")
+        self.bot.debug(f"Bot reconnected on {datetime.datetime.now()}")
     
     @commands.Cog.listener("on_guild_join")
     async def _guild_join(self, guild):
@@ -65,7 +63,7 @@ class Events(commands.Cog):
                                     await DB.Member.insert_member(conn, member)
                                 elif member_existed is None:
                                     await DB.Member.insert_member(conn, member)
-            self.bot._prefixes[guild.id] = '$'
+                    self.bot.prefixes[guild.id] = '$'
 
 
     @commands.Cog.listener("on_message")
@@ -119,6 +117,7 @@ class Events(commands.Cog):
         elif isinstance(error, commands.BotMissingPermissions):
             if "send_messages" in error.missing_perms:
                 return await ctx.author.send("Hey! Sorry for disturbing, but I'm missing `Send Messages` permission.")
+            else:
                 missing_perms = [f"`{Facility.convert_roleperms_dpy_discord(permission)}`" for permission in error.missing_perms]
                 return await ctx.send("I'm missing the following permission(s) to execute this command: " + Facility.striplist(missing_perms))
         elif isinstance(error, commands.NSFWChannelRequired):

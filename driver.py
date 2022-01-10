@@ -1,3 +1,5 @@
+# This Python file is only used to simulate RNG for some economic features.
+
 import random
 import utilities.loot as Loot
 

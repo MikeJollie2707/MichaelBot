@@ -1,4 +1,4 @@
-# This script should only run once, and only when:
+# This script should only run once, and only when one of these are met:
 # - You have an empty database
 # - One or more tables are missing somehow
 # - There's a change in table's structure (prefer ALTER TABLE instead)

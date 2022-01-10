@@ -31,24 +31,26 @@ __discord_extension__ = [
 ]
 
 class MichaelBot(commands.Bot):
+    '''Represents MichaelBot itself. This inherits from `commands.Bot`.'''
     def __init__(self, command_prefix, help_command = commands.DefaultHelpCommand(), description = None, **kwargs):
         super().__init__(command_prefix, help_command, description, **kwargs)
 
         self.DEBUG : typing.Optional[bool] = kwargs.get("debug")
         self.version : typing.Optional[str] = kwargs.get("version")
         self.__divider__ = "----------------------------\n"
-        self._prefixes = {}
+        self.prefixes = {}
         self.usage_format = "`{prefix}{command_name} {command_signature}`"
 
         self.pool : typing.Optional[asyncpg.pool.Pool] = None
         
-    def debug(self, value : object):
+    def debug(self, value : object, end = '\n'):
         if self.DEBUG:
-            print(value)
+            print(value, end = end)
 
-def load_info(bot_name):
-    bot_info = None # A dict
-    secrets = None # A dict
+def load_info(bot_name : str):
+    '''Load the bot information in `config.json`. The argument is the bot index in that file.'''
+    bot_info : dict = None
+    secrets : dict = None
 
     try:
         with open("./setup/config.json") as fin:
@@ -72,7 +74,7 @@ def setup_logger(enable : bool = True):
         logger.addHandler(handler)
 
 def get_info():
-    bot_info = secrets = None
+    bot_info = secrets = {}
     argc = len(sys.argv)
     
     bot_info, secrets = load_info(sys.argv[1])
@@ -94,7 +96,7 @@ async def get_prefix(bot : MichaelBot, message):
     if bot.user.id == 649822097492803584:
         return '!'
     if message.guild is not None:
-        prefix = bot._prefixes[message.guild.id]
+        prefix = bot.prefixes[message.guild.id]
     if prefix is None:
         prefix = '$'
     
@@ -130,7 +132,7 @@ async def main():
     )
     
     try:
-        bot.debug("Connecting to database...")
+        bot.debug("Connecting to database...", end = '')
         bot.pool = await asyncpg.create_pool(
             dsn = secrets.get("dsn"),
             host = secrets.get("host"),
@@ -139,6 +141,7 @@ async def main():
             database = secrets.get("database"),
             password = secrets.get("password")
         )
+        bot.debug("Success.")
     except pg_exceptions.InvalidCatalogNameError:
         print("Can't seems to find the database.")
     except pg_exceptions.InvalidPasswordError:
@@ -146,9 +149,10 @@ async def main():
     except ConnectionRefusedError:
         print("Can't connect to database.")
     
-    bot.debug("Loading extensions...")
+    bot.debug("Loading extensions...", end = '')
     for extension in sorted(__discord_extension__):
         bot.load_extension(extension)
+    bot.debug("Done.")
 
     # Add commands to database.
     bot.debug("Adding extensions to database...", end = '')
