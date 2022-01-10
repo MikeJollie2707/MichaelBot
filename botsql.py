@@ -4,11 +4,10 @@
 # - There's a change in table's structure (prefer ALTER TABLE instead)
 
 import asyncpg
-import json
 import asyncio
 import sys
 
-from bot import load_info as regular_setup
+from bot import load_info
 
 async def setup(secrets : dict):
     conn = await asyncpg.connect(
@@ -24,7 +23,7 @@ async def setup(secrets : dict):
         print("Creating BotCommands table...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS BotCommands (
-                name TEXT UNIQUE NOT NULL,
+                name TEXT PRIMARY KEY,
                 aliases TEXT[]
             );
         ''')
@@ -205,5 +204,5 @@ async def setup(secrets : dict):
     await conn.close()
 
 
-bot_info, secrets = regular_setup(sys.argv[1])
+bot_info, secrets = load_info(sys.argv[1])
 asyncio.run(setup(secrets))

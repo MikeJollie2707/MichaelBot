@@ -151,6 +151,7 @@ async def main():
         bot.load_extension(extension)
 
     # Add commands to database.
+    bot.debug("Adding extensions to database...", end = '')
     if bot.pool is not None:
         async with bot.pool.acquire() as conn:
             async with conn.transaction():
@@ -158,6 +159,7 @@ async def main():
                 for cog_name in cogs:
                     for command in cogs[cog_name].walk_commands():
                         await DB.BotCommands.add(conn, command.qualified_name, command.aliases)
+    bot.debug("Done.")
     
     try:
         await bot.start(secrets["token"])
