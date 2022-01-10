@@ -108,10 +108,10 @@ Note: if you do not setup Lavalink, you need to provide `--nomusic` or `--fastde
 
 ### Run script
 
-If you don't like typing `python3 bot.py BotIndex` all the time when you want to start the bot, there's a script `startup.sh` (for Linux) and `run.ps1` (for Windows Powershell) for convenience.
+If you don't like typing `python3 bot.py BotIndex` all the time when you want to start the bot, there's a script `run.sh` (for Linux) and `run.ps1` (for Windows Powershell) for convenience.
 
-For `startup.sh`, you can edit `MICHAEL_DIR` to your current directory, and `BOT_INDEX` for the bot's index. An absolute path is needed if you plan to put the file to one of the startup application. Mark it executable, and just double click it the next time you want to run.
+For `run.sh`, you can edit `MICHAEL_DIR` to your current directory, and `BOT_INDEX` for the bot's index. Mark it executable, and just double click it the next time you want to run.
 
-- Additionally, for developing purposes, you can provide options when typing in the terminal to run the bot in the state you want. Some options are `--nomusic` (does not load Lavalink and Music cog), `--debug` (display debug information), `--fastdebug` (`--nomusic` and `--debug` because you need to wait for a long time for Lavalink to load).
+- Additionally, for developing purposes, you can provide options when typing in the terminal to run the bot in the state you want. Some options are `--nomusic` (does not load Lavalink and Music cog, which saves time and resources), `--debug` (display debug information), `--fastdebug` (`--nomusic` and `--debug` because you need to wait for a long time for Lavalink to load).
 
 For `run.ps1`, just change the `$BotIndex`, and then open Powershell, run the script using `. ".\run.ps1"`. Current no support for `cmd` because it can be written by yourself.
