@@ -1,15 +1,13 @@
 .vscode/
 venv/
 
-# Just a homemade script to start the bot on startup. Template is in startup.sh.
-# Just put the script into Autostart or wherever software you want.
+# Just a homemade script to start the bot on startup. Template is in run.sh.
 MichaelBot.sh
 MichaelBeta.sh
 
 # Nothing to see here
 note
-.style.yapf
-driver2.py
+.pylintrc
 
 # Token
 setup/bot_secret.json
@@ -25,13 +23,10 @@ discord.log
 __pycache__/
 categories/__pycache__
 categories/templates/__pycache__
-categories/utilityfun/__pycache__
+categories/utilities/__pycache__
 
 # Spammy Lavalink log
 lib/Lavalink3.3/logs
-
-# Deprecated files
-categories/utilityfun/
 
 # Website files
 docs/site/
