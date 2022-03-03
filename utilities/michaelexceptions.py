@@ -1,3 +1,0 @@
-class MichaelBotException(Exception):
-    pass
-

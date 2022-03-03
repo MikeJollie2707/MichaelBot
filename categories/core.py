@@ -1,455 +1,269 @@
-import discord
-from discord.ext import commands
+import lightbulb
+import hikari
 import humanize
 
-import datetime
-import textwrap
-import typing # IntelliSense purpose only
+import datetime as dt
+import typing as t
+from textwrap import dedent
 
-from templates.help import BigHelp, SmallHelp
-from templates.navigate import Pages
-import utilities.facility as Facility
-import utilities.db as DB
-from utilities.checks import has_database
+import utilities.helpers as helpers
+from utilities.navigator import ButtonPages
 
-from bot import MichaelBot # IntelliSense purpose only
+plugin = lightbulb.Plugin("Core", description = "General Commands", include_datastore = True)
+plugin.d.emote = helpers.get_emote(":gear:")
 
-class Core(commands.Cog):
-    """Commands related to information and bot settings."""
-    def __init__(self, bot : MichaelBot):
-        self.bot = bot
-        self.emoji = '⚙️'
-        
-        self.bot.help_command = BigHelp()
-        self.bot.help_command.cog = self
+@plugin.command()
+@lightbulb.command("changelog", "Show 10 latest changes to the bot.")
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
+async def changelog_base(ctx: lightbulb.Context):
+    '''
+    Show 10 latest changes to the bot.
+    '''
+    await changelog_stable(ctx)
 
-    async def cog_check(self, ctx : commands.Context):
-        if isinstance(ctx.channel, discord.DMChannel):
-            raise commands.NoPrivateMessage()
-        
-        return True
+@changelog_base.child
+@lightbulb.command("stable", "Show 10 latest changes to the bot.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def changelog_stable(ctx: lightbulb.Context):
+    if isinstance(ctx, lightbulb.PrefixContext):
+        await ctx.event.message.delete()
+
+    CHANNEL_ID = 644393721512722432
+    channel: hikari.GuildTextChannel = ctx.bot.cache.get_guild_channel(CHANNEL_ID)
+    if channel is None:
+        return await ctx.respond("Seems like I can't retrieve the change logs. You might wanna report this to the developers.", reply = True, mentions_reply = True)
     
-    @commands.group(invoke_without_command = True)
-    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, send_messages = True)
-    async def changelog(self, ctx : commands.Context):
-        '''
-        Show the latest 10 changes of the bot.
-
-        **Usage:** {usage}
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
-        '''
-        channel_id = 644393721512722432 # Do not change
-        channel : typing.Optional[discord.TextChannel] = self.bot.get_channel(channel_id)
-        if channel == None:
-            await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
-            return
-
-        paginator = Pages()
-
-        async for message in channel.history(limit = 10):
-            embed = Facility.get_default_embed(
-                description = message.content, 
-                color = discord.Color.green(),
-                timestamp = datetime.datetime.utcnow(),
-                author = ctx.author
-            )
-            paginator.add_page(embed)
-        
-        await paginator.start(ctx, interupt = False)
-    @changelog.command()
-    async def dev(self, ctx : commands.Context):
-        '''
-        Show the latest 10 changes of the bot *behind the scene*.
-
-        **Usage:** {usage}
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Add Reactions`, `Send Messages`.
-        '''
-        
-        channel_id = 759288597500788766
-
-        channel : typing.Optional[discord.TextChannel] = self.bot.get_channel(channel_id)
-        if channel == None:
-            await ctx.send("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
-            return
-
-        paginator = Pages()
-
-        async for message in channel.history(limit = 10):
-            embed = Facility.get_default_embed(
-                description = message.content, 
-                color = discord.Color.green(),
-                timestamp = datetime.datetime.utcnow(),
-                author = ctx.author
-            )
-            paginator.add_page(embed)
-        
-        await paginator.start(ctx, interupt = False)
-
-    @commands.command()
-    @commands.bot_has_permissions(read_message_history = True, add_reactions = True, manage_messages = True, send_messages = True)
-    async def help(self, ctx : commands.Context, *, command__category = ""):
-        '''
-        Show compact help about a command, or a category.
-        Note: command name and category name is case sensitive; `Core` is different from `core`.
-
-        **Usage:** {usage}
-        **Example 1:** {prefix}{command_name}
-        **Example 2:** {prefix}{command_name} info
-        **Example 3:** {prefix}{command_name} Core
-        **Example 4:** {prefix}{command_name} changelog dev
-                       
-        **You need:** None.
-        **I need:** `Read Message History`, `Add Reactions`, `Manage Messages`, `Send Messages`.
-        '''
-
-        help_command = SmallHelp(ctx)
-        
-        if command__category == "":
-            await help_command.send_bot_help()
-        else:
-            category = self.bot.get_cog(command__category)
-            command = self.bot.get_command(command__category)
-
-            if category != None:
-                await help_command.send_cog_help(category)
-            elif command != None:
-                await help_command.send_command_help(command)
-            else:
-                await ctx.send("Command \"%s\" not found." % command__category)
-
-    @commands.command(aliases = ["about"])
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def info(self, ctx : commands.Context):
-        '''
-        Information about the bot.
-
-        **Aliases:** `about`
-        **Usage:** {usage}
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
-
-        text = self.bot.description
-        if self.bot.version is not None:
-            text += '\n' + self.bot.version
-        
-        embed = Facility.get_default_embed(
-            author = ctx.author,
-            title = self.bot.user.name, 
-            description = self.bot.description, 
-            color = discord.Color.green(),
-            timestamp = datetime.datetime.utcnow()
-        ).add_field(
-            name = "Version:",
-            value = self.bot.version if self.bot.version is not None else "1.5.0",
-            inline = False
-        ).add_field(
-            name  = "Team:", 
-            value = textwrap.dedent('''
-                    **Original Owner + Tester:** <@462726152377860109>
-                    **Developer:** <@472832990012243969>
-                    **Web Dev (?):** *Hidden*
-                    '''), 
-            inline = False
-        ).add_field(
-            name  = "Bot info:", 
-            value = textwrap.dedent('''
-                    **Language:** Python
-                    **Created on:** *Around Nov 13, 2019*
-                    **Library:** [discord.py](https://github.com/Rapptz/discord.py), [Lavalink](https://github.com/freyacodes/Lavalink), [WaveLink](https://github.com/PythonistaGuild/Wavelink)
-                    **Repo:** [Click here](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\")
-                    '''), 
-            inline = False
-        ).set_author(
-            name = ctx.author.name, 
-            icon_url = ctx.author.avatar_url
-        ).set_thumbnail(
-            url = self.bot.user.avatar_url
-        )
-
-        current_time = datetime.datetime.utcnow()
-        up_time = current_time - self.bot.online_at
-        #days = up_time.days
-        #hours = int(up_time.seconds / 3600) # We gotta round here, or else minutes will always be 0.
-        #minutes = (up_time.seconds / 60) - (hours * 60) # Hour = second / 3600, minute = second / 60 (true minute without converting to hour) - hour * 60 (convert hour to minute) = remain minute
-
-        embed.add_field(
-            name  = "Host Device:",
-            value = textwrap.dedent('''
-                    **Processor:** Intel Core i5-4690S CPU @ 3.20GHz x 4
-                    **Memory:** 15.5 GiB of RAM
-                    **Bot Uptime:** %s
-                    ''' % humanize.precisedelta(up_time, "minutes", format = "%0.0f")
-                ),
-            inline = False
-        )
-
-        await ctx.reply(embed = embed, mention_author = False)
-
-    @commands.command()
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def note(self, ctx):
-        '''
-        Provide syntax convention in `help` and `help-all`.
-
-        **Usage:** {usage}
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
-
-        embed = Facility.get_default_embed(
-            title = "MichaelBot",
-            url = "https://mikejollie2707.github.io/MichaelBot",
-            description = "Check out the bot documentation's front page: <https://mikejollie2707.github.io/MichaelBot>",
-            timestamp = datetime.datetime.utcnow(),
+    embeds = []
+    async for message in channel.fetch_history().limit(10):
+        embeds.append(helpers.get_default_embed(
+            description = message.content,
+            timestamp = dt.datetime.now().astimezone(),
             author = ctx.author
-        )
+        ))
+    pages = ButtonPages(embeds)
+    await pages.run(ctx)
 
-        await ctx.reply(embed = embed, mention_author = False)
+@changelog_base.child
+@lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def changelog_dev(ctx: lightbulb.Context):
+    if isinstance(ctx, lightbulb.PrefixContext):
+        await ctx.event.message.delete()
 
-    @commands.command()
-    @commands.check(has_database)
-    @commands.has_guild_permissions(manage_guild = True)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 10.0, type = commands.BucketType.guild)
-    async def prefix(self, ctx : commands.Context, new_prefix : str = None):
-        '''
-        View and set the prefix for the bot.
+    CHANNEL_ID = 759288597500788766
+    channel: hikari.GuildTextChannel = ctx.bot.cache.get_guild_channel(CHANNEL_ID)
+    if channel is None:
+        return await ctx.respond("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
+    
+    embeds = []
+    async for message in channel.fetch_history().limit(10):
+        embeds.append(helpers.get_default_embed(
+            description = message.content,
+            timestamp = dt.datetime.now().astimezone(),
+            author = ctx.author
+        ))
+    pages = ButtonPages(embeds)
+    await pages.run(ctx)
 
-        **Usage:** {usage}
-        **Cooldown:** 10 seconds per 1 use (guild).
-        **Example 1:** {prefix}{command_name}
-        **Example 2:** {prefix}{command_name} %
-        
-        **You need:** `Manage Server`.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
+@plugin.command()
+@lightbulb.command("info", "Information about the bot.", aliases = ["about"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def info(ctx: lightbulb.Context):
+    embed = helpers.get_default_embed(
+        title = ctx.bot.get_me().username,
+        description = ctx.bot.d.description,
+        timestamp = dt.datetime.now().astimezone()
+    ).add_field(
+        name = "Version:",
+        value = ctx.bot.d.version,
+        inline = False
+    ).add_field(
+        name = "Team:",
+        value = dedent('''
+                **Original Owner + Tester:** <@462726152377860109>
+                **Developer:** <@472832990012243969>
+                **Web Dev (?):** *Hidden*
+                '''),
+        inline = False
+    ).add_field(
+        name = "Bot Info:",
+        value = dedent('''
+                **Language:** Python
+                **Created on:** Jan 10, 2022 (originally Nov 13, 2019)
+                **Library:** [hikari](https://github.com/hikari-py/hikari), [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb), [Lavalink](https://github.com/freyacodes/Lavalink), [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
+                **Source:** [GitHub](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\")
+                '''),
+        inline = False
+    ).set_thumbnail(ctx.bot.get_me().avatar_url)
 
-        if new_prefix is None:
-            bot_prefix = self.bot.prefixes[ctx.guild.id]
-            await ctx.reply("Current prefix: " + bot_prefix, mention_author = False)
-        else:
-            async with self.bot.pool.acquire() as conn:
-                async with conn.transaction():
-                    await DB.Guild.update_prefix(conn, ctx.guild.id, new_prefix)
-                    self.bot.prefixes[ctx.guild.id] = new_prefix
-                    # Confirmation
-                    bot_prefix = await DB.Guild.get_prefix(conn, ctx.guild.id)
-                    await ctx.reply("Changed prefix to " + bot_prefix + " for guild ID " + str(ctx.guild.id), mention_author = False)
+    up_time = dt.datetime.now().astimezone() - ctx.bot.d.online_at
+    embed.add_field(
+        name = "Host Info:",
+        value = dedent(f'''
+                **Processor:** Intel Core i3-10100 CPU @ 3.60GHz x 8
+                **Memory:** 15.6 GiB of RAM
+                **Bot Uptime:** {humanize.precisedelta(up_time, "minutes", format = "%0.0f")}
+                '''),
+        inline = False
+    )
 
-    @commands.command()
-    @commands.check(has_database)
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def profile(self, ctx : commands.Context, member : discord.Member = None):
-        '''
-        Information about yourself or another __member__.
+    await ctx.respond(embed = embed, reply = True)
 
-        **Usage:** {usage}
-        **Example 1:** {prefix}{command_name} MikeJollie
-        **Example 2:** {prefix}{command_name}
+@plugin.command()
+@lightbulb.option("member", "A Discord Member.", type = hikari.Member, default = None)
+@lightbulb.command("profile", "Information about yourself or another member.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def profile(ctx: lightbulb.Context):
+    member: hikari.Member = ctx.options.member
 
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
+    if member is None:
+        # ctx.author returns a User instead of a Member.
+        member = ctx.member
+    
+    embed = helpers.get_default_embed(
+        timestamp = dt.datetime.now().astimezone(),
+        author = member
+    ).set_author(
+        name = member.username,
+        icon = member.avatar_url
+    ).add_field(
+        name = "Username:",
+        value = member.username,
+        inline = True
+    ).add_field(
+        name = "Nickname:",
+        value = member.nickname if member.nickname is not None else member.username,
+        inline = True
+    ).add_field(
+        name = "Avatar URL:",
+        value = f"[Click here]({member.avatar_url})",
+        inline = True
+    ).set_thumbnail(
+        member.avatar_url
+    )
 
-        member = ctx.author if member is None else member
+    account_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.created_at, format = '%0.0f')
+    embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
+    member_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.joined_at, format = '%0.0f')
+    embed.add_field(name = f"Joined {ctx.get_guild().name} for:", value = member_age, inline = False)
 
-        embed = Facility.get_default_embed(
-            author = ctx.author,
-            color = discord.Color.green(),
-            timestamp = datetime.datetime.utcnow()
+    roles = [helpers.mention(role) for role in member.get_roles()]
+    s = " - "
+    s = s.join(roles)
+    embed.add_field(name = "Roles:", value = s, inline = False)
+
+    await ctx.respond(embed, reply = True)
+
+@plugin.command()
+@lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.")
+@lightbulb.command("report", "Report a bug or suggest a feature for the bot. Please be constructive.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def report(ctx: lightbulb.Context):
+    report_type = ctx.options.type
+    reason = ctx.options.reason
+
+    REPORT_CHANNEL = 644339079164723201
+    if report_type.upper() == "BUG" or report_type.upper() == "SUGGEST":
+        embed = helpers.get_default_embed(
+            title = report_type.capitalize(),
+            description = reason,
+            timestamp = dt.datetime.now().astimezone()
         ).set_author(
-            name = member.name,
-            icon_url = member.avatar_url
-        ).add_field(
-            name = "Username:", 
-            value = member.name,
-            inline = True
-        ).add_field(
-            name = "Nickname:", 
-            value = member.nick if member.nick != None else member.name,
-            inline = True
-        ).add_field(
-            name = "Avatar URL:", 
-            value = "[Click here](%s)" % member.avatar_url,
-            inline = True
-        ).set_thumbnail(
-            url = member.avatar_url
-        )
-
-        account_age = humanize.precisedelta(datetime.datetime.utcnow() - member.created_at, format = '%0.0f')
-        embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
-
-        member_age = humanize.precisedelta(datetime.datetime.utcnow() - member.joined_at, format = '%0.0f')
-        embed.add_field(name = "Joined %s for:" % member.guild.name, value = member_age, inline = False)
-
-        text = ""
-        async with self.bot.pool.acquire() as conn:
-            badges = await DB.User.UserBadges.get_badges(conn, member.id)
-            if badges == [None] * len(badges):
-                text = "*None*"
-            else:
-                # Get last five, reverse it.
-                badges = badges[-5:][::-1]
-                for badge in badges:
-                    text += badge["emoji"] + ' '
-        embed.add_field(name = "Top 5 Badges:", value = text, inline = False)
-
-        text = ""
-        async with self.bot.pool.acquire() as conn:
-            current = await DB.User.ActiveTools.get_tools(conn, member.id)
-            if current == [None] * len(current):
-                text = "*None*"
-            else:
-                for tool in current:
-                    text += tool["emoji"] + ' '
-            
-        embed.add_field(name = "Current Equipments:", value = text, inline = False)
-        role_list = [Facility.mention(role) for role in member.roles[::-1]]
-        s = " - "
-        s = s.join(role_list)
-
-        embed.add_field(name = "Roles:", value = s, inline = False)
-
-        await ctx.reply(embed = embed, mention_author = False)
-
-    @commands.command()
-    @commands.bot_has_permissions(manage_messages = True, send_messages = True)
-    @commands.cooldown(rate = 1, per = 30.0, type = commands.BucketType.user)
-    async def report(self, ctx : commands.Context, report__suggest : str, *, content : str):
-        '''
-        Report a bug or suggest a feature for the bot.
-        Provide constructive reports and suggestions are appreciated.
-
-        **Usage:** {usage}
-        **Cooldown:** 30 seconds per use (user).
-        **Example 1:** {prefix}{command_name} report This command has a bug.
-        **Example 2:** {prefix}{command_name} suggest This command should be improved.
-
-        **You need:** None.
-        **I need:** `Manage Messages`, `Send Messages`.
-        '''
-
-        report_chan = 644339079164723201 # Do not change
-        channel : typing.Optional[discord.TextChannel] = self.bot.get_channel(report_chan)
-        if channel == None:
-            channel = await self.bot.fetch_channel(report_chan)
-            if channel == None:
-                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
-                raise RuntimeError("Cannot find report channel.")
-        
-        flag = report__suggest
-        if (flag.upper() == "REPORT") or (flag.upper() == "SUGGEST"):
-            msg = ' '
-            msg = msg.join(content.split())
-
-            embed = Facility.get_default_embed(
-                title = flag.capitalize(), 
-                description = msg, 
-                color = discord.Color.green(),
-                timestamp = datetime.datetime.utcnow()
-            )
-            embed.set_author(
-                name = ctx.author.name, 
-                icon_url = ctx.author.avatar_url
-            )
-            embed.add_field(
-                name = "Sender ID:",
-                value = ctx.author.id,
-                inline = False
-            )
-
-            try:
-                await channel.send(embed = embed)
-            except discord.Forbidden as forbidden:
-                await ctx.send("I can't seems to do this command right now. Join the [support server](https://discordapp.com/jeMeyNw) with this new error message and ping the Developer to inform them.")
-                raise forbidden
-            else:
-                await ctx.message.delete()
-                await ctx.send("Your opinion has been sent.", delete_after = 5)
-        else:
-            await ctx.send("Incorrect argument. First argument should be either `suggest` or `report`.")
-
-    @commands.command(aliases = ["server-info"])
-    @commands.bot_has_permissions(read_message_history = True, send_messages = True)
-    async def serverinfo(self, ctx : commands.Context):
-        '''
-        Information about the server that invoke this command.
-
-        **Aliases:** `server-info`
-        **Usage:** {usage}
-        **Example:** {prefix}{command_name}
-
-        **You need:** None.
-        **I need:** `Read Message History`, `Send Messages`.
-        '''
-
-        guild : discord.Guild = ctx.guild
-        embed = Facility.get_default_embed(
-            description = "Information about this server.", 
-            color = discord.Color.green(),
-            timestamp = datetime.datetime.utcnow()
-        )
-        embed.set_thumbnail(url = guild.icon_url)
-
-        embed.add_field(
-            name = "Name", 
-            value = guild.name
-        )
-        embed.add_field(
-            name = "Created on", 
-            value = guild.created_at.strftime("%b %d %Y")
-        )
-        embed.add_field(
-            name = "Owner", 
-            value = str(guild.owner)
-        )
-        embed.add_field(
-            name = "Roles", 
-            value = str(len(guild.roles)) + " roles."
-        )
-        embed.add_field(
-            name = "Channels", 
-            value = textwrap.dedent('''
-                    Text channels: %d
-                    Voice channels: %d
-                    ''' % (len(guild.text_channels), len(guild.voice_channels))
-            )
-        )
-        
-        online = 0
-        bot = 0
-        guild_size = 0
-        for member in guild.members:
-            if member.status != discord.Status.offline:
-                online += 1
-            if member.bot:
-                bot += 1
-            guild_size += 1
-        
-        embed.add_field(
-            name = "Members", 
-            value = '''
-                    %d members,
-                    %d online,
-                    %d bots,
-                    %d humans.
-                    ''' % (guild_size, online, bot, guild_size - bot)
+            name = ctx.author.username,
+            icon = ctx.author.avatar_url
         ).set_footer(
-            text = "Server ID: %s" % str(guild.id)
+            text = f"Sender ID: {ctx.author.id}"
         )
 
-        await ctx.reply(embed = embed, mention_author = False)
-        
-def setup(bot : MichaelBot):
-    bot.add_cog(Core(bot))
+        try:
+            await ctx.bot.rest.create_message(REPORT_CHANNEL, embed = embed)
+            await ctx.respond("Report sent successfully! Thank you.", reply = True)
+        except hikari.ForbiddenError:
+            await ctx.respond("I can't send the report for some reasons. Join the support server and notify them about this, along with whatever you're trying to send.", reply = True, mentions_reply = True)
+    else:
+        await ctx.respond("`type` argument must be either `bug` or `suggest`.", reply = True, mentions_reply = True)
+
+@plugin.command()
+@lightbulb.command("serverinfo", "Information about this server.", aliases = ["server-info"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def serverinfo(ctx: lightbulb.Context):
+    guild = ctx.get_guild()
+    embed = helpers.get_default_embed(
+        description = "**Information about this server.**",
+        timestamp = dt.datetime.now().astimezone()
+    ).set_thumbnail(guild.icon_url).set_author(name = guild.name, icon = guild.icon_url)
+
+    embed.add_field(
+        name = "Name",
+        value = guild.name,
+        inline = True
+    ).add_field(
+        name = "Created On",
+        value = guild.created_at.strftime("%b %d %Y"),
+        inline = True
+    ).add_field(
+        name = "Owner",
+        value = (await guild.fetch_owner()).mention,
+        inline = True
+    ).add_field(
+        name = "Roles",
+        value = str(len(guild.get_roles())) + " roles.",
+        inline = True
+    )
+
+    guild_channel_count = {
+        "text": 0,
+        "voice": 0,
+        "stage": 0,
+        "category": 0,
+        "news": 0,
+    }
+    channels = guild.get_channels()
+    for channel_id in channels:
+        if channels[channel_id].type == hikari.ChannelType.GUILD_TEXT:
+            guild_channel_count["text"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_VOICE:
+            guild_channel_count["voice"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_STAGE:
+            guild_channel_count["stage"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_CATEGORY:
+            guild_channel_count["category"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_NEWS:
+            guild_channel_count["news"] += 1
+    embed.add_field(
+        name = "Channels",
+        value = dedent(f'''
+                Text Channels: {guild_channel_count["text"]}
+                Voice Channels: {guild_channel_count["voice"]}
+                Categories: {guild_channel_count["category"]}
+                Stage Channels: {guild_channel_count["stage"]}
+                News Channels: {guild_channel_count["news"]}
+                '''),
+        inline = True
+    )
+
+    bot_count = 0
+    members = guild.get_members()
+    for member_id in members:
+        if members[member_id].is_bot:
+            bot_count += 1
+    
+    embed.add_field(
+        name = "Members Count",
+        value = dedent(f'''
+                Total: {len(members)}
+                Humans: {len(members) - bot_count}
+                Bots: {bot_count}
+                '''),
+        inline = True
+    )
+
+    embed.set_footer(f"Server ID: {guild.id}")
+
+    await ctx.respond(embed = embed, reply = True)
+
+def load(bot):
+    bot.add_plugin(plugin)
+def unload(bot):
+    bot.remove_plugin(plugin)

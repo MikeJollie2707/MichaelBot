@@ -1,32 +1,17 @@
-.vscode/
-venv/
+*
+!categories/
+!events/
+!utilities/
 
-# Just a homemade script to start the bot on startup. Template is in run.sh.
-MichaelBot.sh
-MichaelBeta.sh
+!lib/Lavalink/
+!setup/config.json
 
-# Nothing to see here
-note
-.pylintrc
+!main.py
+!README.md
+!requirement.txt
 
-# Token
-setup/bot_secret.json
-setup/beta_secret.json
+categories/__pycache__/
+utilities/__pycache__/
+events/__pycache__/
 
-# Database info
-setup/michaeldb.json
-
-# Spammy debug log
-discord.log
-
-# __pycaches__
-__pycache__/
-categories/__pycache__
-categories/templates/__pycache__
-categories/utilities/__pycache__
-
-# Spammy Lavalink log
-lib/Lavalink3.3/logs
-
-# Website files
-docs/site/
+lib/Lavalink/logs/
