@@ -1,17 +1,14 @@
-*
-!categories/
-!events/
-!utilities/
+venv/
 
-!lib/Lavalink/
+setup/*
 !setup/config.json
-
-!main.py
-!README.md
-!requirement.txt
 
 categories/__pycache__/
 utilities/__pycache__/
 events/__pycache__/
 
 lib/Lavalink/logs/
+
+.pylintrc
+MichaelBeta.sh
+MichaelBot.sh

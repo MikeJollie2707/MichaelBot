@@ -40,6 +40,8 @@ def main():
     if argc > 2:
         if sys.argv[2] == "--debug":
             bot_info["debug"] = True
+        else:
+            bot_info["debug"] = False
     
     bot = lightbulb.BotApp(
         token = secrets["token"], 

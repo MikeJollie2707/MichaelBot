@@ -1,15 +1,52 @@
-# MichaelHikari
+# MichaelBot
 
-MichaelHikari is an experimental repository for [MichaelBot](https://github.com/MikeJollie2707/MichaelBot). Because the development for [discord.py](https://gist.github.com/Rapptz/4a2f62751b9600a31a0d3c78100287f1) stopped a while ago, and even now, I still yet to find a reliable or "good" discord.py forks for my bot. As such, this repository is created to experiment with a new library, [Hikari](https://github.com/hikari-py/hikari), instead.
+## What's this?
 
-Hikari provides a very new interface to work with. With a huge documentation and very few basic examples, it's hard to get into. Luckily, the command wrapper for Hikari, [lightbulb](https://github.com/tandemdude/hikari-lightbulb), is extremely similar to discord.ext.commands, so it's an easy place to pick up. The other one, [tanjun](https://github.com/FasterSpeeding/Tanjun), is fairly complicated, so I won't be using it.
+This is a utility Discord Bot written in Python using `hikari`, `hikari-lightbulb`, and other libraries. This bot exists because I think it's a fun project.
 
-## What's New?
+The bot existed before using `discord.py`, but the library discontinued, so I'm working on rewriting the entire thing with `hikari`. Many important features will be missing in the mean time.
 
-Since it's experimental, there won't be any huge commands like economy or moderation. Those requires a database, and porting those over to the new code is too time consuming. As a trade-off, this repository is using application command, which is the official Discord's implementation of command.
+## Features
 
-This system is pretty complicated, with many things to learn like interactions, components, etc. Really weird, but they're pretty helpful.
+- Basic Information
+- Interactive Help Menu
+- Fun Commands
+- Utility Commands
+- Report and Suggest Features
+- Music
 
-## How to Run
+More features will be added as I work on to restore the bot to its glory.
 
-The structure should be similar to the old bot, so get rid of some flags and the launch script should be good to go.
+## Limitations
+
+- Expect a lot of bugs.
+- Uptime not 24/7.
+
+## Libraries
+
+These are the libraries I used. All of these can be installed with `requirement.txt`.
+
+- [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb)
+- [Lavalink](https://github.com/freyacodes/Lavalink) & [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
+- [emoji](https://github.com/carpedm20/emoji/)
+- [humanize](https://github.com/jmoiron/humanize)
+- [pytimeparse](https://github.com/wroberts/pytimeparse)
+- [uvloop](https://github.com/MagicStack/uvloop)
+- pylint
+
+Detail instructions available [here]().
+
+## License
+
+This project is under the [MIT LICENSE](LICENSE).
+
+## Resources
+
+These are the resources I used for the bot.
+
+- [hikari Documentation](https://www.hikari-py.dev/hikari/index.html) (a bit hard to follow)
+- [lightbulb Documentation](https://hikari-lightbulb.readthedocs.io/en/latest/index.html) (very useful place to start)
+- [lavaplayer Documentation](https://lavaplayer.readthedocs.io/en/latest/)
+- [XJ9 Bot](https://github.com/kamfretoz/XJ9) (inspiration for `error_handler.py` and a few others)
+- [kangakari Bot](https://github.com/IkBenOlie5/Kangakari) (inspiration for a few parts)
+- [hikari support server](https://discord.gg/Jx4cNGG) (really chill)
