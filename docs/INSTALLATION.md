@@ -58,7 +58,6 @@ Within `./setup`, there's also another file called `config.json`. The file has t
 // config.json
 {
     "BotIndex": {
-        "name": "Optional, pure decoration",
         "version": "Required",
         "description": "Required",
         "prefix": "Required",
