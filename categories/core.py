@@ -122,7 +122,7 @@ async def profile(ctx: lightbulb.Context):
     
     embed = helpers.get_default_embed(
         timestamp = dt.datetime.now().astimezone(),
-        author = member
+        author = ctx.author
     ).set_author(
         name = member.username,
         icon = member.avatar_url
