@@ -24,7 +24,7 @@ async def changelog_base(ctx: lightbulb.Context):
     await changelog_stable(ctx)
 
 @changelog_base.child
-@lightbulb.command("stable", "Show 10 latest changes to the bot.")
+@lightbulb.command("stable", "Show 10 latest changes to the bot.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def changelog_stable(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
@@ -46,7 +46,7 @@ async def changelog_stable(ctx: lightbulb.Context):
     await pages.run(ctx)
 
 @changelog_base.child
-@lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.")
+@lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def changelog_dev(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
