@@ -13,14 +13,14 @@ plugin.add_checks(checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*
 @plugin.command()
 @lightbulb.command("dice", "Roll a 6-face dice for you.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def dice(ctx : lightbulb.Context):
+async def dice(ctx: lightbulb.Context):
     await ctx.respond("It's %d :game_die:" % (random.randint(1, 6)), reply = True)
 
 @plugin.command()
 @lightbulb.option("content", "The string to repeat.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("echo", "Echo echo echo echo.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def echo(ctx : lightbulb.Context):
+async def echo(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
     await ctx.respond(ctx.options.content)
@@ -30,7 +30,7 @@ async def echo(ctx : lightbulb.Context):
 @lightbulb.option("measure_unit", "The unit to measure")
 @lightbulb.command("how", "An ultimate measurement to measure everything except gayness.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def how(ctx : lightbulb.Context):
+async def how(ctx: lightbulb.Context):
     measure_unit = ctx.options.measure_unit
     target = ctx.options.target
 
@@ -41,7 +41,7 @@ async def how(ctx : lightbulb.Context):
 @lightbulb.option("target", "The target to measure.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("howgay", "An ultimate measurement of gayness.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def howgay(ctx : lightbulb.Context):
+async def howgay(ctx: lightbulb.Context):
     target = ctx.options.target
 
     percent_gay = 0
@@ -59,7 +59,7 @@ async def howgay(ctx : lightbulb.Context):
 @plugin.command()
 @lightbulb.command("ping", "Checks the bot if it's alive")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def ping(ctx : lightbulb.Context):
+async def ping(ctx: lightbulb.Context):
     latency = ctx.bot.heartbeat_latency
     await ctx.respond(f"{ctx.author.mention} Pong! :ping_pong: {format(latency * 1000, '.2f')}ms.", reply = True)
 
@@ -67,7 +67,7 @@ async def ping(ctx : lightbulb.Context):
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("speak", "Speak the message.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def speak(ctx : lightbulb.Context):
+async def speak(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
     await ctx.respond(ctx.options.content, tts = True)
