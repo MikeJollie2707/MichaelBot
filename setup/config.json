@@ -1,13 +1,13 @@
 {
     "MichaelBot": {
-        "version": "0.0.1.1",
+        "version": "0.0.2",
         "description": "A utility bot",
         "prefix": "$",
 
         "secret": "bot_secret.json"
     },
     "MichaelBeta": {
-        "version": "0.0.1.1",
+        "version": "0.0.2",
         "description": "A testing bot for MichaelBot :)",
         "prefix": "!",
 
