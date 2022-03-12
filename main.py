@@ -22,8 +22,8 @@ def load_info(bot_name: str):
     Parameter:
     - `bot_name`: Bot index as indicated in `config.json`.
     '''
-    bot_info : dict = None
-    secrets : dict = None
+    bot_info: dict = None
+    secrets: dict = None
 
     with open("./setup/config.json", encoding = "utf-8") as fin:
         bot_info = json.load(fin)[bot_name]
@@ -33,7 +33,7 @@ def load_info(bot_name: str):
     
     return (bot_info, secrets)
 
-def main():
+def create_bot() -> lightbulb.BotApp:
     argc = len(sys.argv)
 
     bot_info, secrets = load_info(sys.argv[1])
@@ -47,9 +47,11 @@ def main():
         prefix = lightbulb.when_mentioned_or(bot_info["prefix"]),
         intents = hikari.Intents.ALL ^ hikari.Intents.GUILD_PRESENCES,
     )
-    bot.d.version = bot_info["version"]
-    bot.d.description = bot_info["description"]
-    bot.d.debug = bot_info["debug"]
+    
+    bot.d.bot_info = bot_info
+    bot.d.__secrets__ = secrets
+    bot.d.pool = None
+    bot.d.prefixes = {}
     # Whitelist MichaelBot and Bruh server for early testing.
     if bot_info["debug"]:
         bot.default_enabled_guilds = [644336990698995712, 705270581184167987, 868449475323101224]
@@ -57,11 +59,12 @@ def main():
     for extension in sorted(__discord_extensions__):
         bot.load_extensions(extension)
     
-    bot.run()
+    return bot
 
 if __name__ == "__main__":
     if os.name != "nt":
         import uvloop
         uvloop.install()
     
-    main()
+    bot = create_bot()
+    bot.run()
