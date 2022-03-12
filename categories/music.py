@@ -5,11 +5,13 @@ import lavaplayer
 import datetime as dt
 
 import utilities.helpers as helpers
+import utilities.checks as checks
 from utilities.converters import IntervalConverter
 from utilities.navigator import ButtonPages
 
 plugin = lightbulb.Plugin("Music", description = "Music Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":musical_note:")
+plugin.add_checks(checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 lavalink = lavaplayer.LavalinkClient(
     host = "0.0.0.0",  # Lavalink host

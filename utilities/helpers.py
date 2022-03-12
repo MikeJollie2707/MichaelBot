@@ -64,6 +64,12 @@ __PERMISSIONS_MAPPING__ = {
 CONSUME_REST_OPTION = lightbulb.OptionModifier.CONSUME_REST
 GREEDY_OPTION = lightbulb.OptionModifier.GREEDY
 
+# Read Messages is too standard so we don't include it.
+COMMAND_STANDARD_PERMISSIONS = [
+    hikari.Permissions.SEND_MESSAGES,
+    hikari.Permissions.READ_MESSAGE_HISTORY,
+]
+
 # Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
 class DefaultColor:
     '''

@@ -4,9 +4,11 @@ import hikari
 import random
 
 import utilities.helpers as helpers
+import utilities.checks as checks
 
 plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":grin:")
+plugin.add_checks(checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
 @lightbulb.command("dice", "Roll a 6-face dice for you.")

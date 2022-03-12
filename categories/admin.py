@@ -2,25 +2,12 @@ import lightbulb
 import hikari
 
 import utilities.helpers as helpers
+import utilities.checks as checks
 from utilities.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":computer:")
-
-plugin.add_checks(is_dev)
-
-@plugin.set_error_handler()
-async def on_plugin_error(event: lightbulb.CommandErrorEvent) -> bool:
-    exception = event.exception.__cause__ or event.exception
-
-    if isinstance(exception, lightbulb.BotMissingRequiredPermission):
-        pass
-    elif isinstance(exception, lightbulb.MissingRequiredPermission):
-        pass
-    elif isinstance(exception, lightbulb.CheckFailure):
-        exception.message = "`Author must be a MichaelBot developer`"
-    
-    return False
+plugin.add_checks(is_dev, checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
 @lightbulb.option("extension", "The extension to reload.")

@@ -7,10 +7,12 @@ import typing as t
 from textwrap import dedent
 
 import utilities.helpers as helpers
+import utilities.checks as checks
 from utilities.navigator import ButtonPages
 
 plugin = lightbulb.Plugin("Core", description = "General Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":gear:")
+plugin.add_checks(checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
 @lightbulb.command("changelog", "Show 10 latest changes to the bot.")
