@@ -7,14 +7,16 @@ import hikari
 import datetime as dt
 
 import utilities.helpers as helpers
+import utilities.errors as errors
 
 __error_responses__ = {
     "CommandNotFound": "Command `{}` cannot be found.",
     "CommandIsOnCooldown": "Chill out! `{}` seconds left.",
-    "BotMissingRequiredPermission": "Bot is missing the following permissions: {}. These needs to be *explicitly* enabled.",
-    "MissingRequiredPermission": "You're missing the following permissions: {}. These needs to be *explicitly* enabled.",
+    "BotMissingRequiredPermission": "Bot is missing the following permissions: {}.",
+    "MissingRequiredPermission": "You're missing the following permissions: {}.",
     "MissingRequiredRole": "You're missing the following roles: {}.",
     "NSFWChannelOnly": "Hey! Go to your horny channel to use this command!",
+    "GuildBlacklisted": "Uh oh, your server is blacklisted by the bot developers. This means you can't use any of my features. You can appeal by joining my support server.",
     "CheckFailure": "Command `{}` does not satisfy the following requirement: {}.",
     "ConverterFailure": "The following option cannot be converted properly: {}.",
     "NotEnoughArguments": "You're missing the following arguments: {}.",
@@ -41,13 +43,18 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
     elif isinstance(exception, lightbulb.errors.BotMissingRequiredPermission):
         if not exception.missing_perms & hikari.Permissions.SEND_MESSAGES:
             await send_error_message("BotMissingRequiredPermission", event, helpers.striplist(helpers.get_friendly_permissions(exception.missing_perms)))
+        else:
+            print("Failed")
     elif isinstance(exception, lightbulb.errors.MissingRequiredPermission):
         await send_error_message("MissingRequiredPermission", event, helpers.striplist(helpers.get_friendly_permissions(exception.missing_perms)))
     elif isinstance(exception, lightbulb.errors.MissingRequiredRole):
         pass
     elif isinstance(exception, lightbulb.errors.NSFWChannelOnly):
         await send_error_message("NSFWChannelOnly", event)
-    # Usually this would be custom check fails.
+    elif isinstance(exception, errors.GuildBlacklisted):
+        await send_error_message("GuildBlacklisted", event)
+    elif isinstance(exception, errors.CustomCheckFailed):
+        await send_error_message("CheckFailure", event, event.context.command.name, exception.args[0])
     elif isinstance(exception, lightbulb.errors.CheckFailure):
         await send_error_message("CheckFailure", event, event.context.command.name, exception.message)
     elif isinstance(exception, lightbulb.errors.ConverterFailure):
