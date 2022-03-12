@@ -4,6 +4,7 @@ venv/
 setup/*
 !setup/config.json
 
+__pycache__/
 categories/__pycache__/
 utilities/__pycache__/
 events/__pycache__/
