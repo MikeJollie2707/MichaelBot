@@ -5,6 +5,8 @@ import sys
 import json
 import os
 
+import utilities.psql as psql
+
 __discord_extensions__ = [
     "categories.admin",
     "categories.core",
@@ -14,6 +16,18 @@ __discord_extensions__ = [
     "events.error_handler",
     "events.misc_events"
 ]
+
+async def retrieve_prefix(bot: lightbulb.BotApp, message: hikari.Message):
+    async with bot.d.pool.acquire() as conn:
+        # Force return.
+        if bot.get_me().id == 649822097492803584:
+            return '!'
+        
+        guild = await psql.guilds.get_one(conn, message.guild_id)
+        if guild is not None:
+            return guild["prefix"]
+        else:
+            return bot.d.bot_info["prefix"]
 
 def load_info(bot_name: str):
     '''
@@ -44,7 +58,7 @@ def create_bot() -> lightbulb.BotApp:
     
     bot = lightbulb.BotApp(
         token = secrets["token"], 
-        prefix = lightbulb.when_mentioned_or(bot_info["prefix"]),
+        prefix = lightbulb.when_mentioned_or(retrieve_prefix),
         intents = hikari.Intents.ALL ^ hikari.Intents.GUILD_PRESENCES,
     )
     
