@@ -37,7 +37,8 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
     exception = event.exception.__cause__ or event.exception
 
     if isinstance(exception, lightbulb.errors.CommandNotFound):
-        await send_error_message("CommandNotFound", event, exception.invoked_with)
+        #await send_error_message("CommandNotFound", event, exception.invoked_with)
+        await event.bot.rest.trigger_typing(event.context.channel_id)
     elif isinstance(exception, lightbulb.errors.CommandIsOnCooldown):
         await send_error_message("CommandIsOnCooldown", event, exception.retry_after)
     elif isinstance(exception, lightbulb.errors.BotMissingRequiredPermission):
