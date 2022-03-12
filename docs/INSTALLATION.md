@@ -4,7 +4,7 @@ The instructions are geared towards Ubuntu (Kubuntu specifically) because that's
 
 ## Prerequisites
 
-- Requires: Python 3.8+ (ideally latest), Git, `pip` and `virtualenv` OR `python3-venv` under Python. All of these can be installed using Google.
+- Requires: Python 3.8+ (ideally latest), Git, `pip`, `virtualenv` OR `python3-venv` under Python, PostgreSQL (detailed instructions below). All of these can be installed using Google.
 - Optional: Lavalink (detailed instructions below), Docker.
 
 ## About Lavalink
@@ -24,6 +24,10 @@ There are 2 options to host Lavalink: you can host it directly using the `.jar` 
 - Run `docker pull fredboat/lavalink:master`. This will pull the stable image.
 - Run `docker run --name <name> -p <port>:<port> -d -v <path-to-application.yml>:/opt/Lavalink/application.yml fredboat/lavalink:master`, where `<name>` is the name of the process, `<port>` is the port the server is on, and `<path-to-application.yml>` is the absolute path to the config file.
 - To stop the process, run `docker stop <name>`.
+
+## About PostgreSQL
+
+As of the time of this writing, database support is very early, so it'll be mandatory to have a database. In the future, it'll be optional.
 
 ## Build Instructions
 
@@ -49,6 +53,11 @@ Inside `./setup`, create a `.json` file. I'll call it `secret.json`.
 // secret.json
 {
     "token": "Bot token here",
+    "host": "localhost",
+    "port": 5432,
+    "database": "database name",
+    "user": "user name",
+    "password": "password"
 }
 ```
 
@@ -75,7 +84,7 @@ Within `./setup`, there's also another file called `config.json`. The file has t
 - `debug` is an optional option to indicate whether the bot is in debug mode or not.
 - `secret` contains the file name that contains your bot's secret like token.
 
-4. Run the bot.
+1. Run the bot.
 
 ```sh
 python3 -O main.py BotIndex [OPTIONS]

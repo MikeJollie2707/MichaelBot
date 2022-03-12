@@ -4,7 +4,7 @@
 
 This is a utility Discord Bot written in Python using `hikari`, `hikari-lightbulb`, and other libraries. This bot exists because I think it's a fun project.
 
-The bot existed before using `discord.py`, but the library discontinued, so I'm working on rewriting the entire thing with `hikari`. Many important features will be missing in the mean time.
+The bot existed before using `discord.py`, but the library discontinued (and it resumes 3 days after I push the change onto this repository...), so I'm working on rewriting the entire thing with `hikari`. Many important features will be missing in the mean time.
 
 ## Features
 
@@ -20,7 +20,7 @@ More features will be added as I work on to restore the bot to its glory.
 ## Limitations
 
 - Expect a lot of bugs.
-- Uptime not 24/7.
+- Uptime not 100% 24/7.
 
 ## Libraries
 
@@ -28,13 +28,14 @@ These are the libraries I used. All of these can be installed with `requirement.
 
 - [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb)
 - [Lavalink](https://github.com/freyacodes/Lavalink) & [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
+- [asyncpg](https://github.com/MagicStack/asyncpg)
 - [emoji](https://github.com/carpedm20/emoji/)
 - [humanize](https://github.com/jmoiron/humanize)
 - [pytimeparse](https://github.com/wroberts/pytimeparse)
 - [uvloop](https://github.com/MagicStack/uvloop)
-- pylint
+- [pylint](https://github.com/PyCQA/pylint)
 
-Detail instructions available [here]().
+Detail instructions available [here](./docs/INSTALLATION.md).
 
 ## License
 
