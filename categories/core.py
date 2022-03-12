@@ -8,6 +8,7 @@ from textwrap import dedent
 
 import utilities.helpers as helpers
 import utilities.checks as checks
+import utilities.psql as psql
 from utilities.navigator import ButtonPages
 
 plugin = lightbulb.Plugin("Core", description = "General Commands", include_datastore = True)
@@ -73,11 +74,11 @@ async def changelog_dev(ctx: lightbulb.Context):
 async def info(ctx: lightbulb.Context):
     embed = helpers.get_default_embed(
         title = ctx.bot.get_me().username,
-        description = ctx.bot.d.description,
+        description = ctx.bot.d.bot_info["description"],
         timestamp = dt.datetime.now().astimezone()
     ).add_field(
         name = "Version:",
-        value = ctx.bot.d.version,
+        value = ctx.bot.d.bot_info["version"],
         inline = False
     ).add_field(
         name = "Team:",
@@ -110,6 +111,24 @@ async def info(ctx: lightbulb.Context):
     )
 
     await ctx.respond(embed = embed, reply = True)
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
+@lightbulb.option("new_prefix", "New prefix", default = None)
+@lightbulb.command("prefix", "View or edit the bot prefix for the guild. This only affects Prefix Commands.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def prefix(ctx: lightbulb.Context):
+    new_prefix = ctx.options.new_prefix
+
+    async with ctx.bot.d.pool.acquire() as conn:
+        if new_prefix is None:
+            guild = await psql.guilds.get_one(conn, ctx.guild_id)
+            guild_prefix = ctx.bot.d.bot_info["prefix"] if guild is None else guild["prefix"]
+            await ctx.respond(f"Current prefix: `{guild_prefix}`", reply = True)
+        else:
+            async with conn.transaction():
+                await psql.guilds.update_column(conn, ctx.guild_id, "prefix", new_prefix)
+            await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
 
 @plugin.command()
 @lightbulb.option("member", "A Discord Member.", type = hikari.Member, default = None)
