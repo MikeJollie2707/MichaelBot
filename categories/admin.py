@@ -12,18 +12,25 @@ plugin.d.emote = helpers.get_emote(":computer:")
 plugin.add_checks(is_dev, checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
-@lightbulb.option("guild_id", "Guild ID to blacklist.")
-@lightbulb.command("blacklist_guild", "Blacklist a guild.", hidden = True)
+@lightbulb.option("guild", "Guild to blacklist (recommend ID).", type = hikari.Guild)
+@lightbulb.command("blacklist-guild", "Blacklist a guild.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def blacklist_guild(ctx: lightbulb.Context):
+    guild_id = 0
+    if isinstance(ctx, lightbulb.SlashContext):
+        guild = await lightbulb.converters.GuildConverter(ctx).convert(ctx.options.guild)
+        guild_id = guild.id
+    else:
+        guild_id = ctx.options.guild.id
+    
     async with ctx.bot.d.pool.acquire() as conn:
         async with conn.transaction():
-            await psql.guilds.update_column(conn, ctx.options.guild_id, "is_whitelist", False)
+            await psql.guilds.update_column(conn, guild_id, "is_whitelist", False)
     
     await ctx.respond("Blacklisted!", reply = True)
 
 @plugin.command()
-@lightbulb.command("purge_slashes", "Force delete every slash commands in test guilds.", hidden = True)
+@lightbulb.command("purge-slashes", "Force delete every slash commands in test guilds.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def purge_slashes(ctx: lightbulb.Context):
     await ctx.bot.purge_application_commands(*ctx.bot.d.bot_info["default_guilds"])
