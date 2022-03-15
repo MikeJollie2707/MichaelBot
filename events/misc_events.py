@@ -10,8 +10,8 @@ import utilities.psql as psql
 
 plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
 
-@plugin.listener(hikari.StartedEvent)
-async def on_shard_connect(event: hikari.StartedEvent):
+@plugin.listener(hikari.StartingEvent)
+async def on_shard_connect(event: hikari.StartingEvent):
     bot = event.app
     bot.d.online_at = dt.datetime.now().astimezone()
     
