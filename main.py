@@ -68,7 +68,7 @@ def create_bot() -> lightbulb.BotApp:
     bot.d.prefixes = {}
     # Whitelist MichaelBot and Bruh server for early testing.
     if bot_info["debug"]:
-        bot.default_enabled_guilds = [644336990698995712, 705270581184167987, 868449475323101224]
+        bot.default_enabled_guilds = bot_info["default_guilds"]
     
     for extension in sorted(__discord_extensions__):
         bot.load_extensions(extension)
