@@ -9,7 +9,7 @@ from utilities.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":computer:")
-plugin.add_checks(is_dev, checks.is_guild_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(is_dev, checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
 @lightbulb.option("guild", "Guild to blacklist (recommend ID).", type = hikari.Guild)
@@ -57,7 +57,7 @@ async def shutdown(ctx: lightbulb.Context):
     await ctx.bot.close()
 
 @plugin.command()
-@lightbulb.command("test", "test")
+@lightbulb.command("test", "test", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def test(ctx: lightbulb.Context):
     async with ctx.bot.d.pool.acquire() as conn:
