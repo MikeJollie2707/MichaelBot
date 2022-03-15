@@ -10,8 +10,8 @@ import utilities.psql as psql
 
 plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
 
-@plugin.listener(hikari.ShardConnectedEvent)
-async def on_shard_connect(event: hikari.ShardConnectedEvent):
+@plugin.listener(hikari.StartedEvent)
+async def on_shard_connect(event: hikari.StartedEvent):
     bot = event.app
     bot.d.online_at = dt.datetime.now().astimezone()
     
@@ -24,6 +24,7 @@ async def on_shard_connect(event: hikari.ShardConnectedEvent):
                 user = bot.d.__secrets__["user"],
                 password = bot.d.__secrets__["password"]
             )
+            logging.info("Bot successfully connected to the database.")
         except pg_exception.InvalidPasswordError:
             logging.error(f"Invalid password for user '{bot.d.__secrets__['user']}'.")
         except pg_exception.InvalidCatalogNameError:
@@ -33,8 +34,6 @@ async def on_shard_connect(event: hikari.ShardConnectedEvent):
     
     if bot.d.pool is None:
         logging.warn("Unable to connect to a database. Bot will be missing features.")
-    else:
-        logging.info("Bot successfully connected to the database.")
 
 @plugin.listener(hikari.ShardReadyEvent)
 async def on_shard_ready(event: hikari.ShardReadyEvent):
