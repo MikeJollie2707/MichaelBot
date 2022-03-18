@@ -23,11 +23,9 @@ async def retrieve_prefix(bot: lightbulb.BotApp, message: hikari.Message):
         if bot.get_me().id == 649822097492803584:
             return '!'
         
-        guild = await psql.guilds.get_one(conn, message.guild_id)
-        if guild is not None:
-            return guild["prefix"]
-        else:
-            return bot.d.bot_info["prefix"]
+        guild = bot.d.guild_cache.get(message.guild_id)
+        if guild is None: return bot.d.bot_info["prefix"]
+        else: return guild.guild_module["prefix"]
 
 def load_info(bot_name: str):
     '''
@@ -65,7 +63,10 @@ def create_bot() -> lightbulb.BotApp:
     bot.d.bot_info = bot_info
     bot.d.__secrets__ = secrets
     bot.d.pool = None
-    bot.d.prefixes = {}
+    # Hold high-traffic data on database (usually for read-only purpose).
+    bot.d.guild_cache = {}
+    bot.d.user_cache = {}
+
     # Whitelist MichaelBot and Bruh server for early testing.
     if bot_info["debug"]:
         bot.default_enabled_guilds = bot_info["default_guilds"]

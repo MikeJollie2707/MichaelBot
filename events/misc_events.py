@@ -39,13 +39,31 @@ async def on_shard_connect(event: hikari.StartingEvent):
 async def on_shard_ready(event: hikari.ShardReadyEvent):
     bot = event.app
 
-    async with bot.d.pool.acquire() as conn:
-        async with conn.transaction():
+    if bot.d.pool is not None:
+        async with bot.d.pool.acquire() as conn:
             guilds = []
             async for guild in bot.rest.fetch_my_guilds():
                 guilds.append(guild)
             
-            await psql.guilds.add_many(conn, guilds)
+            async with conn.transaction():
+                await psql.Guilds.add_many(conn, guilds)
+            logging.info("Updated database from current guilds.")
+            
+            guilds_info = await psql.Guilds.get_all(conn)
+            for guild in guilds_info:
+                # DatabaseCache will pop ids in constructor.
+                guild_id = guild["id"]
+                log_info = await psql.Guilds.Logs.get_one(conn, guild_id)
+                bot.d.guild_cache[guild_id] = models.GuildCache(guild_module = guild, logging_module = log_info)
+            logging.info("Populated guild cache with stored info.")
+
+            users_info = await psql.Users.get_all(conn)
+            for user in users_info:
+                user_id = user["id"]
+                bot.d.user_cache[user_id] = models.UserCache(user_module = user)
+                print(bot.d.user_cache[user_id].user_module)
+            logging.info("Populated user cache with stored info.")
+
 
 def load(bot):
     bot.add_plugin(plugin)
