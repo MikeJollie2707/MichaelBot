@@ -5,7 +5,7 @@ import sys
 import json
 import os
 
-import utilities.psql as psql
+import utilities.helpers as helpers
 
 __discord_extensions__ = [
     "categories.admin",
@@ -14,7 +14,8 @@ __discord_extensions__ = [
     "categories.help",
     "categories.music",
     "events.error_handler",
-    "events.misc_events"
+    "events.logger",
+    "events.misc_events",
 ]
 
 async def retrieve_prefix(bot: lightbulb.BotApp, message: hikari.Message):
@@ -45,23 +46,14 @@ def load_info(bot_name: str):
     
     return (bot_info, secrets)
 
-def create_bot() -> lightbulb.BotApp:
-    argc = len(sys.argv)
-
-    bot_info, secrets = load_info(sys.argv[1])
-    bot_info["debug"] = False
-    if argc > 2:
-        if sys.argv[2] == "--debug":
-            bot_info["debug"] = True
-    
+def create_bot(bot_info, secrets) -> lightbulb.BotApp:
     bot = lightbulb.BotApp(
         token = secrets["token"], 
         prefix = lightbulb.when_mentioned_or(retrieve_prefix),
         intents = hikari.Intents.ALL ^ hikari.Intents.GUILD_PRESENCES,
     )
-    
     bot.d.bot_info = bot_info
-    bot.d.__secrets__ = secrets
+    bot.d.secrets = secrets
     bot.d.pool = None
     # Hold high-traffic data on database (usually for read-only purpose).
     bot.d.guild_cache = {}
@@ -81,5 +73,12 @@ if __name__ == "__main__":
         import uvloop
         uvloop.install()
     
-    bot = create_bot()
-    bot.run()
+    argc = len(sys.argv)
+    bot_info, secrets = load_info(sys.argv[1])
+    bot_info["debug"] = False
+    if argc > 2:
+        if sys.argv[2] == "--debug":
+            bot_info["debug"] = True
+    
+    bot = create_bot(bot_info, secrets)
+    bot.run(activity = hikari.Activity(name = "P3 All Bindings", type = hikari.ActivityType.PLAYING))

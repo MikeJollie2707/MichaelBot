@@ -6,7 +6,9 @@ import asyncpg.exceptions as pg_exception
 import datetime as dt
 import logging
 
+import utilities.helpers as helpers
 import utilities.psql as psql
+import utilities.models as models
 
 plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
 
@@ -18,19 +20,19 @@ async def on_shard_connect(event: hikari.StartingEvent):
     if bot.d.pool is None:
         try:
             bot.d.pool = await asyncpg.create_pool(
-                host = bot.d.__secrets__["host"],
-                port = bot.d.__secrets__["port"],
-                database = bot.d.__secrets__["database"],
-                user = bot.d.__secrets__["user"],
-                password = bot.d.__secrets__["password"]
+                host = bot.d.secrets["host"],
+                port = bot.d.secrets["port"],
+                database = bot.d.secrets["database"],
+                user = bot.d.secrets["user"],
+                password = bot.d.secrets["password"]
             )
             logging.info("Bot successfully connected to the database.")
         except pg_exception.InvalidPasswordError:
-            logging.error(f"Invalid password for user '{bot.d.__secrets__['user']}'.")
+            logging.error(f"Invalid password for user '{bot.d.secretes['user']}'.")
         except pg_exception.InvalidCatalogNameError:
-            logging.error(f"Unable to find database '{bot.d.__secrets__['database']}'")
+            logging.error(f"Unable to find database '{bot.d.secrets['database']}'")
         except ConnectionRefusedError:
-            logging.error(f"Unable to connect to a database at {bot.d.__secrets__['host']}, port {bot.d.__secrets__['port']}")
+            logging.error(f"Unable to connect to a database at {bot.d.secrets['host']}, port {bot.d.secrets['port']}")
     
     if bot.d.pool is None:
         logging.warn("Unable to connect to a database. Bot will be missing features.")
