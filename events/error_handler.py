@@ -17,6 +17,7 @@ __error_responses__ = {
     "MissingRequiredRole": "You're missing the following roles: {}.",
     "NSFWChannelOnly": "Hey! Go to your horny channel to use this command!",
     "GuildBlacklisted": "Uh oh, your server is blacklisted by the bot developers. This means you can't use any of my features. You can appeal by joining my support server.",
+    "UserBlacklisted": "Uh oh, you are blacklisted by the bot developers. This means you can't use any of my features. You can appeal by joining my support server.",
     "CheckFailure": "Command `{}` does not satisfy the following requirement: {}.",
     "ConverterFailure": "The following option cannot be converted properly: {}.",
     "NotEnoughArguments": "You're missing the following arguments: {}.",
@@ -54,6 +55,8 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         await send_error_message("NSFWChannelOnly", event)
     elif isinstance(exception, errors.GuildBlacklisted):
         await send_error_message("GuildBlacklisted", event)
+    elif isinstance(exception, errors.UserBlacklisted):
+        await send_error_message("UserBlacklisted", event)
     elif isinstance(exception, errors.CustomCheckFailed):
         await send_error_message("CheckFailure", event, event.context.command.name, exception.args[0])
     elif isinstance(exception, lightbulb.errors.CheckFailure):
@@ -62,9 +65,13 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         await send_error_message("ConverterFailure", event, exception.option.name)
     elif isinstance(exception, lightbulb.errors.NotEnoughArguments):
         await send_error_message("NotEnoughArguments", event, helpers.striplist([f"`{option.name}`" for option in exception.missing_options]))
+    else:
+        raise exception
 
 
 def load(bot: lightbulb.BotApp):
     bot.subscribe(lightbulb.CommandErrorEvent, on_command_error)
+    #pass
 def unload(bot: lightbulb.BotApp):
     bot.unsubscribe(lightbulb.CommandErrorEvent, on_command_error)
+    #pass
