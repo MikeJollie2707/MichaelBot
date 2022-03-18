@@ -14,22 +14,49 @@ async def setup_database(user, password, database, host, port):
     )
 
     async with conn.transaction():
-        print("Creating default_commands table...", end = '')
+        print("Creating Guilds table...", end = '')
         await conn.execute('''
-            CREATE TABLE IF NOT EXISTS default_commands (
-                name TEXT PRIMARY KEY
+            CREATE TABLE IF NOT EXISTS Guilds (
+                id INT8 PRIMARY KEY,
+                name TEXT NOT NULL,
+                is_whitelist BOOL NOT NULL DEFAULT TRUE,
+                prefix TEXT NOT NULL DEFAULT '$'
             );
         ''')
         print("Done!")
 
-        print("Creating guilds table...")
+        print("Creating GuildsLogs table...", end = '')
         await conn.execute('''
-            CREATE TABLE IF NOT EXISTS guilds (
+            CREATE TABLE IF NOT EXISTS GuildsLogs (
+                guild_id INT8 UNIQUE NOT NULL,
+                log_channel INT8 DEFAULT NULL,
+                enable_guild_channel_create BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_channel_delete BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_channel_update BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_ban BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_unban BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_update BOOL NOT NULL DEFAULT TRUE,
+                enable_member_join BOOL NOT NULL DEFAULT TRUE,
+                enable_member_leave BOOL NOT NULL DEFAULT TRUE,
+                enable_member_update BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_bulk_message_delete BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_message_delete BOOL NOT NULL DEFAULT TRUE,
+                enable_guild_message_update BOOL NOT NULL DEFAULT TRUE,
+                enable_role_create BOOL NOT NULL DEFAULT TRUE,
+                enable_role_delete BOOL NOT NULL DEFAULT TRUE,
+                enable_role_update BOOL NOT NULL DEFAULT TRUE,
+                CONSTRAINT fk_guildslogs_guilds
+                    FOREIGN KEY (guild_id) REFERENCES Guilds(id)
+            );
+        ''')
+        print("Done!")
+
+        print("Creating Users table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS Users (
                 id INT8 PRIMARY KEY,
                 name TEXT NOT NULL,
-                is_whitelist BOOL DEFAULT TRUE,
-                prefix TEXT NOT NULL DEFAULT '$',
-                enable_log BOOL DEFAULT FALSE
+                is_whitelist BOOL NOT NULL DEFAULT TRUE
             );
         ''')
         print("Done!")
