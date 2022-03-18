@@ -1,9 +1,10 @@
 import lightbulb
 import hikari
+import emoji
 
 import typing as t
 
-import emoji
+import utilities.models as models
 
 __PERMISSIONS_MAPPING__ = {
     # Community Server Permissions
@@ -70,95 +71,6 @@ COMMAND_STANDARD_PERMISSIONS = [
     hikari.Permissions.READ_MESSAGE_HISTORY,
 ]
 
-# Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
-class DefaultColor:
-    '''
-    Store several default colors to use instantly.
-    '''
-    @staticmethod
-    def teal(): return hikari.Color(0x1abc9c)
-
-    @staticmethod
-    def dark_teal(): return hikari.Color(0x11806a)
-
-    @staticmethod
-    def brand_green(): return hikari.Color(0x57F287)
-
-    @staticmethod
-    def green(): return hikari.Color(0x2ecc71)
-
-    @staticmethod
-    def dark_green(): return hikari.Color(0x1f8b4c)
-
-    @staticmethod
-    def blue(): return hikari.Color(0x3498db)
-
-    @staticmethod
-    def dark_blue(): return hikari.Color(0x206694)
-
-    @staticmethod
-    def purple(): return hikari.Color(0x9b59b6)
-
-    @staticmethod
-    def dark_purple(): return hikari.Color(0x71368a)
-
-    @staticmethod
-    def magenta(): return hikari.Color(0xe91e63)
-
-    @staticmethod
-    def dark_magenta(): return hikari.Color(0xad1457)
-
-    @staticmethod
-    def gold(): return hikari.Color(0xf1c40f)
-
-    @staticmethod
-    def dark_gold(): return hikari.Color(0xc27c0e)
-
-    @staticmethod
-    def orange(): return hikari.Color(0xe67e22)
-
-    @staticmethod
-    def dark_orange(): return hikari.Color(0xa84300)
-
-    @staticmethod
-    def brand_red(): return hikari.Color(0xED4245)
-
-    @staticmethod
-    def red(): return hikari.Color(0xe74c3c)
-
-    @staticmethod
-    def dark_red(): return hikari.Color(0x992d22)
-
-    @staticmethod
-    def lighter_gray(): return hikari.Color(0x95a5a6)
-
-    @staticmethod
-    def dark_gray(): return hikari.Color(0x607d8b)
-
-    @staticmethod
-    def light_gray(): return hikari.Color(0x979c9f)
-
-    @staticmethod
-    def darker_gray(): return hikari.Color(0x546e7a)
-
-    @staticmethod
-    def og_blurple(): return hikari.Color(0x7289da)
-
-    @staticmethod
-    def blurple(): return hikari.Color(0x5865F2)
-
-    @staticmethod
-    def greyple(): return hikari.Color(0x5865F2)
-
-    @staticmethod
-    def dark_theme(): return hikari.Color(0x36393F)
-
-    @staticmethod
-    def fuchsia(): return hikari.Color(0xEB459E)
-
-    @staticmethod
-    def yellow(): return hikari.Color(0xFEE75C)
-
 def get_emote(discord_text: str) -> str:
     '''
     Return the Unicode emoji based on the name provided.
@@ -204,7 +116,7 @@ def get_default_embed(author: hikari.Member = None, **kwargs) -> hikari.Embed:
     title = kwargs.get("title")
     url = kwargs.get("url")
     description = kwargs.get("description")
-    color = kwargs.get("color") if kwargs.get("color") is not None else DefaultColor.green()
+    color = kwargs.get("color") if kwargs.get("color") is not None else models.DefaultColor.green()
     timestamp = kwargs.get("timestamp")
 
     embed = hikari.Embed(
