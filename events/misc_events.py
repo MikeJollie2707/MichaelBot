@@ -63,7 +63,6 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
             for user in users_info:
                 user_id = user["id"]
                 bot.d.user_cache[user_id] = models.UserCache(user_module = user)
-                print(bot.d.user_cache[user_id].user_module)
             logging.info("Populated user cache with stored info.")
 
 
