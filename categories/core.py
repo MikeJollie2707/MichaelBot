@@ -8,6 +8,7 @@ from textwrap import dedent
 
 import utilities.helpers as helpers
 import utilities.checks as checks
+import utilities.models as models
 import utilities.psql as psql
 from utilities.navigator import ButtonPages
 
@@ -119,16 +120,16 @@ async def info(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def prefix(ctx: lightbulb.Context):
     new_prefix = ctx.options.new_prefix
-
-    async with ctx.bot.d.pool.acquire() as conn:
-        if new_prefix is None:
-            guild = await psql.guilds.get_one(conn, ctx.guild_id)
-            guild_prefix = ctx.bot.d.bot_info["prefix"] if guild is None else guild["prefix"]
-            await ctx.respond(f"Current prefix: `{guild_prefix}`", reply = True)
-        else:
+    guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+    
+    if new_prefix is None:
+        guild_prefix = ctx.bot.d.bot_info["prefix"] if guild_dbcache is None else guild_dbcache.guild_module["prefix"]
+        await ctx.respond(f"Current prefix: `{guild_prefix}`", reply = True)
+    else:
+        async with ctx.bot.d.pool.acquire() as conn:
             async with conn.transaction():
-                await psql.guilds.update_column(conn, ctx.guild_id, "prefix", new_prefix)
-            await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
+                await guild_dbcache.update_guild_module(conn, ctx.guild_id, "prefix", new_prefix)
+        await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
 
 @plugin.command()
 @lightbulb.option("member", "A Discord Member.", type = hikari.Member, default = None)
