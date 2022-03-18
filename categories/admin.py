@@ -5,6 +5,8 @@ import asyncpg
 import utilities.helpers as helpers
 import utilities.checks as checks
 import utilities.psql as psql
+import utilities.models as models
+import utilities.errors as errors
 from utilities.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)
@@ -14,7 +16,7 @@ plugin.add_checks(is_dev, checks.is_command_enabled, lightbulb.bot_has_guild_per
 @plugin.command()
 @lightbulb.option("guild", "Guild to blacklist (recommend ID).", type = hikari.Guild)
 @lightbulb.command("blacklist-guild", "Blacklist a guild.", hidden = True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def blacklist_guild(ctx: lightbulb.Context):
     guild_id = 0
     if isinstance(ctx, lightbulb.SlashContext):
@@ -124,7 +126,7 @@ async def purge_slashes(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.option("extension", "The extension to reload.")
 @lightbulb.command("reload", "Reload an extension.", hidden = True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def reload(ctx: lightbulb.Context):
     ctx.bot.reload_extensions(ctx.options.extension)
     await ctx.respond(f"Reloaded extension {ctx.options.extension}.", reply = True)
@@ -136,7 +138,7 @@ async def reload_error(event: lightbulb.CommandErrorEvent):
 
 @plugin.command()
 @lightbulb.command("shutdown", "Shut the bot down.", hidden = True)
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def shutdown(ctx: lightbulb.Context):
     await ctx.respond("Bot shutting down...")
     await ctx.bot.close()
@@ -145,9 +147,7 @@ async def shutdown(ctx: lightbulb.Context):
 @lightbulb.command("test", "test", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def test(ctx: lightbulb.Context):
-    async with ctx.bot.d.pool.acquire() as conn:
-        guild = await psql.guilds.get_one(conn, ctx.guild_id)
-        await psql.guilds.update_column(conn, ctx.guild_id, "prefix", "%")
+    pass
 
 def load(bot):
     bot.add_plugin(plugin)
