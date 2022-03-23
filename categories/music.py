@@ -28,6 +28,8 @@ node_extra = {}
 def default_node_extra():
     return {
         "queue_loop": False,
+        # Position of the current track.
+        "current_position": 0,
         # ID of the channel where `join` or `play` is invoked the first time each session.
         "working_channel": 0,
     }
@@ -69,6 +71,15 @@ async def track_end_event(event: lavaplayer.TrackEndEvent):
             node = await lavalink.get_guild_node(event.guild_id)
             if node is not None:
                 node.queue.append(event.track)
+
+@lavalink.listen("playerUpdate")
+async def player_update_event(event: lavaplayer.PlayerUpdateEvent):
+    # For some reasons, event.guild_id is a frickin str, don't trust typehint...
+    guild_id = int(event.guild_id)
+    if node_extra.get(guild_id) is None:
+        return
+    
+    node_extra[guild_id]["current_position"] = event.position
 
 @lavalink.listen(lavaplayer.WebSocketClosedEvent)
 async def web_socket_closed_event(event: lavaplayer.WebSocketClosedEvent):
@@ -118,6 +129,7 @@ async def leave(ctx: lightbulb.Context):
     await ctx.respond("**Successfully disconnected.**", reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.command(name = "np", description = "Get info about the current track.", aliases = ["now_playing"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def np(ctx: lightbulb.Context):
@@ -128,14 +140,11 @@ async def np(ctx: lightbulb.Context):
         if not node.queue:
             await ctx.respond("*cricket noises*", reply = True)
             return
-        
-        # Imagine working on this cool af code then you realize there's no real way to get
-        # the current position of the track. Sadge.
 
         current_track = node.queue[0]
-        ratio = float(current_track.position) / float(current_track.length)
+        ratio = float(node_extra[ctx.guild_id]["current_position"]) / float(current_track.length)
         # Milliseconds have this format hh:mm:ss.somerandomstuffs, so just split at the first dot.
-        current_position = str(dt.timedelta(milliseconds = current_track.position)).split('.', maxsplit = 1)[0]
+        current_position = str(dt.timedelta(milliseconds = node_extra[ctx.guild_id]["current_position"])).split('.', maxsplit = 1)[0]
         full_duration = str(dt.timedelta(milliseconds = current_track.length)).split('.', maxsplit = 1)[0]
         # We're using c-string here because when the dot is at the beginning and the end,
         # I need to deal with some weird string concat, so no.
