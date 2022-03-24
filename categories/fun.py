@@ -61,7 +61,7 @@ async def howgay(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def ping(ctx: lightbulb.Context):
     latency = ctx.bot.heartbeat_latency
-    await ctx.respond(f"{ctx.author.mention} Pong! :ping_pong: {format(latency * 1000, '.2f')}ms.", reply = True)
+    await ctx.respond(f"Pong! :ping_pong: {format(latency * 1000, '.2f')}ms.", reply = True, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)
