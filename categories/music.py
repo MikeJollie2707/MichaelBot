@@ -28,8 +28,6 @@ node_extra = {}
 def default_node_extra():
     return {
         "queue_loop": False,
-        # Position of the current track.
-        "current_position": 0,
         # ID of the channel where `join` or `play` is invoked the first time each session.
         "working_channel": 0,
     }
@@ -45,7 +43,6 @@ MUSIC_EMOTES = {
     "volume_smol": helpers.get_emote(":sound:"),
     "volume_beeg": helpers.get_emote(":loud_sound:"),
     "queue_clear": helpers.get_emote(":dash:"),
-    
 }
 
 def get_yt_thumbnail_endpoint(identifier: str):
@@ -71,15 +68,6 @@ async def track_end_event(event: lavaplayer.TrackEndEvent):
             node = await lavalink.get_guild_node(event.guild_id)
             if node is not None:
                 node.queue.append(event.track)
-
-@lavalink.listen("playerUpdate")
-async def player_update_event(event: lavaplayer.PlayerUpdateEvent):
-    # For some reasons, event.guild_id is a frickin str, don't trust typehint...
-    guild_id = int(event.guild_id)
-    if node_extra.get(guild_id) is None:
-        return
-    
-    node_extra[guild_id]["current_position"] = event.position
 
 @lavalink.listen(lavaplayer.WebSocketClosedEvent)
 async def web_socket_closed_event(event: lavaplayer.WebSocketClosedEvent):
@@ -129,12 +117,10 @@ async def leave(ctx: lightbulb.Context):
     await ctx.respond("**Successfully disconnected.**", reply = True)
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
+@lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.command(name = "np", description = "Get info about the current track.", aliases = ["now_playing"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def np(ctx: lightbulb.Context):
-    await ctx.respond("This command is currently not working as intended due to library limitation")
-
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         if not node.queue:
@@ -142,9 +128,10 @@ async def np(ctx: lightbulb.Context):
             return
 
         current_track = node.queue[0]
-        ratio = float(node_extra[ctx.guild_id]["current_position"]) / float(current_track.length)
+        # This for some reasons return a second instead of milliseconds.
+        ratio = float(current_track.position * 1000) / float(current_track.length)
         # Milliseconds have this format hh:mm:ss.somerandomstuffs, so just split at the first dot.
-        current_position = str(dt.timedelta(milliseconds = node_extra[ctx.guild_id]["current_position"])).split('.', maxsplit = 1)[0]
+        current_position = str(dt.timedelta(seconds = current_track.position)).split('.', maxsplit = 1)[0]
         full_duration = str(dt.timedelta(milliseconds = current_track.length)).split('.', maxsplit = 1)[0]
         # We're using c-string here because when the dot is at the beginning and the end,
         # I need to deal with some weird string concat, so no.
@@ -166,7 +153,8 @@ async def np(ctx: lightbulb.Context):
 
             **Requested by:** {ctx.bot.cache.get_user(int(current_track.requester)).mention}
             """,
-            author = ctx.author
+            author = ctx.author,
+            timestamp = dt.datetime.now().astimezone()
         )
 
         if current_track.sourceName == "youtube":
@@ -178,7 +166,7 @@ async def np(ctx: lightbulb.Context):
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @plugin.command()
-@lightbulb.option(name = "query", description = "The query to play (url, name, etc.)")
+@lightbulb.option(name = "query", description = "The query to play (url, name, etc.)", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command(name = "play", description = "Play the query or add it to the queue.", aliases = ['p'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def play(ctx: lightbulb.Context):
