@@ -33,6 +33,7 @@ These are the libraries I used. All of these can be installed with `requirement.
 - [humanize](https://github.com/jmoiron/humanize)
 - [pytimeparse](https://github.com/wroberts/pytimeparse)
 - [uvloop](https://github.com/MagicStack/uvloop)
+- [mystbin](https://github.com/AbstractUmbra/mystbin.py)
 - [pylint](https://github.com/PyCQA/pylint)
 
 Detail instructions available [here](./docs/INSTALLATION.md).
