@@ -1,6 +1,6 @@
 {
     "MichaelBot": {
-        "version": "0.0.2",
+        "version": "0.0.3",
         "description": "A utility bot",
         "prefix": "$",
         "default_guilds": [644336990698995712, 705270581184167987, 868449475323101224],
@@ -8,7 +8,7 @@
         "secret": "bot_secret.json"
     },
     "MichaelBeta": {
-        "version": "0.0.2",
+        "version": "0.0.3",
         "description": "A testing bot for MichaelBot :)",
         "prefix": "!",
         "default_guilds": [644336990698995712, 705270581184167987, 868449475323101224],
