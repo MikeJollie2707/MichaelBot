@@ -112,7 +112,7 @@ async def join(ctx: lightbulb.Context):
 @lightbulb.command(name = "leave", description = "Leave the voice channel.", aliases = ["disconnect", 'dc'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def leave(ctx: lightbulb.Context):
-    node_extra.pop(ctx.guild_id)
+    node_extra.pop(ctx.guild_id, None)
     await ctx.bot.update_voice_state(ctx.guild_id, None)
     await ctx.respond("**Successfully disconnected.**", reply = True)
 
