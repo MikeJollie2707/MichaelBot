@@ -163,7 +163,7 @@ class MiniButtonPages(ButtonPages):
     async def _on_stop(self):
         # BUG: when attached to a MenuInteractionWrapper, this will clear the buttons even when the menu is returning.
         # This is probably because there's no way to determine whether this call is gonna finish before the menu starts updating.
-        #await self._msg.edit(component = None)
+        await self._msg.edit(component = None)
         pass
 
 class MenuComponent:
@@ -455,6 +455,10 @@ class MenuInteractionWrapper:
             return
         
         if self._return_button.is_pressed(event) and self._msg is not None:
+            # Need a delay in case of a sub-list closing.
+            # This is dirty but can't find any other ways.
+            if self._menu.content is None:
+                await asyncio.sleep(0.5)
             self._menu = self._menu.__parent__
             await self._update_msg(event.interaction, self._menu)
         elif self._terminate_button.is_pressed(event) and self._msg is not None:
