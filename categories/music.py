@@ -23,11 +23,7 @@ lavalink = lavaplayer.LavalinkClient(
 
 # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
 # so we'll make a dictionary to manually track additional info.
-# { guild_id: {} }
 node_extra: dict[int, NodeExtra] = {}
-# This should be the value of node_extra[guild_id]
-def default_node_extra():
-    return NodeExtra()
 
 MUSIC_EMOTES = {
     "pause": helpers.get_emote(":pause_button:"),
@@ -98,7 +94,7 @@ async def join(ctx: lightbulb.Context):
         channel_id = voice_channel.id
     
     await ctx.bot.update_voice_state(ctx.guild_id, channel_id, self_deaf = True)
-    node_extra[ctx.guild_id] = default_node_extra()
+    node_extra[ctx.guild_id] = NodeExtra()
     node_extra[ctx.guild_id].working_channel = ctx.channel_id
     await ctx.respond(f"Joining <#{channel_id}>...", reply = True)
 
