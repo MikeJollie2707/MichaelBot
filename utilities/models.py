@@ -2,6 +2,7 @@ import lightbulb
 import hikari
 
 import typing as t
+from dataclasses import dataclass
 
 import utilities.psql as psql
 
@@ -202,3 +203,8 @@ class DefaultColor:
 
     @staticmethod
     def yellow(): return hikari.Color(0xFEE75C)
+
+@dataclass
+class NodeExtra:
+    queue_loop: bool = False
+    working_channel: int = 0

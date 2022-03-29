@@ -6,6 +6,7 @@ import datetime as dt
 
 import utilities.helpers as helpers
 import utilities.checks as checks
+from utilities.models import NodeExtra
 from utilities.converters import IntervalConverter
 from utilities.navigator import ButtonPages
 
@@ -23,14 +24,10 @@ lavalink = lavaplayer.LavalinkClient(
 # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
 # so we'll make a dictionary to manually track additional info.
 # { guild_id: {} }
-node_extra = {}
+node_extra: dict[int, NodeExtra] = {}
 # This should be the value of node_extra[guild_id]
 def default_node_extra():
-    return {
-        "queue_loop": False,
-        # ID of the channel where `join` or `play` is invoked the first time each session.
-        "working_channel": 0,
-    }
+    return NodeExtra()
 
 MUSIC_EMOTES = {
     "pause": helpers.get_emote(":pause_button:"),
@@ -53,9 +50,8 @@ def get_yt_thumbnail_endpoint(identifier: str):
 async def track_start_event(event: lavaplayer.TrackStartEvent):
     node = await lavalink.get_guild_node(event.guild_id)
     # We probably don't want to spam the Now Playing when it's only looping one song.
-    if node is not None and not node.repeat:
-        channel: hikari.GuildTextChannel = plugin.bot.cache.get_available_guild(event.guild_id).get_channel(node_extra[event.guild_id]["working_channel"])
-        await channel.send(f"Now playing: `{event.track.title}`.")
+    if node is not None:
+        await plugin.bot.rest.create_message(node_extra[event.guild_id].working_channel, f"Now Playing: `{event.track.title}`.")
 
 @lavalink.listen(lavaplayer.TrackEndEvent)
 async def track_end_event(event: lavaplayer.TrackEndEvent):
@@ -64,10 +60,8 @@ async def track_end_event(event: lavaplayer.TrackEndEvent):
     
     node = await lavalink.get_guild_node(event.guild_id)
     if node is not None:
-        if node_extra[event.guild_id]["queue_loop"] and not node.repeat:
-            node = await lavalink.get_guild_node(event.guild_id)
-            if node is not None:
-                node.queue.append(event.track)
+        if node_extra[event.guild_id].queue_loop and not node.repeat:
+            node.queue.append(event.track)
 
 @lavalink.listen(lavaplayer.WebSocketClosedEvent)
 async def web_socket_closed_event(event: lavaplayer.WebSocketClosedEvent):
@@ -105,7 +99,7 @@ async def join(ctx: lightbulb.Context):
     
     await ctx.bot.update_voice_state(ctx.guild_id, channel_id, self_deaf = True)
     node_extra[ctx.guild_id] = default_node_extra()
-    node_extra[ctx.guild_id]["working_channel"] = ctx.channel_id
+    node_extra[ctx.guild_id].working_channel = ctx.channel_id
     await ctx.respond(f"Joining <#{channel_id}>...", reply = True)
 
 @plugin.command()
@@ -170,13 +164,13 @@ async def np(ctx: lightbulb.Context):
 @lightbulb.command(name = "play", description = "Play the query or add it to the queue.", aliases = ['p'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def play(ctx: lightbulb.Context):
-    query = ctx.options.query  # get query from options
+    query = ctx.options.query
 
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is None:
         await join(ctx)
     
-    result = await lavalink.auto_search_tracks(query)  # search for the query
+    result = await lavalink.auto_search_tracks(query)
     if not result:
         await ctx.respond("Can't find any songs with the query.", reply = True, mentions_reply = True)
         return
@@ -252,7 +246,7 @@ async def repeat(ctx: lightbulb.Context):
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         node.repeat = not node.repeat
-        await lavalink.repeat(ctx.guild_id, node.repeat)
+        await lavalink.set_guild_node(ctx.guild_id, node)
         if node.repeat:
             await ctx.respond(f"{MUSIC_EMOTES['single_loop']} **Enabled!**", reply = True)
         else:
@@ -390,7 +384,7 @@ async def queue_loop(ctx: lightbulb.Context):
             await ctx.respond("Something is wrong, try reconnect the bot to the VC.", reply = True, mentions_reply = True)
             return
         
-        fnode["queue_loop"] = not fnode["queue_loop"]
+        fnode.queue_loop = not fnode.queue_loop
         if fnode["queue_loop"]:
             await ctx.respond(f"{MUSIC_EMOTES['queue_loop']} **Enabled!**", reply = True)
         else:
@@ -456,16 +450,7 @@ async def queue_remove(ctx: lightbulb.Context):
 async def skip(ctx: lightbulb.Context):
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        if node.repeat:
-            # When lavaplayer is repeating, skipping does not move on to next track in queue, so we need to manually do that.
-            node.repeat = False
-            await lavalink.set_guild_node(ctx.guild_id, node)
-            await lavalink.skip(ctx.guild_id)
-            node.repeat = True
-            await lavalink.set_guild_node(ctx.guild_id, node)
-        else:
-            await lavalink.skip(ctx.guild_id)
-        
+        await lavalink.skip(ctx.guild_id)
         await ctx.respond(f"{MUSIC_EMOTES['skip']} **Skipped!**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -476,8 +461,7 @@ async def skip(ctx: lightbulb.Context):
 async def stop(ctx: lightbulb.Context):
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        node.repeat = False
-        node_extra[ctx.guild_id]["queue_loop"] = False
+        node_extra[ctx.guild_id].queue_loop = False
 
         await lavalink.stop(ctx.guild_id)
         await ctx.respond(f"{MUSIC_EMOTES['stop']} **Stopped!**", reply = True)
