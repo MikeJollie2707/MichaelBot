@@ -292,7 +292,7 @@ async def queue(ctx: lightbulb.Context):
                 timestamp = dt.datetime.now().astimezone(),
                 author = ctx.author
             ).add_field(
-                name = "Now playing:",
+                name = "Now Playing:",
                 value = f"[{current_track.title}]({current_track.uri}) - {dt.timedelta(milliseconds = current_track.length)}",
                 inline = False
             )
@@ -324,6 +324,15 @@ async def queue(ctx: lightbulb.Context):
                         value = text,
                         inline = False
                     )
+                    embed.add_field(
+                        name = f"{MUSIC_EMOTES['single_loop']}",
+                        value = "Yes" if node.repeat else "No",
+                        inline = True
+                    ).add_field(
+                        name = f"{MUSIC_EMOTES['queue_loop']}",
+                        value = "Yes" if node_extra[ctx.guild_id].queue_loop else "No",
+                        inline = True
+                    )
                     page_list.append(embed)
                     text = ""
                     embed = None
@@ -333,6 +342,15 @@ async def queue(ctx: lightbulb.Context):
                     name = "Up Next:",
                     value = text,
                     inline = False
+                )
+                embed.add_field(
+                    name = f"{MUSIC_EMOTES['single_loop']}",
+                    value = "Yes" if node.repeat else "No",
+                    inline = True
+                ).add_field(
+                    name = f"{MUSIC_EMOTES['queue_loop']}",
+                    value = "Yes" if node_extra[ctx.guild_id].queue_loop else "No",
+                    inline = True
                 )
                 page_list.append(embed)
             
