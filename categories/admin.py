@@ -121,7 +121,7 @@ async def force_sync_cache_guild(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def purge_slashes(ctx: lightbulb.Context):
     await ctx.bot.purge_application_commands(*ctx.bot.d.bot_info["default_guilds"])
-    await ctx.respond("Cleared all slash commands in test guilds. Restart the bot to see them again.", reply = True)
+    await ctx.respond("Cleared all guild slash commands in test guilds.", reply = True)
 
 @plugin.command()
 @lightbulb.option("extension", "The extension to reload.")
