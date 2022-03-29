@@ -144,10 +144,19 @@ async def shutdown(ctx: lightbulb.Context):
     await ctx.bot.close()
 
 @plugin.command()
+@lightbulb.option("count", "Message to delete", type = int)
 @lightbulb.command("test", "test", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def test(ctx: lightbulb.Context):
-    pass
+    #count = ctx.options.count
+
+    #if isinstance(ctx, lightbulb.PrefixCommand):
+    #    count += 1
+    
+    #iterator = ctx.bot.rest.fetch_messages(ctx.channel_id).limit(ctx.options.count)
+    #async for message in iterator.chunk(100):
+    #    await ctx.bot.rest.delete_messages(ctx.channel_id, message)
+    raise errors.CustomCheckFailed("L gitgud")
 
 def load(bot):
     bot.add_plugin(plugin)
