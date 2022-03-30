@@ -7,7 +7,7 @@ import os
 
 EXTENSIONS = [
     "categories.admin",
-    "categories.core",
+    "categories.bot",
     "categories.fun",
     "categories.help",
     "categories.music",
