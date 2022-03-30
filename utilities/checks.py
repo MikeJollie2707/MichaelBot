@@ -1,18 +1,36 @@
 import lightbulb
 import hikari
 
-import utilities.helpers as helpers
 import utilities.models as models
 import utilities.errors as errors
 import utilities.psql as psql
 
 @lightbulb.Check
 def is_dev(ctx: lightbulb.Context) -> bool:
+    '''
+    Check if the user invoked is a MichaelBot developer.
+
+    Exceptions:
+    - `errors.CustomCheckFailed`: The user is not a MichaelBot developer.
+    '''
     if ctx.author.id not in [472832990012243969, 462726152377860109]: raise errors.CustomCheckFailed("`Author must be a MichaelBot developer`")
     return True
 
 @lightbulb.Check
 async def is_command_enabled(ctx: lightbulb.Context) -> bool:
+    '''
+    Check if a command is enabled in a given context.
+    This will also add and/or sync the cache if necessary.
+
+    Exceptions:
+    - `lightbulb.OnlyInGuild`: The context is not in a guild.
+    - `errors.GuildBlacklisted`: The guild the context is in is blacklisted.
+    - `errors.UserBlacklisted`: The user invoked is blacklisted.
+    '''
+
+    if ctx.guild_id is None:
+        raise lightbulb.OnlyInGuild
+    
     guild_cache = models.get_guild_cache(ctx.bot, ctx.guild_id)
     user_cache = models.get_user_cache(ctx.bot, ctx.author.id)
 

@@ -7,6 +7,12 @@ from dataclasses import dataclass
 import utilities.psql as psql
 
 class UserCache:
+    '''
+    Represent a user data in the database.
+    
+    This contains one module:
+    - `user_module`: Represent the `Users` table.
+    '''
     def __init__(self, user_module: dict = {}):
         if user_module is None:
             user_module = {}
@@ -16,16 +22,22 @@ class UserCache:
         self.user_module = user_module
     
     async def add_user_module(self, conn, user: hikari.User):
+        '''
+        Add a user into the cache and the database.
+        '''
         await psql.Users.add_one(conn, user.id, user.username)
         user_info = await psql.Users.get_one(conn, user.id)
         self.user_module = user_info
     async def update_user_module(self, conn, id: int, column: str, new_value):
+        '''
+        Edit a user data in the cache and the database.
+        '''
         await psql.Users.update_column(conn, id, column, new_value)
         self.user_module[column] = new_value
     
     async def force_sync(self, conn, user_id: int):
         '''
-        Force the cache to update with database.
+        Force this object to update with database.
         If the method returns `None`, the entry for this user isn't on the database, thus you should use `add_user_module()` instead.
         Otherwise, it returns itself.
         '''
@@ -40,6 +52,13 @@ class UserCache:
         return self
 
 class GuildCache:
+    '''
+    Represent a guild data in the database.
+    
+    This contains two module:
+    - `guild_module`: Represent the `Guilds` table.
+    - `logging_module`: Represent the `GuildsLogs` table.
+    '''
     def __init__(self, guild_module: dict = {}, logging_module: dict = {}):
         if guild_module is None:
             guild_module = {}
@@ -55,26 +74,38 @@ class GuildCache:
         self.logging_module = logging_module
     
     async def add_guild_module(self, conn, guild: hikari.Guild):
+        '''
+        Add a guild module into the cache and the database.
+        '''
         await psql.Guilds.add_one(conn, guild)
         guild_info = await psql.Guilds.get_one(conn, guild.id)
         self.guild_module = guild_info
     
     async def update_guild_module(self, conn, id: int, column: str, new_value):
+        '''
+        Edit a guild module data in the cache and the database.
+        '''
         await psql.Guilds.update_column(conn, id, column, new_value)
         self.guild_module[column] = new_value
     
     async def add_logging_module(self, conn, guild: hikari.Guild):
+        '''
+        Add a logging module into the cache and the database.
+        '''
         await psql.Guilds.Logs.add_one(conn, guild)
         logging_info = await psql.Guilds.Logs.get_one(conn, guild.id)
         self.logging_module = logging_info
     
     async def update_logging_module(self, conn, id: int, column: str, new_value):
+        '''
+        Update a logging module in the cache and the database.
+        '''
         await psql.Guilds.Logs.update_column(conn, id, column, new_value)
         self.logging_module[column] = new_value
     
     async def force_sync(self, conn, guild_id: int):
         '''
-        Force the cache to update with database.
+        Force this object to update with database.
         If the method returns `None`, the entry for this guild isn't on the database, thus you should use `add_guild_module()` instead.
         Otherwise, it returns itself.
         '''
@@ -206,5 +237,6 @@ class DefaultColor:
 
 @dataclass
 class NodeExtra:
+    '''A class to store extra data for the `lavaplayer.Node`'''
     queue_loop: bool = False
     working_channel: int = 0

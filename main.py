@@ -5,9 +5,7 @@ import sys
 import json
 import os
 
-import utilities.helpers as helpers
-
-__discord_extensions__ = [
+EXTENSIONS = [
     "categories.admin",
     "categories.core",
     "categories.fun",
@@ -19,14 +17,13 @@ __discord_extensions__ = [
 ]
 
 async def retrieve_prefix(bot: lightbulb.BotApp, message: hikari.Message):
-    async with bot.d.pool.acquire() as conn:
-        # Force return.
-        if bot.get_me().id == 649822097492803584:
-            return '!'
-        
-        guild = bot.d.guild_cache.get(message.guild_id)
-        if guild is None: return bot.d.bot_info["prefix"]
-        else: return guild.guild_module["prefix"]
+    # Force return when this is MichaelBeta.
+    if bot.get_me().id == 649822097492803584:
+        return '!'
+    
+    guild = bot.d.guild_cache.get(message.guild_id)
+    if guild is None: return bot.d.bot_info["prefix"]
+    else: return guild.guild_module["prefix"]
 
 def load_info(bot_name: str):
     '''
@@ -59,11 +56,10 @@ def create_bot(bot_info, secrets) -> lightbulb.BotApp:
     bot.d.guild_cache = {}
     bot.d.user_cache = {}
 
-    # Whitelist MichaelBot and Bruh server for early testing.
     if bot_info["debug"]:
         bot.default_enabled_guilds = bot_info["default_guilds"]
     
-    for extension in sorted(__discord_extensions__):
+    for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)
     
     return bot
@@ -81,4 +77,6 @@ if __name__ == "__main__":
             bot_info["debug"] = True
     
     bot = create_bot(bot_info, secrets)
-    bot.run(activity = hikari.Activity(name = "P3 All Bindings", type = hikari.ActivityType.PLAYING))
+    bot.run(
+        activity = hikari.Activity(name = "P3 All Bindings", type = hikari.ActivityType.PLAYING)
+    )

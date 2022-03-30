@@ -3,8 +3,8 @@ import hikari
 
 import random
 
-import utilities.helpers as helpers
 import utilities.checks as checks
+import utilities.helpers as helpers
 
 plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":grin:")
