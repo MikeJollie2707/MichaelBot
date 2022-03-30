@@ -10,7 +10,7 @@ import hikari
 import datetime as dt
 import typing as t
 
-from utilities.navigator import MenuComponent, MenuInteractionWrapper, ButtonPages
+from utilities.navigator import MenuComponent, MenuReactionWrapper, ReactionPages
 import utilities.helpers as helpers
 
 __PREFIX_COMMAND_TYPES__ = (
@@ -143,7 +143,7 @@ class SmallHelp(lightbulb.DefaultHelpCommand):
         menu_root = MenuComponent(main_page)
         for name in plugin_info:
             menu_root.add_list_options(plugins[name].d.emote, plugin_help_format(ctx, plugins[name]))
-        menu = MenuInteractionWrapper(menu_root)
+        menu = MenuReactionWrapper(menu_root)
         await menu.run(ctx)
     
     async def send_plugin_help(self, ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> None:
@@ -153,7 +153,7 @@ class SmallHelp(lightbulb.DefaultHelpCommand):
             page = command_help_format(ctx, command)
             embeds.append(page)
         
-        page = ButtonPages(embeds)
+        page = ReactionPages(embeds)
         await page.run(ctx)
     
     async def send_command_help(self, ctx: lightbulb.Context, command: lightbulb.Command) -> None:
