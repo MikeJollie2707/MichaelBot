@@ -2,13 +2,13 @@ import lightbulb
 import hikari
 import asyncpg
 import asyncpg.exceptions as pg_exception
+import aiohttp
 
 import datetime as dt
 import logging
 
-import utilities.helpers as helpers
-import utilities.psql as psql
 import utilities.models as models
+import utilities.psql as psql
 
 plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
 
@@ -36,6 +36,10 @@ async def on_shard_connect(event: hikari.StartingEvent):
     
     if bot.d.pool is None:
         logging.warn("Unable to connect to a database. Bot will be missing features.")
+    
+    if bot.d.aio_session is None:
+        bot.d.aio_session = aiohttp.ClientSession()
+        logging.info("aiohttp connection session created.")
 
 @plugin.listener(hikari.ShardReadyEvent)
 async def on_shard_ready(event: hikari.ShardReadyEvent):
@@ -65,8 +69,18 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
                 bot.d.user_cache[user_id] = models.UserCache(user_module = user)
             logging.info("Populated user cache with stored info.")
 
+@plugin.listener(hikari.StoppingEvent)
+async def on_stopped(event: hikari.StoppingEvent):
+    bot = event.app
 
-def load(bot):
+    if bot.d.pool is not None:
+        await bot.d.pool.close()
+        logging.info("Postgres connection pool gracefully closed.")
+    if bot.d.aio_session is not None:
+        await bot.d.aio_session.close()
+        logging.info("aiohttp connection session gracefully closed.")
+
+def load(bot: lightbulb.BotApp):
     bot.add_plugin(plugin)
-def unload(bot):
+def unload(bot: lightbulb.BotApp):
     bot.remove_plugin(plugin)

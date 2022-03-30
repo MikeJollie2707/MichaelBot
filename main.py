@@ -10,6 +10,7 @@ EXTENSIONS = [
     "categories.bot",
     "categories.fun",
     "categories.help",
+    "categories.info",
     "categories.music",
     "events.error_handler",
     "events.logger",
@@ -52,6 +53,7 @@ def create_bot(bot_info, secrets) -> lightbulb.BotApp:
     bot.d.bot_info = bot_info
     bot.d.secrets = secrets
     bot.d.pool = None
+    bot.d.aio_session = None
     # Hold high-traffic data on database (usually for read-only purpose).
     bot.d.guild_cache = {}
     bot.d.user_cache = {}
