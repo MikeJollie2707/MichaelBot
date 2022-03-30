@@ -15,6 +15,7 @@ plugin.d.emote = helpers.get_emote(":robot:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("changelog", "Show 10 latest changes to the bot.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def changelog_base(ctx: lightbulb.Context):
@@ -24,6 +25,7 @@ async def changelog_base(ctx: lightbulb.Context):
     await changelog_stable(ctx)
 
 @changelog_base.child
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("stable", "Show 10 latest changes to the bot.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def changelog_stable(ctx: lightbulb.Context):
@@ -46,6 +48,7 @@ async def changelog_stable(ctx: lightbulb.Context):
     await pages.run(ctx)
 
 @changelog_base.child
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def changelog_dev(ctx: lightbulb.Context):
@@ -120,6 +123,7 @@ async def ping(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("new_prefix", "New prefix", default = None)
 @lightbulb.command("prefix", "View or edit the bot prefix for the guild. This only affects Prefix Commands.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -137,6 +141,7 @@ async def prefix(ctx: lightbulb.Context):
         await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.", default = "bug")
 @lightbulb.command("report", "Report a bug or suggest a feature for the bot. Please be constructive.")

@@ -17,6 +17,7 @@ async def dice(ctx: lightbulb.Context):
     await ctx.respond("It's %d :game_die:" % (random.randint(1, 6)), reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to repeat.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("echo", "Echo echo echo echo.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -28,7 +29,7 @@ async def echo(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.option("target", "The target to measure", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("measure_unit", "The unit to measure")
-@lightbulb.command("how", "An ultimate measurement to measure everything except gayness.")
+@lightbulb.command("how", "An ultimate measurement to measure everything.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def how(ctx: lightbulb.Context):
     measure_unit = ctx.options.measure_unit
@@ -36,25 +37,6 @@ async def how(ctx: lightbulb.Context):
 
     percent_thing = random.randint(0, 100)
     await ctx.respond(f"{target} is `{percent_thing}%` {measure_unit}.", reply = True)
-
-@plugin.command()
-@lightbulb.option("target", "The target to measure.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("howgay", "An ultimate measurement of gayness.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def howgay(ctx: lightbulb.Context):
-    target = ctx.options.target
-
-    percent_gay = 0
-    if "MIKEJOLLIE" in target.upper() or "472832990012243969" in target:
-        percent_gay = 0
-    elif "STRANGER.COM" in target.upper():
-        percent_gay = 100
-    else: percent_gay = random.randint(0, 100)
-
-    if percent_gay == 0:
-        await ctx.respond(f"Holy moly, the {target} is 100% straight :open_mouth:, zero trace of gayness.", reply = True)
-    else:
-        await ctx.respond(f"{target} is `{percent_gay}%` gay :rainbow_flag:.", reply = True)
 
 @plugin.command()
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)

@@ -199,6 +199,7 @@ async def role_info(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("term", "The term to search. Example: `rickroll`.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("urban", "Search a term on urbandictionary.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -250,6 +251,7 @@ async def urban(ctx: lightbulb.Context):
             await ctx.respond("Sorry, that word doesn't exist on urban dictionary.", reply = True, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("city_name", "The city to check. Example: `Paris`.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("weather", "Display weather information for a location.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
