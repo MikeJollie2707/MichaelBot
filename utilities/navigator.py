@@ -416,26 +416,41 @@ class MenuInteractionWrapper:
         Send the initial message and return a reference to that message.
         '''
         assert self._context is not None
-        buttons = await self._build_buttons(self._get_available_buttons(page))
-        resp = await self._context.respond(page.content, component=buttons)
+        button_rows = await self._build_buttons(self._get_available_buttons(page))
+        resp = await self._context.respond(page.content, components = button_rows)
         return await resp.message()
 
     async def _update_msg(self, inter: hikari.ComponentInteraction, page: MenuComponent) -> None:
         '''
         Update the message through interaction. Also update the buttons.
         '''
-        buttons = await self._build_buttons(self._get_available_buttons(page), disabled = self._msg is None)
+        button_rows = await self._build_buttons(self._get_available_buttons(page), disabled = self._msg is None)
         try:
-            await inter.create_initial_response(hikari.ResponseType.MESSAGE_UPDATE, page.content, component=buttons)
+            await inter.create_initial_response(hikari.ResponseType.MESSAGE_UPDATE, page.content, components = button_rows)
         except hikari.NotFoundError:
-            await inter.edit_initial_response(page.content, component=buttons)
+            await inter.edit_initial_response(page.content, components = button_rows)
 
-    async def _build_buttons(self, buttons_list: t.Sequence[ComponentButton], disabled: bool = False) -> t.Union[hikari.api.ActionRowBuilder, hikari.UndefinedType]:
+    async def _build_buttons(self, buttons_list: t.Sequence[ComponentButton], disabled: bool = False) -> t.List[t.Union[hikari.api.ActionRowBuilder, hikari.UndefinedType]]:
         assert self._context is not None
-        buttons = self._context.app.rest.build_action_row()
-        for button in buttons_list:
-            button.build(buttons, disabled)
-        return buttons
+
+        # An action row has 5 buttons at max, so we divide buttons into different rows.
+        # A message also has 5 rows at max.
+        if len(buttons_list) > 25:
+            raise ValueError("Button amount exceed 25.")
+        rows = []
+        row = None
+        for index, button in enumerate(buttons_list):
+            if row is None:
+                row = self._context.app.rest.build_action_row()
+            
+            button.build(row, disabled)
+            if index % 5 == 4:
+                rows.append(row)
+                row = None
+        if row is not None:
+            rows.append(row)
+        
+        return rows
 
     async def _process_interaction_create(self, event: hikari.InteractionCreateEvent) -> None:
         if not isinstance(event.interaction, hikari.ComponentInteraction):
@@ -499,7 +514,7 @@ class MenuInteractionWrapper:
 
         if self._msg is not None:
             buttons = self._get_available_buttons(self._menu)
-            await self._msg.edit(component = await self._build_buttons(buttons, True))
+            await self._msg.edit(components = await self._build_buttons(buttons, True))
 
     async def _timeout_coro(self) -> None:
         try:
@@ -528,7 +543,7 @@ class MenuInteractionWrapper:
     
     async def _on_timeout(self):
         timeout_button = ComponentButton(__default_emojis__["timeout"], True, hikari.ButtonStyle.SECONDARY, "timeout", None)
-        await self._msg.edit(component = await self._build_buttons([timeout_button], True))
+        await self._msg.edit(components = await self._build_buttons([timeout_button], True))
     async def _on_stop(self):
         await self._msg.delete()
 
