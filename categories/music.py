@@ -102,9 +102,14 @@ async def join(ctx: lightbulb.Context):
 @lightbulb.command(name = "leave", description = "Leave the voice channel.", aliases = ["disconnect", 'dc'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def leave(ctx: lightbulb.Context):
-    node_extra.pop(ctx.guild_id, None)
-    await ctx.bot.update_voice_state(ctx.guild_id, None)
-    await ctx.respond("**Successfully disconnected.**", reply = True)
+    node = await lavalink.get_guild_node(ctx.guild_id)
+    if node is not None:
+        await lavalink.remove_guild_node(ctx.guild_id)
+        node_extra.pop(ctx.guild_id, None)
+        await ctx.bot.update_voice_state(ctx.guild_id, None)
+        await ctx.respond("**Successfully disconnected.**", reply = True)
+    else:
+        await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
