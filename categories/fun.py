@@ -57,13 +57,6 @@ async def howgay(ctx: lightbulb.Context):
         await ctx.respond(f"{target} is `{percent_gay}%` gay :rainbow_flag:.", reply = True)
 
 @plugin.command()
-@lightbulb.command("ping", "Checks the bot if it's alive")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def ping(ctx: lightbulb.Context):
-    latency = ctx.bot.heartbeat_latency
-    await ctx.respond(f"Pong! :ping_pong: {format(latency * 1000, '.2f')}ms.", reply = True, mentions_reply = True)
-
-@plugin.command()
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("speak", "Speak the message.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
