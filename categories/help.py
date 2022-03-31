@@ -180,7 +180,6 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
             await self.send_bot_help(ctx)
             return
         
-        obj = obj.lower()
         # Prioritize searching command based on context.
         if isinstance(ctx, lightbulb.PrefixContext):
             cmd = self.bot.get_prefix_command(obj)
