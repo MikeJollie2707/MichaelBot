@@ -1,9 +1,3 @@
-# The entire file will base on the assumption that there is no help slash command.
-# This is because it's not certain `help <command>` will return slash command or prefix command.
-# The main idea of a slash command is that it'll display all slash commands, an a prefix...
-# ...help command will display all prefix commands. However, it's not really needed to do the former...
-# ...because there's literally a menu on Discord for that.
-
 import lightbulb
 import hikari
 
@@ -19,13 +13,40 @@ __PREFIX_COMMAND_TYPES__ = (
     lightbulb.PrefixSubGroup,
     lightbulb.PrefixSubCommand,
 )
-# Put it here just in case.
 __SLASH_COMMAND_TYPES__ = (
     lightbulb.SlashCommand,
     lightbulb.SlashCommandGroup,
     lightbulb.SlashSubGroup,
     lightbulb.SlashSubCommand,
 )
+
+def get_slash_command(bot: lightbulb.BotApp, name: str) -> t.Optional[lightbulb.SlashCommand]:
+    '''
+    Get the slash command with the given name, or `None` if none was found.
+
+    Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.
+    '''
+    # Reference: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/app.html#BotApp.get_prefix_command
+    
+    parts = name.split()
+    if len(parts) == 1:
+        return bot._slash_commands.get(name)
+
+    maybe_group = bot._slash_commands.get(parts.pop(0))
+    if not isinstance(maybe_group, lightbulb.SlashCommandGroup):
+        return None
+
+    this: t.Optional[
+        t.Union[
+            lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup, lightbulb.SlashSubCommand
+        ]
+    ] = maybe_group
+    for part in parts:
+        if this is None or isinstance(this, lightbulb.SlashSubCommand):
+            return None
+        this = this.get_subcommand(part)
+
+    return this
 
 def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequence[t.Type], remove_hidden: bool = False) -> t.List[lightbulb.Command]:
     '''
@@ -48,12 +69,16 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
     MAX_COMMANDS = 10
     display = ""
     plugins = []
+
+    types = __PREFIX_COMMAND_TYPES__
+    if isinstance(ctx, lightbulb.SlashContext):
+        types = __SLASH_COMMAND_TYPES__
     
-    commands: t.List[lightbulb.Command] = filter_command_type(plugin.all_commands, __PREFIX_COMMAND_TYPES__, True)
+    commands: t.List[lightbulb.Command] = filter_command_type(plugin.all_commands, types, True)
     commands.sort(key = lambda command: command.name)
     for index, command in enumerate(commands):
         # Signature includes command name.
-        command_title = command.signature
+        command_title = command.signature.replace('=', ' = ')
         
         display += f"**{command_title}:**\n"
         description = command.description
@@ -79,15 +104,10 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
 
 def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> hikari.Embed:
     # Signature includes full command name.
-    embed_title = command.signature
+    embed_title = command.signature.replace('=', ' = ')
     embed_description = "*No help provided*"
     if command.description != "":
         embed_description = command.description + '\n'
-    #if command.get_help(ctx) is not None and command.get_help(ctx) != "":
-    #    embed_description += command.get_help(ctx)
-    #command_signature = command.signature
-
-    # Usage here.
 
     embed = helpers.get_default_embed(
         title = embed_title,
@@ -95,6 +115,43 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
         timestamp = dt.datetime.now().astimezone(),
         author = ctx.author
     )
+    if command.get_help(ctx) != "":
+        embed.add_field(
+            name = "Note",
+            value = command.get_help(ctx)
+        )
+
+    command_type = ""
+    if isinstance(command, __PREFIX_COMMAND_TYPES__):
+        s_cmd = get_slash_command(ctx.bot, command.qualname)
+        # Slash commands base aren't available.
+        if s_cmd is not None and not isinstance(s_cmd, (lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup)):
+            command_type = "`Prefix Command`, `Slash Command`"
+        else:
+            command_type = "`Prefix Command`"
+    elif isinstance(command, __SLASH_COMMAND_TYPES__):
+        if ctx.bot.get_prefix_command(command.qualname) is not None:
+            command_type = "`Prefix Command`, `Slash Command`"
+        else:
+            command_type = "`Slash Command`"
+    embed.add_field(
+        name = "Type",
+        value = command_type
+    )
+
+    if len(command.options) > 0:
+        option_field = ""
+        for option_name in command.options:
+            option_field += f"- `{option_name}`: {command.options[option_name].description}\n"
+        embed.add_field(
+            name = "Parameters",
+            value = option_field
+        )
+    if len(command.aliases) > 0 and isinstance(command, __PREFIX_COMMAND_TYPES__):
+        embed.add_field(
+            name = "Aliases (Prefix Command only)",
+            value = "- " + ', '.join(f"`{alias}`" for alias in command.aliases)
+        )
 
     if isinstance(command, lightbulb.PrefixCommandGroup) or isinstance(command, lightbulb.PrefixSubGroup):
         field_value = ""
@@ -112,9 +169,43 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
     
     return embed
 
-class SmallHelp(lightbulb.DefaultHelpCommand):
-    async def send_bot_help(self, ctx: lightbulb.context.base.Context) -> None:
-        main_page: hikari.Embed = helpers.get_default_embed(
+class MenuLikeHelp(lightbulb.DefaultHelpCommand):
+    async def send_help(self, ctx: lightbulb.Context, obj: t.Optional[str]) -> None:
+        '''
+        The main logic for the help command.
+        '''
+        # Reference: https://github.com/tandemdude/hikari-lightbulb/blob/development/lightbulb/help_command.py#L100
+        if obj is None:
+            await self.send_bot_help(ctx)
+            return
+
+        # Prioritize searching command based on context.
+        if isinstance(ctx, lightbulb.PrefixContext):
+            cmd = self.bot.get_prefix_command(obj)
+            if cmd is not None:
+                if isinstance(cmd, (lightbulb.PrefixCommandGroup, lightbulb.PrefixSubGroup)):
+                    return await self.send_group_help(ctx, cmd)
+                else:
+                    return await self.send_command_help(ctx, cmd)
+        if isinstance(ctx, lightbulb.SlashContext):
+            #cmd = self.bot.get_slash_command(obj)
+            cmd = get_slash_command(self.bot, obj)
+            if cmd is not None:
+                if isinstance(cmd, (lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup)):
+                    return await self.send_group_help(ctx, cmd)
+                else:
+                    return await self.send_command_help(ctx, cmd)
+        
+        # We don't have user/message commands yet.
+
+        await super().send_help(ctx, obj)
+
+    async def send_bot_help(self, ctx: lightbulb.Context) -> None:
+        '''
+        Send a generic help message.
+        '''
+
+        main_page = helpers.get_default_embed(
             title = "Help",
             description = "",
             timestamp = dt.datetime.now().astimezone(),
@@ -127,10 +218,10 @@ class SmallHelp(lightbulb.DefaultHelpCommand):
             public_commands = filter_command_type(plugins[name].all_commands, __PREFIX_COMMAND_TYPES__, True)
             public_commands_len = len(public_commands)
 
-            if public_commands_len != 0:
-                embed_name = f"{plugins[name].d.emote} {name} ({public_commands_len} commands):"
+            if public_commands_len > 0:
+                embed_name = f"{plugins[name].d.emote} {name} ({public_commands_len} commands)"
                 embed_description = "*No description provided*"
-                if plugins[name].description is not None and plugins[name].description != "":
+                if not not plugins[name].description:
                     embed_description = plugins[name].description
                 main_page.add_field(
                     name = embed_name,
@@ -143,27 +234,40 @@ class SmallHelp(lightbulb.DefaultHelpCommand):
         menu_root = MenuComponent(main_page)
         for name in plugin_info:
             menu_root.add_list_options(plugins[name].d.emote, plugin_help_format(ctx, plugins[name]))
-        menu = MenuInteractionWrapper(menu_root)
-        await menu.run(ctx)
+        
+        await MenuInteractionWrapper(menu_root).run(ctx)
     
     async def send_plugin_help(self, ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> None:
+        '''
+        Send a plugin help that contains all commands.
+        '''
         embeds = []
-        public_commands = filter_command_type(plugin.all_commands, __PREFIX_COMMAND_TYPES__, True)
+        types = __PREFIX_COMMAND_TYPES__
+        if isinstance(ctx, lightbulb.SlashContext):
+            types = __SLASH_COMMAND_TYPES__
+        public_commands = filter_command_type(plugin.all_commands, types, True)
         for command in sorted(public_commands, key = lambda cmd: cmd.name):
             page = command_help_format(ctx, command)
             embeds.append(page)
         
-        page = ButtonPages(embeds)
-        await page.run(ctx)
+        await ButtonPages(embeds).run(ctx)
     
     async def send_command_help(self, ctx: lightbulb.Context, command: lightbulb.Command) -> None:
+        '''
+        Send a command help.
+        '''
         await ctx.respond(command_help_format(ctx, command))
     async def send_group_help(self, ctx: lightbulb.Context, group: t.Union[lightbulb.commands.PrefixCommandGroup, lightbulb.commands.PrefixSubGroup]) -> None:
+        '''
+        Send a group help.
+
+        Internally, this does the same as `send_command_help()`.
+        '''
         await ctx.respond(command_help_format(ctx, group))
 
 def load(bot):
     bot.d.old_help_command = bot.help_command
-    bot.help_command = SmallHelp(bot)
+    bot.help_command = MenuLikeHelp(bot)
 def unload(bot):
     bot.help_command = bot.d.old_help_command
     del bot.d.old_help_command

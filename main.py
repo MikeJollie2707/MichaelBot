@@ -49,6 +49,7 @@ def create_bot(bot_info, secrets) -> lightbulb.BotApp:
         token = secrets["token"], 
         prefix = lightbulb.when_mentioned_or(retrieve_prefix),
         intents = hikari.Intents.ALL ^ hikari.Intents.GUILD_PRESENCES,
+        help_slash_command = True
     )
     bot.d.bot_info = bot_info
     bot.d.secrets = secrets
