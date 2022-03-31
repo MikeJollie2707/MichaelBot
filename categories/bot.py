@@ -143,7 +143,7 @@ async def ping(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.option("new_prefix", "New prefix", default = None)
+@lightbulb.option("new_prefix", "The new prefix. Should not be longer than 5 characters or contain spaces.", default = None)
 @lightbulb.command("prefix", "View or edit the bot prefix for the guild. This only affects Prefix Commands.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def prefix(ctx: lightbulb.Context):
@@ -154,6 +154,9 @@ async def prefix(ctx: lightbulb.Context):
         guild_prefix = ctx.bot.d.bot_info["prefix"] if guild_dbcache is None else guild_dbcache.guild_module["prefix"]
         await ctx.respond(f"Current prefix: `{guild_prefix}`", reply = True)
     else:
+        if len(new_prefix) > 5 or len(new_prefix.split(' ')) > 1:
+            await ctx.respond("Invalid prefix.", reply = True, mentions_reply = True)
+            return
         async with ctx.bot.d.pool.acquire() as conn:
             async with conn.transaction():
                 await guild_dbcache.update_guild_module(conn, ctx.guild_id, "prefix", new_prefix)
