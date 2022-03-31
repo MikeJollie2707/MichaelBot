@@ -3,6 +3,7 @@ import hikari
 
 import datetime as dt
 import typing as t
+from textwrap import dedent
 
 from utilities.navigator import MenuComponent, MenuInteractionWrapper, ButtonPages
 import utilities.helpers as helpers
@@ -118,7 +119,7 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
     if command.get_help(ctx) != "":
         embed.add_field(
             name = "Note",
-            value = command.get_help(ctx)
+            value = dedent(command.get_help(ctx))
         )
 
     command_type = ""
@@ -178,7 +179,8 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         if obj is None:
             await self.send_bot_help(ctx)
             return
-
+        
+        obj = obj.lower()
         # Prioritize searching command based on context.
         if isinstance(ctx, lightbulb.PrefixContext):
             cmd = self.bot.get_prefix_command(obj)
