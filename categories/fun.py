@@ -2,8 +2,9 @@ import lightbulb
 import hikari
 import aiohttp
 
-import random
 import datetime as dt
+import random
+from textwrap import dedent
 
 import utilities.checks as checks
 import utilities.helpers as helpers
@@ -19,15 +20,13 @@ async def dice(ctx: lightbulb.Context):
     await ctx.respond("It's %d :game_die:" % (random.randint(1, 6)), reply = True)
 
 @plugin.command()
-@lightbulb.set_help(docstring = True)
+@lightbulb.set_help(dedent('''
+    r/FoundTheInaAlt
+'''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("dadjoke", "Give you a dad joke.", aliases = ["ina-of-the-mountain-what-is-your-wisdom"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def dadjoke(ctx: lightbulb.Context):
-    '''
-    r/FoundTheInaAlt
-    '''
-
     BASE_URL = "https://icanhazdadjoke.com/"
     header = {
         "Accept": "application/json",
@@ -90,16 +89,14 @@ async def speak(ctx: lightbulb.Context):
     await ctx.respond(ctx.options.content, tts = True)
 
 @plugin.command()
-@lightbulb.set_help(docstring = True)
+@lightbulb.set_help(dedent('''
+    UwU This c-c-command is an API caww, so don't use i-it too *pounces on you* many times UwU
+'''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to uwuify.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("uwu", "Turn a text into uwu text.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def uwu(ctx: lightbulb.Context):
-    '''
-    UwU This c-c-command is an API caww, so don't use i-it too *pounces on you* many times UwU
-    '''
-
     BASE_URL = "https://uwuaas.herokuapp.com/api/"
     resp: aiohttp.ClientResponse = await ctx.bot.d.aio_session.post(BASE_URL, json = {"text": ctx.options.text})
     if resp.status == 200:
