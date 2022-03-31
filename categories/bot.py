@@ -119,7 +119,26 @@ async def info(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def ping(ctx: lightbulb.Context):
     latency = ctx.bot.heartbeat_latency
-    await ctx.respond(f"Pong! :ping_pong: {format(latency * 1000, '.2f')}ms.", reply = True, mentions_reply = True)
+    import time
+    start = time.perf_counter()
+    m = await ctx.respond("Never gonna give you up.", reply = True)
+    end = time.perf_counter()
+
+    embed = helpers.get_default_embed(
+        description = "Pong! :ping_pong:",
+        author = ctx.author,
+        timestamp = dt.datetime.now().astimezone()
+    )
+    embed.add_field(
+        name = "Gateway",
+        value = f"{latency * 1000:.2f}ms",
+        inline = True
+    ).add_field(
+        name = "REST",
+        value = f"{(end - start) * 1000:.2f}ms",
+        inline = True
+    )
+    await m.edit(content = None, embed = embed, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
