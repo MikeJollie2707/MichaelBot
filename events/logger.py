@@ -1225,6 +1225,8 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 
+        if isinstance(event.exception, lightbulb.CommandNotFound):
+            return
         if isinstance(event.exception, lightbulb.CommandIsOnCooldown):
             return
 
