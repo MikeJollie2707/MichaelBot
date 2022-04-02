@@ -25,6 +25,9 @@ async def changelog_base(ctx: lightbulb.Context):
     await changelog_stable(ctx)
 
 @changelog_base.child
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+'''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("stable", "Show 10 latest changes to the bot.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -48,6 +51,9 @@ async def changelog_stable(ctx: lightbulb.Context):
     await pages.run(ctx)
 
 @changelog_base.child
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+'''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -141,6 +147,9 @@ async def ping(ctx: lightbulb.Context):
     await m.edit(content = None, embed = embed, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    Author needs to have `Manage Messages`.
+'''))
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("new_prefix", "The new prefix. Should not be longer than 5 characters or contain spaces.", default = None)
@@ -165,7 +174,7 @@ async def prefix(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.", default = "bug")
+@lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.", choices = ["bug", "suggest"])
 @lightbulb.command("report", "Report a bug or suggest a feature for the bot. Please be constructive.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def report(ctx: lightbulb.Context):
