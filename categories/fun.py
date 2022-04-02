@@ -80,12 +80,12 @@ async def dadjoke(ctx: lightbulb.Context):
         "User-Agent": "MichaelBot (Discord Bot) - https://github.com/MikeJollie2707/"
     }
 
-    resp: aiohttp.ClientResponse = await ctx.bot.d.aio_session.get(BASE_URL, headers = header)
-    if resp.status == 200:
-        resp_json = await resp.json()
-        await ctx.respond(resp_json["joke"], reply = True)
-    else:
-        await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
+    async with ctx.bot.d.aio_session.get(BASE_URL, headers = header) as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            await ctx.respond(resp_json["joke"], reply = True)
+        else:
+            await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.command("dice", "Roll a 6-face dice for you.")
