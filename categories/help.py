@@ -208,7 +208,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         Send a generic help message.
         '''
 
-        if isinstance(ctx, lightbulb.PrefixCommand):
+        if isinstance(ctx, lightbulb.PrefixContext):
             await ctx.event.message.delete()
 
         main_page = helpers.get_default_embed(
@@ -221,7 +221,11 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         plugins = ctx.bot.plugins
         plugin_info: t.Dict[str, int] = {}
         for plugin in plugins.values():
-            public_commands = filter_command_type(plugin.all_commands, __PREFIX_COMMAND_TYPES__, True)
+            public_commands = []
+            if isinstance(ctx, lightbulb.PrefixContext):
+                public_commands = filter_command_type(plugin.all_commands, __PREFIX_COMMAND_TYPES__, True)
+            else:
+                public_commands = filter_command_type(plugin.all_commands, __SLASH_COMMAND_TYPES__, True)
             public_commands_len = len(public_commands)
 
             if public_commands_len > 0:
