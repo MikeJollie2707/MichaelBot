@@ -135,6 +135,23 @@ async def mock(ctx: lightbulb.Context):
             await ctx.respond("The text is too large and I can't send it to your DM for some reasons :(", reply = True, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 5.0, uses = 1.0, bucket = lightbulb.UserBucket)
+@lightbulb.command("pekofy", "Pekofy a message peko.")
+@lightbulb.implements(lightbulb.MessageCommand)
+async def peko(ctx: lightbulb.Context):
+    from utilities.funtext import pekofy
+
+    message: hikari.Message = ctx.options.target
+    if message.content != None:
+        text = pekofy(message.content)
+        await ctx.respond(text, reply = True)
+    else:
+        await ctx.respond("Oh no, this message doesn't have any text peko.", reply = True, mentions_reply = True)
+
+@plugin.command()
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+'''))
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("speak", "Speak the message.")
