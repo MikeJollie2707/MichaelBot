@@ -85,13 +85,19 @@ plugin.d.emote = helpers.get_emote(":memo:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD), lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    This command doesn't do anything. Please use the subcommands.
+'''))
 @lightbulb.command("log-set", "Set a channel as a log channel.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def log_set(ctx: lightbulb.Context):
     pass
 
 @log_set.child
-@lightbulb.option("channel", "The channel to dump all the logs. Default to current channel.", type = hikari.TextableGuildChannel, default = None)
+@lightbulb.set_help(dedent('''
+    Author needs to have `Manage Server`.
+'''))
+@lightbulb.option("channel", "The Discord channel to dump all the logs. Default to current channel.", type = hikari.TextableGuildChannel, default = None)
 @lightbulb.command("all", "Set a channel to dump all the logs. This automatically enables logging system.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_set_all(ctx: lightbulb.Context):
@@ -123,7 +129,11 @@ async def log_set_all(ctx: lightbulb.Context):
     await ctx.bot.rest.create_message(channel, "This channel is now mine to log, muahahahaha!")
 
 @log_set.child
-@lightbulb.option("logging_option", "Log type to turn on.", choices = command_event_choices)
+@lightbulb.set_help(dedent('''
+    Author needs to have `Manage Server`.
+    It is recommended to use the `Slash Command` version of the command.
+'''))
+@lightbulb.option("logging_option", "Log type to turn on. Check `log-view` to see all options.", choices = command_event_choices)
 @lightbulb.command("option", "Enable a logging option.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_enable_option(ctx: lightbulb.Context):
@@ -139,12 +149,18 @@ async def log_enable_option(ctx: lightbulb.Context):
     await ctx.respond(f"Log option `{logging_option}` is enabled.", reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    This command doesn't do anything. Please use the subcommands.
+'''))
 @lightbulb.command("log-disable", "Disable logging or part of the logging system.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def log_disable(ctx: lightbulb.Context):
     pass
 
 @log_disable.child
+@lightbulb.set_help(dedent('''
+    Author needs to have `Manage Server`.
+'''))
 @lightbulb.command("all", "Disable logging system.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_disable_all(ctx: lightbulb.Context):
@@ -156,7 +172,11 @@ async def log_disable_all(ctx: lightbulb.Context):
     await ctx.respond(f"Logging disabled successfully.", reply = True)
 
 @log_disable.child
-@lightbulb.option("logging_option", "Log type to turn off.", choices = command_event_choices)
+@lightbulb.set_help(dedent('''
+    Author needs to have `Manage Server`.
+    It is recommended to use the `Slash Command` version of the command.
+'''))
+@lightbulb.option("logging_option", "Log type to turn off. Check `log-view` to see all options.", choices = command_event_choices)
 @lightbulb.command("option", "Disable a logging option.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_disable_option(ctx: lightbulb.Context):
@@ -172,6 +192,9 @@ async def log_disable_option(ctx: lightbulb.Context):
     await ctx.respond(f"Log option `{logging_option}` is disabled.", reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    Author needs to have `Manage Server`.
+'''))
 @lightbulb.command("log-view", "View all log settings.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_view(ctx: lightbulb.Context):

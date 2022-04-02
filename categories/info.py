@@ -15,7 +15,7 @@ plugin.d.emote = helpers.get_emote(":information_source:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
-@lightbulb.option("member", "A Discord member.", type = hikari.Member, default = None)
+@lightbulb.option("member", "A Discord member. Default to you.", type = hikari.Member, default = None)
 @lightbulb.command("profile", "Information about yourself or another member.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def profile(ctx: lightbulb.Context):

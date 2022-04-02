@@ -3,6 +3,7 @@ import hikari
 import lavaplayer
 
 import datetime as dt
+from textwrap import dedent
 
 import utilities.checks as checks
 import utilities.helpers as helpers
@@ -204,7 +205,7 @@ async def pause(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.option(name = "track", description = "Keywords to search. For example: blend w.", modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option(name = "track", description = "Keywords to search. Example: `blend w.`", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command(name = "search", description = "Search and return 10 relevant results. You can then copy the desired link into `play`.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def search(ctx: lightbulb.Context):
@@ -246,6 +247,7 @@ async def seek(ctx: lightbulb.Context):
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.command(name = "repeat", description = "Toggle repeating the track.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def repeat(ctx: lightbulb.Context):
@@ -261,6 +263,9 @@ async def repeat(ctx: lightbulb.Context):
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    It's recommended to use the built-in feature `User Volume` instead of this command.
+'''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option(name = "vol", description = "Volume to set (0-200)", type = int)
 @lightbulb.command(name = "volume", description = "Set the volume of the player.")

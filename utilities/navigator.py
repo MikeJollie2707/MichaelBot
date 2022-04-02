@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import lightbulb
+# Default callback functions
 from lightbulb.utils.nav import *
 import hikari
-import typing as t
-import utilities.helpers as helpers
+
 import asyncio
+import typing as t
+
+import utilities.helpers as helpers
 
 T = t.TypeVar("T")
 
@@ -23,6 +26,10 @@ __default_emojis__ = {
     "return": helpers.get_emote(":arrow_up_small:"),
 }
 
+# In lightbulb, when each buttons are pressed, they call a hidden callback (stop as `stop()`, etc.)
+# When subclass the default navigators/menus, these buttons will call those hidden callback.
+# The problem with the default `stop` behavior is it deletes the message regardless, which is pretty bad ._.
+# So we need a stop function that essentially calls the "destructor" of the navigators/menus to make it do whatever it wants.
 async def __cleanup_stop__(nav, _: hikari.Event) -> None:
     """
     As opposed to the default behavior, this stop will call the Navigator's destructor (which is `_on_stop()`) instead of deleting message.
@@ -34,6 +41,12 @@ async def __cleanup_stop__(nav, _: hikari.Event) -> None:
     nav._msg = None
     if nav._timeout_task is not None:
         nav._timeout_task.cancel()
+
+# Since the default class design kinda sucks (no way to do any cleanup), we're adding 2 methods:
+# - `_on_timeout()` will be called when the class timeout.
+# - `_on_stop()` will be called when it gracefully close.
+# This also means I need to rewrite `_timeout_coro()` to include `_on_timeout()` call, `create_default_button()` to include new `__cleanup_stop__()`.
+# There might be a need to rewrite `run()` since you might want some different initial behavior. These often are very specific so I don't have a definite method for it.
 
 class ReactionPages(ReactionNavigator):
     def __init__(self, pages: t.Sequence[hikari.Embed], *, buttons: t.Optional[t.Sequence[ReactionButton]] = None, original_message: t.Optional[hikari.Message] = None, timeout: float = 120) -> None:
@@ -61,7 +74,7 @@ class ReactionPages(ReactionNavigator):
         except asyncio.CancelledError:
             pass
     
-    async def run(self, context: lightbulb.context.Context) -> None:
+    async def run(self, context: lightbulb.Context) -> None:
         intent_to_check_for = (
             hikari.Intents.GUILD_MESSAGE_REACTIONS
             if context.guild_id is not None
@@ -385,6 +398,8 @@ class MenuReactionWrapper:
 
 class MenuInteractionWrapper:
     def __init__(self, component: MenuComponent, *, terminate_emoji: str = __default_emojis__["terminate"], return_emoji: str = __default_emojis__["return"], timeout: float = 120):
+        if isinstance(component.options, list):
+            raise NotImplementedError("Use ReactionPages instead.")
         self._menu: MenuComponent = component
         self._timeout: float = timeout
         self._return_button = ComponentButton(return_emoji, True, hikari.ButtonStyle.SECONDARY, "return", None)

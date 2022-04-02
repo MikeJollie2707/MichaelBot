@@ -172,6 +172,9 @@ async def prefix(ctx: lightbulb.Context):
         await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    It is recommended to use the `Slash Command` version of this command.
+'''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.", choices = ["bug", "suggest"])

@@ -106,6 +106,9 @@ async def echo(ctx: lightbulb.Context):
     await ctx.respond(ctx.options.content)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    It is recommended to use the `Slash Command` version of this command.
+'''))
 @lightbulb.option("target", "The target to measure", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("measure_unit", "The unit to measure")
 @lightbulb.command("how", "An ultimate measurement to measure everything.")
@@ -120,6 +123,7 @@ async def how(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.set_help(dedent('''
     The text will be sent through DM if it exceeds 1500 characters.
+    It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1.0, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to mock.", modifier = helpers.CONSUME_REST_OPTION)
@@ -176,6 +180,7 @@ async def speak(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.set_help(dedent('''
     UwU This c-c-command is an API caww, so don't use i-it too *pounces on you* many times UwU
+    It is recommended to use the `Message Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to uwuify.", modifier = helpers.CONSUME_REST_OPTION)
