@@ -208,6 +208,9 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         Send a generic help message.
         '''
 
+        if isinstance(ctx, lightbulb.PrefixCommand):
+            await ctx.event.message.delete()
+
         main_page = helpers.get_default_embed(
             title = "Help",
             description = "",
@@ -262,14 +265,14 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         '''
         Send a command help.
         '''
-        await ctx.respond(command_help_format(ctx, command))
+        await ctx.respond(embed = command_help_format(ctx, command))
     async def send_group_help(self, ctx: lightbulb.Context, group: t.Union[lightbulb.commands.PrefixCommandGroup, lightbulb.commands.PrefixSubGroup]) -> None:
         '''
         Send a group help.
 
         Internally, this does the same as `send_command_help()`.
         '''
-        await ctx.respond(command_help_format(ctx, group))
+        await ctx.respond(embed = command_help_format(ctx, group))
 
 def load(bot):
     bot.d.old_help_command = bot.help_command
