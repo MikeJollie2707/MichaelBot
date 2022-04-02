@@ -1,7 +1,6 @@
 # API commands are inspired by: https://github.com/kamfretoz/XJ9/tree/main/extensions/utilities
 import lightbulb
 import hikari
-import aiohttp
 import humanize
 
 import datetime as dt
@@ -210,45 +209,45 @@ async def urban(ctx: lightbulb.Context):
     parameters = {
         "term": term
     }
-    resp: aiohttp.ClientResponse = await ctx.bot.d.aio_session.get(BASE_URL, params = parameters)
-    if resp.status == 200:
-        resp_json = await resp.json()
-        if len(resp_json["list"]) > 0:
-            top_entry = resp_json["list"][0]
-            definition = top_entry["definition"].replace('[', '').replace(']', '')
-            if len(definition) > 900:
-                definition = definition[:901]
-                definition += "..."
-            example = top_entry["example"].replace('[', '').replace(']', '')
-            if len(example) > 900:
-                example = example[:901]
-                example += "..."
-            elif example == "":
-                example = "`None provided`"
-            
-            embed = helpers.get_default_embed(
-                title = f"{top_entry['word']}",
-                timestamp = dt.datetime.now().astimezone()
-            )
-            embed.add_field(
-                name = "Definition:",
-                value = definition
-            )
-            embed.add_field(
-                name = "Example:",
-                value = example
-            )
-            embed.add_field(
-                name = "Ratio:",
-                value = f"{helpers.get_emote(':thumbs_up:')} {top_entry['thumbs_up']} - {helpers.get_emote(':thumbs_down:')} {top_entry['thumbs_down']}"
-            )
-            embed.set_footer(
-                text = f"Defined by: {top_entry['author']}"
-            )
+    async with ctx.bot.d.aio_session.get(BASE_URL, params = parameters) as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            if len(resp_json["list"]) > 0:
+                top_entry = resp_json["list"][0]
+                definition = top_entry["definition"].replace('[', '').replace(']', '')
+                if len(definition) > 900:
+                    definition = definition[:901]
+                    definition += "..."
+                example = top_entry["example"].replace('[', '').replace(']', '')
+                if len(example) > 900:
+                    example = example[:901]
+                    example += "..."
+                elif example == "":
+                    example = "`None provided`"
+                
+                embed = helpers.get_default_embed(
+                    title = f"{top_entry['word']}",
+                    timestamp = dt.datetime.now().astimezone()
+                )
+                embed.add_field(
+                    name = "Definition:",
+                    value = definition
+                )
+                embed.add_field(
+                    name = "Example:",
+                    value = example
+                )
+                embed.add_field(
+                    name = "Ratio:",
+                    value = f"{helpers.get_emote(':thumbs_up:')} {top_entry['thumbs_up']} - {helpers.get_emote(':thumbs_down:')} {top_entry['thumbs_down']}"
+                )
+                embed.set_footer(
+                    text = f"Defined by: {top_entry['author']}"
+                )
 
-            await ctx.respond(embed = embed, reply = True)
-        else:
-            await ctx.respond("Sorry, that word doesn't exist on urban dictionary.", reply = True, mentions_reply = True)
+                await ctx.respond(embed = embed, reply = True)
+            else:
+                await ctx.respond("Sorry, that word doesn't exist on urban dictionary.", reply = True, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
@@ -267,66 +266,66 @@ async def weather(ctx: lightbulb.Context):
         "q": city_name,
         "key": api_key,
     }
-    resp: aiohttp.ClientResponse = await ctx.bot.d.aio_session.get(BASE_URL + "/current.json", params = parameters)
-    if resp.status == 200:
-        resp_json = await resp.json()
-        location = resp_json["location"]
-        current = resp_json["current"]
+    async with ctx.bot.d.aio_session.get(BASE_URL + "/current.json", params = parameters) as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            location = resp_json["location"]
+            current = resp_json["current"]
 
-        embed = hikari.Embed(
-            title = "Weather Information",
-            description = f"Condition: {current['condition']['text']}",
-            timestamp = dt.datetime.now().astimezone()
-        ).set_footer(
-            text = f"Powered by: weatherapi.com",
-            icon = "http://cdn.weatherapi.com/v4/images/weatherapi_logo.png"
-        )
-        embed.add_field(
-            name = "Location:",
-            value = dedent(f'''
-                City: {location["name"]}
-                Country: {location["country"]}
-                Timezone: {location["tz_id"]}
-            ''')
-        )
-        embed.add_field(
-            name = "Temperature:",
-            value = dedent(f'''
-                True Temperature: {current["temp_c"]} °C / {current["temp_f"]} °F
-                Feel Like: {current["feelslike_c"]} °C / {current["feelslike_f"]} °F
-            ''')
-        )
-        embed.add_field(
-            name = "Wind:",
-            value = dedent(f'''
-                Speed: {current["wind_kph"]} km/h ({current["wind_mph"]} mph)
-                Gusts: {current["gust_kph"]} km/h ({current["gust_mph"]} mph)
-                Direction: {current["wind_degree"]}° {current["wind_dir"]}
-            ''')
-        )
-        embed.add_field(
-            name = "Others:",
-            value = dedent(f'''
-                Pressure: {current["pressure_mb"]} hPa ({current["pressure_in"]} inches)
-                Precipitation: {current["precip_mm"]} mm ({current["precip_in"]} inches)
-                Humidity: {current["humidity"]}%
-                Cloudiness: {current["cloud"]}%
-                UV Index: {current["uv"]}
-            ''')
-        )
-        embed.set_thumbnail("http:" + current["condition"]["icon"])
+            embed = hikari.Embed(
+                title = "Weather Information",
+                description = f"Condition: {current['condition']['text']}",
+                timestamp = dt.datetime.now().astimezone()
+            ).set_footer(
+                text = f"Powered by: weatherapi.com",
+                icon = "http://cdn.weatherapi.com/v4/images/weatherapi_logo.png"
+            )
+            embed.add_field(
+                name = "Location:",
+                value = dedent(f'''
+                    City: {location["name"]}
+                    Country: {location["country"]}
+                    Timezone: {location["tz_id"]}
+                ''')
+            )
+            embed.add_field(
+                name = "Temperature:",
+                value = dedent(f'''
+                    True Temperature: {current["temp_c"]} °C / {current["temp_f"]} °F
+                    Feel Like: {current["feelslike_c"]} °C / {current["feelslike_f"]} °F
+                ''')
+            )
+            embed.add_field(
+                name = "Wind:",
+                value = dedent(f'''
+                    Speed: {current["wind_kph"]} km/h ({current["wind_mph"]} mph)
+                    Gusts: {current["gust_kph"]} km/h ({current["gust_mph"]} mph)
+                    Direction: {current["wind_degree"]}° {current["wind_dir"]}
+                ''')
+            )
+            embed.add_field(
+                name = "Others:",
+                value = dedent(f'''
+                    Pressure: {current["pressure_mb"]} hPa ({current["pressure_in"]} inches)
+                    Precipitation: {current["precip_mm"]} mm ({current["precip_in"]} inches)
+                    Humidity: {current["humidity"]}%
+                    Cloudiness: {current["cloud"]}%
+                    UV Index: {current["uv"]}
+                ''')
+            )
+            embed.set_thumbnail("http:" + current["condition"]["icon"])
 
-        if current["is_day"] == 1:
-            embed.color = models.DefaultColor.gold()
+            if current["is_day"] == 1:
+                embed.color = models.DefaultColor.gold()
+            else:
+                embed.color = models.DefaultColor.dark_blue()
+
+            await ctx.respond(embed = embed, reply = True)
+        elif resp.status == 400:
+            await ctx.respond("City not found.", reply = True, mentions_reply = True)
         else:
-            embed.color = models.DefaultColor.dark_blue()
-
-        await ctx.respond(embed = embed, reply = True)
-    elif resp.status == 400:
-        await ctx.respond("City not found.", reply = True, mentions_reply = True)
-    else:
-        resp_json = await resp.json()
-        await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
+            resp_json = await resp.json()
+            await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
 
 def load(bot: lightbulb.BotApp):
     bot.add_plugin(plugin)
