@@ -120,7 +120,8 @@ async def force_sync_cache_guild(ctx: lightbulb.Context):
 @lightbulb.command("purge-slashes", "Force delete every slash commands in test guilds.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def purge_slashes(ctx: lightbulb.Context):
-    await ctx.bot.purge_application_commands(*ctx.bot.d.bot_info["default_guilds"])
+    async with ctx.bot.rest.trigger_typing(ctx.channel_id):
+        await ctx.bot.purge_application_commands(*ctx.bot.d.bot_info["default_guilds"])
     await ctx.respond("Cleared all guild slash commands in test guilds.", reply = True)
 
 @plugin.command()
@@ -156,7 +157,24 @@ async def test(ctx: lightbulb.Context):
     #iterator = ctx.bot.rest.fetch_messages(ctx.channel_id).limit(ctx.options.count)
     #async for message in iterator.chunk(100):
     #    await ctx.bot.rest.delete_messages(ctx.channel_id, message)
-    raise errors.CustomCheckFailed("L gitgud")
+    row1 = ctx.bot.rest.build_action_row()
+    row2 = ctx.bot.rest.build_action_row()
+    btn = row1.add_button(hikari.ButtonStyle.PRIMARY, "Button1")
+    btn.set_label("Button1")
+    btn.add_to_container()
+    btn = row1.add_button(hikari.ButtonStyle.PRIMARY, "Button2")
+    btn.set_label("Button2")
+    btn.add_to_container()
+    btn = row1.add_button(hikari.ButtonStyle.PRIMARY, "Button3")
+    btn.set_label("Button3")
+    btn.add_to_container()
+    
+    btn = row2.add_button(hikari.ButtonStyle.PRIMARY, "Button4")
+    btn.set_label("Button4")
+    btn.add_to_container()
+
+
+    await ctx.respond("Hii", components = [row1])
 
 def load(bot):
     bot.add_plugin(plugin)
