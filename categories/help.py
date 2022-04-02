@@ -122,22 +122,24 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
             value = dedent(command.get_help(ctx))
         )
 
-    command_type = ""
-    if isinstance(command, __PREFIX_COMMAND_TYPES__):
-        s_cmd = get_slash_command(ctx.bot, command.qualname)
-        # Slash commands base aren't available.
-        if s_cmd is not None and not isinstance(s_cmd, (lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup)):
-            command_type = "`Prefix Command`, `Slash Command`"
-        else:
-            command_type = "`Prefix Command`"
-    elif isinstance(command, __SLASH_COMMAND_TYPES__):
-        if ctx.bot.get_prefix_command(command.qualname) is not None:
-            command_type = "`Prefix Command`, `Slash Command`"
-        else:
-            command_type = "`Slash Command`"
+    command_type = []
+    p_cmd = ctx.bot.get_prefix_command(command.qualname)
+    s_cmd = get_slash_command(ctx.bot, command.qualname)
+    m_cmd = ctx.bot.get_message_command(command.qualname)
+    u_cmd = ctx.bot.get_user_command(command.qualname)
+
+    if p_cmd is not None:
+        command_type.append("`Prefix Command`")
+    if s_cmd is not None and not isinstance(s_cmd, (lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup)):
+        command_type.append("`Slash Command`")
+    if m_cmd is not None:
+        command_type.append("`Message Command`")
+    if u_cmd is not None:
+        command_type.append("`User Command`")
+    
     embed.add_field(
         name = "Type",
-        value = command_type
+        value = ' '.join(command_type)
     )
 
     if len(command.options) > 0:
@@ -215,22 +217,22 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
 
         plugins = ctx.bot.plugins
         plugin_info: t.Dict[str, int] = {}
-        for name in plugins:
-            public_commands = filter_command_type(plugins[name].all_commands, __PREFIX_COMMAND_TYPES__, True)
+        for plugin in plugins.values():
+            public_commands = filter_command_type(plugin.all_commands, __PREFIX_COMMAND_TYPES__, True)
             public_commands_len = len(public_commands)
 
             if public_commands_len > 0:
-                embed_name = f"{plugins[name].d.emote} {name} ({public_commands_len} commands)"
+                embed_name = f"{plugin.d.emote} {plugin.name} ({public_commands_len} commands)"
                 embed_description = "*No description provided*"
-                if not not plugins[name].description:
-                    embed_description = plugins[name].description
+                if not not plugin.description:
+                    embed_description = plugin.description
                 main_page.add_field(
                     name = embed_name,
                     value = embed_description,
                     inline = False
                 )
                 
-                plugin_info[name] = public_commands_len
+                plugin_info[plugin.name] = public_commands_len
         
         menu_root = MenuComponent(main_page)
         for name in plugin_info:
@@ -242,14 +244,17 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         '''
         Send a plugin help that contains all commands.
         '''
+        
         embeds = []
         types = __PREFIX_COMMAND_TYPES__
         if isinstance(ctx, lightbulb.SlashContext):
             types = __SLASH_COMMAND_TYPES__
+        
         public_commands = filter_command_type(plugin.all_commands, types, True)
         for command in sorted(public_commands, key = lambda cmd: cmd.name):
             page = command_help_format(ctx, command)
-            embeds.append(page)
+            if page is not None:
+                embeds.append(page)
         
         await ButtonPages(embeds).run(ctx)
     
