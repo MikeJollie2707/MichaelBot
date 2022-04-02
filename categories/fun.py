@@ -201,6 +201,7 @@ async def uwu(ctx: lightbulb.Context):
     #        await ctx.respond("Oh nyo, ★⌒ヽ(˘꒳˘ *) I faiwed *whispers to self* t-to uwu the ÚwÚ text.", reply = True, mentions_reply = True)
     from utilities.funtext import uwuify
 
+    text = ""
     if isinstance(ctx, lightbulb.MessageContext):
         message: hikari.Message = ctx.options.target
         if message.content != None:
