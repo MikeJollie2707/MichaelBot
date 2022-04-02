@@ -1,0 +1,13 @@
+site_name: MichaelBot Documentation
+
+nav:
+  - Home: index.md
+  - Installation: INSTALLATION.md
+  - Commands:
+    - Bot: categories/bot.md
+    - Fun: categories/fun.md
+    - Info: categories/info.md
+    - Logs: categories/logger.md
+    - Music: categories/music.md
+
+dev_addr: '127.0.0.1:8001'
