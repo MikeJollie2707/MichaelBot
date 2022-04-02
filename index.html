@@ -1,969 +1,292 @@
-
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-      
-      
-      
-      <link rel="shortcut icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.8">
-    
-    
-      
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
         <title>MichaelBot Documentation</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.cb6bc1d0.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.39b8e14a.min.css">
-        
-          
-          
-          <meta name="theme-color" content="#009485">
-        
-      
-    
-    
-    
-      
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
-      
-    
-    
-    
-    
-      
-    
-    
-  </head>
-  
-  
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="cyan">
-      
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#welcome-to-michaelbots-documentation" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-      
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
 
-<header class="md-header" data-md-component="header">
-  <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="." title="MichaelBot Documentation" class="md-header-nav__button md-logo" aria-label="MichaelBot Documentation">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
 
-    </a>
-    <label class="md-header-nav__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
-    </label>
-    <div class="md-header-nav__title" data-md-component="header-title">
-      <div class="md-header-nav__ellipsis">
-        <div class="md-header-nav__topic">
-          <span class="md-ellipsis">
-            MichaelBot Documentation
-          </span>
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">MichaelBot Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem active">
+                                <a href="." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="INSTALLATION/" class="nav-link">Installation</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Commands <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="categories/bot/" class="dropdown-item">Bot</a>
+</li>
+                                    
+<li>
+    <a href="categories/fun/" class="dropdown-item">Fun</a>
+</li>
+                                    
+<li>
+    <a href="categories/info/" class="dropdown-item">Info</a>
+</li>
+                                    
+<li>
+    <a href="categories/logger/" class="dropdown-item">Logs</a>
+</li>
+                                    
+<li>
+    <a href="categories/music/" class="dropdown-item">Music</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="INSTALLATION/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="md-header-nav__topic">
-          <span class="md-ellipsis">
-            
-              Home
-            
-          </span>
-        </div>
-      </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
     </div>
+
     
-      <label class="md-header-nav__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-      </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
-      <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </label>
-      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
-      </button>
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list"></ol>
-        </div>
-      </div>
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#welcome-to-michaelbot-documentation" class="nav-link">Welcome to MichaelBot Documentation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#prefix-vs-slash" class="nav-link">Prefix vs Slash</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#cooldown" class="nav-link">Cooldown</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#parameters" class="nav-link">Parameters</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
     </div>
-  </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="welcome-to-michaelbot-documentation">Welcome to MichaelBot Documentation</h1>
+<p>Welcome to MichaelBot's documentation. This documents all the bot's commands along with its features.</p>
+<ul>
+<li>For general purposes, please refers to the <code>Categories</code> heading.</li>
+<li>For those who are interested in some of the more secret stuffs, feel free to look at the bot source code.</li>
+</ul>
+<p>Below are some of the topics that are might not obvious from a user perspective.</p>
+<h2 id="prefix-vs-slash">Prefix vs Slash</h2>
+<p>MichaelBot has 2 main types of command: prefix command and slash command. Prefix command is the OG "command system" that's been widely implemented for pretty much every single bot. Slash command is the official command system in Discord that's been implemented fairly recently. MichaelBot tries to balance these 2, but there are some pros and cons to them:</p>
+<p><strong>Slash &gt; Prefix:</strong></p>
+<ul>
+<li>Is officially supported by Discord and is super newbie-friendly.</li>
+<li>Can use Tab to autocomplete. This makes it somewhat unnecessary for the user to remember the arguments. This is excellent when the user need to input some sort of choice into the command.</li>
+<li>Arguments are generally easier to deal with since Discord do all the necessary text parsing.</li>
+<li>Prefix commands don't work without verifying the bot after reaching 100 servers. This is technically not the case for slash commands.</li>
+</ul>
+<p><strong>Prefix &gt; Slash:</strong></p>
+<ul>
+<li>Is familiar to a lot of people.</li>
+<li>Can alias commands. This allows users to smash commands super fast.</li>
+<li>Slash commands have a hard limit of 100 commands per bot. Prefix commands don't have such thing.</li>
+<li>Slash commands don't have hidden commands; all commands are public.</li>
+<li>Slash commands' parent can't be invoked (<code>queue</code> cannot be invoked if a subcommand <code>queue clear</code> is registered). This is not the case for prefix commands.</li>
+</ul>
+<p>With these pros and cons, sometimes some commands are exclusive to slash or prefix only. This will be mentioned in each command entry. Besides slash commands, Discord also have <em>user commands</em> and <em>message commands</em>. However, the bot rarely uses them for important features, so you can safely ignore them for the most part.</p>
+<p>By default, I'll recommend you to use the Prefix version of the command. However, in some cases, Slash command might performs the job easier. I'll sometimes put my preferences if that's the case.</p>
+<h2 id="cooldown">Cooldown</h2>
+<p>Some commands have cooldown. This is to ensure the bot has time to do things first before it is invoked again. This is quite common for commands that deal with heavy stuffs such as music or communicating with servers. Some cooldown are simply to avoid spamming potential.</p>
+<p>Cooldown is applied to a certain target. There are 4 targets a cooldown can apply:</p>
+<ul>
+<li>A user. This means the user can't execute the command within an interval.</li>
+<li>A channel. This means the command can't be executed in the same channel within an interval.</li>
+<li>A guild. This means the command can't be executed in the same guild within an interval.</li>
+<li>Everywhere. This means the command can't be executed by anyone within an interval.</li>
+</ul>
+<p><strong>Technical:</strong> Most cooldown are soft; they can be reset by resetting the bot or use some commands to reset. Some cooldown are hard-coded; they're saved within the database and you might need to edit the table (and the cache) to remove it.</p>
+<h2 id="parameters">Parameters</h2>
+<p>Many commands require parameters to be passed in. Although the <code>help</code> command already provide a good amount of info, it is still limited because it is auto-generated. Note that these are mostly applied to Prefix Commands; Slash Commands is super user-friendly so you might not even need to care about most of these stuffs.</p>
+<p>Take the command signature <code>foo &lt;bar&gt; [bar2 = bla] [bar3 = 1] [*baz = None]</code></p>
+<ul>
+<li>All parameters are separated by space. Which means if you invoke <code>foo 1 2 3</code>, it'll store as <code>bar = 1, bar2 = 2, bar3 = 3</code> and not <code>bar = 1 2 3</code>.</li>
+<li><code>&lt;parameter&gt;</code> means this parameter is required. That means <code>bar</code> is a required parameter.</li>
+<li><code>[parameter]</code> or <code>[parameter = None]</code> means this parameter is optional. That means <code>bar2</code>, <code>bar3</code>, and <code>baz</code> are optional parameters.<ul>
+<li><code>parameter = sth</code> means the default value of a parameter is set to whatever <code>sth</code> is. This usually appears in optional parameters.</li>
+</ul>
+</li>
+<li><code>*parameter</code> means it'll consume all the remaining text. This means if you invoke <code>foo 1 2 3 4 5 6</code>, it'll store as <code>bar = 1, bar2 = 2, bar3 = 3, baz = 4 5 6</code>.</li>
+</ul>
+<p>Slash Commands have none of the above problem since parameters are separated by Tab, and they also have indication which parameters are required.</p>
+<h3 id="parameter-type">Parameter Type</h3>
+<p>There are several types the bot will work with. The most common one is plain text, followed by numbers. These are pretty straightforward. The less obvious types are such as a Discord User or a Discord Guild. There are several ways to pass in such types, which will be shown in this table.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Pass into Prefix Commands</th>
+<th>Pass into Slash Commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain text</td>
+<td>Literally any text you type.</td>
+<td>Literally any text you type.</td>
+</tr>
+<tr>
+<td>Numbers</td>
+<td>Literally any numbers you type.</td>
+<td>Literally any numbers you type.</td>
+</tr>
+<tr>
+<td>Discord User/Member/Channel/Role</td>
+<td>ID &gt; Mention &gt; Name &gt; Nickname</td>
+<td>Choose from the option (you might need to partially type the name for it to show up).</td>
+</tr>
+<tr>
+<td>Discord Guild</td>
+<td>ID</td>
+<td>ID</td>
+</tr>
+<tr>
+<td>Time</td>
+<td>1d10h10m10s or hh:mm:ss</td>
+<td>1d10h10m10s or hh:mm:ss</td>
+</tr>
+</tbody>
+</table></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+        <script src="search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
 </div>
-    
-    
-      <div class="md-header-nav__source">
-        
-<a href="https://github.com/MikeJollie2707/MichaelBot/" title="Go to repository" class="md-source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    MikeJollie2707/MichaelBot
-  </div>
-</a>
-      </div>
-    
-  </nav>
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
 
-
-
-
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="." title="MichaelBot Documentation" class="md-nav__button md-logo" aria-label="MichaelBot Documentation">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
-
-    </a>
-    MichaelBot Documentation
-  </label>
-  
-    <div class="md-nav__source">
-      
-<a href="https://github.com/MikeJollie2707/MichaelBot/" title="Go to repository" class="md-source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    MikeJollie2707/MichaelBot
-  </div>
-</a>
-    </div>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-      
-
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Home
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
-        Home
-      </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#table-of-contents" class="md-nav__link">
-    Table of Contents
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#introduction" class="md-nav__link">
-    Introduction
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#convention" class="md-nav__link">
-    Convention
-  </a>
-  
-    <nav class="md-nav" aria-label="Convention">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#discord-objects" class="md-nav__link">
-    Discord Objects
-  </a>
-  
-    <nav class="md-nav" aria-label="Discord Objects">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#usermember-concept" class="md-nav__link">
-    User/Member Concept
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#prefix" class="md-nav__link">
-    Prefix
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#permissions" class="md-nav__link">
-    Permissions
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cooldown" class="md-nav__link">
-    Cooldown
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/" class="md-nav__link">
-        Installation
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
-      
-      <label class="md-nav__link" for="nav-3">
-        Commands
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Commands" data-md-level="1">
-        <label class="md-nav__title" for="nav-3">
-          <span class="md-nav__icon md-icon"></span>
-          Commands
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/core/" class="md-nav__link">
-        Core
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/currency/" class="md-nav__link">
-        Currency
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/dev/" class="md-nav__link">
-        Dev
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/events/" class="md-nav__link">
-        Bot events
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/game/" class="md-nav__link">
-        Game
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/logger/" class="md-nav__link">
-        Logging events
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/moderation/" class="md-nav__link">
-        Moderation
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/music/" class="md-nav__link">
-        Music
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/nsfw/" class="md-nav__link">
-        NSFW
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/server/" class="md-nav__link">
-        Settings
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="commands/utility/" class="md-nav__link">
-        Utility
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
-      
-      <label class="md-nav__link" for="nav-4">
-        Currency System
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Currency System" data-md-level="1">
-        <label class="md-nav__title" for="nav-4">
-          <span class="md-nav__icon md-icon"></span>
-          Currency System
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="currency/currency_start/" class="md-nav__link">
-        Intro
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="currency/currency_basic/" class="md-nav__link">
-        Basic
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="currency/currency_intermediate/" class="md-nav__link">
-        Intermediate
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="currency/currency_advanced/" class="md-nav__link">
-        Advanced
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="currency/balance_changes/" class="md-nav__link">
-        Balance Changes
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
-      
-      <label class="md-nav__link" for="nav-5">
-        Templates
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Templates" data-md-level="1">
-        <label class="md-nav__title" for="nav-5">
-          <span class="md-nav__icon md-icon"></span>
-          Templates
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="template/help/" class="md-nav__link">
-        Help
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="template/menu/" class="md-nav__link">
-        Menu
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="template/paginator/" class="md-nav__link">
-        Paginator
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" >
-      
-      <label class="md-nav__link" for="nav-6">
-        Utilities
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-      <nav class="md-nav" aria-label="Utilities" data-md-level="1">
-        <label class="md-nav__title" for="nav-6">
-          <span class="md-nav__icon md-icon"></span>
-          Utilities
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="utilities/facility/" class="md-nav__link">
-        Utility methods
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="utilities/db/" class="md-nav__link">
-        Database methods
-      </a>
-    </li>
-  
-
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#table-of-contents" class="md-nav__link">
-    Table of Contents
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#introduction" class="md-nav__link">
-    Introduction
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#convention" class="md-nav__link">
-    Convention
-  </a>
-  
-    <nav class="md-nav" aria-label="Convention">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#discord-objects" class="md-nav__link">
-    Discord Objects
-  </a>
-  
-    <nav class="md-nav" aria-label="Discord Objects">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#usermember-concept" class="md-nav__link">
-    User/Member Concept
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#prefix" class="md-nav__link">
-    Prefix
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#permissions" class="md-nav__link">
-    Permissions
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cooldown" class="md-nav__link">
-    Cooldown
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          <div class="md-content">
-            <article class="md-content__inner md-typeset">
-              
-                
-                  <a href="https://github.com/MikeJollie2707/MichaelBot/edit/master/docs/index.md" title="Edit this page" class="md-content__button md-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-                  </a>
-                
-                
-                <!-- omit in toc -->
-<h1 id="welcome-to-michaelbots-documentation">Welcome to MichaelBot's documentation</h1>
-<!-- omit in toc -->
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#convention">Convention</a><ul>
-<li><a href="#parameters">Parameters</a></li>
-<li><a href="#discord-objects">Discord Objects</a><ul>
-<li><a href="#usermember-concept">User/Member Concept</a></li>
-</ul>
-</li>
-<li><a href="#prefix">Prefix</a></li>
-<li><a href="#permissions">Permissions</a></li>
-<li><a href="#cooldown">Cooldown</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="introduction">Introduction</h2>
-<p>This is the official documentation for MichaelBot. This can be used as a developer documentation or user documentation.</p>
-<p>If you want to invite the bot, you won't be able to, yet. You can however, ask <code>MikeJollie#1067</code> to invite the bot via <a href="https://discord.gg/jeMeyNw">MichaelBot support server</a>.</p>
-<p>The source of the bot is available publicly on <a href="https://github.com/MikeJollie2707/MichaelBot">GitHub</a>.</p>
-<h2 id="convention">Convention</h2>
-<p>The conventions in this document should be relatively straightforward. The conventions uses in <code>help</code> is a bit less clear, due to not having enough spaces.</p>
-<p>These are the conventions I use in the help command:</p>
-<h3 id="parameters">Parameters</h3>
-<p>These are the parameter types you will find in the <code>Usage</code> section.</p>
-<p><code>&lt;parameter&gt;</code>: Required parameter. The bot will <strong>raise error without this parameter</strong>.</p>
-<p><code>[parameter]</code>: Optional parameter. The bot can <strong>still works without this parameter</strong>.</p>
-<p><code>&lt;param1/param2/...&gt;</code> or <code>[param1/param2/...]</code>: You can provide <strong>either</strong> param style.</p>
-<p>If the parameter has space, use <code>"double quotes"</code> to make it a param.</p>
-<ul>
-<li>Example: if it's <code>profile [mention/ID/name/nickname]</code> and the <code>name</code> is <code>Hello World</code> then you will use <code>profile "Hello World"</code>.</li>
-</ul>
-<h3 id="discord-objects">Discord Objects</h3>
-<p><code>&lt;member&gt;</code> or <code>&lt;user&gt;</code> or <code>&lt;channel&gt;</code> or <code>&lt;guild&gt;</code> are Discord related argument. It is the equivalent of <code>&lt;ID/discrimination/mention/name/nickname&gt;</code>. It is recommended to provide either <code>ID</code> or <code>discrimination</code> (ex: UserName#1234) for absolute accuracy. Providing <code>name</code> or <code>nickname</code> might make the command work not as intended.</p>
-<h4 id="usermember-concept">User/Member Concept</h4>
-<p>User/Member are usually confused terms for a Discord user, but here are the difference.</p>
-<ul>
-<li>When this document refers to <strong>"user"</strong>, it refers to a <strong>Discord user regardless of the server</strong>.</li>
-<li>When this document refers to <strong>"member"</strong>, it refers to a <strong>Discord user in a certain server(s)</strong>.</li>
-</ul>
-<p>Note that Discord API doesn't allow bot to <strong>get information about a user/member if the bot does not see the user/member</strong>, which means the bot needs to share at least <strong>1</strong> server with the user/member to actually work.</p>
-<h3 id="prefix">Prefix</h3>
-<p>This document will assume you know <strong>how to use a command</strong> using <code>&lt;prefix&gt;&lt;command_name&gt;</code>. If you don't know the prefix of the bot, use the bot's mention as the prefix (not recommended) and invoke the <code>prefix</code> command to view the current prefix for the guild.</p>
-<ul>
-<li>The default prefix is <code>$</code> when the bot joins a guild, but no it doesn't have $sudo.</li>
-</ul>
-<h3 id="permissions">Permissions</h3>
-<p>The convention for permissions in <code>help</code> is as follow:</p>
-<ul>
-<li><code>You need</code>: The required permission <strong>you</strong> need to have to execute the command.</li>
-<li><code>I need</code>: The required permission <strong>the bot</strong> need to have to execute the command.</li>
-</ul>
-<p>I will assume the bot always has <code>Send Messages</code> and <code>Read Messages</code> in the channel you use the command. Usually, the bot also needs <code>Read Message History</code> for many commands.</p>
-<h3 id="cooldown">Cooldown</h3>
-<p>The convention for cooldown syntax in <code>help</code> is <code>x seconds per n use(s) (cooldown type)</code>.</p>
-<p><code>x</code>: The cooldown <strong>duration</strong> before you can use the command.</p>
-<p><code>n</code>: The number of <strong>times</strong> the command is used before invoking the cooldown.</p>
-<p><code>cooldown type</code>: There are usually 4 types of cooldown in this bot:</p>
-<ul>
-<li><code>global</code>: The cooldown applies to <strong>every servers</strong> the bot joins.<ul>
-<li>Example: If a person invokes <code>prefix</code> n times, <strong>no one</strong> can invoke <code>prefix</code> again until x seconds are passed.</li>
-</ul>
-</li>
-<li><code>guild</code>: The cooldown applies to <strong>everyone in a certain server</strong>.<ul>
-<li>Example: If a person invokes <code>kick</code> n times, <strong>no one in that person's server</strong> can invoke <code>kick</code> again until x seconds are passed.</li>
-</ul>
-</li>
-<li><code>user</code>: The cooldown applies to that <strong>certain user</strong>.<ul>
-<li>Example: If the user <code>MikeJollie</code> invoke <code>embed_simple</code> n times, <strong>that certain user</strong> can not invoke <code>embed_simple</code> again until x seconds are passed.</li>
-</ul>
-</li>
-<li><code>member</code>: The cooldown applies to that <strong>certain member</strong>.<ul>
-<li>Example: If the member <code>MikeJollie</code> invoke <code>test</code> n times, <strong>that certain member</strong> can not invoke <code>MikeJollie</code> <strong>in the same server he invoked</strong> again until x seconds are passed. <strong>He can invoke the command in a different server in that duration however</strong>.</li>
-</ul>
-</li>
-</ul>
-<p><em>This document is last edited on Feb 19th (PT) by MikeJollie#1067</em></p>
-                
-              
-              
-                
-
-
-              
-            </article>
-          </div>
-        </div>
-      </main>
-      
-        
-<footer class="md-footer">
-  
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
-        
-        
-          <a href="installation/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Installation
-              </div>
-            </div>
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
-      </div>
-      
-    </div>
-  </div>
-</footer>
-      
-    </div>
-    
-      <script src="assets/javascripts/vendor.18f0862e.min.js"></script>
-      <script src="assets/javascripts/bundle.994580cf.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
-      
-      <script>
-        app = initialize({
-          base: ".",
-          features: [],
-          search: Object.assign({
-            worker: "assets/javascripts/worker/search.9c0e82ba.min.js"
-          }, typeof search !== "undefined" && search)
-        })
-      </script>
-      
-    
-  </body>
+    </body>
 </html>
+
+<!--
+MkDocs version : 1.3.0
+Build Date UTC : 2022-04-02 07:06:21.815630+00:00
+-->
