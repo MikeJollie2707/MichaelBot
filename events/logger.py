@@ -68,6 +68,7 @@ def is_loggable(event: hikari.Event):
         return False
     
     if cache_info is None: return False
+    if type(event) not in EVENT_OPTION_MAPPING: return False
     # This checks both logging_module is an empty dict and logging_module.log_channel being empty.
     if cache_info.logging_module.get("log_channel") is None: return False
     if cache_info.logging_module.get(EVENT_OPTION_MAPPING[type(event)]) is None: return False
