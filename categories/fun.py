@@ -168,20 +168,40 @@ async def speak(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to uwuify.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("uwu", "Turn a text into uwu text.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def uwu(ctx: lightbulb.Context):
-    BASE_URL = "https://uwuaas.herokuapp.com/api/"
-    resp: aiohttp.ClientResponse = await ctx.bot.d.aio_session.post(BASE_URL, json = {"text": ctx.options.text})
-    if resp.status == 200:
-        resp_json = await resp.json()
+    #BASE_URL = "https://uwuaas.herokuapp.com/api/"
+    #async with ctx.bot.d.aio_session.post(BASE_URL, json = {"text": ctx.options.text}) as resp:
+    #    if resp.status == 200:
+    #        resp_json = await resp.json()
+    #        embed = helpers.get_default_embed(
+    #            description = resp_json["text"],
+    #            author = ctx.author,
+    #            timestamp = dt.datetime.now().astimezone()
+    #        )
+    #        await ctx.respond(embed = embed, reply = True)
+    #    else:
+    #        await ctx.respond("Oh nyo, ★⌒ヽ(˘꒳˘ *) I faiwed *whispers to self* t-to uwu the ÚwÚ text.", reply = True, mentions_reply = True)
+    from utilities.funtext import uwuify
+
+    if isinstance(ctx, lightbulb.MessageContext):
+        message: hikari.Message = ctx.options.target
+        if message.content != None:
+            text = uwuify(message.content)
+        else:
+            await ctx.respond("Oh nyo, rawr this message doesn't have a-any blushes text. (ꈍᴗꈍ)", reply = True, mentions_reply = True)
+    else:
+        text = uwuify(ctx.options.text)
+
+    if len(text) > 4000:
+        await ctx.respond("Oh nyo, rawr x3 t-the uwu text is too l-long. O-Oopsy.", reply = True, mentions_reply = True)
+    else:
         embed = helpers.get_default_embed(
-            description = resp_json["text"],
+            description = text,
             author = ctx.author,
             timestamp = dt.datetime.now().astimezone()
         )
         await ctx.respond(embed = embed, reply = True)
-    else:
-        await ctx.respond("Oh nyo, ★⌒ヽ(˘꒳˘ *) I faiwed *whispers to self* t-to uwu the ÚwÚ text.", reply = True, mentions_reply = True)
 
 def load(bot: lightbulb.BotApp):
     bot.add_plugin(plugin)
