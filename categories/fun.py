@@ -1,6 +1,5 @@
 import lightbulb
 import hikari
-import aiohttp
 
 import datetime as dt
 import random
@@ -119,12 +118,25 @@ async def how(ctx: lightbulb.Context):
     await ctx.respond(f"{target} is `{percent_thing}%` {measure_unit}.", reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    The text will be sent through DM if it exceeds 1500 characters.
+'''))
+@lightbulb.add_cooldown(length = 5.0, uses = 1.0, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to mock.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("mock", "tuRn A teXT INtO MOCk teXt.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def mock(ctx: lightbulb.Context):
+    if isinstance(ctx, lightbulb.MessageContext):
+        msg = ctx.options.target
+        if msg.content is not None:
+            text = msg.content
+        else:
+            await ctx.respond("Oh no, this message doesn't have any text peko.", reply = True, mentions_reply = True)
+    else:
+        text = ctx.options.text
+    
     transform = [str.upper, str.lower]
-    text = ''.join(random.choice(transform)(c) for c in ctx.options.text)
+    text = ''.join(random.choice(transform)(c) for c in text)
     if len(text) < 1500:
         await ctx.respond(text, reply = True)
     else:
