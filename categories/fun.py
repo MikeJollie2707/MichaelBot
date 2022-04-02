@@ -88,6 +88,15 @@ async def dadjoke(ctx: lightbulb.Context):
         await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.command("dice", "Roll a 6-face dice for you.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def dice(ctx: lightbulb.Context):
+    await ctx.respond("It's %d :game_die:" % (random.randint(1, 6)), reply = True)
+
+@plugin.command()
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+'''))
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to repeat.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("echo", "Echo echo echo echo.")
