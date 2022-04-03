@@ -130,6 +130,7 @@ async def how(ctx: lightbulb.Context):
 @lightbulb.command("mock", "tuRn A teXT INtO MOCk teXt.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def mock(ctx: lightbulb.Context):
+    text = ""
     if isinstance(ctx, lightbulb.MessageContext):
         msg = ctx.options.target
         if msg.content is not None:
