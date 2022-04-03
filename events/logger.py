@@ -145,7 +145,11 @@ async def log_enable_option(ctx: lightbulb.Context):
     async with ctx.bot.d.pool.acquire() as conn:
         async with conn.transaction():
             guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
-            await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, True)
+            if not not guild_dbcache.logging_module:
+                await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, True)
+            else:
+                await ctx.respond(f"Logging is not enabled.", reply = True, mentions_reply = True)
+                return
     await ctx.respond(f"Log option `{logging_option}` is enabled.", reply = True)
 
 @plugin.command()
@@ -167,7 +171,10 @@ async def log_disable_all(ctx: lightbulb.Context):
     async with ctx.bot.d.pool.acquire() as conn:
         async with conn.transaction():
             guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
-            await guild_dbcache.update_logging_module(conn, ctx.guild_id, "log_channel", None)
+            if not not guild_dbcache.logging_module:
+                await guild_dbcache.update_logging_module(conn, ctx.guild_id, "log_channel", None)
+            else:
+                await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
 
     await ctx.respond(f"Logging disabled successfully.", reply = True)
 
@@ -188,7 +195,11 @@ async def log_disable_option(ctx: lightbulb.Context):
     async with ctx.bot.d.pool.acquire() as conn:
         async with conn.transaction():
             guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
-            await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, False)
+            if not not guild_dbcache.logging_module:
+                await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, False)
+            else:
+                await ctx.respond(f"Logging is not enabled.", reply = True, mentions_reply = True)
+                return
     await ctx.respond(f"Log option `{logging_option}` is disabled.", reply = True)
 
 @plugin.command()
@@ -205,11 +216,17 @@ async def log_view(ctx: lightbulb.Context):
         author = ctx.author,
         timestamp = dt.datetime.now().astimezone()
     )
-    for logging_option in guild_dbcache.logging_module:
-        if logging_option == "log_channel":
-            embed.description += f"**Log Destination:** {ctx.bot.cache.get_guild_channel(guild_dbcache.logging_module[logging_option]).mention}\n"
-        else:
-            embed.description += f"`{logging_option}`: {'Enabled' if guild_dbcache.logging_module[logging_option] else 'Disabled'}\n"
+    if len(guild_dbcache.logging_module) > 0:
+        for logging_option in guild_dbcache.logging_module:
+            if logging_option == "log_channel":
+                if guild_dbcache.logging_module[logging_option] is not None:
+                    embed.description += f"**Log Destination:** {ctx.bot.cache.get_guild_channel(guild_dbcache.logging_module[logging_option]).mention}\n"
+                else:
+                    embed.description += f"**Log Destination:** `None`\n"
+            else:
+                embed.description += f"`{logging_option}`: {'Enabled' if guild_dbcache.logging_module[logging_option] else 'Disabled'}\n"
+    else:
+        embed.description += "**Log Destination:** `None`\n"
     embed.set_author(
         name = ctx.get_guild().name,
         icon = ctx.get_guild().icon_url
