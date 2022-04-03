@@ -2,6 +2,8 @@ import lightbulb
 import hikari
 import asyncpg
 
+import datetime as dt
+
 import utilities.helpers as helpers
 import utilities.checks as checks
 import utilities.psql as psql
@@ -115,6 +117,36 @@ async def force_sync_cache_guild(ctx: lightbulb.Context):
             await guild_cache.force_sync(conn, guild_id)
     
     await ctx.respond(f"Guild cache for {ctx.options.guild_id} synced.", reply = True)
+
+@plugin.command()
+@lightbulb.command("cache-view", "View the cache content.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
+async def cache_view(ctx: lightbulb.Context):
+    pass
+
+@cache_view.child
+@lightbulb.option("guild_id", "The guild's id to view.", type = hikari.Guild)
+@lightbulb.command("guild", "View the cache of a guild.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def cache_view_guild(ctx: lightbulb.Context):
+    guild_id = ctx.options.guild_id.id
+
+    guild_cache = models.get_guild_cache(ctx.bot, guild_id)
+    if guild_cache is not None:
+        embed = helpers.get_default_embed(
+            title = "Guild Cache View",
+            author = ctx.author,
+            timestamp = dt.datetime.now().astimezone()
+        ).add_field(
+            name = "Guild Module",
+            value = f"```{guild_cache.guild_module}```"
+        ).add_field(
+            name = "Logging Module",
+            value = f"```{guild_cache.logging_module}```"
+        )
+        await ctx.respond(embed = embed, reply = True)
+    else:
+        await ctx.respond("Cache for this guild doesn't exist.", reply = True, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.command("purge-slashes", "Force delete every slash commands in test guilds.", hidden = True)
