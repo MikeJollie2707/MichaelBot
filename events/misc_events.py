@@ -69,6 +69,27 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
                 bot.d.user_cache[user_id] = models.UserCache(user_module = user)
             logging.info("Populated user cache with stored info.")
 
+@plugin.listener(hikari.GuildJoinEvent)
+async def on_guild_join(event: hikari.GuildJoinEvent):
+    bot = event.app
+
+    if bot.d.pool is not None:
+        async with bot.d.pool.acquire() as conn:
+            guild = event.guild
+            if bot.d.guild_cache.get(guild.id) is None:
+                bot.d.guild_cache[guild.id] = models.GuildCache()
+                res = await bot.d.guild_cache[guild.id].force_sync(conn, guild)
+                if res is None:
+                    await bot.d.guild_cache[guild.id].add_guild_module(conn, guild)
+                logging.info(f"Bot joined guild '{guild.id}'. Cache entry added.")
+
+@plugin.listener(hikari.GuildLeaveEvent)
+async def on_guild_leave(event: hikari.GuildLeaveEvent):
+    bot = event.app
+    if bot.d.pool is not None:
+        bot.d.guild_cache.pop(event.guild_id, None)
+        logging.info(f"Bot left guild '{event.guild_id}'. Cache entry removed.")
+
 @plugin.listener(hikari.StoppingEvent)
 async def on_stopped(event: hikari.StoppingEvent):
     bot = event.app
