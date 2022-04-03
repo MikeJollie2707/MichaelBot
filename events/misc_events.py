@@ -47,13 +47,16 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
 
     if bot.d.pool is not None:
         async with bot.d.pool.acquire() as conn:
-            guilds = []
+            # Only cache guilds that are available to bot, not all guilds in db.
             async for guild in bot.rest.fetch_my_guilds():
-                guilds.append(guild)
-            
-            async with conn.transaction():
-                await psql.Guilds.add_many(conn, guilds)
-            logging.info("Updated database from current guilds.")
+                if bot.d.guild_cache.get(guild.id) is None:
+                    bot.d.guild_cache[guild.id] = models.GuildCache()
+                    res = await bot.d.guild_cache[guild.id].force_sync(conn, guild)
+                    if res is None:
+                        await bot.d.guild_cache[guild.id].add_guild_module(conn, guild)
+                else:
+                    # Handle on reconnect
+                    res = await bot.d.guild_cache[guild.id].force_sync(conn, guild)
             
             guilds_info = await psql.Guilds.get_all(conn)
             for guild in guilds_info:
