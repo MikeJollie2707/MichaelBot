@@ -4,6 +4,7 @@ import hikari
 import sys
 import json
 import os
+import logging
 
 EXTENSIONS = [
     "categories.admin",
@@ -53,6 +54,10 @@ def create_bot(bot_info, secrets) -> lightbulb.BotApp:
     )
     bot.d.bot_info = bot_info
     bot.d.secrets = secrets
+
+    bot.d.logging = logging.getLogger("MichaelBot")
+    bot.d.logging.setLevel(logging.INFO)
+
     bot.d.pool = None
     bot.d.aio_session = None
     # Hold high-traffic data on database (usually for read-only purpose).
@@ -61,6 +66,7 @@ def create_bot(bot_info, secrets) -> lightbulb.BotApp:
 
     if bot_info["debug"]:
         bot.default_enabled_guilds = bot_info["default_guilds"]
+        bot.d.logging.setLevel(logging.DEBUG)
     
     for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)
