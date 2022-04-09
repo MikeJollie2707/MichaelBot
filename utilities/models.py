@@ -240,15 +240,16 @@ class MichaelBot(lightbulb.BotApp):
     ) -> None:
         super().__init__(token, prefix, ignore_bots, owner_ids, default_enabled_guilds, help_class, help_slash_command, delete_unbound_commands, case_insensitive_prefix_commands, **kwargs)
 
-        self.info: dict = None
-        self.secrets: dict = None
-        self.online_at: dt.datetime = None
+        self.info: dict = {}
+        self.secrets: dict = {}
         
+        self.online_at: dt.datetime = None
         self.logging: logging.Logger = None
 
         self.pool: t.Optional[asyncpg.Pool] = None
         self.aio_session: t.Optional[aiohttp.ClientSession] = None
 
+        # Store some db info. This allows read-only operation much cheaper.
         self.guild_cache: dict[int, GuildCache] = {}
         self.user_cache: dict[int, UserCache] = {}
 
