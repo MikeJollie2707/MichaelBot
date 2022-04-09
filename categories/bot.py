@@ -77,6 +77,19 @@ async def changelog_dev(ctx: lightbulb.Context):
     await pages.run(ctx)
 
 @plugin.command()
+@lightbulb.option("name", "Category name or command name. Is case-sensitive.", default = None, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.command("help", "Get help information for the bot.", aliases = ['h'], auto_defer = True)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def help(ctx: lightbulb.Context):
+    obj = ctx.options.name
+    bot: models.MichaelBot = ctx.bot
+
+    if bot.help_command is None:
+        raise NotImplementedError("`help` command class doesn't exist.")
+    
+    await bot.help_command.send_help(ctx, obj)
+
+@plugin.command()
 @lightbulb.command("info", "Show information about the bot.", aliases = ["about"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def info(ctx: lightbulb.Context):
