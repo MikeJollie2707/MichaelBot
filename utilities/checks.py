@@ -28,15 +28,16 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
     - `errors.UserBlacklisted`: The user invoked is blacklisted.
     '''
 
+    bot: models.MichaelBot = ctx.bot
     if ctx.guild_id is None:
         raise lightbulb.OnlyInGuild
     
-    guild_cache = models.get_guild_cache(ctx.bot, ctx.guild_id)
-    user_cache = models.get_user_cache(ctx.bot, ctx.author.id)
+    guild_cache = bot.guild_cache.get(ctx.guild_id)
+    user_cache = bot.user_cache.get(ctx.author.id)
 
     if guild_cache is None:
         guild_cache = models.GuildCache()
-        async with ctx.bot.d.pool.acquire() as conn:
+        async with bot.pool.acquire() as conn:
             async with conn.transaction():
                 guild = await psql.Guilds.get_one(conn, ctx.guild_id)
                 if guild is None:
@@ -45,7 +46,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
                     await guild_cache.force_sync(conn, ctx.author.id)
     if user_cache is None:
         user_cache = models.UserCache()
-        async with ctx.bot.d.pool.acquire() as conn:
+        async with bot.pool.acquire() as conn:
             async with conn.transaction():
                 user = await psql.Users.get_one(conn, ctx.author.id)
                 if user is None:

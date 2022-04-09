@@ -8,6 +8,7 @@ import datetime as dt
 
 import utilities.helpers as helpers
 import utilities.errors as errors
+import utilities.models as models
 
 __error_responses__ = {
     "CommandNotFound": "Command `{}` cannot be found.",
@@ -69,9 +70,9 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         raise exception
 
 
-def load(bot: lightbulb.BotApp):
+def load(bot: models.MichaelBot):
     bot.subscribe(lightbulb.CommandErrorEvent, on_command_error)
     #pass
-def unload(bot: lightbulb.BotApp):
+def unload(bot: models.MichaelBot):
     bot.unsubscribe(lightbulb.CommandErrorEvent, on_command_error)
     #pass

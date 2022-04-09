@@ -6,6 +6,8 @@ import json
 import os
 import logging
 
+from utilities.models import MichaelBot
+
 EXTENSIONS = [
     "categories.admin",
     "categories.bot",
@@ -18,13 +20,13 @@ EXTENSIONS = [
     "events.misc_events",
 ]
 
-async def retrieve_prefix(bot: lightbulb.BotApp, message: hikari.Message):
+async def retrieve_prefix(bot: MichaelBot, message: hikari.Message):
     # Force return when this is MichaelBeta.
     if bot.get_me().id == 649822097492803584:
         return '!'
     
-    guild = bot.d.guild_cache.get(message.guild_id)
-    if guild is None: return bot.d.bot_info["prefix"]
+    guild = bot.guild_cache.get(message.guild_id)
+    if guild is None: return bot.info["prefix"]
     else: return guild.guild_module["prefix"]
 
 def load_info(bot_name: str):
@@ -45,31 +47,24 @@ def load_info(bot_name: str):
     
     return (bot_info, secrets)
 
-def create_bot(bot_info, secrets) -> lightbulb.BotApp:
-    bot = lightbulb.BotApp(
-        token = secrets["token"], 
+def create_bot(bot_info, secrets) -> MichaelBot:
+    bot = MichaelBot(
+        token = secrets["token"],
         prefix = lightbulb.when_mentioned_or(retrieve_prefix),
         intents = hikari.Intents.ALL ^ hikari.Intents.GUILD_PRESENCES,
-        help_slash_command = True,
         logs = None if bot_info["launch_option"] == "silent-terminal" else logging.INFO
     )
-    bot.d.bot_info = bot_info
-    bot.d.secrets = secrets
 
-    bot.d.logging = logging.getLogger("MichaelBot")
-
-    bot.d.pool = None
-    bot.d.aio_session = None
-    # Hold high-traffic data on database (usually for read-only purpose).
-    bot.d.guild_cache = {}
-    bot.d.user_cache = {}
+    bot.info = bot_info
+    bot.secrets = secrets
+    bot.logging = logging.getLogger("MichaelBot")
 
     if bot_info["launch_option"] == "debug":
         bot.default_enabled_guilds = bot_info["default_guilds"]
-        bot.d.logging.setLevel(logging.DEBUG)
+        bot.logging.setLevel(logging.DEBUG)
     elif bot_info["launch_option"] == "silent-terminal": pass
     else:
-        bot.d.logging.setLevel(logging.INFO)
+        bot.logging.setLevel(logging.INFO)
     
     for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)

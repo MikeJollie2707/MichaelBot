@@ -60,9 +60,9 @@ def is_loggable(event: hikari.Event):
         guild = event.context.get_guild()
     else:
         guild = event.get_guild()
-    bot: lightbulb.BotApp = event.app
+    bot: models.MichaelBot = event.app
     try:
-        cache_info = models.get_guild_cache(bot, guild.id)
+        cache_info = bot.guild_cache.get(guild.id)
     except AttributeError:
         # This means cache is `None`.
         return False
@@ -102,6 +102,7 @@ async def log_set(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_set_all(ctx: lightbulb.Context):
     channel = ctx.options.channel
+    bot: models.MichaelBot = ctx.bot
 
     if channel is None:
         channel = ctx.get_channel()
@@ -110,23 +111,23 @@ async def log_set_all(ctx: lightbulb.Context):
     if isinstance(channel, hikari.InteractionChannel):
         channel = ctx.get_guild().get_channel(channel.id)
 
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
             if not guild_dbcache.logging_module:
                 existed = await psql.Guilds.Logs.get_one(conn, ctx.guild_id)
                 if existed is None:
                     await guild_dbcache.add_logging_module(conn, ctx.get_guild())
                 else:
                     await guild_dbcache.force_sync(conn, ctx.guild_id)
-            if not lightbulb.utils.permissions_in(channel, ctx.bot.cache.get_member(ctx.guild_id, ctx.bot.get_me().id)) & hikari.Permissions.SEND_MESSAGES == hikari.Permissions.SEND_MESSAGES:
+            if not lightbulb.utils.permissions_in(channel, bot.cache.get_member(ctx.guild_id, bot.get_me().id)) & hikari.Permissions.SEND_MESSAGES == hikari.Permissions.SEND_MESSAGES:
                 await ctx.respond(f"{channel.mention} doesn't allow me to send a message!", reply = True, mentions_reply = True)
                 return
             
             await guild_dbcache.update_logging_module(conn, ctx.guild_id, "log_channel", channel.id)
     
     await ctx.respond(f"Set channel {channel.mention} as a logging channel.", reply = True)
-    await ctx.bot.rest.create_message(channel, "This channel is now mine to log, muahahahaha!")
+    await bot.rest.create_message(channel, "This channel is now mine to log, muahahahaha!")
 
 @log_set.child
 @lightbulb.set_help(dedent('''
@@ -138,13 +139,14 @@ async def log_set_all(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_enable_option(ctx: lightbulb.Context):
     logging_option = ctx.options.logging_option
+    bot: models.MichaelBot = ctx.bot
 
     if logging_option not in [EVENT_OPTION_MAPPING[event_type] for event_type in EVENT_OPTION_MAPPING]:
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
     
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
             if not not guild_dbcache.logging_module:
                 await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, True)
             else:
@@ -168,9 +170,11 @@ async def log_disable(ctx: lightbulb.Context):
 @lightbulb.command("all", "Disable logging system.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_disable_all(ctx: lightbulb.Context):
-    async with ctx.bot.d.pool.acquire() as conn:
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
             if not not guild_dbcache.logging_module:
                 await guild_dbcache.update_logging_module(conn, ctx.guild_id, "log_channel", None)
             else:
@@ -188,13 +192,14 @@ async def log_disable_all(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_disable_option(ctx: lightbulb.Context):
     logging_option = ctx.options.logging_option
+    bot: models.MichaelBot = ctx.bot
 
     if logging_option not in [EVENT_OPTION_MAPPING[event_type] for event_type in EVENT_OPTION_MAPPING]:
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
     
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
             if not not guild_dbcache.logging_module:
                 await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, False)
             else:
@@ -209,7 +214,9 @@ async def log_disable_option(ctx: lightbulb.Context):
 @lightbulb.command("log-view", "View all log settings.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_view(ctx: lightbulb.Context):
-    guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    guild_dbcache = bot.guild_cache.get(ctx.guild_id)
     embed = helpers.get_default_embed(
         title = f"Log Settings for {ctx.get_guild().name}",
         description = "",
@@ -220,7 +227,7 @@ async def log_view(ctx: lightbulb.Context):
         for logging_option in guild_dbcache.logging_module:
             if logging_option == "log_channel":
                 if guild_dbcache.logging_module[logging_option] is not None:
-                    embed.description += f"**Log Destination:** {ctx.bot.cache.get_guild_channel(guild_dbcache.logging_module[logging_option]).mention}\n"
+                    embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(guild_dbcache.logging_module[logging_option]).mention}\n"
                 else:
                     embed.description += f"**Log Destination:** `None`\n"
             else:
@@ -237,12 +244,13 @@ async def log_view(ctx: lightbulb.Context):
 @plugin.listener(hikari.GuildChannelCreateEvent)
 async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_CREATE)
         log_time = dt.datetime.now().astimezone()
         executor = None
 
-        async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_CREATE).limit(1):
+        async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_CREATE).limit(1):
             for log_id in audit_log.entries:
                 entry = audit_log.entries[log_id]
                 log_time = entry.created_at
@@ -250,7 +258,7 @@ async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
                 break
         
         if isinstance(event.channel, hikari.GuildTextChannel):
-            category = event.app.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
+            category = bot.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
             embed.title = "Text Channel Created"
             embed.description = dedent(f'''
                 **Name:** `{event.channel.name}`
@@ -266,7 +274,7 @@ async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
                 ''')
             )
         elif isinstance(event.channel, hikari.GuildVoiceChannel):
-            category = event.app.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
+            category = bot.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
             embed.title = "Voice Channel Created"
             embed.description = dedent(f'''
                 **Name:** `{event.channel.name}`
@@ -302,17 +310,18 @@ async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
             icon = event.get_guild().icon_url
         )
         embed.timestamp = log_time
-        await event.app.rest.create_message(log_channel, embed = embed)
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.GuildChannelDeleteEvent)
 async def on_guild_channel_delete(event: hikari.GuildChannelDeleteEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time = dt.datetime.now().astimezone()
         executor = None
 
-        async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_DELETE).limit(1):
+        async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_DELETE).limit(1):
             for log_id in audit_log.entries:
                 entry = audit_log.entries[log_id]
                 log_time = entry.created_at
@@ -320,7 +329,7 @@ async def on_guild_channel_delete(event: hikari.GuildChannelDeleteEvent):
                 break
         
         if isinstance(event.channel, hikari.GuildTextChannel):
-            category = event.app.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
+            category = bot.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
             embed.title = "Text Channel Deleted"
             embed.description = dedent(f'''
                 **Name:** `{event.channel.name}`
@@ -334,7 +343,7 @@ async def on_guild_channel_delete(event: hikari.GuildChannelDeleteEvent):
                 ''')
             )
         elif isinstance(event.channel, hikari.GuildVoiceChannel):
-            category = event.app.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
+            category = bot.cache.get_guild_channel(event.channel.parent_id) if event.channel.parent_id is not None else None
             embed.title = "Voice Channel Deleted"
             embed.description = dedent(f'''
                 **Name:** `{event.channel.name}`
@@ -369,12 +378,13 @@ async def on_guild_channel_delete(event: hikari.GuildChannelDeleteEvent):
             icon = event.get_guild().icon_url
         )
         embed.timestamp = log_time
-        await event.app.rest.create_message(log_channel, embed = embed)
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.GuildChannelUpdateEvent)
 async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_UPDATE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -394,9 +404,9 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
             )
             embed.timestamp = dt.datetime.now().astimezone()
 
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
         else:
-            async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_UPDATE).limit(1):
+            async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_UPDATE).limit(1):
                 for log_id in audit_log.entries:
                     entry = audit_log.entries[log_id]
                     
@@ -432,7 +442,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                 )
 
                 embed.timestamp = log_time
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
                 embed = hikari.Embed(color = COLOR_UPDATE)
             if isinstance(event.channel, hikari.GuildTextChannel) and event.old_channel.topic != event.channel.topic:
                 # To ignore RL SMP mass edit, but also in general bot rarely need to edit topic.
@@ -466,7 +476,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                     )
 
                     embed.timestamp = log_time
-                    await event.app.rest.create_message(log_channel, embed = embed)
+                    await bot.rest.create_message(log_channel, embed = embed)
                     embed = hikari.Embed(color = COLOR_UPDATE)
             if event.old_channel.position != event.channel.position:
                 # This part is particularly spammy (because moving a channel will affect all the remaining positions, which also trigger this events).
@@ -487,7 +497,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                 for target_id in after.permission_overwrites:
                     if target_id not in before.permission_overwrites:
                         if not retrieved_update:
-                            async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_OVERWRITE_CREATE).limit(1):
+                            async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_OVERWRITE_CREATE).limit(1):
                                 for log_id in audit_log.entries:
                                     entry = audit_log.entries[log_id]
                                     log_time_overwrite = entry.created_at
@@ -526,7 +536,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
 
                     embed.timestamp = log_time_overwrite
                     embed.color = COLOR_CREATE
-                    await event.app.rest.create_message(log_channel, embed = embed)
+                    await bot.rest.create_message(log_channel, embed = embed)
                     embed = hikari.Embed(color = COLOR_UPDATE)
                 
                 retrieved_update = False
@@ -537,7 +547,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                 for target_id in before.permission_overwrites:
                     if target_id not in after.permission_overwrites:
                         if not retrieved_update:
-                            async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_OVERWRITE_DELETE).limit(1):
+                            async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_OVERWRITE_DELETE).limit(1):
                                 for log_id in audit_log.entries:
                                     entry = audit_log.entries[log_id]
                                     log_time_overwrite = entry.created_at
@@ -576,7 +586,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
 
                     embed.timestamp = log_time_overwrite
                     embed.color = COLOR_DELETE
-                    await event.app.rest.create_message(log_channel, embed = embed)
+                    await bot.rest.create_message(log_channel, embed = embed)
                     embed = hikari.Embed(color = COLOR_UPDATE)
 
                 executor_overwrite = None
@@ -589,7 +599,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                         if target_obj is None:
                             target_obj = event.get_guild().get_member(target_id)
                         
-                        async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_OVERWRITE_UPDATE).limit(1):
+                        async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_OVERWRITE_UPDATE).limit(1):
                             for log_id in audit_log.entries:
                                 entry = audit_log.entries[log_id]
                                 log_time_overwrite = entry.created_at
@@ -659,7 +669,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                         )
 
                         embed.timestamp = log_time_overwrite
-                        await event.app.rest.create_message(log_channel, embed = embed)
+                        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.BanCreateEvent)
 async def on_guild_ban(event: hikari.BanCreateEvent):
@@ -676,7 +686,8 @@ async def on_guild_update(event: hikari.GuildUpdateEvent):
 @plugin.listener(hikari.MemberCreateEvent)
 async def on_member_join(event: hikari.MemberCreateEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_CREATE)
         log_time = dt.datetime.now().astimezone()
         
@@ -699,7 +710,7 @@ async def on_member_join(event: hikari.MemberCreateEvent):
         )
 
         embed.timestamp = log_time
-        await event.app.rest.create_message(log_channel, embed = embed)
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.MemberDeleteEvent)
 async def on_member_leave(event: hikari.MemberDeleteEvent):
@@ -708,7 +719,8 @@ async def on_member_leave(event: hikari.MemberDeleteEvent):
 @plugin.listener(hikari.MemberUpdateEvent)
 async def on_member_update(event: hikari.MemberUpdateEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_UPDATE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -717,7 +729,7 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
             pass
         else:
             if event.old_member.get_roles() != event.member.get_roles():
-                async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MEMBER_ROLE_UPDATE).limit(1):
+                async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MEMBER_ROLE_UPDATE).limit(1):
                     for log_id in audit_log.entries:
                         entry = audit_log.entries[log_id]
                         log_time = entry.created_at
@@ -751,7 +763,8 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
                     )
 
                     embed.timestamp = log_time
-                    await event.app.rest.create_message(log_channel, embed = embed)
+                    await bot.rest.create_message(log_channel, embed = embed)
+                    embed = hikari.Embed(color = COLOR_UPDATE)
                 if len(removed_roles) != 0:
                     embed.title = "Member Role Removed"
                     embed.description = dedent(f'''
@@ -773,9 +786,10 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
                     )
 
                     embed.timestamp = log_time
-                    await event.app.rest.create_message(log_channel, embed = embed)                    
+                    await bot.rest.create_message(log_channel, embed = embed)
+                    embed = hikari.Embed(color = COLOR_UPDATE)
             if event.old_member.nickname != event.member.nickname:
-                async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MEMBER_UPDATE).limit(1):
+                async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MEMBER_UPDATE).limit(1):
                     for log_id in audit_log.entries:
                         entry = audit_log.entries[log_id]
                         log_time = entry.created_at
@@ -802,18 +816,19 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
                 )
 
                 embed.timestamp = log_time
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.GuildBulkMessageDeleteEvent)
 async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time = dt.datetime.now().astimezone()
         executor = None
 
         if len(event.old_messages) > 0:
-            async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MESSAGE_BULK_DELETE).limit(1):
+            async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MESSAGE_BULK_DELETE).limit(1):
                 for log_id in audit_log.entries:
                     entry = audit_log.entries[log_id]
                     log_time = entry.created_at
@@ -852,7 +867,7 @@ async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent
             )
 
             embed.timestamp = log_time
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
         else:
             embed.title = "Bulk Message Deleted"
             embed.description = "⚠ Deleted messages info cannot be found."
@@ -868,19 +883,20 @@ async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent
             )
 
             embed.timestamp = log_time
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.GuildMessageDeleteEvent)
 async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
 
         if event.old_message is not None:
             # Since this event is pretty fucked by Discord I'm just gonna display the basic info lmfao not gonna bother look for who delete it.
-            async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MESSAGE_DELETE).limit(1):
+            async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MESSAGE_DELETE).limit(1):
                 for log_id in audit_log.entries:
                     entry = audit_log.entries[log_id]
                     if entry.target_id != event.old_message.author.id:
@@ -924,7 +940,7 @@ async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
             )
 
             embed.timestamp = log_time
-            await event.app.rest.create_message(log_channel, content = "*Note: `Deleted by:` can be incorrect due to Discord limitation.*", embed = embed)
+            await bot.rest.create_message(log_channel, content = "*Note: `Deleted by:` can be incorrect due to Discord limitation.*", embed = embed)
         else:
             embed.title = "Message Deleted"
             embed.description = "⚠ Deleted message info cannot be found."
@@ -939,7 +955,7 @@ async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
                 icon = event.get_guild().icon_url
             )
             embed.timestamp = dt.datetime.now().astimezone()
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.GuildMessageUpdateEvent)
 async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
@@ -948,7 +964,8 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
         if event.author == hikari.UNDEFINED:
             return
         elif not event.author.is_bot:
-            log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+            bot: models.MichaelBot = event.app
+            log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
             embed = hikari.Embed(color = COLOR_UPDATE)
             log_time: dt.datetime = dt.datetime.now().astimezone()
             executor = event.author
@@ -1003,17 +1020,18 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
             )
             embed.timestamp = log_time
 
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.RoleCreateEvent)
 async def on_role_create(event: hikari.RoleCreateEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_CREATE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
 
-        async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.ROLE_CREATE).limit(1):
+        async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.ROLE_CREATE).limit(1):
             for log_id in audit_log.entries:
                 entry = audit_log.entries[log_id]
                 log_time = entry.created_at
@@ -1045,24 +1063,25 @@ async def on_role_create(event: hikari.RoleCreateEvent):
                     icon = executor.avatar_url
                 )
                 embed.set_author(
-                    name = event.app.cache.get_guild(event.guild_id).name,
-                    icon = event.app.cache.get_guild(event.guild_id).icon_url
+                    name = bot.cache.get_guild(event.guild_id).name,
+                    icon = bot.cache.get_guild(event.guild_id).icon_url
                 )
                 embed.timestamp = log_time
 
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
                 break
 
 @plugin.listener(hikari.RoleDeleteEvent)
 async def on_role_delete(event: hikari.RoleDeleteEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
 
         entry_found = False
-        async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.ROLE_DELETE).limit(1):
+        async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.ROLE_DELETE).limit(1):
             for log_id in audit_log.entries:
                 if event.old_role is not None:
                     entry_found = True
@@ -1098,28 +1117,29 @@ async def on_role_delete(event: hikari.RoleDeleteEvent):
                     icon = executor.avatar_url
                 )
                 embed.set_author(
-                    name = event.app.cache.get_guild(event.guild_id).name,
-                    icon = event.app.cache.get_guild(event.guild_id).icon_url
+                    name = bot.cache.get_guild(event.guild_id).name,
+                    icon = bot.cache.get_guild(event.guild_id).icon_url
                 )
                 embed.timestamp = log_time
 
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
                 break
 
         if not entry_found:
             embed.title = "Role Deleted"
             embed.description = "⚠ Role information cannot be found."
             embed.set_author(
-                name = event.app.cache.get_guild(event.guild_id).name,
-                icon = event.app.cache.get_guild(event.guild_id).icon_url
+                name = bot.cache.get_guild(event.guild_id).name,
+                icon = bot.cache.get_guild(event.guild_id).icon_url
             )
             embed.timestamp = dt.datetime.now().astimezone()
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.RoleUpdateEvent)
 async def on_role_update(event: hikari.RoleUpdateEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_UPDATE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
@@ -1131,14 +1151,14 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
                 **Role:** {event.role.mention}
             ''')
             embed.set_author(
-                name = event.app.cache.get_guild(event.guild_id).name,
-                icon = event.app.cache.get_guild(event.guild_id).icon_url
+                name = bot.cache.get_guild(event.guild_id).name,
+                icon = bot.cache.get_guild(event.guild_id).icon_url
             )
 
             embed.timestamp = log_time
-            await event.app.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed)
         else:
-            async for audit_log in event.app.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.ROLE_UPDATE).limit(1):
+            async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.ROLE_UPDATE).limit(1):
                 for log_id in audit_log.entries:
                     entry = audit_log.entries[log_id]
                     log_time = entry.created_at
@@ -1161,12 +1181,12 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
                         text = "Updated by: Unknown"
                     )
                 embed.set_author(
-                    name = event.app.cache.get_guild(event.guild_id).name,
-                    icon = event.app.cache.get_guild(event.guild_id).icon_url
+                    name = bot.cache.get_guild(event.guild_id).name,
+                    icon = bot.cache.get_guild(event.guild_id).icon_url
                 )
 
                 embed.timestamp = log_time
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
                 embed = hikari.Embed(color = COLOR_UPDATE)
             if event.old_role.color != event.role.color:
                 embed.title = "Role Color Changed"
@@ -1185,12 +1205,12 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
                         text = "Updated by: Unknown"
                     )
                 embed.set_author(
-                    name = event.app.cache.get_guild(event.guild_id).name,
-                    icon = event.app.cache.get_guild(event.guild_id).icon_url
+                    name = bot.cache.get_guild(event.guild_id).name,
+                    icon = bot.cache.get_guild(event.guild_id).icon_url
                 )
 
                 embed.timestamp = log_time
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
                 embed = hikari.Embed(color = COLOR_UPDATE)
             if event.old_role.permissions != event.role.permissions:
                 # Take two permissions old: 1101011 and new: 1011001 for example.
@@ -1224,17 +1244,18 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
                         text = "Updated by: Unknown"
                     )
                 embed.set_author(
-                    name = event.app.cache.get_guild(event.guild_id).name,
-                    icon = event.app.cache.get_guild(event.guild_id).icon_url
+                    name = bot.cache.get_guild(event.guild_id).name,
+                    icon = bot.cache.get_guild(event.guild_id).icon_url
                 )
                 
                 embed.timestamp = log_time
-                await event.app.rest.create_message(log_channel, embed = embed)
+                await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(lightbulb.CommandCompletionEvent)
 async def on_command_invoke(event: lightbulb.CommandCompletionEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.context.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.context.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 
@@ -1257,12 +1278,13 @@ async def on_command_invoke(event: lightbulb.CommandCompletionEvent):
         )
 
         embed.timestamp = log_time
-        await event.app.rest.create_message(log_channel, embed = embed)
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(lightbulb.CommandErrorEvent)
 async def on_command_error(event: lightbulb.CommandErrorEvent):
     if is_loggable(event):
-        log_channel = models.get_guild_cache(event.app, event.context.guild_id).logging_module["log_channel"]
+        bot: models.MichaelBot = event.app
+        log_channel = bot.guild_cache[event.context.guild_id].logging_module["log_channel"]
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 
@@ -1292,9 +1314,9 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         )
 
         embed.timestamp = log_time
-        await event.app.rest.create_message(log_channel, embed = embed)
+        await bot.rest.create_message(log_channel, embed = embed)
 
-def load(bot: lightbulb.BotApp):
+def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
-def unload(bot: lightbulb.BotApp):
+def unload(bot: models.MichaelBot):
     bot.remove_plugin(plugin)

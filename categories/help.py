@@ -5,8 +5,9 @@ import datetime as dt
 import typing as t
 from textwrap import dedent
 
-from utilities.navigator import MenuComponent, MenuInteractionWrapper, ButtonPages
 import utilities.helpers as helpers
+import utilities.models as models
+from utilities.navigator import MenuComponent, MenuInteractionWrapper, ButtonPages
 
 __PREFIX_COMMAND_TYPES__ = (
     lightbulb.PrefixCommand, 
@@ -20,34 +21,6 @@ __SLASH_COMMAND_TYPES__ = (
     lightbulb.SlashSubGroup,
     lightbulb.SlashSubCommand,
 )
-
-def get_slash_command(bot: lightbulb.BotApp, name: str) -> t.Optional[lightbulb.SlashCommand]:
-    '''
-    Get the slash command with the given name, or `None` if none was found.
-
-    Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.
-    '''
-    # Reference: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/app.html#BotApp.get_prefix_command
-    
-    parts = name.split()
-    if len(parts) == 1:
-        return bot._slash_commands.get(name)
-
-    maybe_group = bot._slash_commands.get(parts.pop(0))
-    if not isinstance(maybe_group, lightbulb.SlashCommandGroup):
-        return None
-
-    this: t.Optional[
-        t.Union[
-            lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup, lightbulb.SlashSubCommand
-        ]
-    ] = maybe_group
-    for part in parts:
-        if this is None or isinstance(this, lightbulb.SlashSubCommand):
-            return None
-        this = this.get_subcommand(part)
-
-    return this
 
 def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequence[t.Type], remove_hidden: bool = False) -> t.List[lightbulb.Command]:
     '''
@@ -67,6 +40,8 @@ def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequen
     return l
 
 def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.List[hikari.Embed]:
+    bot: models.MichaelBot = ctx.bot
+
     MAX_COMMANDS = 10
     display = ""
     plugins = []
@@ -104,6 +79,8 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
     return plugins
 
 def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> hikari.Embed:
+    bot: models.MichaelBot = ctx.bot
+
     # Signature includes full command name.
     embed_title = command.signature.replace('=', ' = ')
     embed_description = "*No help provided*"
@@ -123,10 +100,10 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
         )
 
     command_type = []
-    p_cmd = ctx.bot.get_prefix_command(command.qualname)
-    s_cmd = get_slash_command(ctx.bot, command.qualname)
-    m_cmd = ctx.bot.get_message_command(command.qualname)
-    u_cmd = ctx.bot.get_user_command(command.qualname)
+    p_cmd = bot.get_prefix_command(command.qualname)
+    s_cmd = bot.get_slash_command(command.qualname)
+    m_cmd = bot.get_message_command(command.qualname)
+    u_cmd = bot.get_user_command(command.qualname)
 
     if p_cmd is not None:
         command_type.append("`Prefix Command`")
@@ -177,6 +154,9 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         '''
         The main logic for the help command.
         '''
+        bot: models.MichaelBot = self.bot
+        print("Hi")
+
         # Reference: https://github.com/tandemdude/hikari-lightbulb/blob/development/lightbulb/help_command.py#L100
         if obj is None:
             await self.send_bot_help(ctx)
@@ -184,15 +164,14 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         
         # Prioritize searching command based on context.
         if isinstance(ctx, lightbulb.PrefixContext):
-            cmd = self.bot.get_prefix_command(obj)
+            cmd = bot.get_prefix_command(obj)
             if cmd is not None:
                 if isinstance(cmd, (lightbulb.PrefixCommandGroup, lightbulb.PrefixSubGroup)):
                     return await self.send_group_help(ctx, cmd)
                 else:
                     return await self.send_command_help(ctx, cmd)
         if isinstance(ctx, lightbulb.SlashContext):
-            #cmd = self.bot.get_slash_command(obj)
-            cmd = get_slash_command(self.bot, obj)
+            cmd = bot.get_slash_command(obj)
             if cmd is not None:
                 if isinstance(cmd, (lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup)):
                     return await self.send_group_help(ctx, cmd)
@@ -207,7 +186,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         '''
         Send a generic help message.
         '''
-
+        
         if isinstance(ctx, lightbulb.PrefixContext):
             await ctx.event.message.delete()
 
@@ -278,9 +257,9 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         '''
         await ctx.respond(embed = command_help_format(ctx, group))
 
-def load(bot):
+def load(bot: models.MichaelBot):
     bot.d.old_help_command = bot.help_command
     bot.help_command = MenuLikeHelp(bot)
-def unload(bot):
+def unload(bot: models.MichaelBot):
     bot.help_command = bot.d.old_help_command
     del bot.d.old_help_command

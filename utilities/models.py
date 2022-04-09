@@ -1,6 +1,10 @@
 import lightbulb
 import hikari
+import aiohttp
+import asyncpg
 
+import datetime as dt
+import logging
 import typing as t
 from dataclasses import dataclass
 
@@ -126,26 +130,6 @@ class GuildCache:
         self.logging_module = guild_log
         return self
 
-def get_guild_cache(bot: lightbulb.BotApp, guild_id: int) -> t.Optional[GuildCache]:
-    '''
-    Return a guild's cache.
-    This allows you to have IntelliSense all those methods and save some spaces.
-
-    The returned cache is a reference, thus changing it will change the actual cache.
-    '''
-
-    return bot.d.guild_cache.get(guild_id)
-
-def get_user_cache(bot: lightbulb.BotApp, user_id: int) -> t.Optional[UserCache]:
-    '''
-    Return a user's cache.
-    This allows you to have IntelliSense all those methods and save some spaces.
-
-    The returned cache is a reference, thus changing it will change the actual cache.
-    '''
-
-    return bot.d.user_cache.get(user_id)
-
 # Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
 class DefaultColor:
     '''
@@ -240,3 +224,62 @@ class NodeExtra:
     '''A class to store extra data for the `lavaplayer.Node`'''
     queue_loop: bool = False
     working_channel: int = 0
+
+class MichaelBot(lightbulb.BotApp):
+    def __init__(self, 
+        token, 
+        prefix = None, 
+        ignore_bots = True, 
+        owner_ids: t.Sequence[int] = (), 
+        default_enabled_guilds: t.Union[int, t.Sequence[int]] = (), 
+        help_class = None, 
+        help_slash_command = False, 
+        delete_unbound_commands = True, 
+        case_insensitive_prefix_commands = False, 
+        **kwargs
+    ) -> None:
+        super().__init__(token, prefix, ignore_bots, owner_ids, default_enabled_guilds, help_class, help_slash_command, delete_unbound_commands, case_insensitive_prefix_commands, **kwargs)
+
+        self.info: dict = None
+        self.secrets: dict = None
+        self.online_at: dt.datetime = None
+        
+        self.logging: logging.Logger = None
+
+        self.pool: t.Optional[asyncpg.Pool] = None
+        self.aio_session: t.Optional[aiohttp.ClientSession] = None
+
+        self.guild_cache: dict[int, GuildCache] = {}
+        self.user_cache: dict[int, UserCache] = {}
+
+        # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
+        # so we'll make a dictionary to manually track additional info.
+        self.node_extra: dict[int, NodeExtra] = {}
+    
+    def get_slash_command(self, name: str) -> t.Optional[lightbulb.SlashCommand]:
+        '''
+        Get the slash command with the given name, or `None` if none was found.
+
+        Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.
+        '''
+        # Reference: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/app.html#BotApp.get_prefix_command
+        
+        parts = name.split()
+        if len(parts) == 1:
+            return self._slash_commands.get(name)
+
+        maybe_group = self._slash_commands.get(parts.pop(0))
+        if not isinstance(maybe_group, lightbulb.SlashCommandGroup):
+            return None
+
+        this: t.Optional[
+            t.Union[
+                lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup, lightbulb.SlashSubCommand
+            ]
+        ] = maybe_group
+        for part in parts:
+            if this is None or isinstance(this, lightbulb.SlashSubCommand):
+                return None
+            this = this.get_subcommand(part)
+
+        return this

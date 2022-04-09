@@ -204,12 +204,13 @@ async def role_info(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def urban(ctx: lightbulb.Context):
     term = ctx.options.term
+    bot: models.MichaelBot = ctx.bot
 
     BASE_URL = "http://api.urbandictionary.com/v0/define"
     parameters = {
         "term": term
     }
-    async with ctx.bot.d.aio_session.get(BASE_URL, params = parameters) as resp:
+    async with bot.aio_session.get(BASE_URL, params = parameters) as resp:
         if resp.status == 200:
             resp_json = await resp.json()
             if len(resp_json["list"]) > 0:
@@ -256,8 +257,9 @@ async def urban(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def weather(ctx: lightbulb.Context):
     city_name = ctx.options.city_name
+    bot: models.MichaelBot = ctx.bot
 
-    api_key = ctx.bot.d.secrets.get("weather_api_key")
+    api_key = bot.secrets.get("weather_api_key")
     if api_key is None:
         raise NotImplementedError("Weather API key not detected.")
     
@@ -266,7 +268,7 @@ async def weather(ctx: lightbulb.Context):
         "q": city_name,
         "key": api_key,
     }
-    async with ctx.bot.d.aio_session.get(BASE_URL + "/current.json", params = parameters) as resp:
+    async with bot.aio_session.get(BASE_URL + "/current.json", params = parameters) as resp:
         if resp.status == 200:
             resp_json = await resp.json()
             location = resp_json["location"]
@@ -327,7 +329,7 @@ async def weather(ctx: lightbulb.Context):
             resp_json = await resp.json()
             await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
 
-def load(bot: lightbulb.BotApp):
+def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
-def unload(bot: lightbulb.BotApp):
+def unload(bot: models.MichaelBot):
     bot.remove_plugin(plugin)

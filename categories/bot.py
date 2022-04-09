@@ -32,11 +32,13 @@ async def changelog_base(ctx: lightbulb.Context):
 @lightbulb.command("stable", "Show 10 latest changes to the bot.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def changelog_stable(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
 
     CHANNEL_ID = 644393721512722432
-    channel: hikari.GuildTextChannel = ctx.bot.cache.get_guild_channel(CHANNEL_ID)
+    channel: hikari.GuildTextChannel = bot.cache.get_guild_channel(CHANNEL_ID)
     if channel is None:
         return await ctx.respond("Seems like I can't retrieve the change logs. You might wanna report this to the developers.", reply = True, mentions_reply = True)
     
@@ -58,11 +60,13 @@ async def changelog_stable(ctx: lightbulb.Context):
 @lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def changelog_dev(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
 
     CHANNEL_ID = 759288597500788766
-    channel: hikari.GuildTextChannel = ctx.bot.cache.get_guild_channel(CHANNEL_ID)
+    channel: hikari.GuildTextChannel = bot.cache.get_guild_channel(CHANNEL_ID)
     if channel is None:
         return await ctx.respond("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
     
@@ -93,13 +97,15 @@ async def help(ctx: lightbulb.Context):
 @lightbulb.command("info", "Show information about the bot.", aliases = ["about"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def info(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     embed = helpers.get_default_embed(
-        title = ctx.bot.get_me().username,
-        description = ctx.bot.d.bot_info["description"],
+        title = bot.get_me().username,
+        description = bot.info["description"],
         timestamp = dt.datetime.now().astimezone()
     ).add_field(
         name = "Version:",
-        value = ctx.bot.d.bot_info["version"],
+        value = bot.info["version"],
         inline = False
     ).add_field(
         name = "Team:",
@@ -118,9 +124,9 @@ async def info(ctx: lightbulb.Context):
                 **Source:** [GitHub](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\"), [Dashboard](https://github.com/nhxv/discord-bot)
                 '''),
         inline = False
-    ).set_thumbnail(ctx.bot.get_me().avatar_url)
+    ).set_thumbnail(bot.get_me().avatar_url)
 
-    up_time = dt.datetime.now().astimezone() - ctx.bot.d.online_at
+    up_time = dt.datetime.now().astimezone() - bot.online_at
     embed.add_field(
         name = "Host Info:",
         value = dedent(f'''
@@ -137,7 +143,10 @@ async def info(ctx: lightbulb.Context):
 @lightbulb.command("ping", "Check the bot if it's alive")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def ping(ctx: lightbulb.Context):
-    latency = ctx.bot.heartbeat_latency
+    bot: models.MichaelBot = ctx.bot
+
+    latency = bot.heartbeat_latency
+    
     import time
     start = time.perf_counter()
     m = await ctx.respond("Never gonna give you up.", reply = True)
@@ -170,16 +179,18 @@ async def ping(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def prefix(ctx: lightbulb.Context):
     new_prefix = ctx.options.new_prefix
-    guild_dbcache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    guild_dbcache = bot.guild_cache.get(ctx.guild_id)
     
     if new_prefix is None:
-        guild_prefix = ctx.bot.d.bot_info["prefix"] if guild_dbcache is None else guild_dbcache.guild_module["prefix"]
+        guild_prefix = bot.info["prefix"] if guild_dbcache is None else guild_dbcache.guild_module["prefix"]
         await ctx.respond(f"Current prefix: `{guild_prefix}`", reply = True)
     else:
         if len(new_prefix) > 5 or len(new_prefix.split(' ')) > 1:
             await ctx.respond("Invalid prefix.", reply = True, mentions_reply = True)
             return
-        async with ctx.bot.d.pool.acquire() as conn:
+        async with bot.pool.acquire() as conn:
             async with conn.transaction():
                 await guild_dbcache.update_guild_module(conn, ctx.guild_id, "prefix", new_prefix)
         await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
@@ -196,6 +207,7 @@ async def prefix(ctx: lightbulb.Context):
 async def report(ctx: lightbulb.Context):
     report_type = ctx.options.type
     reason = ctx.options.reason
+    bot: models.MichaelBot = ctx.bot
 
     REPORT_CHANNEL = 644339079164723201
     if report_type.upper() == "BUG" or report_type.upper() == "SUGGEST":
@@ -211,7 +223,7 @@ async def report(ctx: lightbulb.Context):
         )
 
         try:
-            await ctx.bot.rest.create_message(REPORT_CHANNEL, embed = embed)
+            await bot.rest.create_message(REPORT_CHANNEL, embed = embed)
             await ctx.respond("Report sent successfully! Thank you.", reply = True)
         except hikari.ForbiddenError:
             await ctx.respond("I can't send the report for some reasons. Join the support server and notify them about this, along with whatever you're trying to send.", reply = True, mentions_reply = True)

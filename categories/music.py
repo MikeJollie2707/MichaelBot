@@ -7,6 +7,7 @@ from textwrap import dedent
 
 import utilities.checks as checks
 import utilities.helpers as helpers
+import utilities.models as models
 from utilities.converters import IntervalConverter
 from utilities.models import NodeExtra
 from utilities.navigator import ButtonPages
@@ -21,10 +22,6 @@ lavalink = lavaplayer.LavalinkClient(
     password = "youshallnotpass",  # Lavalink password
     user_id = 577663051722129427
 )
-
-# Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
-# so we'll make a dictionary to manually track additional info.
-node_extra: dict[int, NodeExtra] = {}
 
 MUSIC_EMOTES = {
     "pause": helpers.get_emote(":pause_button:"),
@@ -45,19 +42,22 @@ def get_yt_thumbnail_endpoint(identifier: str):
 
 @lavalink.listen(lavaplayer.TrackStartEvent)
 async def track_start_event(event: lavaplayer.TrackStartEvent):
+    bot: models.MichaelBot = plugin.bot
+
     node = await lavalink.get_guild_node(event.guild_id)
     # We probably don't want to spam the Now Playing when it's only looping one song.
     if node is not None:
-        await plugin.bot.rest.create_message(node_extra[event.guild_id].working_channel, f"Now Playing: `{event.track.title}`.")
+        await plugin.bot.rest.create_message(bot.node_extra[event.guild_id].working_channel, f"Now Playing: `{event.track.title}`.")
 
 @lavalink.listen(lavaplayer.TrackEndEvent)
 async def track_end_event(event: lavaplayer.TrackEndEvent):
-    if node_extra.get(event.guild_id) is None:
+    bot: models.MichaelBot = plugin.bot
+    if bot.node_extra.get(event.guild_id) is None:
         return
     
     node = await lavalink.get_guild_node(event.guild_id)
     if node is not None:
-        if node_extra[event.guild_id].queue_loop and not node.repeat:
+        if bot.node_extra[event.guild_id].queue_loop and not node.repeat:
             node.queue.append(event.track)
 
 @lavalink.listen(lavaplayer.WebSocketClosedEvent)
@@ -84,9 +84,10 @@ async def start_lavalink(event: hikari.ShardReadyEvent):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def join(ctx: lightbulb.Context):
     voice_channel = ctx.options.voice_channel
+    bot: models.MichaelBot = ctx.bot
     
     if voice_channel is None:
-        states = ctx.bot.cache.get_voice_states_view_for_guild(ctx.guild_id)
+        states = bot.cache.get_voice_states_view_for_guild(ctx.guild_id)
         voice_state = [state async for state in states.iterator().filter(lambda i: i.user_id == ctx.author.id)]
         if not voice_state:
             await ctx.respond("You are not in a voice channel.")
@@ -95,20 +96,24 @@ async def join(ctx: lightbulb.Context):
     else:
         channel_id = voice_channel.id
     
-    await ctx.bot.update_voice_state(ctx.guild_id, channel_id, self_deaf = True)
-    node_extra[ctx.guild_id] = NodeExtra()
-    node_extra[ctx.guild_id].working_channel = ctx.channel_id
+    await bot.update_voice_state(ctx.guild_id, channel_id, self_deaf = True)
+    if bot.node_extra.get(ctx.guild_id) is None:
+        bot.node_extra[ctx.guild_id] = NodeExtra()
+    # Update working channel.
+    bot.node_extra[ctx.guild_id].working_channel = ctx.channel_id
     await ctx.respond(f"Joining <#{channel_id}>...", reply = True)
 
 @plugin.command()
 @lightbulb.command(name = "leave", description = "Leave the voice channel.", aliases = ["disconnect", 'dc'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def leave(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         await lavalink.remove_guild_node(ctx.guild_id)
-        node_extra.pop(ctx.guild_id, None)
-        await ctx.bot.update_voice_state(ctx.guild_id, None)
+        bot.node_extra.pop(ctx.guild_id, None)
+        await bot.update_voice_state(ctx.guild_id, None)
         await ctx.respond("**Successfully disconnected.**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -118,6 +123,8 @@ async def leave(ctx: lightbulb.Context):
 @lightbulb.command(name = "np", description = "Get info about the current track.", aliases = ["now_playing"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def np(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         if not node.queue:
@@ -148,7 +155,7 @@ async def np(ctx: lightbulb.Context):
             `{progress_string}`
             `{current_position}` / `{full_duration}`
 
-            **Requested by:** {ctx.bot.cache.get_user(int(current_track.requester)).mention}
+            **Requested by:** {bot.cache.get_user(int(current_track.requester)).mention}
             """,
             author = ctx.author,
             timestamp = dt.datetime.now().astimezone()
@@ -292,6 +299,8 @@ async def volume(ctx: lightbulb.Context):
 @lightbulb.command(name = "queue", description = "Display the song queue.", aliases = ['q'])
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def queue(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         embed = None
@@ -347,7 +356,7 @@ async def queue(ctx: lightbulb.Context):
                         inline = True
                     ).add_field(
                         name = f"{MUSIC_EMOTES['queue_loop']}",
-                        value = "Yes" if node_extra[ctx.guild_id].queue_loop else "No",
+                        value = "Yes" if bot.node_extra[ctx.guild_id].queue_loop else "No",
                         inline = True
                     )
                     page_list.append(embed)
@@ -366,7 +375,7 @@ async def queue(ctx: lightbulb.Context):
                     inline = True
                 ).add_field(
                     name = f"{MUSIC_EMOTES['queue_loop']}",
-                    value = "Yes" if node_extra[ctx.guild_id].queue_loop else "No",
+                    value = "Yes" if bot.node_extra[ctx.guild_id].queue_loop else "No",
                     inline = True
                 )
                 page_list.append(embed)
@@ -409,9 +418,11 @@ async def queue_shuffle(ctx: lightbulb.Context):
 @lightbulb.command(name = "loop", description = "Toggle queue loop.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_loop(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        fnode = node_extra.get(ctx.guild_id)
+        fnode = bot.node_extra.get(ctx.guild_id)
         if fnode is None:
             await ctx.respond("Something is wrong, try reconnect the bot to the VC.", reply = True, mentions_reply = True)
             return
@@ -494,16 +505,18 @@ async def skip(ctx: lightbulb.Context):
 @lightbulb.command(name = "stop", description = "Stop the player.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def stop(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     node = await lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        node_extra[ctx.guild_id].queue_loop = False
+        bot.node_extra[ctx.guild_id].queue_loop = False
 
         await lavalink.stop(ctx.guild_id)
         await ctx.respond(f"{MUSIC_EMOTES['stop']} **Stopped!**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
-def load(bot: lightbulb.BotApp):
+def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
-def unload(bot: lightbulb.BotApp):
+def unload(bot: models.MichaelBot):
     bot.remove_plugin(plugin)

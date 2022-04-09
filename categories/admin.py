@@ -20,6 +20,8 @@ plugin.add_checks(is_dev, checks.is_command_enabled, lightbulb.bot_has_guild_per
 @lightbulb.command("blacklist-guild", "Blacklist a guild.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def blacklist_guild(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+    
     guild_id = 0
     if isinstance(ctx, lightbulb.SlashContext):
         guild = await lightbulb.converters.GuildConverter(ctx).convert(ctx.options.guild)
@@ -27,9 +29,18 @@ async def blacklist_guild(ctx: lightbulb.Context):
     else:
         guild_id = ctx.options.guild.id
     
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guild_cache = models.get_guild_cache(ctx.bot, ctx.guild_id)
+            guild_cache = bot.guild_cache.get(guild_id)
+            if guild_cache is None:
+                guild_db = await psql.Guilds.get_one(conn, guild_id)
+                if guild_db is None:
+                    await ctx.respond("Can't blacklist a guild that's not available in guild.", reply = True, mentions_reply = True)
+                    return
+                else:
+                    guild_cache = models.GuildCache()
+                    await guild_cache.force_sync(conn, guild_id)
+            
             await guild_cache.update_guild_module(conn, guild_id, "is_whitelist", False)
     
     await ctx.respond("Blacklisted!", reply = True)
@@ -39,6 +50,8 @@ async def blacklist_guild(ctx: lightbulb.Context):
 @lightbulb.command("blacklist-user", "Blacklist a user.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def blacklist_user(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+    
     user_id = 0
     if isinstance(ctx, lightbulb.SlashContext):
         user = await lightbulb.converters.UserConverter(ctx).convert(ctx.options.user)
@@ -50,9 +63,9 @@ async def blacklist_user(ctx: lightbulb.Context):
         await ctx.respond("Sorry, can't blacklist my bot owner. That's not a thing.", reply = True, mentions_reply = True)
         return
     
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            user_cache = models.get_user_cache(ctx.bot, ctx.guild_id)
+            user_cache = bot.user_cache.get(user_id)
             if user_cache is None:
                 user_db = await psql.Users.get_one(conn, user_id)
                 if user_db is None:
@@ -70,21 +83,21 @@ async def blacklist_user(ctx: lightbulb.Context):
 @lightbulb.command("force-sync-cache", "Force update the cache with the current data in database.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def force_sync_cache(ctx: lightbulb.Context):
-    async with ctx.bot.d.pool.acquire() as conn:
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
             guilds = await psql.Guilds.get_all(conn)
             for guild in guilds:
                 guild_id = guild["id"]
-                ctx.bot.d.guild_cache[guild_id] = models.GuildCache()
-                guild_cache = models.get_guild_cache(ctx.bot, guild_id)
-                await guild_cache.force_sync(conn, guild_id)
+                bot.guild_cache[guild_id] = models.GuildCache()
+                await bot.guild_cache[guild_id].force_sync(conn, guild_id)
             
             users = await psql.Users.get_all(conn)
             for user in users:
                 user_id = user["id"]
-                ctx.bot.d.user_cache[user_id] = models.UserCache()
-                user_cache = models.get_user_cache(ctx.bot, user_id)
-                await user_cache.force_sync(conn, user_id)
+                bot.user_cache[user_id] = models.UserCache()
+                await bot.user_cache[user_id].force_sync(conn, user_id)
     
     await ctx.respond("Cache is now sync to the database.", reply = True)
 
@@ -94,12 +107,12 @@ async def force_sync_cache(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def force_sync_cache_user(ctx: lightbulb.Context):
     user_id = ctx.options.user_id.id
+    bot: models.MichaelBot = ctx.bot
 
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            ctx.bot.d.user_cache[user_id] = models.UserCache()
-            user_cache = models.get_user_cache(ctx.bot, user_id)
-            await user_cache.force_sync(conn, user_id)
+            bot.user_cache[user_id] = models.UserCache()
+            await bot.user_cache[user_id].force_sync(conn, user_id)
     
     await ctx.respond(f"User cache for {ctx.options.user_id} synced.", reply = True)
 
@@ -109,12 +122,12 @@ async def force_sync_cache_user(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def force_sync_cache_guild(ctx: lightbulb.Context):
     guild_id = ctx.options.guild_id.id
+    bot: models.MichaelBot = ctx.bot
 
-    async with ctx.bot.d.pool.acquire() as conn:
+    async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            ctx.bot.d.guild_cache[guild_id] = models.GuildCache()
-            guild_cache = models.get_guild_cache(ctx.bot, guild_id)
-            await guild_cache.force_sync(conn, guild_id)
+            bot.guild_cache[guild_id] = models.GuildCache()
+            await bot.guild_cache[guild_id].force_sync(conn, guild_id)
     
     await ctx.respond(f"Guild cache for {ctx.options.guild_id} synced.", reply = True)
 
@@ -130,8 +143,9 @@ async def cache_view(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def cache_view_guild(ctx: lightbulb.Context):
     guild_id = ctx.options.guild_id.id
+    bot: models.MichaelBot = ctx.bot
 
-    guild_cache = models.get_guild_cache(ctx.bot, guild_id)
+    guild_cache = bot.guild_cache.get(guild_id)
     if guild_cache is not None:
         embed = helpers.get_default_embed(
             title = "Guild Cache View",
@@ -152,8 +166,10 @@ async def cache_view_guild(ctx: lightbulb.Context):
 @lightbulb.command("purge-slashes", "Force delete every slash commands in test guilds.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def purge_slashes(ctx: lightbulb.Context):
-    async with ctx.bot.rest.trigger_typing(ctx.channel_id):
-        await ctx.bot.purge_application_commands(*ctx.bot.d.bot_info["default_guilds"])
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.rest.trigger_typing(ctx.channel_id):
+        await bot.purge_application_commands(*bot.info["default_guilds"])
     await ctx.respond("Cleared all guild slash commands in test guilds.", reply = True)
 
 @plugin.command()
@@ -161,7 +177,9 @@ async def purge_slashes(ctx: lightbulb.Context):
 @lightbulb.command("reload", "Reload an extension.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def reload(ctx: lightbulb.Context):
-    ctx.bot.reload_extensions(ctx.options.extension)
+    bot: models.MichaelBot = ctx.bot
+
+    bot.reload_extensions(ctx.options.extension)
     await ctx.respond(f"Reloaded extension {ctx.options.extension}.", reply = True)
 @reload.set_error_handler()
 async def reload_error(event: lightbulb.CommandErrorEvent):
@@ -181,34 +199,9 @@ async def shutdown(ctx: lightbulb.Context):
 @lightbulb.command("test", "test", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def test(ctx: lightbulb.Context):
-    #count = ctx.options.count
+    print(type(ctx.bot.help_command))
 
-    #if isinstance(ctx, lightbulb.PrefixCommand):
-    #    count += 1
-    
-    #iterator = ctx.bot.rest.fetch_messages(ctx.channel_id).limit(ctx.options.count)
-    #async for message in iterator.chunk(100):
-    #    await ctx.bot.rest.delete_messages(ctx.channel_id, message)
-    row1 = ctx.bot.rest.build_action_row()
-    row2 = ctx.bot.rest.build_action_row()
-    btn = row1.add_button(hikari.ButtonStyle.PRIMARY, "Button1")
-    btn.set_label("Button1")
-    btn.add_to_container()
-    btn = row1.add_button(hikari.ButtonStyle.PRIMARY, "Button2")
-    btn.set_label("Button2")
-    btn.add_to_container()
-    btn = row1.add_button(hikari.ButtonStyle.PRIMARY, "Button3")
-    btn.set_label("Button3")
-    btn.add_to_container()
-    
-    btn = row2.add_button(hikari.ButtonStyle.PRIMARY, "Button4")
-    btn.set_label("Button4")
-    btn.add_to_container()
-
-
-    await ctx.respond("Hii", components = [row1])
-
-def load(bot):
+def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
-def unload(bot):
+def unload(bot: models.MichaelBot):
     bot.remove_plugin(plugin)

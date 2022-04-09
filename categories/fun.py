@@ -7,6 +7,7 @@ from textwrap import dedent
 
 import utilities.checks as checks
 import utilities.helpers as helpers
+import utilities.models as models
 
 plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":grin:")
@@ -73,13 +74,15 @@ async def copypasta(ctx: lightbulb.Context):
 @lightbulb.command("dadjoke", "Give you a dad joke.", aliases = ["ina-of-the-mountain-what-is-your-wisdom"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def dadjoke(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
     BASE_URL = "https://icanhazdadjoke.com/"
     header = {
         "Accept": "application/json",
         "User-Agent": "MichaelBot (Discord Bot) - https://github.com/MikeJollie2707/"
     }
 
-    async with ctx.bot.d.aio_session.get(BASE_URL, headers = header) as resp:
+    async with bot.aio_session.get(BASE_URL, headers = header) as resp:
         if resp.status == 200:
             resp_json = await resp.json()
             await ctx.respond(resp_json["joke"], reply = True)
@@ -188,18 +191,6 @@ async def speak(ctx: lightbulb.Context):
 @lightbulb.command("uwu", "Turn a text into uwu text.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def uwu(ctx: lightbulb.Context):
-    #BASE_URL = "https://uwuaas.herokuapp.com/api/"
-    #async with ctx.bot.d.aio_session.post(BASE_URL, json = {"text": ctx.options.text}) as resp:
-    #    if resp.status == 200:
-    #        resp_json = await resp.json()
-    #        embed = helpers.get_default_embed(
-    #            description = resp_json["text"],
-    #            author = ctx.author,
-    #            timestamp = dt.datetime.now().astimezone()
-    #        )
-    #        await ctx.respond(embed = embed, reply = True)
-    #    else:
-    #        await ctx.respond("Oh nyo, ★⌒ヽ(˘꒳˘ *) I faiwed *whispers to self* t-to uwu the ÚwÚ text.", reply = True, mentions_reply = True)
     from utilities.funtext import uwuify
 
     text = ""
@@ -222,7 +213,17 @@ async def uwu(ctx: lightbulb.Context):
         )
         await ctx.respond(embed = embed, reply = True)
 
-def load(bot: lightbulb.BotApp):
+@plugin.command()
+@lightbulb.set_help(dedent('''
+
+'''))
+@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.command("wink", "Wink wink ;)")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def wink(ctx: lightbulb.Context):
+    pass
+
+def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
-def unload(bot: lightbulb.BotApp):
+def unload(bot: models.MichaelBot):
     bot.remove_plugin(plugin)
