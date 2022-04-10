@@ -155,7 +155,6 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         The main logic for the help command.
         '''
         bot: models.MichaelBot = self.bot
-        print("Hi")
 
         # Reference: https://github.com/tandemdude/hikari-lightbulb/blob/development/lightbulb/help_command.py#L100
         if obj is None:
