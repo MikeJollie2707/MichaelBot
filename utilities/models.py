@@ -2,6 +2,7 @@ import lightbulb
 import hikari
 import aiohttp
 import asyncpg
+import lavaplayer
 
 import datetime as dt
 import logging
@@ -253,6 +254,7 @@ class MichaelBot(lightbulb.BotApp):
         self.guild_cache: dict[int, GuildCache] = {}
         self.user_cache: dict[int, UserCache] = {}
 
+        self.lavalink: t.Optional[lavaplayer.LavalinkClient] = None
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
         # so we'll make a dictionary to manually track additional info.
         self.node_extra: dict[int, NodeExtra] = {}

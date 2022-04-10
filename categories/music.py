@@ -16,13 +16,6 @@ plugin = lightbulb.Plugin("Music", description = "Music Commands", include_datas
 plugin.d.emote = helpers.get_emote(":musical_note:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
-lavalink = lavaplayer.LavalinkClient(
-    host = "0.0.0.0",  # Lavalink host
-    port = 2333,  # Lavalink port
-    password = "youshallnotpass",  # Lavalink password
-    user_id = 577663051722129427
-)
-
 MUSIC_EMOTES = {
     "pause": helpers.get_emote(":pause_button:"),
     "play": helpers.get_emote(":arrow_forward:"),
@@ -38,44 +31,55 @@ MUSIC_EMOTES = {
 
 def get_yt_thumbnail_endpoint(identifier: str):
     return f"https://img.youtube.com/vi/{identifier}/maxresdefault.jpg"
- 
 
-@lavalink.listen(lavaplayer.TrackStartEvent)
 async def track_start_event(event: lavaplayer.TrackStartEvent):
     bot: models.MichaelBot = plugin.bot
 
-    node = await lavalink.get_guild_node(event.guild_id)
+    node = await bot.lavalink.get_guild_node(event.guild_id)
     # We probably don't want to spam the Now Playing when it's only looping one song.
     if node is not None:
         await plugin.bot.rest.create_message(bot.node_extra[event.guild_id].working_channel, f"Now Playing: `{event.track.title}`.")
 
-@lavalink.listen(lavaplayer.TrackEndEvent)
 async def track_end_event(event: lavaplayer.TrackEndEvent):
     bot: models.MichaelBot = plugin.bot
+    
     if bot.node_extra.get(event.guild_id) is None:
         return
     
-    node = await lavalink.get_guild_node(event.guild_id)
+    node = await bot.lavalink.get_guild_node(event.guild_id)
     if node is not None:
         if bot.node_extra[event.guild_id].queue_loop and not node.repeat:
             node.queue.append(event.track)
 
-@lavalink.listen(lavaplayer.WebSocketClosedEvent)
 async def web_socket_closed_event(event: lavaplayer.WebSocketClosedEvent):
     print(event.reason)
 
 # On voice state update the bot will update the lavalink node
 @plugin.listener(hikari.VoiceStateUpdateEvent)
 async def voice_state_update(event: hikari.VoiceStateUpdateEvent):
-    await lavalink.raw_voice_state_update(event.guild_id, event.state.user_id, event.state.session_id, event.state.channel_id)
+    bot: models.MichaelBot = event.app
+    await bot.lavalink.raw_voice_state_update(event.guild_id, event.state.user_id, event.state.session_id, event.state.channel_id)
 
 @plugin.listener(hikari.VoiceServerUpdateEvent)
 async def voice_server_update(event: hikari.VoiceServerUpdateEvent):
-    await lavalink.raw_voice_server_update(event.guild_id, event.endpoint, event.token)
+    bot: models.MichaelBot = event.app
+    await bot.lavalink.raw_voice_server_update(event.guild_id, event.endpoint, event.token)
 
 @plugin.listener(hikari.ShardReadyEvent)
 async def start_lavalink(event: hikari.ShardReadyEvent):
-    lavalink.connect()
+    bot: models.MichaelBot = event.app
+    bot.lavalink = lavaplayer.LavalinkClient(
+        host = "0.0.0.0",  # Lavalink host
+        port = 2333,  # Lavalink port
+        password = "youshallnotpass",  # Lavalink password
+        user_id = bot.get_me().id
+    )
+    # Reference: https://github.com/HazemMeqdad/lavaplayer/blob/main/lavaplayer/client.py#L604
+    bot.lavalink.event_manager.add_listener(lavaplayer.TrackStartEvent, track_start_event)
+    bot.lavalink.event_manager.add_listener(lavaplayer.TrackEndEvent, track_end_event)
+    bot.lavalink.event_manager.add_listener(lavaplayer.WebSocketClosedEvent, web_socket_closed_event)
+
+    bot.lavalink.connect()
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
@@ -109,9 +113,8 @@ async def join(ctx: lightbulb.Context):
 async def leave(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        await lavalink.remove_guild_node(ctx.guild_id)
         bot.node_extra.pop(ctx.guild_id, None)
         await bot.update_voice_state(ctx.guild_id, None)
         await ctx.respond("**Successfully disconnected.**", reply = True)
@@ -125,7 +128,7 @@ async def leave(ctx: lightbulb.Context):
 async def np(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         if not node.queue:
             await ctx.respond("*cricket noises*", reply = True)
@@ -176,22 +179,23 @@ async def np(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def play(ctx: lightbulb.Context):
     query = ctx.options.query
+    bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is None:
         await join(ctx)
     
-    result = await lavalink.auto_search_tracks(query)
+    result = await bot.lavalink.auto_search_tracks(query)
     if not result:
         await ctx.respond("Can't find any songs with the query.", reply = True, mentions_reply = True)
         return
     
     if isinstance(result, lavaplayer.PlayList):
-        await lavalink.add_to_queue(ctx.guild_id, result.tracks, ctx.author.id)
+        await bot.lavalink.add_to_queue(ctx.guild_id, result.tracks, ctx.author.id)
         await ctx.respond(f"Added playlist `{result.name}` with {len(result.tracks)} tracks to queue.", reply = True)
         return
 
-    await lavalink.play(ctx.guild_id, result[0], ctx.author.id)
+    await bot.lavalink.play(ctx.guild_id, result[0], ctx.author.id)
     await ctx.respond(f"Added `{result[0].title}` to the queue", reply = True) 
 
 @plugin.command()
@@ -199,10 +203,12 @@ async def play(ctx: lightbulb.Context):
 @lightbulb.command(name = "pause", description = "Toggle pausing the player.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def pause(ctx: lightbulb.Context):
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         node.is_pause = not node.is_pause
-        await lavalink.pause(ctx.guild_id, node.is_pause)
+        await bot.lavalink.pause(ctx.guild_id, node.is_pause)
         if node.is_pause:
             await ctx.respond(f"{MUSIC_EMOTES['pause']} **Paused.**", reply = True)
         else:
@@ -217,9 +223,10 @@ async def pause(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def search(ctx: lightbulb.Context):
     track = ctx.options.track
+    bot: models.MichaelBot = ctx.bot
 
     # Ideally the user should provide keywords, but if they provide a link then I'll go with that too.
-    results = await lavalink.auto_search_tracks(track)
+    results = await bot.lavalink.auto_search_tracks(track)
     if results is None:
         await ctx.respond("Can't find any songs with the keywords provided.", reply = True, mentions_reply = True)
         return
@@ -242,13 +249,14 @@ async def search(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def seek(ctx: lightbulb.Context):
     position = ctx.options.position
+    bot: models.MichaelBot = ctx.bot
 
     if isinstance(ctx, lightbulb.SlashContext):
         position = await IntervalConverter(ctx).convert(position)
     
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        await lavalink.seek(ctx.guild_id, position.seconds * 1000)
+        await bot.lavalink.seek(ctx.guild_id, position.seconds * 1000)
         await ctx.respond(f"{MUSIC_EMOTES['skip']} **Seek to `{position}`.**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -258,10 +266,12 @@ async def seek(ctx: lightbulb.Context):
 @lightbulb.command(name = "repeat", description = "Toggle repeating the track.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def repeat(ctx: lightbulb.Context):
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         node.repeat = not node.repeat
-        await lavalink.set_guild_node(ctx.guild_id, node)
+        await bot.lavalink.set_guild_node(ctx.guild_id, node)
         if node.repeat:
             await ctx.respond(f"{MUSIC_EMOTES['single_loop']} **Enabled!**", reply = True)
         else:
@@ -279,16 +289,17 @@ async def repeat(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def volume(ctx: lightbulb.Context):
     vol = ctx.options.vol
+    bot: models.MichaelBot = ctx.bot
 
     if isinstance(ctx, lightbulb.SlashContext):
         vol = int(vol)
     
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         # Force the volume to stay in range.
         vol = min(max(vol, 0), 200)
 
-        await lavalink.volume(ctx.guild_id, vol)
+        await bot.lavalink.volume(ctx.guild_id, vol)
         emote = MUSIC_EMOTES["volume_beeg"] if vol > 100 else MUSIC_EMOTES["volume_smol"]
         await ctx.respond(f"{emote} Set volume to {vol}%", reply = True)
     else:
@@ -301,7 +312,7 @@ async def volume(ctx: lightbulb.Context):
 async def queue(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         embed = None
         if len(node.queue) == 0:
@@ -395,10 +406,12 @@ async def queue_view(ctx: lightbulb.Context):
 @lightbulb.command(name = "clear", description = "Clear the entire queue but the current track.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_clear(ctx: lightbulb.Context):
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:    
         node.queue = [node.queue[0]]
-        await lavalink.set_guild_node(ctx.guild_id, node)
+        await bot.lavalink.set_guild_node(ctx.guild_id, node)
         await ctx.respond(f"{MUSIC_EMOTES['queue_clear']} **Queue cleared!**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -407,9 +420,11 @@ async def queue_clear(ctx: lightbulb.Context):
 @lightbulb.command(name = "shuffle", description = "Shuffle the queue.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_shuffle(ctx: lightbulb.Context):
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        await lavalink.shuffle(ctx.guild_id)
+        await bot.lavalink.shuffle(ctx.guild_id)
         await ctx.respond(f"{MUSIC_EMOTES['shuffle']} **Shuffled!**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -420,7 +435,7 @@ async def queue_shuffle(ctx: lightbulb.Context):
 async def queue_loop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         fnode = bot.node_extra.get(ctx.guild_id)
         if fnode is None:
@@ -444,8 +459,9 @@ async def queue_loop(ctx: lightbulb.Context):
 async def queue_move(ctx: lightbulb.Context):
     from_index = ctx.options.from_index - 1
     to_index = ctx.options.to_index - 1
+    bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         movable_queue = node.queue[1:]
         movable_size = len(movable_queue)
@@ -460,7 +476,7 @@ async def queue_move(ctx: lightbulb.Context):
         movable_queue.insert(to_index, track)
 
         node.queue = [node.queue[0]] + movable_queue
-        await lavalink.set_guild_node(ctx.guild_id, node)
+        await bot.lavalink.set_guild_node(ctx.guild_id, node)
         await ctx.respond(f"**Track** `{track.title}` **moved from {from_index + 1} to {to_index + 1}.**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -472,8 +488,9 @@ async def queue_move(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_remove(ctx: lightbulb.Context):
     index = ctx.options.index - 1
+    bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         removable_queue = node.queue[1:]
         if index < 0 or index > len(removable_queue) - 1:
@@ -484,7 +501,7 @@ async def queue_remove(ctx: lightbulb.Context):
         removable_queue = removable_queue[:index] + removable_queue[index + 1:]
 
         node.queue = [node.queue[0]] + removable_queue
-        await lavalink.set_guild_node(ctx.guild_id, node)
+        await bot.lavalink.set_guild_node(ctx.guild_id, node)
         await ctx.respond(f"**Track removed:** `{removed_track.title}`.", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -494,9 +511,11 @@ async def queue_remove(ctx: lightbulb.Context):
 @lightbulb.command(name = "skip", description = "Skip the current track.", aliases = ['s'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def skip(ctx: lightbulb.Context):
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    bot: models.MichaelBot = ctx.bot
+
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
-        await lavalink.skip(ctx.guild_id)
+        await bot.lavalink.skip(ctx.guild_id)
         await ctx.respond(f"{MUSIC_EMOTES['skip']} **Skipped!**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
@@ -507,11 +526,11 @@ async def skip(ctx: lightbulb.Context):
 async def stop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    node = await lavalink.get_guild_node(ctx.guild_id)
+    node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:
         bot.node_extra[ctx.guild_id].queue_loop = False
 
-        await lavalink.stop(ctx.guild_id)
+        await bot.lavalink.stop(ctx.guild_id)
         await ctx.respond(f"{MUSIC_EMOTES['stop']} **Stopped!**", reply = True)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
