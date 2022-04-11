@@ -32,6 +32,10 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
     if ctx.guild_id is None:
         raise lightbulb.OnlyInGuild
     
+    # A db-existing check should be separated.
+    if bot.pool is None:
+        return True
+    
     guild_cache = bot.guild_cache.get(ctx.guild_id)
     user_cache = bot.user_cache.get(ctx.author.id)
 
@@ -59,4 +63,32 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
     if not user_cache.user_module["is_whitelist"]:
         raise errors.UserBlacklisted
         
+    return True
+
+@lightbulb.Check
+def is_db_connected(ctx: lightbulb.Context) -> bool:
+    '''
+    Check if a database connection pool is available.
+    This must be checked on commands that uses connection pool.
+
+    Exception:
+    - `errors.NoDatabase`: The bot doesn't have a database connection pool.
+    '''
+    bot: models.MichaelBot = ctx.bot
+    if bot.pool is None:
+        raise errors.NoDatabase
+    return True
+
+@lightbulb.Check
+def is_aiohttp_existed(ctx: lightbulb.Context) -> bool:
+    '''
+    Check if a http client is available.
+    This must be checked on commands that uses http methods.
+
+    Exception:
+    - `errors.NoHTTPClient`: The bot doesn't have a http client.
+    '''
+    bot: models.MichaelBot = ctx.bot
+    if bot.aio_session is None:
+        raise errors.NoHTTPClient
     return True

@@ -52,6 +52,7 @@ ANIME_ACTIONS = {
 @lightbulb.set_help(dedent('''
     It is recommended to use the `Slash Command` version of the command.
 '''))
+@lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("user", "The user to perform the option on. Default to yourself.", type = hikari.User, default = None)
 @lightbulb.option("action_type", "The action to perform.", choices = ANIME_ACTIONS.keys())
@@ -143,6 +144,7 @@ async def copypasta(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     r/FoundTheInaAlt
 '''))
+@lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("dadjoke", "Give you a dad joke.", aliases = ["ina-of-the-mountain-what-is-your-wisdom"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
