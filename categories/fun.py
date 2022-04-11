@@ -6,6 +6,7 @@ import random
 from textwrap import dedent
 
 import utilities.checks as checks
+import utilities.errors as errors
 import utilities.helpers as helpers
 import utilities.models as models
 
@@ -49,7 +50,6 @@ ANIME_ACTIONS = {
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    **Cooldown:** 5 seconds after 1 use per user.
     It is recommended to use the `Slash Command` version of the command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
@@ -84,7 +84,7 @@ async def do(ctx: lightbulb.Context):
             await ctx.respond(content = msg_content, embed = embed, reply = True)
         else:
             await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
-            bot.logging.error(f"{BASE_URL} returned status {resp.status}. Raw response: {await resp.text()}")
+            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.UserBucket)
@@ -161,6 +161,7 @@ async def dadjoke(ctx: lightbulb.Context):
             await ctx.respond(resp_json["joke"], reply = True)
         else:
             await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
+            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
 @lightbulb.command("dice", "Roll a 6-face dice for you.")
@@ -256,7 +257,6 @@ async def speak(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    **Cooldown:** 3 seconds after 1 use per user.
     It is recommended to use the `Message Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
