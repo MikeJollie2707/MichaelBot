@@ -268,12 +268,13 @@ class MichaelBot(lightbulb.BotApp):
         log_level = "INFO"
         if launch_options is None:
             launch_options = ""
-        if launch_options in ["--debug", "-d"]:
-            self.default_enabled_guilds = self.info["default_guilds"]
-            self.logging.setLevel(logging.DEBUG)
-            log_level = "DEBUG"
-        if launch_options in ["--quiet", "-q"]:
-            log_level = ""
+        for option in launch_options.split():
+            if option in ["--debug", "-d"]:
+                self.default_enabled_guilds = self.info["default_guilds"]
+                self.logging.setLevel(logging.DEBUG)
+                log_level = "DEBUG"
+            elif option in ["--quiet", "-q"]:
+                log_level = ""
 
         super().__init__(
             token,
