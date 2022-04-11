@@ -4,7 +4,6 @@ import hikari
 import sys
 import json
 import os
-import logging
 
 from utilities.models import MichaelBot
 
@@ -53,19 +52,10 @@ def create_bot(bot_info, secrets) -> MichaelBot:
         token = secrets["token"],
         prefix = lightbulb.when_mentioned_or(retrieve_prefix),
         intents = hikari.Intents.ALL ^ hikari.Intents.GUILD_PRESENCES,
-        logs = None if bot_info["launch_option"] == "silent-terminal" else logging.INFO
+
+        info = bot_info,
+        secrets = secrets
     )
-
-    bot.info = bot_info
-    bot.secrets = secrets
-    bot.logging = logging.getLogger("MichaelBot")
-
-    if bot_info["launch_option"] == "debug":
-        bot.default_enabled_guilds = bot_info["default_guilds"]
-        bot.logging.setLevel(logging.DEBUG)
-    elif bot_info["launch_option"] == "silent-terminal": pass
-    else:
-        bot.logging.setLevel(logging.INFO)
     
     for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)
@@ -79,12 +69,6 @@ if __name__ == "__main__":
     
     argc = len(sys.argv)
     bot_info, secrets = load_info(sys.argv[1])
-    bot_info["launch_option"] = ""
-    if argc > 2:
-        if sys.argv[2] == "--debug":
-            bot_info["launch_option"] = "debug"
-        elif sys.argv[2] == "--silent-terminal":
-            bot_info["launch_option"] = "silent-terminal"
     
     bot = create_bot(bot_info, secrets)
     bot.run(

@@ -239,13 +239,18 @@ class MichaelBot(lightbulb.BotApp):
         case_insensitive_prefix_commands = False, 
         **kwargs
     ) -> None:
-        super().__init__(token, prefix, ignore_bots, owner_ids, default_enabled_guilds, help_class, help_slash_command, delete_unbound_commands, case_insensitive_prefix_commands, **kwargs)
+        '''
+        A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.
 
-        self.info: dict = {}
-        self.secrets: dict = {}
+        Unique Parameters:
+        - `info`: The bot info. Store the one in `config.json`.
+        - `secrets`: The bot's secrets such as token, database info, etc.
+        '''
+        self.info: dict = kwargs.pop("info")
+        self.secrets: dict = kwargs.pop("secrets")
         
         self.online_at: dt.datetime = None
-        self.logging: logging.Logger = None
+        self.logging: logging.Logger = logging.getLogger("MichaelBot")
 
         self.pool: t.Optional[asyncpg.Pool] = None
         self.aio_session: t.Optional[aiohttp.ClientSession] = None
@@ -258,6 +263,31 @@ class MichaelBot(lightbulb.BotApp):
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
         # so we'll make a dictionary to manually track additional info.
         self.node_extra: dict[int, NodeExtra] = {}
+
+        launch_options = self.info.get("launch_options")
+        log_level = "INFO"
+        if launch_options is None:
+            launch_options = ""
+        if launch_options in ["--debug", "-d"]:
+            self.default_enabled_guilds = self.info["default_guilds"]
+            self.logging.setLevel(logging.DEBUG)
+            log_level = "DEBUG"
+        if launch_options in ["--quiet", "-q"]:
+            log_level = ""
+
+        super().__init__(
+            token,
+            prefix,
+            ignore_bots,
+            owner_ids,
+            default_enabled_guilds,
+            help_class,
+            help_slash_command,
+            delete_unbound_commands,
+            case_insensitive_prefix_commands,
+            logs = log_level if bool(log_level) else None,
+            **kwargs
+        )
     
     def get_slash_command(self, name: str) -> t.Optional[lightbulb.SlashCommand]:
         '''

@@ -3,6 +3,7 @@
         "version": "0.0.4",
         "description": "A utility bot",
         "prefix": "$",
+        "launch_options": "",
         "default_guilds": [644336990698995712, 705270581184167987, 868449475323101224],
 
         "secret": "bot_secret.json"
@@ -11,6 +12,7 @@
         "version": "0.0.4",
         "description": "A testing bot for MichaelBot :)",
         "prefix": "!",
+        "launch_options": "--debug",
         "default_guilds": [644336990698995712, 705270581184167987, 868449475323101224],
 
         "secret": "beta_secret.json"
