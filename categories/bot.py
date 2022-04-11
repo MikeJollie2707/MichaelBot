@@ -172,7 +172,7 @@ async def ping(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     Author needs to have `Manage Messages`.
 '''))
-@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
+@lightbulb.add_checks(checks.is_db_connected, lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("new_prefix", "The new prefix. Should not be longer than 5 characters or contain spaces.", default = None)
 @lightbulb.command("prefix", "View or edit the bot prefix for the guild. This only affects Prefix Commands.")

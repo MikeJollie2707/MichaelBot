@@ -82,7 +82,12 @@ def is_loggable(event: hikari.Event):
 
 plugin = lightbulb.Plugin("Logs", "Logging Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":memo:")
-plugin.add_checks(checks.is_command_enabled, lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD), lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_db_connected,
+    checks.is_command_enabled,
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD),
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS)
+)
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
