@@ -10,7 +10,11 @@ class CustomCheckFailed(lightbulb.CheckFailure):
     pass
 
 class NoDatabase(CustomCheckFailed):
-    '''Exception raised when the bot doesn't have a database.'''
+    '''Exception raised when the bot doesn't have a database connection pool.'''
+    pass
+
+class NoHTTPClient(CustomCheckFailed):
+    '''Exception raised when the bot doesn't have a http client.'''
     pass
 
 class GuildDisabled(CustomCheckFailed):

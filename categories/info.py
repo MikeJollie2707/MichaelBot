@@ -7,6 +7,7 @@ import datetime as dt
 from textwrap import dedent
 
 import utilities.checks as checks
+import utilities.errors as errors
 import utilities.helpers as helpers
 import utilities.models as models
 
@@ -198,6 +199,7 @@ async def role_info(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @plugin.command()
+@lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("term", "The term to search. Example: `rickroll`.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("urban", "Search a term on urbandictionary.")
@@ -249,8 +251,12 @@ async def urban(ctx: lightbulb.Context):
                 await ctx.respond(embed = embed, reply = True)
             else:
                 await ctx.respond("Sorry, that word doesn't exist on urban dictionary.", reply = True, mentions_reply = True)
+        else:
+            await ctx.respond("Something went wrong.", reply = True, mentions_reply = True)
+            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
+@lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("city_name", "The city to check. Example: `Paris`.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("weather", "Display weather information for a location.")
@@ -328,6 +334,7 @@ async def weather(ctx: lightbulb.Context):
         else:
             resp_json = await resp.json()
             await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
+            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
