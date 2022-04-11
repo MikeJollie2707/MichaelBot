@@ -13,6 +13,79 @@ plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore
 plugin.d.emote = helpers.get_emote(":grin:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
+ANIME_ACTIONS = {
+    "angry": {
+        "url": ["http://api.satou-chan.xyz/api/endpoint/angry"],
+        "quotes": [
+            "*angry noises*",
+            "{author} is angry towards {target}. Quick, give them a pat or something :worried:"
+        ]
+    },
+    "cuddle": {
+        "url": ["http://api.satou-chan.xyz/api/endpoint/cuddle"],
+        "quotes": ["{author} cuddle to {target}."]
+    },
+    "hug": {
+        "url": ["https://some-random-api.ml/animu/hug"],
+        "quotes": ["{author} hugs {target}.", "Here, have a hug {target} :heart:"]
+    },
+    "pat": {
+        "url": ["https://some-random-api.ml/animu/pat", "http://api.satou-chan.xyz/api/endpoint/pat"],
+        "quotes": ["Here, have a pat {target}."]
+    },
+    "punch": {
+        "url": ["http://api.satou-chan.xyz/api/endpoint/punch"],
+        "quotes": ["Gomu gomu no, punch {target}.", "{author} seek violence against {target}."]
+    },
+    "slap": {
+        "url": ["http://api.satou-chan.xyz/api/endpoint/slap"],
+        "quotes": ["{author} slaps {target}.", "Slap incoming {target}! *Gets obliterated*"]
+    },
+    "wink": {
+        "url": ["https://some-random-api.ml/animu/wink"],
+        "quotes": ["Wink ;)"]
+    },
+}
+
+@plugin.command()
+@lightbulb.set_help(dedent('''
+    **Cooldown:** 5 seconds after 1 use per user.
+    It is recommended to use the `Slash Command` version of the command.
+'''))
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("user", "The user to perform the option on. Default to yourself.", type = hikari.User, default = None)
+@lightbulb.option("action_type", "The action to perform.", choices = ANIME_ACTIONS.keys())
+@lightbulb.command("do", "Perform an anime action.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def do(ctx: lightbulb.Context):
+    action_type: str = ctx.options.action_type
+    user: hikari.User = ctx.options.user
+    bot: models.MichaelBot = ctx.bot
+
+    if action_type not in ANIME_ACTIONS:
+        raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["action_type"]])
+    
+    if user is None:
+        user = ctx.author
+    
+    BASE_URL = random.choice(ANIME_ACTIONS[action_type]["url"])
+    async with bot.aio_session.get(BASE_URL) as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            gif = resp_json.get("link") or resp_json.get("url")
+            embed = helpers.get_default_embed(
+                author = ctx.author,
+                timestamp = dt.datetime.now().astimezone()
+            ).set_image(gif)
+
+            msg_content: str = random.choice(ANIME_ACTIONS[action_type]["quotes"])
+            msg_content = msg_content.format(author = ctx.author.mention, target = user.mention)
+
+            await ctx.respond(content = msg_content, embed = embed, reply = True)
+        else:
+            await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
+            bot.logging.error(f"{BASE_URL} returned status {resp.status}. Raw response: {await resp.text()}")
+
 @plugin.command()
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("type", "Which copypasta to show. Dig into the bot's code to see available options ;)", modifier = helpers.CONSUME_REST_OPTION)
@@ -128,7 +201,7 @@ async def how(ctx: lightbulb.Context):
     The text will be sent through DM if it exceeds 1500 characters.
     It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.add_cooldown(length = 5.0, uses = 1.0, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 3.0, uses = 1.0, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to mock.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("mock", "tuRn A teXT INtO MOCk teXt.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
@@ -183,7 +256,7 @@ async def speak(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    UwU This c-c-command is an API caww, so don't use i-it too *pounces on you* many times UwU
+    **Cooldown:** 3 seconds after 1 use per user.
     It is recommended to use the `Message Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
@@ -212,16 +285,6 @@ async def uwu(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         )
         await ctx.respond(embed = embed, reply = True)
-
-@plugin.command()
-@lightbulb.set_help(dedent('''
-
-'''))
-@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("wink", "Wink wink ;)")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def wink(ctx: lightbulb.Context):
-    pass
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
