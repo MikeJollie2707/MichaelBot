@@ -1,15 +1,15 @@
 # Installation
 
-The instructions are geared towards Ubuntu (Kubuntu specifically) because that's what I use. Windows instruction might or might not work.
+The instructions are geared towards Ubuntu (Kubuntu specifically) because that's what I use. As the time of this writing, I haven't tested any of the code on Windows. There will be instructions in the future, but they might or might not work since I don't work on Windows regularly.
 
 ## Prerequisites
 
-- Requires: Python 3.8+ (ideally latest), Git, `pip`, `virtualenv` OR `python3-venv` under Python, PostgreSQL (detailed instructions below). All of these can be installed using Google.
-- Optional: Lavalink (detailed instructions below), Docker.
+- Requires: Python 3.8+ (ideally latest), Git, `pip`, `virtualenv` OR `python3-venv` under Python.
+- Optional: Lavalink (more information below), Docker (for Lavalink), PostgreSQL (more information below).
 
 ## About Lavalink
 
-Lavalink is optional for the bot. If you don't plan to use the music functionality, you can simply remove `categories/music.py` and edit `main.py` a bit to exclude the file. Then you can completely ignore this section and move on. Otherwise, you'll need to finish setting up Lavalink and get it running.
+Lavalink is optional for the bot. If you don't plan to use the music functionality, you can simply edit `main.py` the `EXTENSION` variable to exclude `categories.music`. Then you can completely ignore this section and move on. Otherwise, you'll need to finish setting up Lavalink and get it running.
 
 There are 2 options to host Lavalink: you can host it directly using the `.jar` file or use Docker. I personally switched to Docker recently so I won't tell which one you should go. In either cases, you'll need a file `application.yml` to configure the server. An example is provided in `./lib/Lavalink`. You'll also need Java 13+, which can be downloaded [here](https://adoptopenjdk.net/archive.html?variant=openjdk13&jvmVariant=hotspot) or somewhere else (there are a billion places to download a billion java versions I'm not gonna even bother).
 
@@ -27,7 +27,11 @@ There are 2 options to host Lavalink: you can host it directly using the `.jar` 
 
 ## About PostgreSQL
 
-As of the time of this writing, database support is very early, so it'll be mandatory to have a database. In the future, it'll be optional.
+PostgreSQL is optional for the bot, but is strongly recommended. Without a database, some features will be missing, such as prefix config, blacklisting, logging, etc. In addition to that, although the code can handle no database scenario on its own, it is not well-tested for such cases, so there might be some edge cases here and there.
+
+This is a pretty fine guide to install PostgreSQL on Ubuntu: https://linuxhint.com/postgresql_installation_guide_ubuntu_20-04/
+
+After installing Postgres, create a database and check the connection info. You'll need this later.
 
 ## Build Instructions
 
@@ -57,7 +61,8 @@ Inside `./setup`, create a `.json` file. I'll call it `secret.json`.
     "port": 5432,
     "database": "database name",
     "user": "user name",
-    "password": "password"
+    "password": "password",
+    "weather_api_key": "api key"
 }
 ```
 
@@ -70,30 +75,32 @@ Within `./setup`, there's also another file called `config.json`. The file has t
         "version": "Required",
         "description": "Required",
         "prefix": "Required",
-        "debug": false,
+        "launch_options": "Optional",
+        "default_guilds": [123456],
 
         "secret": "secret.json"
     }
 }
 ```
 
-- `BotIndex` is the index you'll refer to the bot when you launch it from the terminal.
-- `version` is the bot version. Just fake something up like `69.69beta` if you don't really care about this.
-- `description` is the bot's about me. Discord doesn't have a way to retrieve this so this is required for now.
-- `prefix` is the bot's prefix.
-- `debug` is an optional option to indicate whether the bot is in debug mode or not.
-- `secret` contains the file name that contains your bot's secret like token.
+- `BotIndex`: the index you'll refer to the bot when you launch it from the terminal. Usually the bot name without space.
+- `version`: the bot version. Just fake something up like `69.69beta` if you don't really care about this.
+- `description`: the bot's about me. Discord doesn't have a way to retrieve this so this is required for now.
+- `prefix`: the bot's default prefix.
+- `launch_options`: an optional string to pass into the bot when it launches. This mostly affects terminal logging. Acceptable options are:
+    - `-d` or `--debug`: Launch the bot in debug mode. This will set the log level to `DEBUG` but more importantly, it'll apply slash commands to `default_guilds` immediately (no need to wait at most 1 hour). If this is passed, `default_guilds` must also be non-empty.
+    - `-q` or `--quiet`: Launch the bot in quiet mode. This will disable terminal logging, but any uncaught exceptions will still spawn in `stderr`.
+- `default_guilds`: a list of guilds' ids to apply slash commands immediately. This is required if the bot is launched in debug mode.
+- `secret`: the file name that contains your bot's secret like token.
 
-1. Run the bot.
+You can view my bot config as an example.
+
+4. Run the bot.
 
 ```sh
-python3 -O main.py BotIndex [OPTIONS]
+python3 -O main.py BotIndex
 ```
-
-These options include:
-
-- `--debug`: Force switch the bot into debug mode.
 
 ## What's next?
 
-For personal convenience, I also have a template script to run the bot in different modes. You can check it out at `run.sh`. It'll *only* run the bot and not Lavalink. You'll need to run that thing separately.
+For personal convenience, I also have a template script to run the bot in different modes. You can check it out at `run.sh`. It'll *only* run the bot. You'll need to run Lavalink and PostgreSQL on your own.

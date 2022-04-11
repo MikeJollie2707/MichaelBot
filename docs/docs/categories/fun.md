@@ -30,6 +30,19 @@ Roll a 6-face dice for you.
 
 Type: `Prefix Command`, `Slash Command`
 
+## `do <action_type> [*user]`
+
+Perform an anime action.
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 5 seconds after 1 use per user.
+
+Parameters:
+
+- `action_type`: The action to perform. Valid actions are: `angry`, `cuddle`, `hug`, `pat`, `punch`, `slap`, `wink`.
+- `user`: The Discord user to perform the action on. Default to yourself.
+
 ## `echo <content>`
 
 Echo echo echo echo.
@@ -107,8 +120,4 @@ Parameters:
 
 - `text`: Text to uwuify.
 
-Additional Info:
-
-- UwU This c-c-command is an API caww, so don't use i-it too *pounces on you* many times UwU
-
-*Last updated on Apr 1, 2022*
+*Last updated on Apr 10, 2022*
