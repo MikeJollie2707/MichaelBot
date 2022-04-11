@@ -35,7 +35,7 @@ async def on_shard_connect(event: hikari.StartingEvent):
             bot.logging.error(f"Unable to connect to a database at {bot.secrets['host']}, port {bot.secrets['port']}")
     
     if bot.pool is None:
-        bot.logging.warn("Unable to connect to a database. Bot will be missing features.")
+        bot.logging.warning("Unable to connect to a database. Bot will be missing features.")
     
     if bot.aio_session is None:
         bot.aio_session = aiohttp.ClientSession()
