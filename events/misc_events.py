@@ -28,7 +28,7 @@ async def on_shard_connect(event: hikari.StartingEvent):
             )
             bot.logging.info("Bot successfully connected to the database.")
         except pg_exception.InvalidPasswordError:
-            bot.logging.error(f"Invalid password for user '{bot.secretes['user']}'.")
+            bot.logging.error(f"Invalid password for user '{bot.secrets['user']}'.")
         except pg_exception.InvalidCatalogNameError:
             bot.logging.error(f"Unable to find database '{bot.secrets['database']}'")
         except ConnectionRefusedError:

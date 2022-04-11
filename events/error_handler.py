@@ -93,7 +93,7 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
     elif isinstance(exception, lightbulb.errors.NotEnoughArguments):
         await send_error_message("NotEnoughArguments", event, helpers.striplist([f"`{option.name}`" for option in exception.missing_options]))
     else:
-        await send_error_message("Others", event, f"{type(exception).__name__} {exception}")
+        await send_error_message("Others", event, f"{type(exception).__name__}: {exception}")
         bot.logging.error(f"An error occurred in '{event.context.command.qualname}', but is not handled!", exc_info = exception)
 
 
