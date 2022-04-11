@@ -49,45 +49,6 @@ ANIME_ACTIONS = {
 }
 
 @plugin.command()
-@lightbulb.set_help(dedent('''
-    It is recommended to use the `Slash Command` version of the command.
-'''))
-@lightbulb.add_checks(checks.is_aiohttp_existed)
-@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("user", "The user to perform the option on. Default to yourself.", type = hikari.User, default = None)
-@lightbulb.option("action_type", "The action to perform.", choices = ANIME_ACTIONS.keys())
-@lightbulb.command("do", "Perform an anime action.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def do(ctx: lightbulb.Context):
-    action_type: str = ctx.options.action_type
-    user: hikari.User = ctx.options.user
-    bot: models.MichaelBot = ctx.bot
-
-    if action_type not in ANIME_ACTIONS:
-        raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["action_type"]])
-    
-    if user is None:
-        user = ctx.author
-    
-    BASE_URL = random.choice(ANIME_ACTIONS[action_type]["url"])
-    async with bot.aio_session.get(BASE_URL) as resp:
-        if resp.status == 200:
-            resp_json = await resp.json()
-            gif = resp_json.get("link") or resp_json.get("url")
-            embed = helpers.get_default_embed(
-                author = ctx.author,
-                timestamp = dt.datetime.now().astimezone()
-            ).set_image(gif)
-
-            msg_content: str = random.choice(ANIME_ACTIONS[action_type]["quotes"])
-            msg_content = msg_content.format(author = ctx.author.mention, target = user.mention)
-
-            await ctx.respond(content = msg_content, embed = embed, reply = True)
-        else:
-            await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
-            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
-
-@plugin.command()
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("type", "Which copypasta to show. Dig into the bot's code to see available options ;)", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("copypasta", "My favorite copypasta.", hidden = True)
@@ -170,6 +131,45 @@ async def dadjoke(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def dice(ctx: lightbulb.Context):
     await ctx.respond("It's %d :game_die:" % (random.randint(1, 6)), reply = True)
+
+@plugin.command()
+@lightbulb.set_help(dedent('''
+    It is recommended to use the `Slash Command` version of the command.
+'''))
+@lightbulb.add_checks(checks.is_aiohttp_existed)
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("user", "The user to perform the option on. Default to yourself.", type = hikari.User, default = None)
+@lightbulb.option("action_type", "The action to perform.", choices = ANIME_ACTIONS.keys())
+@lightbulb.command("do", "Perform an anime action.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def do(ctx: lightbulb.Context):
+    action_type: str = ctx.options.action_type
+    user: hikari.User = ctx.options.user
+    bot: models.MichaelBot = ctx.bot
+
+    if action_type not in ANIME_ACTIONS:
+        raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["action_type"]])
+    
+    if user is None:
+        user = ctx.author
+    
+    BASE_URL = random.choice(ANIME_ACTIONS[action_type]["url"])
+    async with bot.aio_session.get(BASE_URL) as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            gif = resp_json.get("link") or resp_json.get("url")
+            embed = helpers.get_default_embed(
+                author = ctx.author,
+                timestamp = dt.datetime.now().astimezone()
+            ).set_image(gif)
+
+            msg_content: str = random.choice(ANIME_ACTIONS[action_type]["quotes"])
+            msg_content = msg_content.format(author = ctx.author.mention, target = user.mention)
+
+            await ctx.respond(content = msg_content, embed = embed, reply = True)
+        else:
+            await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
+            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
