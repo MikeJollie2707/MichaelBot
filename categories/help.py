@@ -93,11 +93,6 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
         timestamp = dt.datetime.now().astimezone(),
         author = ctx.author
     )
-    if command.get_help(ctx) != "":
-        embed.add_field(
-            name = "Note",
-            value = dedent(command.get_help(ctx))
-        )
 
     command_type = []
     p_cmd = bot.get_prefix_command(command.qualname)
@@ -131,6 +126,12 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
         embed.add_field(
             name = "Aliases (Prefix Command only)",
             value = "- " + ', '.join(f"`{alias}`" for alias in command.aliases)
+        )
+    
+    if command.get_help(ctx) != "":
+        embed.add_field(
+            name = "Note",
+            value = dedent(command.get_help(ctx))
         )
 
     if isinstance(command, lightbulb.PrefixCommandGroup) or isinstance(command, lightbulb.PrefixSubGroup):
