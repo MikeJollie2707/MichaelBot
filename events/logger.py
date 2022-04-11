@@ -1288,15 +1288,19 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 
-        if isinstance(event.exception, lightbulb.CommandNotFound):
+        exception = event.exception
+        if isinstance(exception, lightbulb.CommandInvocationError):
+            exception = exception.__cause__
+
+        if isinstance(exception, lightbulb.CommandNotFound):
             return
-        if isinstance(event.exception, lightbulb.CommandIsOnCooldown):
+        if isinstance(exception, lightbulb.CommandIsOnCooldown):
             return
 
         embed.title = "Command Raised an Error"
         embed.description = dedent(f'''
             **Command:** `{event.context.invoked.signature}`
-            **Error:** ```{event.exception}```
+            **Error:** ```{type(exception).__name__}: {exception}```
         ''')
         embed.add_field(
             name = "Additional Info:",
