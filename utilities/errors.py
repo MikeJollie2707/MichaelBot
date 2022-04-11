@@ -1,8 +1,8 @@
 import lightbulb
 import hikari
 
-class CustomCacheDesync(hikari.HikariError):
-    '''Exception raised when the bot's cache is desync from database.'''
+class CustomAPIFailed(hikari.HTTPError):
+    '''Exception raised when a third-party API call failed (not status 200).'''
     pass
 
 class CustomCheckFailed(lightbulb.CheckFailure):
