@@ -15,6 +15,7 @@ EXTENSIONS = [
     "categories.help",
     "categories.info",
     "categories.music",
+    "categories.test",
     "events.error_handler",
     "events.logger",
     "events.misc_events",

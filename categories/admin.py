@@ -194,13 +194,6 @@ async def shutdown(ctx: lightbulb.Context):
     await ctx.respond("Bot shutting down...")
     await ctx.bot.close()
 
-@plugin.command()
-@lightbulb.option("count", "Message to delete", type = int)
-@lightbulb.command("test", "test", hidden = True)
-@lightbulb.implements(lightbulb.PrefixCommand)
-async def test(ctx: lightbulb.Context):
-    print(type(ctx.bot.help_command))
-
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
 def unload(bot: models.MichaelBot):
