@@ -36,7 +36,7 @@ These are the libraries I used. All of these can be installed with `requirement.
 - [mystbin](https://github.com/AbstractUmbra/mystbin.py)
 - [pylint](https://github.com/PyCQA/pylint)
 
-Detail instructions available [here](./docs/INSTALLATION.md).
+Detail instructions available [here](./docs/docs/INSTALLATION.md).
 
 ## License
 
