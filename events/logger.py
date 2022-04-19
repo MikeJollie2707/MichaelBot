@@ -705,7 +705,7 @@ async def on_member_join(event: hikari.MemberCreateEvent):
             name = "Additional Info:",
             value = dedent(f'''
                 **Member ID:** {event.member.id}
-                **Account created on:** <t:{event.member.created_at.timestamp()}>
+                **Account created on:** <t:{int(event.member.created_at.timestamp())}>
                 **Account age:** {humanize.precisedelta(dt.datetime.now().astimezone() - event.member.created_at, format = '%0.0f')}
             ''')
         )
