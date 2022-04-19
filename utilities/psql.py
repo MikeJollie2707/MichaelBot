@@ -4,10 +4,20 @@ import lightbulb
 
 import typing as t
 
-def record_to_dict(record: asyncpg.Record) -> t.Optional[dict]:
+def record_to_dict(record: asyncpg.Record, /) -> t.Optional[dict]:
+    '''Convert a `Record` into a `dict` or `None` if the object is already `None`.
+
+    This is for convenience purpose, where `dict(Record)` will return `{}` which is not an accurate
+    representation of empty. `obj is None` or `obj is not None` is more obvious to anyone than
+    `bool(obj)` or `not bool(obj)`.
+
+    Args:
+        record (asyncpg.Record): The record to convert.
+
+    Returns:
+        t.Optional[dict]: `dict` or `None`.
     '''
-    Convert a `Record` into a dictionary, or `None` if `record` is also `None`.
-    '''
+    
     if record is None: return None
     else: return dict(record)
 
@@ -40,29 +50,59 @@ def insert_into_query(table_name: str, len_col: int) -> str:
 
     return f"INSERT INTO {table_name} VALUES {arg_str} ON CONFLICT DO NOTHING;"
 
-async def __get_all__(conn, query):
+async def __get_all__(conn, query: str, *, where: t.Callable[[dict], bool] = lambda r: True) -> list[t.Optional[dict]]:
+    '''Run a `SELECT` statement and return a list of objects.
+
+    This should NOT be used outside of the module. Instead, use `table_name.get_all()`.
+
+    Args:
+        conn: Database connection.
+        query (str): The `SELECT` statement to run. This should not contain `WHERE` clause.
+            Conditions should be set in `where` parameter.
+        where (Callable[[dict], bool], optional): Additional conditions to filter.
+            By default, no condition is applied (always return `True`).
+
+    Returns:
+        list[Optional[dict]]: A list of `dict` or list of `None`.
     '''
-    Warning: This methods should NOT be called. Instead, use `table_name.get_all(conn)`.
 
+    result = await conn.fetch(query)
+    l = []
+    record_obj = None
+    for record in result:
+        record_obj = record_to_dict(record)
+        if record_obj is None or (record_obj is not None and where(record_obj)):
+            l.append(record_obj)
+    
+    return l
 
+async def __get_one__(conn, query: str, *constraints) -> t.Optional[dict]:
+    '''Run a `SELECT` statement and return the first object that matches the constraints.
+
+    Args:
+        conn: Database connection.
+        query (str): The `SELECT` statement to run. This should contain a `WHERE` clause.
+        constraints: Arguments to be formatted into the query.
+
+    Returns:
+        Optional[dict]: A `dict` or `None` if no object is found.
     '''
     
-    result = await conn.fetch(query)
-    return [record_to_dict(record) for record in result]
-
-async def __get_one__(conn, query, *constraints):
     record = await conn.fetchrow(query, *constraints)
     return record_to_dict(record)
 
 class Guilds:
     @classmethod
     async def get_all(cls, conn):
+        return cls.get_all_where(conn)
+    @classmethod
+    async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
         query = '''
             SELECT * FROM Guilds
             ORDER BY Guilds.name;
         '''
 
-        return await __get_all__(conn, query)
+        return await __get_all__(conn, query, where = where)
     @classmethod
     async def get_one(cls, conn, id: int):
         query = '''
@@ -71,6 +111,7 @@ class Guilds:
         '''
 
         return await __get_one__(conn, query, id)
+    
     @classmethod
     async def add_one(cls, conn, guild: hikari.Guild):
         query = insert_into_query("Guilds", 4)
@@ -106,11 +147,14 @@ class Guilds:
     class Logs:
         @classmethod
         async def get_all(cls, conn):
+            return await cls.get_all_where(conn)
+        @classmethod
+        async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
             query = '''
                 SELECT * FROM GuildsLogs;
             '''
 
-            return await __get_all__(conn, query)
+            return await __get_all__(conn, query, where = where)
         @classmethod
         async def get_one(cls, conn, id: int):
             query = '''
@@ -154,12 +198,15 @@ class Guilds:
 class Users:
     @classmethod
     async def get_all(cls, conn):
+        return await cls.get_all_where(conn)
+    @classmethod
+    async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
         query = '''
             SELECT * FROM Users
             ORDER BY Users.name;
         '''
 
-        return await __get_all__(conn, query)
+        return await __get_all__(conn, query, where = where)
     @classmethod
     async def get_one(cls, conn, id: int):
         query = '''
