@@ -6,10 +6,10 @@ import mystbin
 import datetime as dt
 from textwrap import dedent
 
-import utilities.checks as checks
-import utilities.helpers as helpers
-import utilities.models as models
-import utilities.psql as psql
+import utils.checks as checks
+import utils.helpers as helpers
+import utils.models as models
+import utils.psql as psql
 
 EVENT_OPTION_MAPPING = {
     hikari.GuildChannelCreateEvent: "guild_channel_create",

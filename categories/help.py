@@ -5,9 +5,9 @@ import datetime as dt
 import typing as t
 from textwrap import dedent
 
-import utilities.helpers as helpers
-import utilities.models as models
-from utilities.navigator import MenuComponent, MenuInteractionWrapper, ButtonPages
+import utils.helpers as helpers
+import utils.models as models
+from utils.navigator import MenuComponent, MenuInteractionWrapper, ButtonPages
 
 __PREFIX_COMMAND_TYPES__ = (
     lightbulb.PrefixCommand, 

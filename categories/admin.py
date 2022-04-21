@@ -3,11 +3,11 @@ import hikari
 
 import datetime as dt
 
-import utilities.helpers as helpers
-import utilities.checks as checks
-import utilities.psql as psql
-import utilities.models as models
-from utilities.checks import is_dev
+import utils.helpers as helpers
+import utils.checks as checks
+import utils.psql as psql
+import utils.models as models
+from utils.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":computer:")

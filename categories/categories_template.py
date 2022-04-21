@@ -7,9 +7,9 @@ import hikari
 # Import std python libraries here.
 import datetime as dt
 
-# Utilities
-# It's recommended to shorten their names to not include "utilities"
-import utilities.helpers as helpers
+# utils
+# It's recommended to shorten their names to not include "utils"
+import utils.helpers as helpers
 
 # Create a category
 plugin = lightbulb.Plugin("Category's name", include_datastore = True)

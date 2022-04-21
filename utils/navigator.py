@@ -11,7 +11,7 @@ import hikari
 import asyncio
 import typing as t
 
-import utilities.helpers as helpers
+import utils.helpers as helpers
 
 T = t.TypeVar("T")
 

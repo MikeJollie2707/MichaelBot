@@ -9,7 +9,7 @@ import logging
 import typing as t
 from dataclasses import dataclass
 
-import utilities.psql as psql
+import utils.psql as psql
 
 class UserCache:
     '''

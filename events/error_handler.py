@@ -6,9 +6,9 @@ import hikari
 
 import datetime as dt
 
-import utilities.helpers as helpers
-import utilities.errors as errors
-import utilities.models as models
+import utils.helpers as helpers
+import utils.errors as errors
+import utils.models as models
 
 __error_responses__ = {
     "CommandNotFound": "Command `{}` cannot be found.",

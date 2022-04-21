@@ -1,9 +1,9 @@
 import lightbulb
 import hikari
 
-import utilities.models as models
-import utilities.errors as errors
-import utilities.psql as psql
+import utils.models as models
+import utils.errors as errors
+import utils.psql as psql
 
 @lightbulb.Check
 def is_dev(ctx: lightbulb.Context) -> bool:

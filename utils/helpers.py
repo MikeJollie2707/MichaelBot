@@ -6,7 +6,7 @@ import asyncio
 import typing as t
 import datetime as dt
 
-import utilities.models as models
+import utils.models as models
 
 __PERMISSIONS_MAPPING__ = {
     # Community Server Permissions

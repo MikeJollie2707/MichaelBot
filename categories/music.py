@@ -5,12 +5,12 @@ import lavaplayer
 import datetime as dt
 from textwrap import dedent
 
-import utilities.checks as checks
-import utilities.helpers as helpers
-import utilities.models as models
-from utilities.converters import IntervalConverter
-from utilities.models import NodeExtra
-from utilities.navigator import ButtonPages
+import utils.checks as checks
+import utils.helpers as helpers
+import utils.models as models
+from utils.converters import IntervalConverter
+from utils.models import NodeExtra
+from utils.navigator import ButtonPages
 
 plugin = lightbulb.Plugin("Music", description = "Music Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":musical_note:")

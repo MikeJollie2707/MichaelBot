@@ -6,8 +6,8 @@ import aiohttp
 
 import datetime as dt
 
-import utilities.models as models
-import utilities.psql as psql
+import utils.models as models
+import utils.psql as psql
 
 plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
 

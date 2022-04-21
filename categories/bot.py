@@ -5,10 +5,10 @@ import humanize
 import datetime as dt
 from textwrap import dedent
 
-import utilities.checks as checks
-import utilities.helpers as helpers
-import utilities.models as models
-from utilities.navigator import ButtonPages
+import utils.checks as checks
+import utils.helpers as helpers
+import utils.models as models
+from utils.navigator import ButtonPages
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")

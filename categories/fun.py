@@ -5,10 +5,10 @@ import datetime as dt
 import random
 from textwrap import dedent
 
-import utilities.checks as checks
-import utilities.errors as errors
-import utilities.helpers as helpers
-import utilities.models as models
+import utils.checks as checks
+import utils.errors as errors
+import utils.helpers as helpers
+import utils.models as models
 
 plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":grin:")
@@ -235,7 +235,7 @@ async def mock(ctx: lightbulb.Context):
 @lightbulb.command("pekofy", "Pekofy a message peko.")
 @lightbulb.implements(lightbulb.MessageCommand)
 async def peko(ctx: lightbulb.Context):
-    from utilities.funtext import pekofy
+    from utils.funtext import pekofy
 
     message: hikari.Message = ctx.options.target
     if message.content != None:
@@ -266,7 +266,7 @@ async def speak(ctx: lightbulb.Context):
 @lightbulb.command("uwu", "Turn a text into uwu text.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def uwu(ctx: lightbulb.Context):
-    from utilities.funtext import uwuify
+    from utils.funtext import uwuify
 
     text = ""
     if isinstance(ctx, lightbulb.MessageContext):
