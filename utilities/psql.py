@@ -50,7 +50,7 @@ def insert_into_query(table_name: str, len_col: int) -> str:
 
     return f"INSERT INTO {table_name} VALUES {arg_str} ON CONFLICT DO NOTHING;"
 
-async def __get_all__(conn, query: str, *, where: t.Callable[[dict], bool] = lambda r: True) -> list[t.Optional[dict]]:
+async def __get_all__(conn, query: str, *, where: t.Callable[[dict], bool] = lambda r: True) -> list[dict]:
     '''Run a `SELECT` statement and return a list of objects.
 
     This should NOT be used outside of the module. Instead, use `table_name.get_all()`.
@@ -94,7 +94,7 @@ async def __get_one__(conn, query: str, *constraints) -> t.Optional[dict]:
 class Guilds:
     @classmethod
     async def get_all(cls, conn):
-        return cls.get_all_where(conn)
+        return await cls.get_all_where(conn)
     @classmethod
     async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
         query = '''
