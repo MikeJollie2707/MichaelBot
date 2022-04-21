@@ -9,6 +9,8 @@ categories/__pycache__/
 utilities/__pycache__/
 events/__pycache__/
 
+categories/test.py
+
 docs/site
 
 lib/Lavalink/logs/
