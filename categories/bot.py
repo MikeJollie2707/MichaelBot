@@ -15,60 +15,31 @@ plugin.d.emote = helpers.get_emote(":robot:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+'''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", default = "stable")
 @lightbulb.command("changelog", "Show 10 latest changes to the bot.")
-@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
-async def changelog_base(ctx: lightbulb.Context):
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def changelog(ctx: lightbulb.Context):
     '''
     Show 10 latest changes to the bot.
     '''
-    await changelog_stable(ctx)
-
-@changelog_base.child
-@lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
-'''))
-@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("stable", "Show 10 latest changes to the bot.", inherit_checks = True)
-@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def changelog_stable(ctx: lightbulb.Context):
+    
     bot: models.MichaelBot = ctx.bot
 
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
 
-    CHANNEL_ID = 644393721512722432
+    if ctx.options.option is None:
+        CHANNEL_ID = 759288597500788766
+    else:
+        CHANNEL_ID = 644393721512722432
+    
     channel: hikari.GuildTextChannel = bot.cache.get_guild_channel(CHANNEL_ID)
     if channel is None:
         return await ctx.respond("Seems like I can't retrieve the change logs. You might wanna report this to the developers.", reply = True, mentions_reply = True)
-    
-    embeds = []
-    async for message in channel.fetch_history().limit(10):
-        embeds.append(helpers.get_default_embed(
-            description = message.content,
-            timestamp = dt.datetime.now().astimezone(),
-            author = ctx.author
-        ))
-    pages = ButtonPages(embeds)
-    await pages.run(ctx)
-
-@changelog_base.child
-@lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
-'''))
-@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("development", "Show 10 latest changes to the bot *behind the scenes*.", inherit_checks = True)
-@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def changelog_dev(ctx: lightbulb.Context):
-    bot: models.MichaelBot = ctx.bot
-
-    if isinstance(ctx, lightbulb.PrefixContext):
-        await ctx.event.message.delete()
-
-    CHANNEL_ID = 759288597500788766
-    channel: hikari.GuildTextChannel = bot.cache.get_guild_channel(CHANNEL_ID)
-    if channel is None:
-        return await ctx.respond("Seems like I can't retrieve the change logs. You might wanna report this to the developers.")
     
     embeds = []
     async for message in channel.fetch_history().limit(10):
