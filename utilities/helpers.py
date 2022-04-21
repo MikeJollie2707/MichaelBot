@@ -71,9 +71,8 @@ COMMAND_STANDARD_PERMISSIONS = [
     hikari.Permissions.READ_MESSAGE_HISTORY,
 ]
 
-def get_emote(discord_text: str) -> str:
-    '''
-    Return the Unicode emoji based on the name provided.
+def get_emote(discord_text: str, /) -> str:
+    '''Return the Unicode emoji based on the name provided.
 
     Parameter:
     - `discord_text`: Discord/Twitter name of the emoji including `:`. Example: `:grin:`.
@@ -87,7 +86,7 @@ def get_emote(discord_text: str) -> str:
         raise KeyError(f"Emoji {discord_text} cannot be found.")
     return ret
 
-def get_friendly_permissions(permissions: hikari.Permissions) -> t.List[str]:
+def get_friendly_permissions(permissions: hikari.Permissions, /) -> t.List[str]:
     '''
     Return a list of highlighted permissions string presented in the permission provided.
     This returns the exact Discord's string of the permission.
@@ -104,13 +103,12 @@ def get_friendly_permissions(permissions: hikari.Permissions) -> t.List[str]:
             l.append(f"`{__PERMISSIONS_MAPPING__[permission]}`")
     return l
 
-def get_default_embed(author: hikari.Member = None, **kwargs) -> hikari.Embed:
-    '''
-    Return a default embed to work with for consistency.
+def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed:
+    '''Return a default embed to work with for consistency.
 
-    Parameter:
-    - `author`: The author to set in the footer.
-    - `**kwargs`: `hikari.Embed` constructor.
+    Args:
+        author: The author to set in the footer.
+        **kwargs: `hikari.Embed` constructor.
     '''
 
     title = kwargs.get("title")
@@ -134,15 +132,14 @@ def get_default_embed(author: hikari.Member = None, **kwargs) -> hikari.Embed:
     
     return embed
 
-def mention(mentionable_object: t.Union[hikari.PartialUser, hikari.PartialRole, hikari.TextableGuildChannel]) -> str:
-    '''
-    Return the appropriate mention string for a mentionable object.
+def mention(mentionable_object: t.Union[hikari.PartialUser, hikari.PartialRole, hikari.TextableGuildChannel], /) -> str:
+    '''Return the appropriate mention string for a mentionable object.
     
     If the object is a `hikari.PartialRole` and it has the name "@everyone", then it'll return the name directly.
     Otherwise, it returns the object's default mention.
 
-    Parameter:
-    - `mentionable_object`: The object to mention.
+    Args:
+        mentionable_object: The object to mention.
     '''
 
     if isinstance(mentionable_object, hikari.PartialRole):
@@ -155,10 +152,8 @@ def striplist(arr: t.Sequence) -> str:
     '''
     Return a nice string representation of a list.
 
-    Parameter:
-    - `arr`: A `Sequence`.
+    Returns:
+        str: The final string. Empty if sequence is empty.
     '''
 
-    if len(arr) == 0:
-        return ""
     return ", ".join(arr)
