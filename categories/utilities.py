@@ -11,7 +11,7 @@ import utilities.errors as errors
 import utilities.helpers as helpers
 import utilities.models as models
 
-plugin = lightbulb.Plugin(name = "Information", description = "Information Commands", include_datastore = True)
+plugin = lightbulb.Plugin(name = "Utilities", description = "Utility Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":information_source:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
