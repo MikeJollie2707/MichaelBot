@@ -2,7 +2,9 @@ import lightbulb
 import hikari
 import emoji
 
+import asyncio
 import typing as t
+import datetime as dt
 
 import utilities.models as models
 
@@ -148,9 +150,21 @@ def mention(mentionable_object: t.Union[hikari.PartialUser, hikari.PartialRole, 
     
     return mentionable_object.mention
 
-def striplist(arr: t.Sequence) -> str:
+async def sleep_until(when: dt.datetime, /):
+    '''Wait until the specified time.
+
+    Args:
+        when (dt.datetime): The time to resume. Must be tz aware and in utc.
     '''
-    Return a nice string representation of a list.
+    time = when - dt.datetime.now().astimezone()
+    if time.total_seconds() > 0:
+        await asyncio.sleep(time.total_seconds())
+
+def striplist(arr: t.Sequence, /) -> str:
+    '''Return a string from a list, separated by comma.
+
+    Args:
+        arr (t.Sequence): Any sequence.
 
     Returns:
         str: The final string. Empty if sequence is empty.
