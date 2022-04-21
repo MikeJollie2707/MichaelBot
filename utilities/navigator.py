@@ -397,6 +397,7 @@ class MenuReactionWrapper:
         await self._msg.delete()
 
 class MenuInteractionWrapper:
+    __slots__ = ("_context", "_msg", "_timeout_task", "_menu", "_timeout", "_return_button", "_terminate_button")
     def __init__(self, component: MenuComponent, *, terminate_emoji: str = __default_emojis__["terminate"], return_emoji: str = __default_emojis__["return"], timeout: float = 120):
         if isinstance(component.options, list):
             raise NotImplementedError("Use ReactionPages instead.")
@@ -405,7 +406,7 @@ class MenuInteractionWrapper:
         self._return_button = ComponentButton(return_emoji, True, hikari.ButtonStyle.SECONDARY, "return", None)
         self._terminate_button = ComponentButton(terminate_emoji, True, hikari.ButtonStyle.DANGER, "terminate", None)
 
-        self._context: t.Optional[lightbulb.context.base.Context] = None
+        self._context: t.Optional[lightbulb.Context] = None
         self._msg: t.Optional[hikari.Message] = None
         self._timeout_task: t.Optional[asyncio.Task[None]] = None
     
@@ -562,58 +563,40 @@ class MenuInteractionWrapper:
     async def _on_stop(self):
         await self._msg.delete()
 
-def reactionpage_generator(items: t.List[T], max_item: int, title_formatter: t.Callable[[T], hikari.Embed], item_formatter: t.Callable[[hikari.Embed, T], None]):
-    '''
-    Auto-generate a `ReactionPages` from a list.
-    This will add up to `max_item` into one embed/page before moving on to the next one.
+class ItemListBuilder:
+    def __init__(self, items: list[T], max_item_per_page: int, page_type: t.Type = ButtonPages):
+        self.items = items
+        self.max_item = max_item_per_page
+        self.page_type = page_type
 
-    Parameters:
-    - `items`: List of items.
-    - `max_item`: The maximum amount of items per page.
-    - `title_formatter`: A callback that accept a `T` and return a `hikari.Embed`.
-    - `item_formatter`: A callback that accept a `hikari.Embed` and a `T`. Returns nothing.
-    '''
-    embeds = []
-    embed = None
-    for index, item in enumerate(items):
-        if index % max_item == 0:
-            embed = title_formatter(item)
+        self.page_start_formatter: t.Callable[[int, T], hikari.Embed] = lambda index, item: hikari.Embed()
+        self.entry_formatter: t.Callable[[hikari.Embed, int, T]] = lambda embed, index, item: None
+        self.page_end_formatter: t.Callable[[hikari.Embed, int, T]] = lambda embed, index, item: None
+    
+    def set_page_start_formatter(self, callback: t.Callable[[int, T], hikari.Embed], /):
+        self.page_start_formatter = callback
+    def set_entry_formatter(self, callback: t.Callable[[hikari.Embed, int, T]], /):
+        self.entry_formatter = callback
+    def set_page_end_formatter(self, callback: t.Callable[[hikari.Embed, int, T]], /):
+        self.page_end_formatter = callback
+    
+    def build(self):
+        embeds: list[hikari.Embed] = []
+        embed: hikari.Embed = None
+        for index, item in enumerate(self.items):
+            if embed is None:
+                embed = self.page_start_formatter(index, item)
+            
+            self.entry_formatter(embed, index, item)
+
+            if index % self.max_item == self.max_item - 1:
+                self.page_end_formatter(embed, index, item)
+                
+                embeds.append(embed)
+                embed = None
         
-        item_formatter(embed, item)
-
-        if index % max_item == max_item - 1:
+        if embed is not None:
+            self.page_end_formatter(embed, index, item)
             embeds.append(embed)
-            embed = None
-        
-    if embed is not None:
-        embeds.append(embed)
-    
-    return ReactionPages(embeds)
 
-def buttonpage_generator(items: t.List[T], max_item: int, title_formatter: t.Callable[[int, T], hikari.Embed], item_formatter: t.Callable[[int, hikari.Embed, T], None]):
-    '''
-    Auto-generate a `ButtonPages` from a list.
-    This will add up to `max_item` into one embed/page before moving on to the next one.
-
-    - `items`: List of items.
-    - `max_item`: The maximum amount of items per page.
-    - `title_formatter`: A callback that accept an `int`, a `T`, and return a `hikari.Embed`.
-    - `item_formatter`: A callback that accept an `int`, a `hikari.Embed`, and a `T`. Returns nothing.
-    '''
-    
-    embeds = []
-    embed = None
-    for index, item in enumerate(items):
-        if index % max_item == 0:
-            embed = title_formatter(index, item)
-        
-        item_formatter(index, embed, item)
-
-        if index % max_item == max_item - 1:
-            embeds.append(embed)
-            embed = None
-        
-    if embed is not None:
-        embeds.append(embed)
-    
-    return ButtonPages(embeds)
+        return self.page_type(embeds)
