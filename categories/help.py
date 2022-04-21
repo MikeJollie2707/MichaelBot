@@ -58,7 +58,7 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
         
         display += f"**{command_title}:**\n"
         description = command.description
-        if description is None or description == "":
+        if not description:
             description = "*No help provided*"    
         display += f"- {description}\n\n"
 
@@ -136,9 +136,7 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
 
     if isinstance(command, lightbulb.PrefixCommandGroup) or isinstance(command, lightbulb.PrefixSubGroup):
         field_value = ""
-        # I swear this part looks so dumb just because Python refuses to easily sort the dictionary.
-        subcommands_list = [command.subcommands[name] for name in command.subcommands]
-        for subcommand in sorted(subcommands_list, key = lambda cmd: cmd.name):
+        for subcommand in sorted(command.subcommands.values(), key = lambda cmd: cmd.name):
             field_value += f"- `{subcommand.name}`: {subcommand.description}\n"
         
         if len(command.subcommands) > 0:
@@ -158,11 +156,13 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         bot: models.MichaelBot = self.bot
 
         # Reference: https://github.com/tandemdude/hikari-lightbulb/blob/development/lightbulb/help_command.py#L100
+
         if obj is None:
             await self.send_bot_help(ctx)
             return
         
         # Prioritize searching command based on context.
+
         if isinstance(ctx, lightbulb.PrefixContext):
             cmd = bot.get_prefix_command(obj)
             if cmd is not None:
@@ -198,7 +198,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         )
 
         plugins = ctx.bot.plugins
-        plugin_info: t.Dict[str, int] = {}
+        plugin_info: dict[str, int] = {}
         for plugin in plugins.values():
             public_commands = []
             if isinstance(ctx, lightbulb.PrefixContext):
@@ -210,7 +210,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
             if public_commands_len > 0:
                 embed_name = f"{plugin.d.emote} {plugin.name} ({public_commands_len} commands)"
                 embed_description = "*No description provided*"
-                if not not plugin.description:
+                if bool(plugin.description):
                     embed_description = plugin.description
                 main_page.add_field(
                     name = embed_name,

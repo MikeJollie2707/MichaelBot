@@ -1,6 +1,5 @@
 import lightbulb
 import hikari
-import asyncpg
 
 import datetime as dt
 
@@ -8,7 +7,6 @@ import utilities.helpers as helpers
 import utilities.checks as checks
 import utilities.psql as psql
 import utilities.models as models
-import utilities.errors as errors
 from utilities.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)

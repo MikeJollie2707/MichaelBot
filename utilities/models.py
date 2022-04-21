@@ -227,6 +227,18 @@ class NodeExtra:
     working_channel: int = 0
 
 class MichaelBot(lightbulb.BotApp):
+    __slots__ = (
+        "info", 
+        "secrets",
+        "online_at",
+        "logging",
+        "pool",
+        "aio_session",
+        "guild_cache",
+        "user_cache",
+        "lavalink",
+        "node_extra"
+    )
     def __init__(self, 
         token, 
         prefix = None, 

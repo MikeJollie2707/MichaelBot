@@ -12,7 +12,7 @@ import utilities.psql as psql
 plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
 
 @plugin.listener(hikari.StartingEvent)
-async def on_shard_connect(event: hikari.StartingEvent):
+async def on_starting(event: hikari.StartingEvent):
     bot: models.MichaelBot = event.app
     if bot.online_at is None:
         bot.online_at = dt.datetime.now().astimezone()
@@ -88,7 +88,7 @@ async def on_guild_leave(event: hikari.GuildLeaveEvent):
         bot.logging.info(f"Bot left guild '{event.guild_id}'. Cache entry removed.")
 
 @plugin.listener(hikari.StoppingEvent)
-async def on_stopped(event: hikari.StoppingEvent):
+async def on_stopping(event: hikari.StoppingEvent):
     bot: models.MichaelBot = event.app
 
     if bot.pool is not None:
