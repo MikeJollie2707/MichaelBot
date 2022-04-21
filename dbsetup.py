@@ -63,6 +63,17 @@ async def setup_database(user, password, database, host, port):
         ''')
         print("Done!")
 
+        print("Creating Reminders table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS Reminders (
+                user_id INT8 NOT NULL,
+                remind_id SERIAL,
+                awake_time TIMESTAMP WITH TIME ZONE NOT NULL,
+                message TEXT NOT NULL
+            );
+        ''')
+        print("Done!")
+
     await conn.close()
 
 if __name__ == "__main__":

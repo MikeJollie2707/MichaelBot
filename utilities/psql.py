@@ -3,6 +3,7 @@ import hikari
 import lightbulb
 
 import typing as t
+import datetime as dt
 
 def record_to_dict(record: asyncpg.Record, /) -> t.Optional[dict]:
     '''Convert a `Record` into a `dict` or `None` if the object is already `None`.
@@ -63,7 +64,7 @@ async def __get_all__(conn, query: str, *, where: t.Callable[[dict], bool] = lam
             By default, no condition is applied (always return `True`).
 
     Returns:
-        list[Optional[dict]]: A list of `dict` or list of `None`.
+        list[dict]: A list of `dict` or empty list.
     '''
 
     result = await conn.fetch(query)
@@ -246,3 +247,48 @@ class Users:
         '''
 
         await conn.execute(query, new_value, id)
+
+class Reminders:
+    @classmethod
+    async def get_user_reminders(cls, conn, user_id: int) -> list[dict]:
+        query = '''
+            SELECT * FROM Reminders
+            WHERE user_id = ($1);
+        '''
+
+        result = await conn.fetch(query, user_id)
+        return [record_to_dict(record) for record in result]
+    @classmethod
+    async def get_reminders(cls, conn, lower_time: dt.datetime, upper_time: dt.datetime) -> list[dict]:
+        query = '''
+            SELECT * FROM Reminders
+            WHERE awake_time > ($1) AND awake_time <= ($2);
+        '''
+
+        result = await conn.fetch(query, lower_time, upper_time)
+        return [record_to_dict(record) for record in result]
+    @classmethod
+    async def get_past_reminders(cls, conn, now: dt.datetime) -> list[dict]:
+        query = '''
+            SELECT * FROM Reminders
+            WHERE awake_time < ($1);
+        '''
+
+        result = await conn.fetch(query, now)
+        return [record_to_dict(record) for record in result]
+    @classmethod
+    async def add_reminder(cls, conn, user_id: int, when: dt.datetime, message: str):
+        query = '''
+            INSERT INTO Reminders (user_id, awake_time, message)
+                VALUES ($1, $2, $3);
+        '''
+        
+        await conn.execute(query, user_id, when, message)
+    @classmethod
+    async def remove_reminder(cls, conn, user_id: int, remind_id: int):
+        query = '''
+            DELETE FROM Reminders
+            WHERE user_id = ($1) AND remind_id = ($2);
+        '''
+
+        await conn.execute(query, user_id, remind_id)
