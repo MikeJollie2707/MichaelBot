@@ -6,7 +6,7 @@ setup/*
 
 __pycache__/
 categories/__pycache__/
-utilities/__pycache__/
+utils/__pycache__/
 events/__pycache__/
 
 categories/test.py
