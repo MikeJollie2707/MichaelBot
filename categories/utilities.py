@@ -1,18 +1,24 @@
-# API commands are inspired by: https://github.com/kamfretoz/XJ9/tree/main/extensions/utilities
+# API commands are inspired by: https://github.com/kamfretoz/XJ9/tree/main/extensions/utils
 import lightbulb
 import hikari
 import humanize
+from lightbulb.ext import tasks
 
 import datetime as dt
 from textwrap import dedent
 
-import utilities.checks as checks
-import utilities.errors as errors
-import utilities.helpers as helpers
-import utilities.models as models
+import utils.checks as checks
+import utils.converters as converters
+import utils.errors as errors
+import utils.helpers as helpers
+import utils.models as models
+import utils.psql as psql
+from utils.navigator import ItemListBuilder
+
+NOTIFY_REFRESH = 2 * 60
 
 plugin = lightbulb.Plugin(name = "Utilities", description = "Utility Commands", include_datastore = True)
-plugin.d.emote = helpers.get_emote(":information_source:")
+plugin.d.emote = helpers.get_emote(":gear:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
@@ -197,6 +203,134 @@ async def role_info(ctx: lightbulb.Context):
     )
 
     await ctx.respond(embed = embed, reply = True)
+
+async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, when: dt.datetime = None, remind_id: int = None):
+    '''Send `user` a DM about `message` at time `when`.
+
+    This should be created as a `Task` to avoid logic-blocking (the code itself is not async-blocking).
+
+    Args:
+        bot (models.MichaelBot): Bot instance.
+        user (hikari.User): The user to DM.
+        message (str): The message to be sent.
+        when (dt.datetime, optional): The time to send. If `None` or smaller than current time, the message will be sent immediately.
+        remind_id (int, optional): The reminder's id to be removed once the reminder is sent. If `None`, reminder will not be removed from database.
+    '''
+    if when is not None:
+        await helpers.sleep_until(when)
+    
+    try:
+        await user.send("Hi there! You told me to remind you about:\n" + message)
+
+        if remind_id is not None:
+            async with bot.pool.acquire() as conn:
+                await psql.Reminders.remove_reminder(conn, user.id, remind_id)
+    except hikari.ForbiddenError:
+        # Don't remove reminder if the sending fails, will retry to send on next refresh cycle.
+        pass
+@plugin.command()
+@lightbulb.set_help(dedent('''
+    This command only works with subcommands.
+'''))
+@lightbulb.command("remindme", "Create a reminder. Make sure your DM is open to the bot.", hidden = True, aliases = ["rmd", "notify", "timer"])
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
+async def remind(ctx: lightbulb.Context):
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+
+@remind.child
+@lightbulb.set_help(dedent(f'''
+    An interval of less than {NOTIFY_REFRESH} seconds is considered to be a "short reminder".
+'''))
+@lightbulb.option("message", "The message the bot will send after the interval.", modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("interval", "How long until the bot reminds you. Must be between 1 minute and 30 days. Example: 3d2m1s", type = converters.IntervalConverter)
+@lightbulb.command("create", "Create a reminder. Make sure your DM is open to the bot.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def remind_create(ctx: lightbulb.Context):
+    interval: dt.timedelta = ctx.options.interval
+    bot: models.MichaelBot = ctx.bot
+
+    when: dt.datetime = dt.datetime.now().astimezone() + interval
+    if interval.total_seconds() < 60:
+        await ctx.respond("The interval is too small. Must be at least 1 minute.", reply = True, mentions_reply = True)
+    elif interval.total_seconds() > 30 * 24 * 60 * 60:
+        await ctx.respond("The interval is too large. Must be at most 30 days.", reply = True, mentions_reply = True)
+    elif interval.total_seconds() < NOTIFY_REFRESH:
+        bot.create_task(do_remind(bot, ctx.author, ctx.options.message, when))
+        await ctx.respond("A short reminder has been created. Expect the bot to DM you soon:tm:", reply = True)
+    else:
+        async with bot.pool.acquire() as conn:
+            await psql.Reminders.add_reminder(conn, ctx.author.id, when, ctx.options.message)
+        await ctx.respond(f"I'll remind you about '{ctx.options.message}' in `{humanize.precisedelta(interval, format = '%0.0f')}`.", reply = True)
+
+@remind.child
+@lightbulb.set_help(dedent('''
+    Due to optimization, this command won't display short reminders.
+'''))
+@lightbulb.command("view", "View all your long reminders.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def remind_view(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        reminders = await psql.Reminders.get_user_reminders(conn, ctx.author.id)
+    
+    if len(reminders) == 0:
+        embed = helpers.get_default_embed(
+            title = "Reminders",
+            description = "*Cricket noises*",
+            author = ctx.author,
+            timestamp = dt.datetime.now().astimezone()
+        )
+        await ctx.respond(embed = embed, reply = True)
+    else:
+        builder = ItemListBuilder(reminders, max_item_per_page = 5)
+        def start_format(index, item):
+            embed = helpers.get_default_embed(
+                title = "Reminders",
+                description = "",
+                author = ctx.author,
+                timestamp = dt.datetime.now().astimezone()
+            )
+            return embed
+        def entry_format(embed, index, item):
+            message = item["message"]
+            if len(item["message"]) > 30:
+                message = item["message"][:27] + "..."
+            
+            time_till_awake: dt.timedelta = item["awake_time"] - dt.datetime.now().astimezone()
+            embed.description += f"{index + 1}. {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
+        
+        builder.set_page_start_formatter(start_format)
+        builder.set_entry_formatter(entry_format)
+        await builder.build().run(ctx)
+
+@tasks.task(s = NOTIFY_REFRESH, auto_start = True, pass_app = True, wait_before_execution = True)
+async def scan_reminders(bot: models.MichaelBot):
+    '''Check for past and future reminders every `NOTIFY_REFRESH` seconds.
+
+    - If there are any past reminders (tried to send, but couldn't due to permissions, disconnect, etc.), it'll try sending them again.
+    - If there are any future reminders within `NOTIFY_REFRESH` seconds, it'll create `do_remind()` task to be launched.
+
+    Args:
+        bot (models.MichaelBot): The bot.
+    '''
+
+    if bot.pool is None: return
+
+    current = dt.datetime.now().astimezone()
+    future = current + dt.timedelta(seconds = NOTIFY_REFRESH)
+
+    async with bot.pool.acquire() as conn:
+        passed = await psql.Reminders.get_past_reminders(conn, current)
+        upcoming = await psql.Reminders.get_reminders(conn, current, future)
+    
+    for missed_reminder in passed:
+        user = bot.cache.get_user(missed_reminder["user_id"])
+        bot.create_task(do_remind(bot, user, missed_reminder["message"], current, missed_reminder["remind_id"]))
+    
+    for upcoming_reminder in upcoming:
+        user = bot.cache.get_user(upcoming_reminder["user_id"])
+        bot.create_task(do_remind(bot, user, upcoming_reminder["message"], upcoming_reminder["awake_time"], upcoming_reminder["remind_id"]))
 
 @plugin.command()
 @lightbulb.add_checks(checks.is_aiohttp_existed)
