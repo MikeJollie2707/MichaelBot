@@ -1,20 +1,21 @@
 import lightbulb
 import hikari
+from lightbulb.ext import tasks
 
 import sys
 import json
 import os
 
-from utilities.models import MichaelBot
+from utils.models import MichaelBot
 
 EXTENSIONS = [
     "categories.admin",
     "categories.bot",
     "categories.fun",
     "categories.help",
-    "categories.info",
     "categories.music",
     "categories.test",
+    "categories.utilities",
     "events.error_handler",
     "events.logger",
     "events.misc_events",
@@ -29,12 +30,16 @@ async def retrieve_prefix(bot: MichaelBot, message: hikari.Message):
     if guild is None: return bot.info["prefix"]
     else: return guild.guild_module["prefix"]
 
-def load_info(bot_name: str):
-    '''
-    Load the bot information from `config.json`.
+def load_info(bot_name: str) -> tuple[dict]:
+    '''Return the bot information in `config.json`
 
-    Parameter:
-    - `bot_name`: Bot index as indicated in `config.json`.
+    This strictly requires `secret` field in the json.
+
+    Args:
+        bot_name (str): The bot index to load in `config.json`
+
+    Returns:
+        tuple[dict]: Two objects, `(bot_info, secrets)`.
     '''
     bot_info: dict = None
     secrets: dict = None
@@ -47,7 +52,7 @@ def load_info(bot_name: str):
     
     return (bot_info, secrets)
 
-def create_bot(bot_info, secrets) -> MichaelBot:
+def create_bot(bot_info: dict, secrets: dict) -> MichaelBot:
     bot = MichaelBot(
         token = secrets["token"],
         prefix = lightbulb.when_mentioned_or(retrieve_prefix),
@@ -71,6 +76,7 @@ if __name__ == "__main__":
     bot_info, secrets = load_info(sys.argv[1])
     
     bot = create_bot(bot_info, secrets)
+    tasks.load(bot)
     bot.run(
         activity = hikari.Activity(name = "P3 All Bindings", type = hikari.ActivityType.PLAYING)
     )
