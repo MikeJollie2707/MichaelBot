@@ -32,10 +32,12 @@ async def changelog(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
 
-    if ctx.options.option is None:
+    if ctx.options.option.lower() == "stable":
         CHANNEL_ID = 759288597500788766
-    else:
+    elif ctx.options.option.lower() in ("dev", "development"):
         CHANNEL_ID = 644393721512722432
+    else:
+        return await ctx.respond("`option` argument must be either `dev`, `development`, or `stable`.", reply = True, mentions_reply = True)
     
     channel: hikari.GuildTextChannel = bot.cache.get_guild_channel(CHANNEL_ID)
     if channel is None:
