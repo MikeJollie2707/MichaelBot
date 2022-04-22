@@ -138,7 +138,7 @@ async def dice(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("user", "The user to perform the option on. Default to yourself.", type = hikari.User, default = None)
+@lightbulb.option("user", "The user to perform the option on. Default to yourself.", type = hikari.User, default = None, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("action_type", "The action to perform.", choices = ANIME_ACTIONS.keys())
 @lightbulb.command("do", "Perform an anime action.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
