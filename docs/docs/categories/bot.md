@@ -2,29 +2,33 @@
 
 Bot-related Commands
 
-## `changelog`
+## `changelog [option = stable]`
 
 Show 10 latest stable changes to the bot.
 
-Type: `Prefix Command`
-
-Cooldown: 5 seconds after 1 use per user.
-
-### `changelog stable`
-
-Show 10 latest stable changes to the bot. This exists for Slash Commands.
-
 Type: `Prefix Command`, `Slash Command`
 
 Cooldown: 5 seconds after 1 use per user.
 
-### `changelog development`
+Parameters:
 
-Show 10 latest changes to the bot *behind the scene*.
+- `option`: Additional options. Valid options are `dev`/`development` and `stable`.
+
+Additional Info:
+
+- Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+
+## `help [*name = None]`
+
+Get help information for the bot.
 
 Type: `Prefix Command`, `Slash Command`
 
-Cooldown: 5 seconds after 1 use per user.
+Aliases: `h`
+
+Parameters:
+
+- `name`: Category name or command name. Is case-sensitive.
 
 ## `info`
 
@@ -69,4 +73,4 @@ Parameters:
 - `type`: The type of report you're making. Either `bug` or `suggest`.
 - `reason`: The content you're trying to send.
 
-*Last updated on Apr 1, 2022*
+*Last updated on Apr 25, 2022*

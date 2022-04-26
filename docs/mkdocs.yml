@@ -6,8 +6,8 @@ nav:
   - Commands:
     - Bot: categories/bot.md
     - Fun: categories/fun.md
-    - Info: categories/info.md
     - Logs: categories/logger.md
     - Music: categories/music.md
+    - Utilities: categories/utilities.md
 
 dev_addr: '127.0.0.1:8001'
