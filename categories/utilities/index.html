@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Info - MichaelBot Documentation</title>
+        <title>Utilities - MichaelBot Documentation</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -52,15 +52,15 @@
 </li>
                                     
 <li>
-    <a href="./" class="dropdown-item active">Info</a>
-</li>
-                                    
-<li>
     <a href="../logger/" class="dropdown-item">Logs</a>
 </li>
                                     
 <li>
     <a href="../music/" class="dropdown-item">Music</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active">Utilities</a>
 </li>
                                 </ul>
                             </li>
@@ -73,12 +73,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../fun/" class="nav-link">
+                                <a rel="prev" href="../music/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../logger/" class="nav-link">
+                                <a rel="next" class="nav-link disabled">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -100,7 +100,7 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#information-category" class="nav-link">Information Category</a>
+            <li class="nav-item" data-level="1"><a href="#utilities-category" class="nav-link">Utilities Category</a>
               <ul class="nav flex-column">
             <li class="nav-item" data-level="2"><a href="#profile-member-none" class="nav-link">profile [member = None]</a>
               <ul class="nav flex-column">
@@ -111,6 +111,10 @@
               </ul>
             </li>
             <li class="nav-item" data-level="2"><a href="#role-info-role" class="nav-link">role-info &lt;role&gt;</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#remindme" class="nav-link">remindme</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -129,8 +133,8 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="information-category">Information Category</h1>
-<p>Information Commands.</p>
+<h1 id="utilities-category">Utilities Category</h1>
+<p>Utility Commands.</p>
 <h2 id="profile-member-none"><code>profile [member = None]</code></h2>
 <p>Information about yourself or another member.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
@@ -150,6 +154,35 @@
 <li><code>role</code>: A Discord role.</li>
 </ul>
 <p>Aliases: <code>roleinfo</code></p>
+<h2 id="remindme"><code>remindme</code></h2>
+<p>Create a reminder. Make sure your DM is open to the bot.</p>
+<p>Type: <code>None</code></p>
+<p>Aliases: <code>rmd</code>, <code>notify</code>, <code>timer</code></p>
+<p>Additional Info:</p>
+<ul>
+<li>This command only works with subcommands.</li>
+</ul>
+<h3 id="remindme-create-interval-message"><code>remindme create &lt;interval&gt; &lt;*message&gt;</code></h3>
+<p>Create a reminder. Make sure your DM is open to the bot.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Cooldown: 5 seconds after 1 use per user.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>interval</code>: How long until the bot reminds you. Must be between 1 minute and 30 days. Example: <code>3d2m1s</code></li>
+<li><code>message</code>: The message the bot will send after the interval.</li>
+</ul>
+<p>Additional Info:</p>
+<ul>
+<li>An interval of less than 120 seconds is considered to be a "short reminder".</li>
+</ul>
+<h3 id="remindme-view"><code>remindme view</code></h3>
+<p>View all your long reminders.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Cooldown: 5 seconds after 1 use per user.</p>
+<p>Additional Info:</p>
+<ul>
+<li>Due to optimization, this command won't display short reminders.</li>
+</ul>
 <h2 id="urban-term"><code>urban &lt;*term&gt;</code></h2>
 <p>Search a term on urbandictionary.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
@@ -166,7 +199,7 @@
 <ul>
 <li><code>city_name</code>: The city to check. Example: <code>Paris</code>.</li>
 </ul>
-<p><em>Last updated on Apr 1, 2022</em></p></div>
+<p><em>Last updated on Apr 25, 2022</em></p></div>
             </div>
         </div>
 

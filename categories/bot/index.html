@@ -52,15 +52,15 @@
 </li>
                                     
 <li>
-    <a href="../info/" class="dropdown-item">Info</a>
-</li>
-                                    
-<li>
     <a href="../logger/" class="dropdown-item">Logs</a>
 </li>
                                     
 <li>
     <a href="../music/" class="dropdown-item">Music</a>
+</li>
+                                    
+<li>
+    <a href="../utilities/" class="dropdown-item">Utilities</a>
 </li>
                                 </ul>
                             </li>
@@ -102,7 +102,11 @@
             
             <li class="nav-item" data-level="1"><a href="#bot-category" class="nav-link">Bot Category</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-level="2"><a href="#changelog" class="nav-link">changelog</a>
+            <li class="nav-item" data-level="2"><a href="#changelog-option-stable" class="nav-link">changelog [option = stable]</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#help-name-none" class="nav-link">help [*name = None]</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -131,18 +135,26 @@
 
 <h1 id="bot-category">Bot Category</h1>
 <p>Bot-related Commands</p>
-<h2 id="changelog"><code>changelog</code></h2>
+<h2 id="changelog-option-stable"><code>changelog [option = stable]</code></h2>
 <p>Show 10 latest stable changes to the bot.</p>
-<p>Type: <code>Prefix Command</code></p>
-<p>Cooldown: 5 seconds after 1 use per user.</p>
-<h3 id="changelog-stable"><code>changelog stable</code></h3>
-<p>Show 10 latest stable changes to the bot. This exists for Slash Commands.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
 <p>Cooldown: 5 seconds after 1 use per user.</p>
-<h3 id="changelog-development"><code>changelog development</code></h3>
-<p>Show 10 latest changes to the bot <em>behind the scene</em>.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>option</code>: Additional options. Valid options are <code>dev</code>/<code>development</code> and <code>stable</code>.</li>
+</ul>
+<p>Additional Info:</p>
+<ul>
+<li>Bot needs to have <code>Manage Messages</code> permission if used as a Prefix Command.</li>
+</ul>
+<h2 id="help-name-none"><code>help [*name = None]</code></h2>
+<p>Get help information for the bot.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
-<p>Cooldown: 5 seconds after 1 use per user.</p>
+<p>Aliases: <code>h</code></p>
+<p>Parameters:</p>
+<ul>
+<li><code>name</code>: Category name or command name. Is case-sensitive.</li>
+</ul>
 <h2 id="info"><code>info</code></h2>
 <p>Show information about the bot.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
@@ -171,7 +183,7 @@
 <li><code>type</code>: The type of report you're making. Either <code>bug</code> or <code>suggest</code>.</li>
 <li><code>reason</code>: The content you're trying to send.</li>
 </ul>
-<p><em>Last updated on Apr 1, 2022</em></p></div>
+<p><em>Last updated on Apr 25, 2022</em></p></div>
             </div>
         </div>
 
