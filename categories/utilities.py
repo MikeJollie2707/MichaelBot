@@ -241,6 +241,7 @@ async def remind(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent(f'''
     An interval of less than {NOTIFY_REFRESH} seconds is considered to be a "short reminder".
 '''))
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("message", "The message the bot will send after the interval.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("interval", "How long until the bot reminds you. Must be between 1 minute and 30 days. Example: 3d2m1s", type = converters.IntervalConverter)
 @lightbulb.command("create", "Create a reminder. Make sure your DM is open to the bot.")
@@ -266,6 +267,7 @@ async def remind_create(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     Due to optimization, this command won't display short reminders.
 '''))
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("view", "View all your long reminders.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def remind_view(ctx: lightbulb.Context):
