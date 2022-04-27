@@ -204,6 +204,75 @@ async def role_info(ctx: lightbulb.Context):
 
     await ctx.respond(embed = embed, reply = True)
 
+@plugin.command()
+@lightbulb.command("embed", "Send an embed.")
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
+async def embed(ctx: lightbulb.Context):
+    pass
+
+@embed.child
+@lightbulb.option("raw_embed", "The embed in JSON format.", modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.command("from-json", "Send an embed from a JSON object.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def embed_from_json(ctx: lightbulb.Context):
+    raw_embed: str = ctx.options.raw_embed
+
+    if isinstance(ctx, lightbulb.PrefixContext):
+        await ctx.event.message.delete()
+
+    raw_embed = raw_embed.strip("```").strip()
+    import json
+    json_embed = json.loads(raw_embed)
+    print(json_embed)
+    embed = helpers.embed_from_dict(json_embed)
+    await ctx.respond(embed = embed)
+
+@embed.child
+@lightbulb.option("message_id", "Message link", type = hikari.Message, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.command("to-json", "Take the embed from a message and convert to a JSON object.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def embed_to_json(ctx: lightbulb.Context):
+    message_id = ctx.options.message_id
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(message_id, str):
+        message_id = await bot.rest.fetch_message(ctx.channel_id, message_id)
+    
+    if not message_id.embeds:
+        await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
+    else:
+        import json
+        for embed in message_id.embeds:
+            d = helpers.embed_to_dict(embed)
+            
+            await ctx.respond(f"```{json.dumps(d, indent = 4)}```")
+
+@embed.child
+@lightbulb.option("color", "Choice of color", choices = ["green", "black"], default = "green")
+@lightbulb.option("description", "The description of the embed.", default = None)
+@lightbulb.option("title", "The title of the embed.", default = None)
+@lightbulb.command("simple", "Create and send a simple embed. Useful for quick embeds.")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def embed_simple(ctx: lightbulb.Context):
+    title = ctx.options.title
+    description = ctx.options.description
+    color = ctx.options.color
+
+    if not title and not description:
+        await ctx.respond("Embed cannot be empty!", reply = True, mentions_reply = True)
+    else:
+        embed = hikari.Embed(
+            title = title,
+            description = description
+        )
+
+        if color == "green":
+            embed.color = models.DefaultColor.green()
+        elif color == "black":
+            embed.color = hikari.Color(0x000000)
+        
+        await ctx.respond(embed = embed)
+
 async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, when: dt.datetime = None, remind_id: int = None):
     '''Send `user` a DM about `message` at time `when`.
 

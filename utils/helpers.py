@@ -73,6 +73,108 @@ COMMAND_STANDARD_PERMISSIONS = [
     hikari.Permissions.READ_MESSAGE_HISTORY,
 ]
 
+def embed_from_dict(data: dict[str, t.Any]) -> hikari.Embed:
+    embed = hikari.Embed()
+
+    embed.title = data.get("title", None)
+    embed.description = data.get("description", None)
+    embed.url = data.get("url", None)
+
+    if embed.title is not None:
+        embed.title = str(embed.title)
+    if embed.description is not None:
+        embed.description = str(embed.description)
+    if embed.url is not None:
+        embed.url = str(embed.url)
+    
+    try:
+        embed.color = hikari.Color(data["color"])
+    except KeyError:
+        pass
+
+    try:
+        embed.timestamp = dt.datetime.fromtimestamp(data['timestamp'], tz = dt.timezone.utc)
+    except KeyError:
+        pass
+
+    try:
+        value = data["thumbnail"]
+    except KeyError:
+        pass
+    else:
+        embed.set_thumbnail(value)
+    
+    try:
+        value = data["author"]
+    except KeyError:
+        pass
+    else:
+        embed.set_author(**value)
+    
+    try:
+        value = data["fields"]
+    except KeyError:
+        pass
+    else:
+        for field in value:
+            embed.add_field(**field)
+    
+    try:
+        value = data["image"]
+    except KeyError:
+        pass
+    else:
+        embed.set_image(value)
+
+    try:
+        value = data["footer"]
+    except KeyError:
+        pass
+    else:
+        embed.set_footer(**value)
+
+    return embed
+
+def embed_to_dict(embed: hikari.Embed) -> dict[str, t.Any]:
+    d = {}
+
+    if bool(embed.title):
+        d["title"] = embed.title
+    if bool(embed.description):
+        d["description"] = embed.description
+    if bool(embed.url):
+        d["url"] = embed.url
+    
+    if bool(embed.color):
+        d["color"] = int(embed.color)
+    if bool(embed.timestamp):
+        d["timestamp"] = embed.timestamp.timestamp()
+    if bool(embed.thumbnail):
+        d["thumbnail"] = embed.thumbnail.url
+    if bool(embed.author):
+        d["author"] = {
+            "icon": embed.author.icon.url,
+            "name": embed.author.name,
+            "url": embed.author.url
+        }
+    if bool(embed.fields):
+        d["fields"] = []
+        for field in embed.fields:
+            d["fields"].append({
+                "name": field.name,
+                "value": field.value,
+                "inline": field.is_inline
+            })
+    if bool(embed.image):
+        d["image"] = embed.image.url
+    if bool(embed.footer):
+        d["footer"] = {
+            "text": embed.footer.text,
+            "icon": embed.footer.icon.url
+        }
+    
+    return d
+
 def get_emote(discord_text: str, /) -> str:
     '''Return the Unicode emoji based on the name provided.
 
