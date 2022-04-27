@@ -34,7 +34,7 @@ async def send_error_message(error_type: str, event: lightbulb.CommandErrorEvent
     
     embed = hikari.Embed(
         description = f":warning: **{message}**",
-        color = models.DefaultColor.brand_red(),
+        color = models.DefaultColor.brand_red,
         timestamp = dt.datetime.now().astimezone()
     )
     

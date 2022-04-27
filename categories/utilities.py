@@ -532,9 +532,9 @@ async def weather(ctx: lightbulb.Context):
             embed.set_thumbnail("http:" + current["condition"]["icon"])
 
             if current["is_day"] == 1:
-                embed.color = models.DefaultColor.gold()
+                embed.color = models.DefaultColor.gold
             else:
-                embed.color = models.DefaultColor.dark_blue()
+                embed.color = models.DefaultColor.dark_blue
 
             await ctx.respond(embed = embed, reply = True)
         elif resp.status == 400:

@@ -8,6 +8,7 @@ import datetime as dt
 import logging
 import typing as t
 from dataclasses import dataclass
+from enum import Enum
 
 import utils.psql as psql
 
@@ -132,93 +133,41 @@ class GuildCache:
         return self
 
 # Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
-class DefaultColor:
+class DefaultColor(Enum):
     '''
     Store several default colors to use instantly.
     '''
-    @staticmethod
-    def teal(): return hikari.Color(0x1abc9c)
 
-    @staticmethod
-    def dark_teal(): return hikari.Color(0x11806a)
-
-    @staticmethod
-    def brand_green(): return hikari.Color(0x57F287)
-
-    @staticmethod
-    def green(): return hikari.Color(0x2ecc71)
-
-    @staticmethod
-    def dark_green(): return hikari.Color(0x1f8b4c)
-
-    @staticmethod
-    def blue(): return hikari.Color(0x3498db)
-
-    @staticmethod
-    def dark_blue(): return hikari.Color(0x206694)
-
-    @staticmethod
-    def purple(): return hikari.Color(0x9b59b6)
-
-    @staticmethod
-    def dark_purple(): return hikari.Color(0x71368a)
-
-    @staticmethod
-    def magenta(): return hikari.Color(0xe91e63)
-
-    @staticmethod
-    def dark_magenta(): return hikari.Color(0xad1457)
-
-    @staticmethod
-    def gold(): return hikari.Color(0xf1c40f)
-
-    @staticmethod
-    def dark_gold(): return hikari.Color(0xc27c0e)
-
-    @staticmethod
-    def orange(): return hikari.Color(0xe67e22)
-
-    @staticmethod
-    def dark_orange(): return hikari.Color(0xa84300)
-
-    @staticmethod
-    def brand_red(): return hikari.Color(0xED4245)
-
-    @staticmethod
-    def red(): return hikari.Color(0xe74c3c)
-
-    @staticmethod
-    def dark_red(): return hikari.Color(0x992d22)
-
-    @staticmethod
-    def lighter_gray(): return hikari.Color(0x95a5a6)
-
-    @staticmethod
-    def dark_gray(): return hikari.Color(0x607d8b)
-
-    @staticmethod
-    def light_gray(): return hikari.Color(0x979c9f)
-
-    @staticmethod
-    def darker_gray(): return hikari.Color(0x546e7a)
-
-    @staticmethod
-    def og_blurple(): return hikari.Color(0x7289da)
-
-    @staticmethod
-    def blurple(): return hikari.Color(0x5865F2)
-
-    @staticmethod
-    def greyple(): return hikari.Color(0x5865F2)
-
-    @staticmethod
-    def dark_theme(): return hikari.Color(0x36393F)
-
-    @staticmethod
-    def fuchsia(): return hikari.Color(0xEB459E)
-
-    @staticmethod
-    def yellow(): return hikari.Color(0xFEE75C)
+    teal = hikari.Color(0x1abc9c)
+    dark_teal = hikari.Color(0x11806a)
+    brand_green = hikari.Color(0x57F287)
+    green = hikari.Color(0x2ecc71)
+    dark_green = hikari.Color(0x1f8b4c)
+    blue = hikari.Color(0x3498db)
+    dark_blue = hikari.Color(0x206694)
+    purple = hikari.Color(0x9b59b6)
+    dark_purple = hikari.Color(0x71368a)
+    magenta = hikari.Color(0xe91e63)
+    dark_magenta = hikari.Color(0xad1457)
+    gold = hikari.Color(0xf1c40f)
+    dark_gold = hikari.Color(0xc27c0e)
+    orange = hikari.Color(0xe67e22)
+    dark_orange = hikari.Color(0xa84300)
+    brand_red = hikari.Color(0xED4245)
+    red = hikari.Color(0xe74c3c)
+    dark_red = hikari.Color(0x992d22)
+    lighter_gray = hikari.Color(0x95a5a6)
+    dark_gray = hikari.Color(0x607d8b)
+    light_gray = hikari.Color(0x979c9f)
+    darker_gray = hikari.Color(0x546e7a)
+    og_blurple = hikari.Color(0x7289da)
+    blurple = hikari.Color(0x5865F2)
+    greyple = hikari.Color(0x5865F2)
+    dark_theme = hikari.Color(0x36393F)
+    fuchsia = hikari.Color(0xEB459E)
+    yellow = hikari.Color(0xFEE75C)
+    black = hikari.Color(0x000000)
+    white = hikari.Color(0xFFFFFF)
 
 @dataclass
 class NodeExtra:
