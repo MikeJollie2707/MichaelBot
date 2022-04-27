@@ -319,6 +319,9 @@ async def remind_create(ctx: lightbulb.Context):
     interval: dt.timedelta = ctx.options.interval
     bot: models.MichaelBot = ctx.bot
 
+    if isinstance(ctx, lightbulb.SlashContext):
+        interval = await converters.IntervalConverter(ctx).convert(ctx.options.interval)
+
     when: dt.datetime = dt.datetime.now().astimezone() + interval
     if interval.total_seconds() < 60:
         await ctx.respond("The interval is too small. Must be at least 1 minute.", reply = True, mentions_reply = True)
