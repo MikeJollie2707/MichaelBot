@@ -212,7 +212,7 @@ async def embed(ctx: lightbulb.Context):
 
 @embed.child
 @lightbulb.option("raw_embed", "The embed in JSON format.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("from-json", "Send an embed from a JSON object.")
+@lightbulb.command("from-json", "Send an embed from a JSON object. Check out https://embedbuilder.nadekobot.me/ for easier time.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_from_json(ctx: lightbulb.Context):
     raw_embed: str = ctx.options.raw_embed
@@ -229,7 +229,7 @@ async def embed_from_json(ctx: lightbulb.Context):
 
 @embed.child
 @lightbulb.option("message_id", "Message link", type = hikari.Message, modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("to-json", "Take the embed from a message and convert to a JSON object.")
+@lightbulb.command("to-json", "Take the embed from a message and convert it to a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_to_json(ctx: lightbulb.Context):
     message_id = ctx.options.message_id
