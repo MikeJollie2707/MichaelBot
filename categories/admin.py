@@ -161,14 +161,24 @@ async def cache_view_guild(ctx: lightbulb.Context):
         await ctx.respond("Cache for this guild doesn't exist.", reply = True, mentions_reply = True)
 
 @plugin.command()
-@lightbulb.command("purge-slashes", "Force delete every slash commands in test guilds.", hidden = True)
+@lightbulb.command("purge-guild-slashes", "Force delete every slash commands in test guilds.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def purge_slashes(ctx: lightbulb.Context):
+async def purge_guild_slashes(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.rest.trigger_typing(ctx.channel_id):
         await bot.purge_application_commands(*bot.info["default_guilds"])
     await ctx.respond("Cleared all guild slash commands in test guilds.", reply = True)
+
+@plugin.command()
+@lightbulb.command("purge-slashes", "Force delete every slash commands.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def purge_slashes(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.rest.trigger_typing(ctx.channel_id):
+        await bot.purge_application_commands(global_commands = True)
+    await ctx.respond("Cleared all application commands from all guilds.", reply = True)
 
 @plugin.command()
 @lightbulb.option("extension", "The extension to reload.")
