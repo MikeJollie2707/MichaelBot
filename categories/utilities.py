@@ -207,10 +207,10 @@ async def role_info(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.command("embed", "Send an embed.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
-async def embed(ctx: lightbulb.Context):
+async def _embed(ctx: lightbulb.Context):
     pass
 
-@embed.child
+@_embed.child
 @lightbulb.option("raw_embed", "The embed in JSON format.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("from-json", "Send an embed from a JSON object. Check out https://embedbuilder.nadekobot.me/ for easier time.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -227,7 +227,7 @@ async def embed_from_json(ctx: lightbulb.Context):
     embed = helpers.embed_from_dict(json_embed)
     await ctx.respond(embed = embed)
 
-@embed.child
+@_embed.child
 @lightbulb.option("message_id", "Message link", type = hikari.Message, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("to-json", "Take the embed from a message and convert it to a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -247,7 +247,7 @@ async def embed_to_json(ctx: lightbulb.Context):
             
             await ctx.respond(f"```{json.dumps(d, indent = 4)}```")
 
-@embed.child
+@_embed.child
 @lightbulb.option("color", "Choice of color", choices = ["green", "black"], default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)
