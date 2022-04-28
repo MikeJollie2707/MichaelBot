@@ -248,7 +248,10 @@ async def embed_to_json(ctx: lightbulb.Context):
             await ctx.respond(f"```{json.dumps(d, indent = 4)}```")
 
 @_embed.child
-@lightbulb.option("color", "Choice of color", choices = ["green", "black"], default = "green")
+@lightbulb.set_help(dedent('''
+    This is an alternative to `embed interactive`.
+'''))
+@lightbulb.option("color", "Choice of color", autocomplete = True, default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)
 @lightbulb.command("simple", "Create and send a simple embed. Useful for quick embeds.")
@@ -263,15 +266,82 @@ async def embed_simple(ctx: lightbulb.Context):
     else:
         embed = hikari.Embed(
             title = title,
-            description = description
+            description = description,
+            color = models.DefaultColor[color].value
         )
-
-        if color == "green":
-            embed.color = models.DefaultColor.green()
-        elif color == "black":
-            embed.color = hikari.Color(0x000000)
         
         await ctx.respond(embed = embed)
+@embed_simple.autocomplete("color")
+async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    if option.value != "":
+        return [color for color in models.DefaultColor._member_names_ if option.value in color]
+    return models.DefaultColor._member_names_[:25]
+
+@_embed.child
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages`.
+    This is an alternative to `embed simple`.
+'''))
+@lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
+@lightbulb.command("interactive", "Create a simple embed with prompts.")
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def embed_interactive(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    def is_response(event: hikari.GuildMessageCreateEvent):
+        msg = event.message
+        return msg.author == ctx.author and msg.channel_id == ctx.channel_id
+    
+    title = ""
+    description = ""
+    color = None
+    available_colors = models.DefaultColor._member_names_
+
+    await ctx.event.message.delete()
+    try:
+        await ctx.respond("What's the title? (Type `None` to skip)")
+        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
+        if event.message.content.strip('`') != "None":
+            title = event.message.content
+        
+        await event.message.delete()
+        await ctx.delete_last_response()
+
+        await ctx.respond("What's the description? (Type `None` to skip)")
+        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
+        if event.message.content.strip('`') != "None":
+            description = event.message.content
+        
+        await event.message.delete()
+        await ctx.delete_last_response()
+
+        if title == "" and description == "":
+            await ctx.respond("Embed must have at least a title or a description. If you don't want these fields, use `embed from-json`.")
+            return
+
+        await ctx.respond(f"What's the color? You can enter a hex number or one of the following predefined colors: `{helpers.striplist(available_colors)}`")
+        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
+        color_content = event.message.content.lower()
+        if color_content in available_colors:
+            color = models.DefaultColor[color_content].value
+        else:
+            try:
+                color = hikari.Color(int(color_content, base = 16))
+            except ValueError:
+                await ctx.respond("Invalid color.")
+                return
+        
+        await event.message.delete()
+        await ctx.delete_last_response()
+
+        embed = hikari.Embed(
+            title = title,
+            description = description,
+            color = color
+        )
+        await ctx.respond(embed = embed)
+    except TimeoutError:
+        await ctx.respond("Session timed out.")
 
 async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, when: dt.datetime = None, remind_id: int = None):
     '''Send `user` a DM about `message` at time `when`.
