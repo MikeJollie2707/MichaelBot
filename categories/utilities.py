@@ -42,25 +42,6 @@ async def calc(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Rounding errors, along with other debatable values such as `0^0` is incorrect due to language limitation.
-'''))
-@lightbulb.option("expression", "The math expression.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("calc", "Calculate a math expression.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def calc(ctx: lightbulb.Context):
-    import py_expression_eval
-    parser = py_expression_eval.Parser()
-
-    try:
-        result = parser.parse(ctx.options.expression).evaluate({})
-        await ctx.respond(f"Result: `{result}`")
-    except ZeroDivisionError:
-        await ctx.respond("Zero division detected!", reply = True, mentions_reply = True)
-    except:
-        await ctx.respond("An error occurred!", reply = True, mentions_reply = True)
-
-@plugin.command()
-@lightbulb.set_help(dedent('''
     This command only works with subcommands.
 '''))
 @lightbulb.command("embed", "Send an embed.")
