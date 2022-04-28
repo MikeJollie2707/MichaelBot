@@ -90,7 +90,8 @@ async def embed_to_json(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     This is an alternative to `embed interactive`.
 '''))
-@lightbulb.option("color", "Choice of color", autocomplete = True, default = "green")
+@lightbulb.option("channel", "The channel to send this embed. Default to the current one.", type = hikari.TextableGuildChannel, default = None)
+@lightbulb.option("color", "Your choice of color", autocomplete = True, default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)
 @lightbulb.command("simple", "Create and send a simple embed. Useful for quick embeds.")
@@ -99,6 +100,7 @@ async def embed_simple(ctx: lightbulb.Context):
     title = ctx.options.title
     description = ctx.options.description
     color = ctx.options.color
+    channel = ctx.options.channel
 
     if not title and not description:
         await ctx.respond("Embed cannot be empty!", reply = True, mentions_reply = True)
@@ -108,8 +110,12 @@ async def embed_simple(ctx: lightbulb.Context):
             description = description,
             color = models.DefaultColor[color].value
         )
-        
-        await ctx.respond(embed = embed)
+
+        if channel is None:
+            await ctx.respond(embed = embed)
+        else:
+            await ctx.respond("Sent!")
+            await ctx.bot.rest.create_message(channel, embed = embed)
 @embed_simple.autocomplete("color")
 async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     if option.value != "":
@@ -122,7 +128,7 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
     This is an alternative to `embed simple`.
 '''))
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("interactive", "Create a simple embed with prompts.")
+@lightbulb.command("interactive", "Create a simple embed with prompts.", aliases = ['i'])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def embed_interactive(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -134,6 +140,7 @@ async def embed_interactive(ctx: lightbulb.Context):
     title = ""
     description = ""
     color = None
+    channel = None
     available_colors = models.DefaultColor._member_names_
 
     await ctx.event.message.delete()
@@ -173,12 +180,22 @@ async def embed_interactive(ctx: lightbulb.Context):
         await event.message.delete()
         await ctx.delete_last_response()
 
+        await ctx.respond("Which channel to send this embed? (Type `None` to send it here)")
+        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
+        if event.message.content.strip('`') != "None":
+            channel = await lightbulb.TextableGuildChannelConverter(ctx).convert(event.message.content.strip('`'))
+        if channel is None:
+            channel = ctx.get_channel()
+        
+        await event.message.delete()
+        await ctx.delete_last_response()
+
         embed = hikari.Embed(
             title = title,
             description = description,
             color = color
         )
-        await ctx.respond(embed = embed)
+        await bot.rest.create_message(channel, embed = embed)
     except TimeoutError:
         await ctx.respond("Session timed out.")
 
