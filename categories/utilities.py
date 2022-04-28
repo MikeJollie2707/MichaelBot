@@ -63,7 +63,6 @@ async def embed_from_json(ctx: lightbulb.Context):
     raw_embed = raw_embed.strip("```").strip()
     import json
     json_embed = json.loads(raw_embed)
-    print(json_embed)
     embed = helpers.embed_from_dict(json_embed)
     await ctx.respond(embed = embed)
 
