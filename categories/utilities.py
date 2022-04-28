@@ -205,10 +205,13 @@ async def role_info(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    This command only works with subcommands.
+'''))
 @lightbulb.command("embed", "Send an embed.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def _embed(ctx: lightbulb.Context):
-    pass
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @_embed.child
 @lightbulb.option("raw_embed", "The embed in JSON format.", modifier = helpers.CONSUME_REST_OPTION)
