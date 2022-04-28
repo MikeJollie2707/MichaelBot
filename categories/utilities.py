@@ -626,7 +626,7 @@ async def weather(ctx: lightbulb.Context):
             if current["is_day"] == 1:
                 embed.color = models.DefaultColor.gold
             else:
-                embed.color = models.DefaultColor.dark_blue
+                embed.color = models.DefaultColor.dark_blue.value
 
             await ctx.respond(embed = embed, reply = True)
         elif resp.status == 400:

@@ -218,7 +218,7 @@ def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed
     title = kwargs.get("title")
     url = kwargs.get("url")
     description = kwargs.get("description")
-    color = kwargs.get("color") if kwargs.get("color") is not None else models.DefaultColor.green
+    color = kwargs.get("color") if kwargs.get("color") is not None else models.DefaultColor.green.value
     timestamp = kwargs.get("timestamp")
 
     embed = hikari.Embed(

@@ -40,11 +40,11 @@ command_event_choices = [EVENT_OPTION_MAPPING[event_type] for event_type in EVEN
 command_event_choices.remove("command_complete")
 command_event_choices.remove("command_error")
 
-COLOR_MODERATION = hikari.Color(0x000000)
-COLOR_CREATE = models.DefaultColor.green
-COLOR_DELETE = models.DefaultColor.orange
-COLOR_UPDATE = models.DefaultColor.yellow
-COLOR_OTHER = models.DefaultColor.teal
+COLOR_MODERATION = models.DefaultColor.black.value
+COLOR_CREATE = models.DefaultColor.green.value
+COLOR_DELETE = models.DefaultColor.orange.value
+COLOR_UPDATE = models.DefaultColor.yellow.value
+COLOR_OTHER = models.DefaultColor.teal.value
 
 async def send_to_mystbin(content: str) -> str:
     mystbin_client = mystbin.Client()
