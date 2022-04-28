@@ -38,7 +38,7 @@ async def send_error_message(error_type: str, event: lightbulb.CommandErrorEvent
         timestamp = dt.datetime.now().astimezone()
     )
     
-    await event.context.respond(f"{event.context.author.mention}", embed = embed, reply = True, user_mentions = True, mentions_reply = True)
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True)
 
 async def on_command_error(event: lightbulb.CommandErrorEvent):
     bot: models.MichaelBot = event.bot
