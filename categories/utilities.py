@@ -73,6 +73,8 @@ async def embed_from_json(ctx: lightbulb.Context):
             await ctx.event.message.delete()
     except json.JSONDecodeError as js:
         await ctx.respond(f"{ctx.author.mention} The JSON you provided is not valid. Detail message: `{js}`", user_mentions = True)
+    except ValueError as color_error:
+        await ctx.respond(f"{ctx.author.mention} The color you provided is invalid. It must be an integer of base 10.", user_mentions = True)
     except hikari.BadRequestError as bad:
         await ctx.respond(f"{ctx.author.mention} The JSON you provided is ill-formed. Detail message: `{bad}`", user_mentions = True)
     
