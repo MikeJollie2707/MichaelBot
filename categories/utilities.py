@@ -22,6 +22,9 @@ plugin.d.emote = helpers.get_emote(":gear:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    Rounding errors, along with other debatable values such as `0^0` is incorrect due to language limitation.
+'''))
 @lightbulb.option("expression", "The math expression.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("calc", "Calculate a math expression.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
