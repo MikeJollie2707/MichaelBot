@@ -360,6 +360,22 @@ async def remind_view(ctx: lightbulb.Context):
         builder.set_entry_formatter(entry_format)
         await builder.build().run(ctx)
 
+@remind.child
+@lightbulb.set_help(dedent('''
+    Due to optimization, this command won't remove short reminders.
+'''))
+@lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("remind_id", "The reminder's id. You can find it in `remindme view`.", type = int)
+@lightbulb.command("remove", "Remove a long reminder.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def remind_remove(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        await psql.Reminders.remove_reminder(conn, ctx.options.remind_id, ctx.author.id)
+    
+    await ctx.respond(f"Removed the reminder `{ctx.options.remind_id}`.")
+
 @plugin.command()
 @lightbulb.option("role", "A Discord role.", type = hikari.Role)
 @lightbulb.command("role-info", "Information about a role in this server.", aliases = ["roleinfo"])
@@ -626,7 +642,7 @@ async def weather(ctx: lightbulb.Context):
             if current["is_day"] == 1:
                 embed.color = models.DefaultColor.gold
             else:
-                embed.color = models.DefaultColor.dark_blue.value
+                embed.color = models.DefaultColor.dark_blue
 
             await ctx.respond(embed = embed, reply = True)
         elif resp.status == 400:
