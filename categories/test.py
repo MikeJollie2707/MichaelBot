@@ -20,7 +20,7 @@ plugin.add_checks(checks.is_dev, checks.is_command_enabled, lightbulb.bot_has_gu
 async def test(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    await ctx.respond("Weeee")
+    pass
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
