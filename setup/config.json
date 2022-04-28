@@ -13,7 +13,7 @@
         "description": "A testing bot for MichaelBot :)",
         "prefix": "!",
         "launch_options": "--debug",
-        "default_guilds": [644336990698995712, 705270581184167987, 868449475323101224],
+        "default_guilds": [644336990698995712, 705270581184167987],
 
         "secret": "beta_secret.json"
     }
