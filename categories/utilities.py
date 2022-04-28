@@ -327,6 +327,7 @@ async def remind_create(ctx: lightbulb.Context):
 async def remind_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
+    reminders = []
     async with bot.pool.acquire() as conn:
         reminders = await psql.Reminders.get_user_reminders(conn, ctx.author.id)
     
@@ -347,6 +348,7 @@ async def remind_view(ctx: lightbulb.Context):
                 author = ctx.author,
                 timestamp = dt.datetime.now().astimezone()
             )
+            embed.description = f"**Format:** 0. `remind_id` Reminder message - 0h0m\n\n"
             return embed
         def entry_format(embed, index, item):
             message = item["message"]
@@ -354,7 +356,7 @@ async def remind_view(ctx: lightbulb.Context):
                 message = item["message"][:27] + "..."
             
             time_till_awake: dt.timedelta = item["awake_time"] - dt.datetime.now().astimezone()
-            embed.description += f"{index + 1}. {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
+            embed.description += f"{index + 1}. `{item['remind_id']}` {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
         
         builder.set_page_start_formatter(start_format)
         builder.set_entry_formatter(entry_format)
@@ -640,9 +642,9 @@ async def weather(ctx: lightbulb.Context):
             embed.set_thumbnail("http:" + current["condition"]["icon"])
 
             if current["is_day"] == 1:
-                embed.color = models.DefaultColor.gold
+                embed.color = models.DefaultColor.gold.value
             else:
-                embed.color = models.DefaultColor.dark_blue
+                embed.color = models.DefaultColor.dark_blue.value
 
             await ctx.respond(embed = embed, reply = True)
         elif resp.status == 400:
