@@ -102,11 +102,19 @@
             
             <li class="nav-item" data-level="1"><a href="#utilities-category" class="nav-link">Utilities Category</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#calc-expression" class="nav-link">calc &lt;expression&gt;</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#embed" class="nav-link">embed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#profile-member-none" class="nav-link">profile [member = None]</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#server-info" class="nav-link">server-info</a>
+            <li class="nav-item" data-level="2"><a href="#remindme" class="nav-link">remindme</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -114,7 +122,7 @@
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-level="2"><a href="#remindme" class="nav-link">remindme</a>
+            <li class="nav-item" data-level="2"><a href="#server-info" class="nav-link">server-info</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -135,6 +143,69 @@
 
 <h1 id="utilities-category">Utilities Category</h1>
 <p>Utility Commands.</p>
+<h2 id="calc-expression"><code>calc &lt;expression&gt;</code></h2>
+<p>Calculate a math expression.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Parameters:</p>
+<ul>
+<li><code>expression</code>: The math expression.</li>
+</ul>
+<p>Additional Info:</p>
+<ul>
+<li>Rounding errors, along with other debatable values such as <code>0^0</code> is incorrect due to language limitation.</li>
+</ul>
+<h2 id="embed"><code>embed</code></h2>
+<p>Send an embed.</p>
+<p>Additional Info:</p>
+<ul>
+<li>This command only works with subcommands.</li>
+</ul>
+<h3 id="embed-from-json-raw_embed"><code>embed from-json &lt;raw_embed&gt;</code></h3>
+<p>Send an embed from a JSON object. Check out https://embedbuilder.nadekobot.me/ for easier time.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Cooldown: 3 seconds after 1 use per user.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>raw_embed</code>: The embed in JSON format.</li>
+</ul>
+<h3 id="embed-to-json-message_id"><code>embed to-json &lt;message_id&gt;</code></h3>
+<p>Take the embed from a message and convert it to a JSON object.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Cooldown: 3 seconds after 1 use per user.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>message_id</code>: The message ID. The bot can't get a message that's too old.</li>
+</ul>
+<p>Additional Info:</p>
+<ul>
+<li>This is useful when you want to change slightly from an existing embed.</li>
+</ul>
+<h3 id="embed-simple-title-none-description-none-color-green-channel-none"><code>embed simple [title = None] [description = None] [color = green] [channel = None]</code></h3>
+<p>Create and send a simple embed. Useful for quick embeds.</p>
+<p>Type: <code>Slash Command</code></p>
+<p>Cooldown: 3 seconds after 1 use per user.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>title</code>: The title of the embed.</li>
+<li><code>description</code>: The description of the embed.</li>
+<li><code>color</code>: Your choice of color. Default to green.</li>
+<li><code>channel</code>: The channel to send this embed. Default to the current one.</li>
+</ul>
+<p>Additional Info:</p>
+<ul>
+<li>This is an alternative to <code>embed interactive</code>.</li>
+<li>Either <code>title</code> or <code>description</code> must be non-empty.</li>
+</ul>
+<h3 id="embed-interactive"><code>embed interactive</code></h3>
+<p>Create a simple embed with prompts.</p>
+<p>Type: <code>Prefix Command</code></p>
+<p>Aliases: <code>embed i</code></p>
+<p>Cooldown: 3 seconds after 1 use per user.</p>
+<p>Additional Info:</p>
+<ul>
+<li>Bot needs to have <code>Manage Messages</code>.</li>
+<li>This is an alternative to <code>embed simple</code>.</li>
+</ul>
 <h2 id="profile-member-none"><code>profile [member = None]</code></h2>
 <p>Information about yourself or another member.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
@@ -142,18 +213,6 @@
 <ul>
 <li><code>member</code>: A Discord member. Default to you.</li>
 </ul>
-<h2 id="server-info"><code>server-info</code></h2>
-<p>Information about this server.</p>
-<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
-<p>Aliases: <code>serverinfo</code></p>
-<h2 id="role-info-role"><code>role-info &lt;role&gt;</code></h2>
-<p>Information about a role in this server.</p>
-<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
-<p>Parameters:</p>
-<ul>
-<li><code>role</code>: A Discord role.</li>
-</ul>
-<p>Aliases: <code>roleinfo</code></p>
 <h2 id="remindme"><code>remindme</code></h2>
 <p>Create a reminder. Make sure your DM is open to the bot.</p>
 <p>Type: <code>None</code></p>
@@ -183,6 +242,30 @@
 <ul>
 <li>Due to optimization, this command won't display short reminders.</li>
 </ul>
+<h3 id="remindme-remove-remind_id"><code>remindme remove &lt;remind_id&gt;</code></h3>
+<p>Remove a long reminder.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Cooldown: 5 seconds after 1 use per user.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>remind_id</code>: The reminder's id. You can find it in <code>remindme view</code>.</li>
+</ul>
+<p>Additional Info:</p>
+<ul>
+<li>Due to optimization, this command won't remove short reminders.</li>
+</ul>
+<h2 id="role-info-role"><code>role-info &lt;role&gt;</code></h2>
+<p>Information about a role in this server.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Parameters:</p>
+<ul>
+<li><code>role</code>: A Discord role.</li>
+</ul>
+<p>Aliases: <code>roleinfo</code></p>
+<h2 id="server-info"><code>server-info</code></h2>
+<p>Information about this server.</p>
+<p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
+<p>Aliases: <code>serverinfo</code></p>
 <h2 id="urban-term"><code>urban &lt;*term&gt;</code></h2>
 <p>Search a term on urbandictionary.</p>
 <p>Type: <code>Prefix Command</code>, <code>Slash Command</code></p>
@@ -199,7 +282,7 @@
 <ul>
 <li><code>city_name</code>: The city to check. Example: <code>Paris</code>.</li>
 </ul>
-<p><em>Last updated on Apr 25, 2022</em></p></div>
+<p><em>Last updated on Apr 27, 2022</em></p></div>
             </div>
         </div>
 
