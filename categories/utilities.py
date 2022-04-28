@@ -22,189 +22,6 @@ plugin.d.emote = helpers.get_emote(":gear:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
-@lightbulb.option("member", "A Discord member. Default to you.", type = hikari.Member, default = None)
-@lightbulb.command("profile", "Information about yourself or another member.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def profile(ctx: lightbulb.Context):
-    member: hikari.Member = ctx.options.member
-
-    if member is None:
-        # ctx.author returns a User instead of a Member.
-        member = ctx.member
-    
-    embed = helpers.get_default_embed(
-        timestamp = dt.datetime.now().astimezone(),
-        author = ctx.author
-    ).set_author(
-        name = member.username,
-        icon = member.avatar_url
-    ).add_field(
-        name = "Username:",
-        value = member.username,
-        inline = True
-    ).add_field(
-        name = "Nickname:",
-        value = member.nickname if member.nickname is not None else member.username,
-        inline = True
-    ).add_field(
-        name = "Avatar URL:",
-        value = f"[Click here]({member.avatar_url})",
-        inline = True
-    ).set_thumbnail(
-        member.avatar_url
-    )
-
-    account_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.created_at, format = '%0.0f')
-    embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
-    member_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.joined_at, format = '%0.0f')
-    embed.add_field(name = f"Joined {ctx.get_guild().name} for:", value = member_age, inline = False)
-
-    roles = [helpers.mention(role) for role in member.get_roles()]
-    s = " - "
-    s = s.join(roles)
-    embed.add_field(name = "Roles:", value = s, inline = False)
-
-    await ctx.respond(embed, reply = True)
-
-@plugin.command()
-@lightbulb.command("server-info", "Information about this server.", aliases = ["serverinfo"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def server_info(ctx: lightbulb.Context):
-    guild = ctx.get_guild()
-    embed = helpers.get_default_embed(
-        description = "**Information about this server.**",
-        timestamp = dt.datetime.now().astimezone()
-    ).set_thumbnail(guild.icon_url).set_author(name = guild.name, icon = guild.icon_url)
-
-    embed.add_field(
-        name = "Name",
-        value = guild.name,
-        inline = True
-    ).add_field(
-        name = "Created On",
-        value = guild.created_at.strftime("%b %d %Y"),
-        inline = True
-    ).add_field(
-        name = "Owner",
-        value = (await guild.fetch_owner()).mention,
-        inline = True
-    ).add_field(
-        name = "Roles",
-        value = str(len(guild.get_roles())) + " roles.",
-        inline = True
-    )
-
-    guild_channel_count = {
-        "text": 0,
-        "voice": 0,
-        "stage": 0,
-        "category": 0,
-        "news": 0,
-    }
-    channels = guild.get_channels()
-    for channel_id in channels:
-        if channels[channel_id].type == hikari.ChannelType.GUILD_TEXT:
-            guild_channel_count["text"] += 1
-        elif channels[channel_id].type == hikari.ChannelType.GUILD_VOICE:
-            guild_channel_count["voice"] += 1
-        elif channels[channel_id].type == hikari.ChannelType.GUILD_STAGE:
-            guild_channel_count["stage"] += 1
-        elif channels[channel_id].type == hikari.ChannelType.GUILD_CATEGORY:
-            guild_channel_count["category"] += 1
-        elif channels[channel_id].type == hikari.ChannelType.GUILD_NEWS:
-            guild_channel_count["news"] += 1
-    embed.add_field(
-        name = "Channels",
-        value = dedent(f'''
-                Text Channels: {guild_channel_count["text"]}
-                Voice Channels: {guild_channel_count["voice"]}
-                Categories: {guild_channel_count["category"]}
-                Stage Channels: {guild_channel_count["stage"]}
-                News Channels: {guild_channel_count["news"]}
-                '''),
-        inline = True
-    )
-
-    bot_count = 0
-    members = guild.get_members()
-    for member_id in members:
-        if members[member_id].is_bot:
-            bot_count += 1
-    
-    embed.add_field(
-        name = "Members Count",
-        value = dedent(f'''
-                Total: {len(members)}
-                Humans: {len(members) - bot_count}
-                Bots: {bot_count}
-                '''),
-        inline = True
-    )
-
-    embed.set_footer(f"Server ID: {guild.id}")
-
-    await ctx.respond(embed = embed, reply = True)
-
-@plugin.command()
-@lightbulb.option("role", "A Discord role.", type = hikari.Role)
-@lightbulb.command("role-info", "Information about a role in this server.", aliases = ["roleinfo"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def role_info(ctx: lightbulb.Context):
-    role: hikari.Role = ctx.options.role
-
-    embed = hikari.Embed(
-        description = "**Information about this role.**",
-        color = role.color,
-        timestamp = dt.datetime.now().astimezone()
-    ).set_author(
-        name = ctx.get_guild().name,
-        icon = ctx.get_guild().icon_url   
-    ).add_field(
-        name = "Name",
-        value = role.name,
-        inline = True
-    ).add_field(
-        name = "Created On",
-        value = role.created_at.strftime("%b %d %Y"),
-        inline = True
-    ).add_field(
-        name = "Color",
-        value = f"{role.color.hex_code}",
-        inline = True
-    )
-
-    special = []
-    if role.is_hoisted:
-        special.append("`Hoisted`")
-    if role.is_mentionable:
-        special.append("`Mentionable`")
-    if role.is_managed:
-        special.append("`Integrated`")
-    if role.is_premium_subscriber_role:
-        special.append("`Nitro Boost Exclusive`")
-    if len(special) > 0:
-        embed.add_field(
-            name = "Special Perks",
-            value = ", ".join(special)
-        )
-    
-    count = 0
-    members = ctx.get_guild().get_members()
-    for id in members:
-        if role in members[id].get_roles():
-            count += 1
-    
-    embed.add_field(
-        name = "Members",
-        value = f"{count} members."
-    )
-    embed.set_footer(
-        text = f"Role ID: {role.id}"
-    )
-
-    await ctx.respond(embed = embed, reply = True)
-
-@plugin.command()
 @lightbulb.set_help(dedent('''
     This command only works with subcommands.
 '''))
@@ -346,6 +163,51 @@ async def embed_interactive(ctx: lightbulb.Context):
     except TimeoutError:
         await ctx.respond("Session timed out.")
 
+@plugin.command()
+@lightbulb.option("member", "A Discord member. Default to you.", type = hikari.Member, default = None)
+@lightbulb.command("profile", "Information about yourself or another member.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def profile(ctx: lightbulb.Context):
+    member: hikari.Member = ctx.options.member
+
+    if member is None:
+        # ctx.author returns a User instead of a Member.
+        member = ctx.member
+    
+    embed = helpers.get_default_embed(
+        timestamp = dt.datetime.now().astimezone(),
+        author = ctx.author
+    ).set_author(
+        name = member.username,
+        icon = member.avatar_url
+    ).add_field(
+        name = "Username:",
+        value = member.username,
+        inline = True
+    ).add_field(
+        name = "Nickname:",
+        value = member.nickname if member.nickname is not None else member.username,
+        inline = True
+    ).add_field(
+        name = "Avatar URL:",
+        value = f"[Click here]({member.avatar_url})",
+        inline = True
+    ).set_thumbnail(
+        member.avatar_url
+    )
+
+    account_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.created_at, format = '%0.0f')
+    embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
+    member_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.joined_at, format = '%0.0f')
+    embed.add_field(name = f"Joined {ctx.get_guild().name} for:", value = member_age, inline = False)
+
+    roles = [helpers.mention(role) for role in member.get_roles()]
+    s = " - "
+    s = s.join(roles)
+    embed.add_field(name = "Roles:", value = s, inline = False)
+
+    await ctx.respond(embed, reply = True)
+
 async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, when: dt.datetime = None, remind_id: int = None):
     '''Send `user` a DM about `message` at time `when`.
 
@@ -370,6 +232,34 @@ async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, whe
     except hikari.ForbiddenError:
         # Don't remove reminder if the sending fails, will retry to send on next refresh cycle.
         pass
+@tasks.task(s = NOTIFY_REFRESH, auto_start = True, pass_app = True, wait_before_execution = True)
+async def scan_reminders(bot: models.MichaelBot):
+    '''Check for past and future reminders every `NOTIFY_REFRESH` seconds.
+
+    - If there are any past reminders (tried to send, but couldn't due to permissions, disconnect, etc.), it'll try sending them again.
+    - If there are any future reminders within `NOTIFY_REFRESH` seconds, it'll create `do_remind()` task to be launched.
+
+    Args:
+        bot (models.MichaelBot): The bot.
+    '''
+
+    if bot.pool is None: return
+
+    current = dt.datetime.now().astimezone()
+    future = current + dt.timedelta(seconds = NOTIFY_REFRESH)
+
+    async with bot.pool.acquire() as conn:
+        passed = await psql.Reminders.get_past_reminders(conn, current)
+        upcoming = await psql.Reminders.get_reminders(conn, current, future)
+    
+    for missed_reminder in passed:
+        user = bot.cache.get_user(missed_reminder["user_id"])
+        bot.create_task(do_remind(bot, user, missed_reminder["message"], current, missed_reminder["remind_id"]))
+    
+    for upcoming_reminder in upcoming:
+        user = bot.cache.get_user(upcoming_reminder["user_id"])
+        bot.create_task(do_remind(bot, user, upcoming_reminder["message"], upcoming_reminder["awake_time"], upcoming_reminder["remind_id"]))
+
 @plugin.command()
 @lightbulb.set_help(dedent('''
     This command only works with subcommands.
@@ -451,33 +341,143 @@ async def remind_view(ctx: lightbulb.Context):
         builder.set_entry_formatter(entry_format)
         await builder.build().run(ctx)
 
-@tasks.task(s = NOTIFY_REFRESH, auto_start = True, pass_app = True, wait_before_execution = True)
-async def scan_reminders(bot: models.MichaelBot):
-    '''Check for past and future reminders every `NOTIFY_REFRESH` seconds.
+@plugin.command()
+@lightbulb.option("role", "A Discord role.", type = hikari.Role)
+@lightbulb.command("role-info", "Information about a role in this server.", aliases = ["roleinfo"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def role_info(ctx: lightbulb.Context):
+    role: hikari.Role = ctx.options.role
 
-    - If there are any past reminders (tried to send, but couldn't due to permissions, disconnect, etc.), it'll try sending them again.
-    - If there are any future reminders within `NOTIFY_REFRESH` seconds, it'll create `do_remind()` task to be launched.
+    embed = hikari.Embed(
+        description = "**Information about this role.**",
+        color = role.color,
+        timestamp = dt.datetime.now().astimezone()
+    ).set_author(
+        name = ctx.get_guild().name,
+        icon = ctx.get_guild().icon_url   
+    ).add_field(
+        name = "Name",
+        value = role.name,
+        inline = True
+    ).add_field(
+        name = "Created On",
+        value = role.created_at.strftime("%b %d %Y"),
+        inline = True
+    ).add_field(
+        name = "Color",
+        value = f"{role.color.hex_code}",
+        inline = True
+    )
 
-    Args:
-        bot (models.MichaelBot): The bot.
-    '''
-
-    if bot.pool is None: return
-
-    current = dt.datetime.now().astimezone()
-    future = current + dt.timedelta(seconds = NOTIFY_REFRESH)
-
-    async with bot.pool.acquire() as conn:
-        passed = await psql.Reminders.get_past_reminders(conn, current)
-        upcoming = await psql.Reminders.get_reminders(conn, current, future)
+    special = []
+    if role.is_hoisted:
+        special.append("`Hoisted`")
+    if role.is_mentionable:
+        special.append("`Mentionable`")
+    if role.is_managed:
+        special.append("`Integrated`")
+    if role.is_premium_subscriber_role:
+        special.append("`Nitro Boost Exclusive`")
+    if len(special) > 0:
+        embed.add_field(
+            name = "Special Perks",
+            value = ", ".join(special)
+        )
     
-    for missed_reminder in passed:
-        user = bot.cache.get_user(missed_reminder["user_id"])
-        bot.create_task(do_remind(bot, user, missed_reminder["message"], current, missed_reminder["remind_id"]))
+    count = 0
+    members = ctx.get_guild().get_members()
+    for id in members:
+        if role in members[id].get_roles():
+            count += 1
     
-    for upcoming_reminder in upcoming:
-        user = bot.cache.get_user(upcoming_reminder["user_id"])
-        bot.create_task(do_remind(bot, user, upcoming_reminder["message"], upcoming_reminder["awake_time"], upcoming_reminder["remind_id"]))
+    embed.add_field(
+        name = "Members",
+        value = f"{count} members."
+    )
+    embed.set_footer(
+        text = f"Role ID: {role.id}"
+    )
+
+    await ctx.respond(embed = embed, reply = True)
+
+@plugin.command()
+@lightbulb.command("server-info", "Information about this server.", aliases = ["serverinfo"])
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def server_info(ctx: lightbulb.Context):
+    guild = ctx.get_guild()
+    embed = helpers.get_default_embed(
+        description = "**Information about this server.**",
+        timestamp = dt.datetime.now().astimezone()
+    ).set_thumbnail(guild.icon_url).set_author(name = guild.name, icon = guild.icon_url)
+
+    embed.add_field(
+        name = "Name",
+        value = guild.name,
+        inline = True
+    ).add_field(
+        name = "Created On",
+        value = guild.created_at.strftime("%b %d %Y"),
+        inline = True
+    ).add_field(
+        name = "Owner",
+        value = (await guild.fetch_owner()).mention,
+        inline = True
+    ).add_field(
+        name = "Roles",
+        value = str(len(guild.get_roles())) + " roles.",
+        inline = True
+    )
+
+    guild_channel_count = {
+        "text": 0,
+        "voice": 0,
+        "stage": 0,
+        "category": 0,
+        "news": 0,
+    }
+    channels = guild.get_channels()
+    for channel_id in channels:
+        if channels[channel_id].type == hikari.ChannelType.GUILD_TEXT:
+            guild_channel_count["text"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_VOICE:
+            guild_channel_count["voice"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_STAGE:
+            guild_channel_count["stage"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_CATEGORY:
+            guild_channel_count["category"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_NEWS:
+            guild_channel_count["news"] += 1
+    embed.add_field(
+        name = "Channels",
+        value = dedent(f'''
+                Text Channels: {guild_channel_count["text"]}
+                Voice Channels: {guild_channel_count["voice"]}
+                Categories: {guild_channel_count["category"]}
+                Stage Channels: {guild_channel_count["stage"]}
+                News Channels: {guild_channel_count["news"]}
+                '''),
+        inline = True
+    )
+
+    bot_count = 0
+    members = guild.get_members()
+    for member_id in members:
+        if members[member_id].is_bot:
+            bot_count += 1
+    
+    embed.add_field(
+        name = "Members Count",
+        value = dedent(f'''
+                Total: {len(members)}
+                Humans: {len(members) - bot_count}
+                Bots: {bot_count}
+                '''),
+        inline = True
+    )
+
+    embed.set_footer(f"Server ID: {guild.id}")
+
+    await ctx.respond(embed = embed, reply = True)
 
 @plugin.command()
 @lightbulb.add_checks(checks.is_aiohttp_existed)
