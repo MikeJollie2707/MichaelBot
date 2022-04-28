@@ -57,15 +57,25 @@ async def _embed(ctx: lightbulb.Context):
 async def embed_from_json(ctx: lightbulb.Context):
     raw_embed: str = ctx.options.raw_embed
 
-    if isinstance(ctx, lightbulb.PrefixContext):
-        await ctx.event.message.delete()
-
     raw_embed = raw_embed.strip("```").strip()
+    
     import json
-    json_embed = json.loads(raw_embed)
-    embed = helpers.embed_from_dict(json_embed)
-    await ctx.respond(embed = embed)
+    try:
+        json_embed = json.loads(raw_embed)
+        if not isinstance(json_embed, dict):
+            raise json.JSONDecodeError("JSON object must be enclosed in `\{\}`.")
+        
+        embed = helpers.embed_from_dict(json_embed)
+        await ctx.respond(embed = embed)
 
+        # Delete message later for user to look at what they did.
+        if isinstance(ctx, lightbulb.PrefixContext):
+            await ctx.event.message.delete()
+    except json.JSONDecodeError as js:
+        await ctx.respond(f"{ctx.author.mention} The JSON you provided is not valid. Detail message: `{js}`", user_mentions = True)
+    except hikari.BadRequestError as bad:
+        await ctx.respond(f"{ctx.author.mention} The JSON you provided is ill-formed. Detail message: `{bad}`", user_mentions = True)
+    
 @_embed.child
 @lightbulb.set_help(dedent('''
     This is useful when you want to change slightly from an existing embed.
@@ -113,6 +123,9 @@ async def embed_simple(ctx: lightbulb.Context):
     if not title and not description:
         await ctx.respond("Embed cannot be empty!", reply = True, mentions_reply = True)
     else:
+        if color not in models.DefaultColor._member_names_:
+            color = "green"
+        
         embed = hikari.Embed(
             title = title,
             description = description,
