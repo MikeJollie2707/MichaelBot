@@ -1,3 +1,4 @@
+# Current flaw is adding/removing won't give any special status if entry doesn't exist.
 import asyncpg
 import hikari
 import lightbulb
@@ -285,10 +286,11 @@ class Reminders:
         
         await conn.execute(query, user_id, when, message)
     @classmethod
-    async def remove_reminder(cls, conn, user_id: int, remind_id: int):
+    async def remove_reminder(cls, conn, remind_id: int, user_id: int):
+        # Although remind_id is sufficient, user_id is to make sure a user can't remove another reminder.
         query = '''
             DELETE FROM Reminders
-            WHERE user_id = ($1) AND remind_id = ($2);
+            WHERE remind_id = ($1) AND user_id = ($2);
         '''
 
-        await conn.execute(query, user_id, remind_id)
+        await conn.execute(query, remind_id, user_id)
