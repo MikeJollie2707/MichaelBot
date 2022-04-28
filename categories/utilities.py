@@ -50,6 +50,7 @@ async def _embed(ctx: lightbulb.Context):
     raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @_embed.child
+@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("raw_embed", "The embed in JSON format.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("from-json", "Send an embed from a JSON object. Check out https://embedbuilder.nadekobot.me/ for easier time.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -67,7 +68,11 @@ async def embed_from_json(ctx: lightbulb.Context):
     await ctx.respond(embed = embed)
 
 @_embed.child
-@lightbulb.option("message_id", "Message link", type = hikari.Message, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.set_help(dedent('''
+    This is useful when you want to change slightly from an existing embed.
+'''))
+@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("message_id", "The message ID. The bot can't get a message that's too old.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("to-json", "Take the embed from a message and convert it to a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_to_json(ctx: lightbulb.Context):
@@ -77,7 +82,9 @@ async def embed_to_json(ctx: lightbulb.Context):
     if isinstance(message_id, str):
         message_id = await bot.rest.fetch_message(ctx.channel_id, message_id)
     
-    if not message_id.embeds:
+    if message_id is None:
+        await ctx.respond("I can't get this message!", reply = True, mentions_reply = True)
+    elif not message_id.embeds:
         await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
     else:
         import json
@@ -89,9 +96,11 @@ async def embed_to_json(ctx: lightbulb.Context):
 @_embed.child
 @lightbulb.set_help(dedent('''
     This is an alternative to `embed interactive`.
+    Either `title` or `description` must be non-empty.
 '''))
+@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("channel", "The channel to send this embed. Default to the current one.", type = hikari.TextableGuildChannel, default = None)
-@lightbulb.option("color", "Your choice of color", autocomplete = True, default = "green")
+@lightbulb.option("color", "Your choice of color. Default to green.", autocomplete = True, default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)
 @lightbulb.command("simple", "Create and send a simple embed. Useful for quick embeds.")
@@ -127,6 +136,7 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
     Bot needs to have `Manage Messages`.
     This is an alternative to `embed simple`.
 '''))
+@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
 @lightbulb.command("interactive", "Create a simple embed with prompts.", aliases = ['i'])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
