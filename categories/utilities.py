@@ -63,7 +63,7 @@ async def embed_from_json(ctx: lightbulb.Context):
     try:
         json_embed = json.loads(raw_embed)
         if not isinstance(json_embed, dict):
-            raise json.JSONDecodeError("JSON object must be enclosed in `\{\}`.")
+            raise json.JSONDecodeError("JSON object must be enclosed in `{{}}`.")
         
         embed = helpers.embed_from_dict(json_embed)
         await ctx.respond(embed = embed)
