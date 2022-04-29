@@ -730,7 +730,7 @@ async def weather(ctx: lightbulb.Context):
         else:
             resp_json = await resp.json()
             await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
-            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
+            #raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)

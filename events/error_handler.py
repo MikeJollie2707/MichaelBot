@@ -85,7 +85,7 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         await send_error_message("CheckFailure", event, event.context.command.name, exception.args[0])
     
     elif isinstance(exception, lightbulb.errors.CheckFailure):
-        await send_error_message("CheckFailure", event, event.context.command.name, exception.message)
+        await send_error_message("CheckFailure", event, event.context.command.name, exception.args[0])
     
     elif isinstance(exception, lightbulb.errors.ConverterFailure):
         await send_error_message("ConverterFailure", event, exception.option.name)
