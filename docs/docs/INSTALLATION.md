@@ -1,10 +1,12 @@
 # Installation
 
-The instructions are geared towards Ubuntu (Kubuntu specifically) because that's what I use. As the time of this writing, I haven't tested any of the code on Windows. There will be instructions in the future, but they might or might not work since I don't work on Windows regularly.
+All instructions are geared towards Ubuntu (Kubuntu specifically) because that's what I use.
+
+- Instructions for Windows is available, but be aware I don't test them often.
 
 ## Prerequisites
 
-- Requires: Python 3.8+ (ideally latest), Git, `pip`, `virtualenv` OR `python3-venv` under Python.
+- Requires: Python 3.8+ (ideally latest), Git, `pip`, `virtualenv`/`python3-venv` under Python.
 - Optional: Lavalink (more information below), Docker (for Lavalink), PostgreSQL (more information below).
 
 ## About Lavalink
@@ -19,6 +21,8 @@ There are 2 options to host Lavalink: you can host it directly using the `.jar` 
 - Run `java -jar <path to Lavalink.jar>`. Lavalink server should start running now. By default, it'll run on `localhost:2333` unless you configure it in `application.yml`.
 
 ### Running Lavalink (Docker)
+
+This is not tested on Windows.
 
 - Download Docker. [Here](https://docs.docker.com/engine/install/ubuntu/) is the guide for Ubuntu.
 - Run `docker pull fredboat/lavalink:master`. This will pull the stable image.
@@ -35,7 +39,9 @@ After installing Postgres, create a database and check the connection info. You'
 
 ## Build Instructions
 
-1. Clone the repository.
+The following instructions has been tested with `bash` and `Powershell`. You'll need to replace the `python` command mentioned below with whatever your system has (`python3` or `python3.x` for Linux, `python` for Windows).
+
+1. Clone the repository into the current folder.
 
 ```sh
 git clone https://github.com/MikeJollie2707/MichaelBot.git .
@@ -44,9 +50,17 @@ git clone https://github.com/MikeJollie2707/MichaelBot.git .
 2. Activate virtual environment and install libraries.
 
 ```sh
-python3 -m pip venv venv
+# Linux
+python -m pip venv venv
 source ./venv/bin/activate
-python3 -m pip install -r requirement.txt
+python -m pip install -r requirement.txt
+
+# Windows
+# From my experience, / still works, but if it doesn't, use \
+python -m pip venv venv
+./venv/Scripts/Activate.ps1
+# This is important; uvloop is not available on Windows.
+python -m pip install -r win_requirement.txt
 ```
 
 3. Configure the bot.
@@ -65,6 +79,8 @@ Inside `./setup`, create a `.json` file. I'll call it `secret.json`.
     "weather_api_key": "api key"
 }
 ```
+
+- If you don't have a database and/or `weather_api_key`, leave them as dummy values (`""` and `0`).
 
 Within `./setup`, there's also another file called `config.json`. The file has the following structure:
 
@@ -95,12 +111,18 @@ Within `./setup`, there's also another file called `config.json`. The file has t
 
 You can view my bot config as an example.
 
-4. Run the bot.
+4. (Optional) If you have a database, you'll need to set up the tables beforehand. You only need to do this once.
 
 ```sh
-python3 -O main.py BotIndex
+python dbsetup.py BotIndex
+```
+
+5. Run the bot.
+
+```sh
+python -OO main.py BotIndex
 ```
 
 ## What's next?
 
-For personal convenience, I also have a template script to run the bot in different modes. You can check it out at `run.sh`. It'll *only* run the bot. You'll need to run Lavalink and PostgreSQL on your own.
+For personal convenience, I also have a template script to run the bot in different modes. You can check it out at `run.sh` (Kubuntu) or `run.ps1` (Windows). It'll *only* run the bot. You'll need to run Lavalink and PostgreSQL on your own.
