@@ -22,6 +22,43 @@ plugin.d.emote = helpers.get_emote(":gear:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
+@lightbulb.option("number", "The number you're converting.", type = str)
+@lightbulb.option("to_base", "The base you want to convert to.", type = int, choices = [2, 8, 10, 16])
+@lightbulb.option("from_base", "The base the number you're converting.", type = int, choices = [2, 8, 10, 16])
+@lightbulb.command("base-convert", "Convert a number to the desired base.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def base_convert(ctx: lightbulb.Context):
+    from_base: int = ctx.options.from_base
+    to_base: int = ctx.options.to_base
+    number: str = ctx.options.number
+
+    # Force into default bases when used as flaw Prefix Command.
+    if from_base not in [2, 8, 10, 16]:
+        from_base = 10
+    if to_base not in [2, 8, 10, 16]:
+        to_base = 16
+
+    base_10: int = 0
+    # Allow spacing between binary to make it easier for user.
+    if from_base == 2:
+        number = "".join(number.split(' '))
+    
+    try:
+        base_10 = int(number, base = from_base)
+    except ValueError:
+        await ctx.respond(f"The number is not at base `{from_base}`.", reply = True, mentions_reply = True)
+        return
+    
+    if to_base == 10:
+        await ctx.respond(f"{number} = {base_10}", reply = True)
+    elif to_base == 2:
+        await ctx.respond(f"{number} = {base_10:b}", reply = True)
+    elif to_base == 8:
+        await ctx.respond(f"{number} = {base_10:o}", reply = True)
+    elif to_base == 16:
+        await ctx.respond(f"{number} = #{base_10:X}", reply = True)
+
+@plugin.command()
 @lightbulb.set_help(dedent('''
     Rounding errors, along with other debatable values such as `0^0` is incorrect due to language limitation.
 '''))
