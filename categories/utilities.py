@@ -662,7 +662,7 @@ async def weather(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     api_key = bot.secrets.get("weather_api_key")
-    if api_key is None:
+    if not api_key:
         raise NotImplementedError("Weather API key not detected.")
     
     BASE_URL = "http://api.weatherapi.com/v1"
