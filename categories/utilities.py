@@ -152,7 +152,7 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("interactive", "Create a simple embed with prompts.", aliases = ['i'])
+@lightbulb.command("interactive", "Create a simple embed with prompts.")
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def embed_interactive(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
