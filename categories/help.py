@@ -146,7 +146,8 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
         subcommands = command.subcommands.values()
 
         types = __PREFIX_COMMAND_TYPES__
-        if isinstance(ctx, lightbulb.SlashContext):
+        # Can't check with ctx, since SlashContext can call a PrefixCommandGroup.
+        if isinstance(command, __SLASH_COMMAND_TYPES__):
             types = __SLASH_COMMAND_TYPES__
         
         for subcommand in sorted(filter_command_type(subcommands, types, True), key = lambda cmd: cmd.name):
