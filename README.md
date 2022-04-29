@@ -32,8 +32,9 @@ These are the libraries I used. All of these can be installed with `requirement.
 - [emoji](https://github.com/carpedm20/emoji/)
 - [humanize](https://github.com/jmoiron/humanize)
 - [pytimeparse](https://github.com/wroberts/pytimeparse)
+- [py_expression_eval](https://github.com/axiacore/py-expression-eval)
 - [uvloop](https://github.com/MagicStack/uvloop)
-- [mystbin](https://github.com/AbstractUmbra/mystbin.py)
+- [mystbin.py](https://github.com/AbstractUmbra/mystbin.py)
 - [pylint](https://github.com/PyCQA/pylint)
 
 Detail instructions available [here](./docs/docs/INSTALLATION.md).
