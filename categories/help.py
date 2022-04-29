@@ -22,6 +22,13 @@ __SLASH_COMMAND_TYPES__ = (
     lightbulb.SlashSubCommand,
 )
 
+__COMMAND_GROUPS_TYPES__ = (
+    lightbulb.PrefixCommandGroup,
+    lightbulb.SlashCommandGroup,
+    lightbulb.PrefixSubGroup,
+    lightbulb.SlashSubGroup
+)
+
 def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequence[t.Type], remove_hidden: bool = False) -> t.List[lightbulb.Command]:
     '''
     Filter commands with one of the type mentioned in `types`.
@@ -134,9 +141,15 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
             value = dedent(command.get_help(ctx))
         )
 
-    if isinstance(command, lightbulb.PrefixCommandGroup) or isinstance(command, lightbulb.PrefixSubGroup):
+    if isinstance(command, __COMMAND_GROUPS_TYPES__):
         field_value = ""
-        for subcommand in sorted(command.subcommands.values(), key = lambda cmd: cmd.name):
+        subcommands = command.subcommands.values()
+
+        types = __PREFIX_COMMAND_TYPES__
+        if isinstance(ctx, lightbulb.SlashContext):
+            types = __SLASH_COMMAND_TYPES__
+        
+        for subcommand in sorted(filter_command_type(subcommands, types, True), key = lambda cmd: cmd.name):
             field_value += f"- `{subcommand.name}`: {subcommand.description}\n"
         
         if len(command.subcommands) > 0:
