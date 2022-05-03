@@ -321,11 +321,12 @@ async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, whe
         await helpers.sleep_until(when)
     
     try:
+        # BUG: user seems to be None in some cases.
         await user.send("Hi there! You told me to remind you about:\n" + message)
 
         if remind_id is not None:
             async with bot.pool.acquire() as conn:
-                await psql.Reminders.remove_reminder(conn, user.id, remind_id)
+                await psql.Reminders.remove_reminder(conn, remind_id, user.id)
     except hikari.ForbiddenError:
         # Don't remove reminder if the sending fails, will retry to send on next refresh cycle.
         pass
@@ -351,10 +352,12 @@ async def scan_reminders(bot: models.MichaelBot):
     
     for missed_reminder in passed:
         user = bot.cache.get_user(missed_reminder["user_id"])
+        assert user is not None
         bot.create_task(do_remind(bot, user, missed_reminder["message"], current, missed_reminder["remind_id"]))
     
     for upcoming_reminder in upcoming:
         user = bot.cache.get_user(upcoming_reminder["user_id"])
+        assert user is not None
         bot.create_task(do_remind(bot, user, upcoming_reminder["message"], upcoming_reminder["awake_time"], upcoming_reminder["remind_id"]))
 
 @plugin.command()

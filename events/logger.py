@@ -411,6 +411,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
 
             await bot.rest.create_message(log_channel, embed = embed)
         else:
+            # BUG: TimeoutError here sometimes.
             async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.CHANNEL_UPDATE).limit(1):
                 for log_id in audit_log.entries:
                     entry = audit_log.entries[log_id]
