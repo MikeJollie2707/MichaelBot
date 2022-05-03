@@ -185,7 +185,7 @@ def get_emote(discord_text: str, /) -> str:
     - `KeyError`: Cannot find the emoji based on the text.
     '''
 
-    ret = emoji.emojize(discord_text, use_aliases = True)
+    ret = emoji.emojize(discord_text, language = "alias")
     if ret == discord_text:
         raise KeyError(f"Emoji {discord_text} cannot be found.")
     return ret
