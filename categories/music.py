@@ -184,6 +184,10 @@ async def play(ctx: lightbulb.Context):
     node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is None:
         await join(ctx)
+        node = await bot.lavalink.get_guild_node(ctx.guild_id)
+        # join() failed somehow, most likely from not joining vc.
+        if node is None:
+            return
     
     result = await bot.lavalink.auto_search_tracks(query)
     if not result:
