@@ -37,8 +37,8 @@ async def track_start_event(event: lavaplayer.TrackStartEvent):
 
     node = await bot.lavalink.get_guild_node(event.guild_id)
     # We probably don't want to spam the Now Playing when it's only looping one song.
-    if node is not None:
-        await plugin.bot.rest.create_message(bot.node_extra[event.guild_id].working_channel, f"Now Playing: `{event.track.title}`.")
+    if node is not None and not node.repeat:
+        await bot.rest.create_message(bot.node_extra[event.guild_id].working_channel, f"Now Playing: `{event.track.title}`.")
 
 async def track_end_event(event: lavaplayer.TrackEndEvent):
     bot: models.MichaelBot = plugin.bot
