@@ -157,7 +157,10 @@ class ButtonPages(ButtonNavigator):
         self._timeout_task = asyncio.create_task(self._timeout_coro())
 
     async def _on_timeout(self):
-        await self._msg.delete()
+        row = self._context.app.rest.build_action_row()
+        button = ComponentButton(__default_emojis__["timeout"], True, hikari.ButtonStyle.SECONDARY, "timeout", lambda _, __: None)
+        button.build(row, True)
+        await self._msg.edit(component = row)
     async def _on_stop(self):
         await self._msg.delete()
 
