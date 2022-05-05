@@ -75,7 +75,8 @@ async def info(ctx: lightbulb.Context):
     embed = helpers.get_default_embed(
         title = bot.get_me().username,
         description = bot.info["description"],
-        timestamp = dt.datetime.now().astimezone()
+        timestamp = dt.datetime.now().astimezone(),
+        author = ctx.author
     ).add_field(
         name = "Version:",
         value = bot.info["version"],
