@@ -98,15 +98,15 @@ class GuildCache:
         '''
         Add a logging module into the cache and the database.
         '''
-        await psql.Guilds.Logs.add_one(conn, guild)
-        logging_info = await psql.Guilds.Logs.get_one(conn, guild.id)
+        await psql.GuildsLogs.add_one(conn, guild)
+        logging_info = await psql.GuildsLogs.get_one(conn, guild.id)
         self.logging_module = logging_info
     
     async def update_logging_module(self, conn, id: int, column: str, new_value):
         '''
         Update a logging module in the cache and the database.
         '''
-        await psql.Guilds.Logs.update_column(conn, id, column, new_value)
+        await psql.GuildsLogs.update_column(conn, id, column, new_value)
         self.logging_module[column] = new_value
     
     async def force_sync(self, conn, guild_id: int):
@@ -122,7 +122,7 @@ class GuildCache:
         else:
             guild.pop("id", None)
         
-        guild_log = await psql.Guilds.Logs.get_one(conn, guild_id)
+        guild_log = await psql.GuildsLogs.get_one(conn, guild_id)
         if guild_log is None:
             guild_log = {}
         else:

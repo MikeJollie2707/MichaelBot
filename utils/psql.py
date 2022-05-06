@@ -146,56 +146,56 @@ class Guilds:
 
         await conn.execute(query, new_value, id)
     
-    class Logs:
-        @classmethod
-        async def get_all(cls, conn):
-            return await cls.get_all_where(conn)
-        @classmethod
-        async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
-            query = '''
-                SELECT * FROM GuildsLogs;
-            '''
+class GuildsLogs:
+    @classmethod
+    async def get_all(cls, conn):
+        return await cls.get_all_where(conn)
+    @classmethod
+    async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
+        query = '''
+            SELECT * FROM GuildsLogs;
+        '''
 
-            return await __get_all__(conn, query, where = where)
-        @classmethod
-        async def get_one(cls, conn, id: int):
-            query = '''
-                SELECT * FROM GuildsLogs
-                WHERE guild_id = ($1);
-            '''
+        return await __get_all__(conn, query, where = where)
+    @classmethod
+    async def get_one(cls, conn, id: int):
+        query = '''
+            SELECT * FROM GuildsLogs
+            WHERE guild_id = ($1);
+        '''
 
-            return await __get_one__(conn, query, id)
-        
-        # Only 2 columns are required, rest are defaults.
-        @classmethod
-        async def add_many(cls, conn, guilds: t.Tuple[hikari.Guild]):
-            query = '''
-                INSERT INTO GuildsLogs
-                VALUES ($1) ON CONFLICT DO NOTHING;
-            '''
+        return await __get_one__(conn, query, id)
+    
+    # Only 2 columns are required, rest are defaults.
+    @classmethod
+    async def add_many(cls, conn, guilds: t.Tuple[hikari.Guild]):
+        query = '''
+            INSERT INTO GuildsLogs
+            VALUES ($1) ON CONFLICT DO NOTHING;
+        '''
 
-            args = []
-            for guild in guilds:
-                args.append((guild.id))
+        args = []
+        for guild in guilds:
+            args.append((guild.id))
 
-            await conn.executemany(query, args)
-        @classmethod
-        async def add_one(cls, conn, guild: hikari.Guild):
-            query = '''
-                INSERT INTO GuildsLogs
-                VALUES ($1) ON CONFLICT DO NOTHING;
-            '''
+        await conn.executemany(query, args)
+    @classmethod
+    async def add_one(cls, conn, guild: hikari.Guild):
+        query = '''
+            INSERT INTO GuildsLogs
+            VALUES ($1) ON CONFLICT DO NOTHING;
+        '''
 
-            await conn.execute(query, (guild.id))
-        @classmethod
-        async def update_column(cls, conn, id: int, column: str, new_value):
-            query = f'''
-                UPDATE GuildsLogs
-                SET {column} = ($1)
-                WHERE guild_id = ($2);
-            '''
+        await conn.execute(query, (guild.id))
+    @classmethod
+    async def update_column(cls, conn, id: int, column: str, new_value):
+        query = f'''
+            UPDATE GuildsLogs
+            SET {column} = ($1)
+            WHERE guild_id = ($2);
+        '''
 
-            await conn.execute(query, new_value, id)
+        await conn.execute(query, new_value, id)
 
 class Users:
     @classmethod

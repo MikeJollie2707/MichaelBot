@@ -120,7 +120,7 @@ async def log_set_all(ctx: lightbulb.Context):
         async with conn.transaction():
             guild_dbcache = bot.guild_cache.get(ctx.guild_id)
             if not guild_dbcache.logging_module:
-                existed = await psql.Guilds.Logs.get_one(conn, ctx.guild_id)
+                existed = await psql.GuildsLogs.get_one(conn, ctx.guild_id)
                 if existed is None:
                     await guild_dbcache.add_logging_module(conn, ctx.get_guild())
                 else:
