@@ -1,8 +1,10 @@
 import lightbulb
 import hikari
 import humanize
+import psutil
 
 import datetime as dt
+import platform
 from textwrap import dedent
 
 import utils.checks as checks
@@ -13,6 +15,20 @@ from utils.navigator import ButtonPages
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+
+# https://www.thepythoncode.com/article/get-hardware-system-information-python
+def get_memory_size(bytes, suffix = "B"):
+    """
+    Scale bytes to its proper format
+    e.g:
+        1253656 => '1.20MB'
+        1253656678 => '1.17GB'
+    """
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -68,8 +84,14 @@ async def help(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.command("info", "Show information about the bot.", aliases = ["about"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def info(ctx: lightbulb.Context):
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+
+@info.child
+@lightbulb.command("bot", "Show information about the bot.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def info_bot(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     embed = helpers.get_default_embed(
@@ -84,32 +106,260 @@ async def info(ctx: lightbulb.Context):
     ).add_field(
         name = "Team:",
         value = dedent('''
-                **Original Owner + Tester:** <@462726152377860109>
-                **Developer:** <@472832990012243969>
-                **Web Dev (?):** *Hidden*
+                > **Original Owner + Tester:** <@462726152377860109>
+                > **Developer:** <@472832990012243969>
+                > **Web Dev (?):** *Hidden*
                 '''),
         inline = False
     ).add_field(
         name = "Bot Info:",
         value = dedent('''
-                **Language:** Python
-                **Created on:** Jan 10, 2022 (originally Nov 13, 2019)
-                **Library:** [hikari](https://github.com/hikari-py/hikari), [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb), [Lavalink](https://github.com/freyacodes/Lavalink), [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
-                **Source:** [GitHub](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\"), [Dashboard](https://github.com/nhxv/discord-bot)
+                > **Language:** Python
+                > **Created on:** Jan 10, 2022 (originally Nov 13, 2019)
+                > **Library:** [hikari](https://github.com/hikari-py/hikari), [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb), [Lavalink](https://github.com/freyacodes/Lavalink), [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
+                > **Source:** [GitHub](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\"), [Dashboard](https://github.com/nhxv/discord-bot)
                 '''),
         inline = False
     ).set_thumbnail(bot.get_me().avatar_url)
 
+    await ctx.respond(embed = embed, reply = True)
+
+@info.child
+@lightbulb.command("host", "Show information about the machine hosting the bot.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def info_host(ctx: lightbulb.Context):
+    # Reference: https://www.thepythoncode.com/article/get-hardware-system-information-python
+    bot: models.MichaelBot = ctx.bot
+
+    system = platform.system()
+    processor = ""
+    if system == "Linux":
+        processor = "Intel Core i3-10100 @ 3.60GHz"
+    elif system == "Windows":
+        processor = "Intel Core i7-1165G7 @ 2.80GHz"
+    boot_duration = dt.datetime.now().astimezone() - dt.datetime.fromtimestamp(psutil.boot_time()).astimezone()
     up_time = dt.datetime.now().astimezone() - bot.online_at
-    embed.add_field(
-        name = "Host Info:",
+    ram = psutil.virtual_memory()
+    swap = psutil.swap_memory()
+
+    embed = helpers.get_default_embed(
+        title = bot.get_me().username,
+        description = bot.info["description"],
+        timestamp = dt.datetime.now().astimezone(),
+        author = ctx.author
+    ).add_field(
+        name = "General Information",
         value = dedent(f'''
-                **Processor:** Intel Core i3-10100 CPU @ 3.60GHz x 8
-                **Memory:** 15.6 GiB of RAM
-                **Bot Uptime:** {humanize.precisedelta(up_time, "minutes", format = "%0.0f")}
-                '''),
-        inline = False
+            > **System:** {system}
+            > **Processor:** {processor}
+            > **Boot Duration:** {humanize.precisedelta(boot_duration, "minutes", format = "%0.0f")}
+            > **Bot Uptime:** {humanize.precisedelta(up_time, "minutes", format = "%0.0f")}
+        ''')
+    ).add_field(
+        name = "Python Information",
+        value = dedent(f'''
+            > **Version:** {platform.python_implementation()} {platform.python_version()}
+            > **Compiler:** {platform.python_compiler()}
+        ''')
+    ).add_field(
+        name = "CPU Information",
+        value = dedent(f'''
+            > **Physical Cores:** {psutil.cpu_count(logical = False)}
+            > **Total Cores:** {psutil.cpu_count(logical = True)}
+            > **Max Frequency:** {psutil.cpu_freq().max / 1000 :.2f}GHz
+            > **Min Frequency:** {psutil.cpu_freq().min / 1000 :.2f}GHz
+            > **Total CPU Usage:** {psutil.cpu_percent()}%
+        ''')
+    ).add_field(
+        name = "Memory Information",
+        value = dedent(f'''
+            > **RAM Usage:** {get_memory_size(ram.used)}/{get_memory_size(ram.total)} ({ram.percent}%)
+            > **Swap Usage:** {get_memory_size(swap.used)}/{get_memory_size(swap.free)} ({swap.percent}%)
+        ''')
+    ).set_thumbnail(bot.get_me().avatar_url)
+
+    await ctx.respond(embed = embed, reply = True)
+
+@info.child
+@lightbulb.option("member", "A Discord member. Default to yourself.", type = hikari.Member, default = None)
+@lightbulb.command("member", "Show information about yourself or another member.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def info_member(ctx: lightbulb.Context):
+    member: hikari.Member = ctx.options.member
+
+    if member is None:
+        # ctx.author returns a User instead of a Member.
+        member = ctx.member
+    
+    embed = helpers.get_default_embed(
+        timestamp = dt.datetime.now().astimezone(),
+        author = ctx.author
+    ).set_author(
+        name = member.username,
+        icon = member.avatar_url
+    ).add_field(
+        name = "Username:",
+        value = member.username,
+        inline = True
+    ).add_field(
+        name = "Nickname:",
+        value = member.nickname if member.nickname is not None else member.username,
+        inline = True
+    ).add_field(
+        name = "Avatar URL:",
+        value = f"[Click here]({member.avatar_url})",
+        inline = True
+    ).set_thumbnail(
+        member.avatar_url
     )
+
+    account_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.created_at, format = '%0.0f')
+    embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
+    member_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.joined_at, format = '%0.0f')
+    embed.add_field(name = f"Joined {ctx.get_guild().name} for:", value = member_age, inline = False)
+
+    roles = [helpers.mention(role) for role in member.get_roles()]
+    s = " - "
+    s = s.join(roles)
+    embed.add_field(name = "Roles:", value = s, inline = False)
+
+    await ctx.respond(embed, reply = True)
+
+@info.child
+@lightbulb.option("role", "A Discord role.", type = hikari.Role)
+@lightbulb.command("role", "Show information about a role.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def info_role(ctx: lightbulb.Context):
+    role: hikari.Role = ctx.options.role
+
+    embed = hikari.Embed(
+        description = "**Information about this role.**",
+        color = role.color,
+        timestamp = dt.datetime.now().astimezone()
+    ).set_author(
+        name = ctx.get_guild().name,
+        icon = ctx.get_guild().icon_url   
+    ).add_field(
+        name = "Name",
+        value = role.name,
+        inline = True
+    ).add_field(
+        name = "Created On",
+        value = role.created_at.strftime("%b %d %Y"),
+        inline = True
+    ).add_field(
+        name = "Color",
+        value = f"{role.color.hex_code}",
+        inline = True
+    )
+
+    special = []
+    if role.is_hoisted:
+        special.append("`Hoisted`")
+    if role.is_mentionable:
+        special.append("`Mentionable`")
+    if role.is_managed:
+        special.append("`Integrated`")
+    if role.is_premium_subscriber_role:
+        special.append("`Nitro Boost Exclusive`")
+    if len(special) > 0:
+        embed.add_field(
+            name = "Special Perks",
+            value = ", ".join(special)
+        )
+    
+    count = 0
+    members = ctx.get_guild().get_members()
+    for id in members:
+        if role in members[id].get_roles():
+            count += 1
+    
+    embed.add_field(
+        name = "Members",
+        value = f"{count} members."
+    )
+    embed.set_footer(
+        text = f"Role ID: {role.id}"
+    )
+
+    await ctx.respond(embed = embed, reply = True)
+
+@info.child
+@lightbulb.command("server", "Information about this server.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def info_server(ctx: lightbulb.Context):
+    guild = ctx.get_guild()
+    embed = helpers.get_default_embed(
+        description = "**Information about this server.**",
+        timestamp = dt.datetime.now().astimezone()
+    ).set_thumbnail(guild.icon_url).set_author(name = guild.name, icon = guild.icon_url)
+
+    embed.add_field(
+        name = "Name",
+        value = guild.name,
+        inline = True
+    ).add_field(
+        name = "Created On",
+        value = guild.created_at.strftime("%b %d %Y"),
+        inline = True
+    ).add_field(
+        name = "Owner",
+        value = (await guild.fetch_owner()).mention,
+        inline = True
+    ).add_field(
+        name = "Roles",
+        value = str(len(guild.get_roles())) + " roles.",
+        inline = True
+    )
+
+    guild_channel_count = {
+        "text": 0,
+        "voice": 0,
+        "stage": 0,
+        "category": 0,
+        "news": 0,
+    }
+    channels = guild.get_channels()
+    for channel_id in channels:
+        if channels[channel_id].type == hikari.ChannelType.GUILD_TEXT:
+            guild_channel_count["text"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_VOICE:
+            guild_channel_count["voice"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_STAGE:
+            guild_channel_count["stage"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_CATEGORY:
+            guild_channel_count["category"] += 1
+        elif channels[channel_id].type == hikari.ChannelType.GUILD_NEWS:
+            guild_channel_count["news"] += 1
+    embed.add_field(
+        name = "Channels",
+        value = dedent(f'''
+                Text Channels: {guild_channel_count["text"]}
+                Voice Channels: {guild_channel_count["voice"]}
+                Categories: {guild_channel_count["category"]}
+                Stage Channels: {guild_channel_count["stage"]}
+                News Channels: {guild_channel_count["news"]}
+                '''),
+        inline = True
+    )
+
+    bot_count = 0
+    members = guild.get_members()
+    for member_id in members:
+        if members[member_id].is_bot:
+            bot_count += 1
+    
+    embed.add_field(
+        name = "Members Count",
+        value = dedent(f'''
+                Total: {len(members)}
+                Humans: {len(members) - bot_count}
+                Bots: {bot_count}
+                '''),
+        inline = True
+    )
+
+    embed.set_footer(f"Server ID: {guild.id}")
 
     await ctx.respond(embed = embed, reply = True)
 
