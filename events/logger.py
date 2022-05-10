@@ -989,12 +989,12 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
                 before_content = before.content if before.content != "" else "`<Empty>`"
                 after_content = after.content if after.content != "" else "`<Empty>`"
 
-                content_message = dedent(f'''
-                    **Before:**
-                    {before_content}
-                    **After:**
-                    {after_content}
-                ''')
+                content_message = (
+                    "**Before:**\n"
+                    f"{before_content}\n"
+                    "**After:**\n"
+                    f"{after_content}\n"
+                )
 
                 log_time = after.edited_timestamp
                 if log_time is None:
