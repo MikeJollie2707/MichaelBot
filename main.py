@@ -8,7 +8,7 @@ import os
 
 from utils.models import MichaelBot
 
-EXTENSIONS = [
+EXTENSIONS = (
     "categories.admin",
     "categories.bot",
     "categories.fun",
@@ -19,7 +19,7 @@ EXTENSIONS = [
     "events.error_handler",
     "events.logger",
     "events.misc_events",
-]
+)
 
 async def retrieve_prefix(bot: MichaelBot, message: hikari.Message):
     # Force return when this is MichaelBeta.
