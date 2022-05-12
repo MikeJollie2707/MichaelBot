@@ -211,7 +211,6 @@ class MichaelBot(lightbulb.BotApp):
         self.secrets: dict = kwargs.pop("secrets")
         
         self.online_at: dt.datetime = None
-        self.logging: logging.Logger = logging.getLogger("MichaelBot")
 
         self.pool: t.Optional[asyncpg.Pool] = None
         self.aio_session: t.Optional[aiohttp.ClientSession] = None
@@ -225,6 +224,7 @@ class MichaelBot(lightbulb.BotApp):
         # so we'll make a dictionary to manually track additional info.
         self.node_extra: dict[int, NodeExtra] = {}
 
+        logger = logging.getLogger("MichaelBot")
         launch_options = self.info.get("launch_options")
         log_level = "INFO"
         if launch_options is None:
@@ -232,11 +232,10 @@ class MichaelBot(lightbulb.BotApp):
         for option in launch_options.split():
             if option in ["--debug", "-d"]:
                 default_enabled_guilds = self.info["default_guilds"]
-                self.logging.setLevel(logging.DEBUG)
                 log_level = "DEBUG"
-            elif option in ["--quiet", "-q"]:
+            if option in ["--quiet", "-q"]:
                 log_level = ""
-
+        
         super().__init__(
             token,
             prefix,

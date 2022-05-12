@@ -5,10 +5,13 @@ import lightbulb
 import hikari
 
 import datetime as dt
+import logging
 
 import utils.helpers as helpers
 import utils.errors as errors
 import utils.models as models
+
+logger = logging.getLogger("MichaelBot")
 
 __error_responses__ = {
     "CommandNotFound": "Command `{}` cannot be found.",
@@ -58,7 +61,7 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         if not exception.missing_perms & hikari.Permissions.SEND_MESSAGES:
             await send_error_message("BotMissingRequiredPermission", event, helpers.striplist(helpers.get_friendly_permissions(exception.missing_perms)))
         else:
-            bot.logging.error(f"Command '{event.context.command.qualname}' is missing permissions, but one of them is `Send Messages`.")
+            logger.error(f"Command '{event.context.command.qualname}' is missing permissions, but one of them is `Send Messages`.")
     
     elif isinstance(exception, lightbulb.errors.MissingRequiredPermission):
         await send_error_message("MissingRequiredPermission", event, helpers.striplist(helpers.get_friendly_permissions(exception.missing_perms)))
@@ -94,7 +97,7 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         await send_error_message("NotEnoughArguments", event, helpers.striplist([f"`{option.name}`" for option in exception.missing_options]))
     else:
         await send_error_message("Others", event, f"{type(exception).__name__}: {exception}")
-        bot.logging.error(f"An error occurred in '{event.context.command.qualname}', but is not handled!", exc_info = exception)
+        logger.error(f"An error occurred in '{event.context.command.qualname}', but is not handled!", exc_info = exception)
 
 
 def load(bot: models.MichaelBot):
