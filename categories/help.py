@@ -123,8 +123,8 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
 
     if len(command.options) > 0:
         option_field = ""
-        for option_name in command.options:
-            option_field += f"- `{option_name}`: {command.options[option_name].description}\n"
+        for option in command.options.values():
+            option_field += f"- `{option.name}`: {option.description}\n"
         embed.add_field(
             name = "Parameters",
             value = option_field
@@ -135,7 +135,7 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
             value = "- " + ', '.join(f"`{alias}`" for alias in command.aliases)
         )
     
-    if command.get_help(ctx) != "":
+    if not command.get_help(ctx):
         embed.add_field(
             name = "Note",
             value = dedent(command.get_help(ctx))
@@ -212,6 +212,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         )
 
         plugins = ctx.bot.plugins
+        # {plugin_name: command_count}
         plugin_info: dict[str, int] = {}
         for plugin in plugins.values():
             public_commands = []
@@ -223,9 +224,11 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
 
             if public_commands_len > 0:
                 embed_name = f"{plugin.d.emote} {plugin.name} ({public_commands_len} commands)"
+                
                 embed_description = "*No description provided*"
                 if bool(plugin.description):
                     embed_description = plugin.description
+                
                 main_page.add_field(
                     name = embed_name,
                     value = embed_description,

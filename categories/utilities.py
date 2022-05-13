@@ -39,7 +39,7 @@ async def base_convert(ctx: lightbulb.Context):
         to_base = 16
 
     base_10: int = 0
-    # Allow spacing between binary to make it easier for user.
+    # Parse if user put spaces between binary to make it easier to read.
     if from_base == 2:
         number = "".join(number.split(' '))
     
@@ -550,7 +550,7 @@ async def weather(ctx: lightbulb.Context):
         else:
             resp_json = await resp.json()
             await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
-            #raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
+            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
