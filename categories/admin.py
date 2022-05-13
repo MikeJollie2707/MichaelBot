@@ -23,7 +23,11 @@ async def blacklist_guild(ctx: lightbulb.Context):
     guild_id = 0
     if isinstance(ctx, lightbulb.SlashContext):
         guild = await lightbulb.converters.GuildConverter(ctx).convert(ctx.options.guild)
-        guild_id = guild.id
+        if guild is not None:
+            guild_id = guild.id
+        else:
+            await ctx.respond("Guild not found.", reply = True, mentions_reply = True)
+            return
     else:
         guild_id = ctx.options.guild.id
     
@@ -53,7 +57,11 @@ async def blacklist_user(ctx: lightbulb.Context):
     user_id = 0
     if isinstance(ctx, lightbulb.SlashContext):
         user = await lightbulb.converters.UserConverter(ctx).convert(ctx.options.user)
-        user_id = user.id
+        if user is not None:
+            user_id = user.id
+        else:
+            await ctx.respond("User not found.", reply = True, mentions_reply = True)
+            return
     else:
         user_id = ctx.options.user.id
     
