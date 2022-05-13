@@ -251,9 +251,9 @@ async def info_member(ctx: lightbulb.Context):
         member.avatar_url
     )
 
-    account_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.created_at, format = '%0.0f')
+    account_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.created_at, minimum_unit = "minutes", format = '%0.0f')
     embed.add_field(name = "Joined Discord for:", value = account_age, inline = False)
-    member_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.joined_at, format = '%0.0f')
+    member_age: str = humanize.precisedelta(dt.datetime.now().astimezone() - member.joined_at, minimum_unit = "minutes", format = '%0.0f')
     embed.add_field(name = f"Joined {ctx.get_guild().name} for:", value = member_age, inline = False)
 
     roles = [helpers.mention(role) for role in member.get_roles()]
