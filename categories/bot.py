@@ -70,7 +70,7 @@ async def changelog(ctx: lightbulb.Context):
     await pages.run(ctx)
 
 @plugin.command()
-@lightbulb.option("name", "Category name or command name. Is case-sensitive.", default = None, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("help", "Get help information for the bot.", aliases = ['h'], auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def help(ctx: lightbulb.Context):
@@ -81,6 +81,44 @@ async def help(ctx: lightbulb.Context):
         raise NotImplementedError("`help` command class doesn't exist.")
     
     await bot.help_command.send_help(ctx, obj)
+
+@help.autocomplete("name")
+async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    # Use dictionary to ensure unique values.
+    valid_match = {}
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return input_value in name
+        #return name.startswith(input_value)
+
+    for plg_name, p in bot.plugins.items():
+        if match_algorithm(plg_name.lower(), option.value) and not plg_name.startswith('.'):
+            # Just dummy value.
+            valid_match[plg_name] = True
+    
+    # Return categories by default.
+    if option.value == '':
+        return tuple(valid_match.keys())[:25]
+    
+    for cmd_name, p_cmd in bot.prefix_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not p_cmd.hidden:
+            valid_match[cmd_name] = True
+    for cmd_name, s_cmd in bot.slash_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not s_cmd.hidden:
+            valid_match[cmd_name] = True
+    for cmd_name, m_cmd in bot.message_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not m_cmd.hidden:
+            valid_match[cmd_name] = True
+    for cmd_name, u_cmd in bot.user_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not u_cmd.hidden:
+            valid_match[cmd_name] = True
+    
+    # dict.keys() is not subscriptable.
+    if len(valid_match.keys()) > 0:
+        return tuple(valid_match.keys())[:25]
+    
+    return []
 
 @plugin.command()
 @lightbulb.command("info", "Show information about the bot.", aliases = ["about"])
