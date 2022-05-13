@@ -179,7 +179,7 @@ async def embed_simple(ctx: lightbulb.Context):
 @embed_simple.autocomplete("color")
 async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     if option.value != "":
-        return [color for color in models.DefaultColor._member_names_ if option.value in color]
+        return [color for color in models.DefaultColor._member_names_ if color.startswith(option.value)]
     return models.DefaultColor._member_names_[:25]
 
 @_embed.child
