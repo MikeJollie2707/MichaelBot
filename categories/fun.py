@@ -14,6 +14,9 @@ plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore
 plugin.d.emote = helpers.get_emote(":grin:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
+# TODO: Deal with errors.CustomAPIFailed more appropriately.
+# Currently, it's sending a command-scope error message and a global unhandled message.
+
 ANIME_ACTIONS = {
     "angry": {
         "url": ["http://api.satou-chan.xyz/api/endpoint/angry"],

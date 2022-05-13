@@ -21,6 +21,9 @@ plugin = lightbulb.Plugin(name = "Utilities", description = "Utility Commands", 
 plugin.d.emote = helpers.get_emote(":gear:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
+# TODO: Deal with errors.CustomAPIFailed more appropriately.
+# Currently, it's sending a command-scope error message and a global unhandled message.
+
 @plugin.command()
 @lightbulb.option("number", "The number you're converting.", type = str)
 @lightbulb.option("to_base", "The base you want to convert to.", type = int, choices = [2, 8, 10, 16])
@@ -192,6 +195,9 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
 @lightbulb.command("interactive", "Create a simple embed with prompts.")
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def embed_interactive(ctx: lightbulb.Context):
+    # TODO: Change this to interactive button instead.
+    # Send an empty embed with buttons, user click buttons then send messages to edit the embed, embed changes according to user input.
+    # Then send by pressing the "Send" button.
     bot: models.MichaelBot = ctx.bot
 
     def is_response(event: hikari.GuildMessageCreateEvent):
