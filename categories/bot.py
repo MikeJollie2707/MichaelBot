@@ -35,7 +35,7 @@ def get_memory_size(bytes, suffix = "B"):
     Bot needs to have `Manage Messages` permission if used as a Prefix Command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", default = "stable")
+@lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", choices = ("dev", "development", "stable"), default = "stable")
 @lightbulb.command("changelog", "Show 10 latest changes to the bot.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def changelog(ctx: lightbulb.Context):
