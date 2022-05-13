@@ -1,0 +1,19 @@
+[MESSAGES CONTROL]
+
+# Enable the message, report, category or checker with the given id(s). You can
+# either give multiple identifier separated by comma (,) or put this option
+# multiple time.
+#enable=
+
+# Disable the message, report, category or checker with the given id(s). You
+# can either give multiple identifier separated by comma (,) or put this option
+# multiple time (only on the command line, not in the configuration file where
+# it should appear only once).
+disable=
+line-too-long, # Not too sure about the importance of max 80 characters.
+trailing-whitespace, # Spacing is for readability.
+missing-function-docstring, # Not every function needs documentation. It's only a problem if you don't document important functions.
+missing-class-docstring, # ^^^
+broad-except, # There's nothing wrong with catching all exception. It's only a problem if you abuse it.
+invalid-name, # Who gives linter the right to determine what to name?
+arguments-renamed # Sometimes library maintainers have stupid naming sense.
