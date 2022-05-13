@@ -10,7 +10,7 @@ import logging
 import utils.models as models
 import utils.psql as psql
 
-plugin = lightbulb.Plugin("Listeners", "Internal Listeners")
+plugin = lightbulb.Plugin(".Listeners", "Internal Listeners")
 logger = logging.getLogger("MichaelBot")
 
 @plugin.listener(hikari.StartingEvent)

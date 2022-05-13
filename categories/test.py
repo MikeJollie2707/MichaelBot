@@ -11,7 +11,7 @@ import utils.helpers as helpers
 import utils.models as models
 import utils.psql as psql
 
-plugin = lightbulb.Plugin("zzzzzExperiment", "Sandbox")
+plugin = lightbulb.Plugin(".Experiment", "Sandbox")
 plugin.add_checks(checks.is_dev, checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 @plugin.command()
