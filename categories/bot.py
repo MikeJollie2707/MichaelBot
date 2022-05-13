@@ -346,7 +346,7 @@ async def info_server(ctx: lightbulb.Context):
         inline = True
     ).add_field(
         name = "Roles",
-        value = str(len(guild.get_roles())) + " roles.",
+        value = f"{len(guild.get_roles())} roles.",
         inline = True
     )
 
