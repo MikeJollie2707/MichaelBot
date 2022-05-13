@@ -124,7 +124,7 @@ async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, i
 @lightbulb.command("info", "Show information about the bot.", aliases = ["about"])
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def info(ctx: lightbulb.Context):
-    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+    await info_bot(ctx)
 
 @info.child
 @lightbulb.command("bot", "Show information about the bot.")
