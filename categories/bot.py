@@ -58,9 +58,9 @@ async def changelog(ctx: lightbulb.Context):
         await ctx.event.message.delete()
 
     if ctx.options.option.lower() == "stable":
-        CHANNEL_ID = 759288597500788766
-    elif ctx.options.option.lower() in ("dev", "development"):
         CHANNEL_ID = 644393721512722432
+    elif ctx.options.option.lower() in ("dev", "development"):
+        CHANNEL_ID = 759288597500788766
     else:
         return await ctx.respond("`option` argument must be either `dev`, `development`, or `stable`.", reply = True, mentions_reply = True)
     
