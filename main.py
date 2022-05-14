@@ -1,3 +1,5 @@
+'''Entry point of the bot.'''
+
 import json
 import os
 import sys
@@ -27,8 +29,9 @@ async def retrieve_prefix(bot: MichaelBot, message: hikari.Message):
         return '!'
     
     guild = bot.guild_cache.get(message.guild_id)
-    if guild is None: return bot.info["prefix"]
-    else: return guild.guild_module["prefix"]
+    if guild is None:
+        return bot.info["prefix"]
+    return guild.guild_module["prefix"]
 
 def load_info(bot_name: str) -> tuple[dict]:
     '''Return the bot information in `config.json`
@@ -41,6 +44,7 @@ def load_info(bot_name: str) -> tuple[dict]:
     Returns:
         tuple[dict]: Two objects, `(bot_info, secrets)`.
     '''
+    
     bot_info: dict = None
     secrets: dict = None
 
@@ -52,7 +56,14 @@ def load_info(bot_name: str) -> tuple[dict]:
     
     return (bot_info, secrets)
 
-def create_bot(bot_info: dict, secrets: dict) -> MichaelBot:
+if __name__ == "__main__":
+    if os.name != "nt":
+        import uvloop
+        uvloop.install()
+    
+    argc = len(sys.argv)
+    bot_info, secrets = load_info(sys.argv[1])
+    
     bot = MichaelBot(
         token = secrets["token"],
         prefix = lightbulb.when_mentioned_or(retrieve_prefix),
@@ -62,21 +73,11 @@ def create_bot(bot_info: dict, secrets: dict) -> MichaelBot:
         secrets = secrets
     )
     
+    tasks.load(bot)
+
     for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)
     
-    return bot
-
-if __name__ == "__main__":
-    if os.name != "nt":
-        import uvloop
-        uvloop.install()
-    
-    argc = len(sys.argv)
-    bot_info, secrets = load_info(sys.argv[1])
-    
-    bot = create_bot(bot_info, secrets)
-    tasks.load(bot)
     bot.run(
         activity = hikari.Activity(name = "P3 All Bindings", type = hikari.ActivityType.PLAYING)
     )
