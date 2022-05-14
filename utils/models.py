@@ -1,5 +1,6 @@
+'''Contains many data structures, including the customized `MichaelBot` class.'''
+
 import datetime as dt
-import logging
 import typing as t
 from dataclasses import dataclass
 from enum import Enum
@@ -19,7 +20,7 @@ class UserCache:
     This contains one module:
     - `user_module`: Represent the `Users` table.
     '''
-    def __init__(self, user_module: dict = {}):
+    def __init__(self, user_module: dict = None):
         if user_module is None:
             user_module = {}
         else:
@@ -34,11 +35,11 @@ class UserCache:
         await psql.Users.add_one(conn, user.id, user.username)
         user_info = await psql.Users.get_one(conn, user.id)
         self.user_module = user_info
-    async def update_user_module(self, conn, id: int, column: str, new_value):
+    async def update_user_module(self, conn, user_id: int, column: str, new_value):
         '''
         Edit a user data in the cache and the database.
         '''
-        await psql.Users.update_column(conn, id, column, new_value)
+        await psql.Users.update_column(conn, user_id, column, new_value)
         self.user_module[column] = new_value
     
     async def force_sync(self, conn, user_id: int):
@@ -65,7 +66,7 @@ class GuildCache:
     - `guild_module`: Represent the `Guilds` table.
     - `logging_module`: Represent the `GuildsLogs` table.
     '''
-    def __init__(self, guild_module: dict = {}, logging_module: dict = {}):
+    def __init__(self, guild_module: dict = None, logging_module: dict = None):
         if guild_module is None:
             guild_module = {}
         else:
@@ -87,11 +88,11 @@ class GuildCache:
         guild_info = await psql.Guilds.get_one(conn, guild.id)
         self.guild_module = guild_info
     
-    async def update_guild_module(self, conn, id: int, column: str, new_value):
+    async def update_guild_module(self, conn, guild_id: int, column: str, new_value):
         '''
         Edit a guild module data in the cache and the database.
         '''
-        await psql.Guilds.update_column(conn, id, column, new_value)
+        await psql.Guilds.update_column(conn, guild_id, column, new_value)
         self.guild_module[column] = new_value
     
     async def add_logging_module(self, conn, guild: hikari.Guild):
@@ -102,11 +103,11 @@ class GuildCache:
         logging_info = await psql.GuildsLogs.get_one(conn, guild.id)
         self.logging_module = logging_info
     
-    async def update_logging_module(self, conn, id: int, column: str, new_value):
+    async def update_logging_module(self, conn, guild_id: int, column: str, new_value):
         '''
         Update a logging module in the cache and the database.
         '''
-        await psql.GuildsLogs.update_column(conn, id, column, new_value)
+        await psql.GuildsLogs.update_column(conn, guild_id, column, new_value)
         self.logging_module[column] = new_value
     
     async def force_sync(self, conn, guild_id: int):
@@ -176,6 +177,8 @@ class NodeExtra:
     working_channel: int = 0
 
 class MichaelBot(lightbulb.BotApp):
+    '''A custom bot with additional attribute and some logic fixes.'''
+
     __slots__ = (
         "info", 
         "secrets",
@@ -224,7 +227,6 @@ class MichaelBot(lightbulb.BotApp):
         # so we'll make a dictionary to manually track additional info.
         self.node_extra: dict[int, NodeExtra] = {}
 
-        logger = logging.getLogger("MichaelBot")
         launch_options = self.info.get("launch_options")
         log_level = "INFO"
         if launch_options is None:

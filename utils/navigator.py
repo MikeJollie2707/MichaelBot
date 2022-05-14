@@ -1,3 +1,5 @@
+#pylint: disable=protected-access
+
 # Reference: https://github.com/tandemdude/hikari-lightbulb/blob/development/lightbulb/utils/nav.py
 
 # For self-typing. Not sure why this is not part of Python.
@@ -180,7 +182,6 @@ class MiniButtonPages(ButtonPages):
         # BUG: when attached to a MenuInteractionWrapper, this will clear the buttons even when the menu is returning.
         # This is probably because there's no way to determine whether this call is gonna finish before the menu starts updating.
         await self._msg.edit(component = None)
-        pass
 
 class MenuComponent:
     '''
@@ -599,6 +600,7 @@ class ItemListBuilder:
                 embed = None
         
         if embed is not None:
+            # TODO: Fix undefined-loop-variable
             self.page_end_formatter(embed, index, item)
             embeds.append(embed)
 

@@ -1,4 +1,5 @@
-import hikari
+'''Custom checks for various commands.'''
+
 import lightbulb
 
 import utils.errors as errors

@@ -1,3 +1,5 @@
+'''Music Commands'''
+
 import datetime as dt
 from textwrap import dedent
 

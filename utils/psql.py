@@ -1,10 +1,14 @@
-# Current flaw is adding/removing won't give any special status if entry doesn't exist.
+# The code uses a lot of `id`, which turns out to be shadowing the builtin `id()`.
+#pylint: disable=redefined-builtin
+
+'''Contains many functions that hide all "naked" SQL to use.'''
+
+# NOTE: Current flaw is adding/removing won't give any special status if entry doesn't exist.
 import datetime as dt
 import typing as t
 
 import asyncpg
 import hikari
-import lightbulb
 
 def record_to_dict(record: asyncpg.Record, /) -> t.Optional[dict]:
     '''Convert a `Record` into a `dict` or `None` if the object is already `None`.
@@ -20,8 +24,9 @@ def record_to_dict(record: asyncpg.Record, /) -> t.Optional[dict]:
         t.Optional[dict]: `dict` or `None`.
     '''
     
-    if record is None: return None
-    else: return dict(record)
+    if record is None: 
+        return None
+    return dict(record)
 
 async def legacy_insert_into(conn, table_name: str, *args):
     '''
@@ -35,10 +40,10 @@ async def legacy_insert_into(conn, table_name: str, *args):
         arg_str += f"${j + 1}, "
     arg_str = arg_str[:-2] + ')'
 
-    await conn.executemany('''
-        INSERT INTO %s
-        VALUES %s
-    ''' % (table_name, arg_str), *args
+    await conn.executemany(f'''
+        INSERT INTO {table_name}
+        VALUES {arg_str}
+    ''', *args
     )
 
 def insert_into_query(table_name: str, len_col: int) -> str:
@@ -94,6 +99,7 @@ async def __get_one__(conn, query: str, *constraints) -> t.Optional[dict]:
     return record_to_dict(record)
 
 class Guilds:
+    '''Functions to interact with the `Guilds` table.'''
     @classmethod
     async def get_all(cls, conn):
         return await cls.get_all_where(conn)
@@ -147,6 +153,7 @@ class Guilds:
         await conn.execute(query, new_value, id)
     
 class GuildsLogs:
+    '''Functions to interact with the `GuildsLogs` table.'''
     @classmethod
     async def get_all(cls, conn):
         return await cls.get_all_where(conn)
@@ -198,6 +205,7 @@ class GuildsLogs:
         await conn.execute(query, new_value, id)
 
 class Users:
+    '''Functions to interact with the `Users` table.'''
     @classmethod
     async def get_all(cls, conn):
         return await cls.get_all_where(conn)
@@ -250,6 +258,7 @@ class Users:
         await conn.execute(query, new_value, id)
 
 class Reminders:
+    '''Functions to interact with the `Reminders` table.'''
     @classmethod
     async def get_user_reminders(cls, conn, user_id: int) -> list[dict]:
         query = '''

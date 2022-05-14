@@ -1,3 +1,5 @@
+'''Fun Commands'''
+
 import datetime as dt
 import random
 from textwrap import dedent

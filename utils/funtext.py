@@ -1,3 +1,5 @@
+'''Contains funny text manipulations.'''
+
 import random
 
 __REPLACE_WORDS = {
@@ -118,6 +120,6 @@ def pekofy(text: str) -> str:
                 words[index] = words[index][:-1] + f" peko{punc}"
         
         if word == words[-1]:
-            words[index] += f" peko"
+            words[index] += " peko"
     
     return ' '.join(words)

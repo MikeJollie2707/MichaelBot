@@ -1,3 +1,5 @@
+'''Bot-related Commands.'''
+
 import datetime as dt
 import platform
 from textwrap import dedent
@@ -17,18 +19,25 @@ plugin.d.emote = helpers.get_emote(":robot:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
-def get_memory_size(bytes, suffix = "B"):
-    """
-    Scale bytes to its proper format
+def get_memory_size(byte: int, /, suffix: str = "B") -> str:
+    '''Scale bytes to its proper format
     e.g:
         1253656 => '1.20MB'
         1253656678 => '1.17GB'
-    """
+
+    Args:
+        byte (int): Number of bytes to convert.
+        suffix (str, optional): The unit of the number. Defaults to "B".
+
+    Returns:
+        str: A representation of memory size after condensing.
+    '''
+
     factor = 1024
     for unit in ["", "K", "M", "G", "T", "P"]:
-        if bytes < factor:
-            return f"{bytes:.2f}{unit}{suffix}"
-        bytes /= factor
+        if byte < factor:
+            return f"{byte:.2f}{unit}{suffix}"
+        byte /= factor
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -73,7 +82,7 @@ async def changelog(ctx: lightbulb.Context):
 @lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("help", "Get help information for the bot.", aliases = ['h'], auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def help(ctx: lightbulb.Context):
+async def _help(ctx: lightbulb.Context):
     obj = ctx.options.name
     bot: models.MichaelBot = ctx.bot
 
@@ -82,7 +91,7 @@ async def help(ctx: lightbulb.Context):
     
     await bot.help_command.send_help(ctx, obj)
 
-@help.autocomplete("name")
+@_help.autocomplete("name")
 async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     # Use dictionary to ensure unique values.
     valid_match = {}
@@ -92,7 +101,7 @@ async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, i
         return input_value in name
         #return name.startswith(input_value)
 
-    for plg_name, p in bot.plugins.items():
+    for plg_name, _ in bot.plugins.items():
         if match_algorithm(plg_name.lower(), option.value) and not plg_name.startswith('.'):
             # Just dummy value.
             valid_match[plg_name] = True
@@ -308,8 +317,8 @@ async def info_role(ctx: lightbulb.Context):
     
     count = 0
     members = ctx.get_guild().get_members()
-    for id in members:
-        if role in members[id].get_roles():
+    for member_id in members:
+        if role in members[member_id].get_roles():
             count += 1
     
     embed.add_field(

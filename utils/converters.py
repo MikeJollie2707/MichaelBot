@@ -1,6 +1,7 @@
+'''Custom argument converters.'''
+
 import datetime
 
-import hikari
 import lightbulb
 import pytimeparse
 

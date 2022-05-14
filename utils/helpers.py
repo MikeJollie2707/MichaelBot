@@ -1,3 +1,5 @@
+'''Contains many useful functions.'''
+
 import asyncio
 import datetime as dt
 import typing as t
@@ -202,9 +204,9 @@ def get_friendly_permissions(permissions: hikari.Permissions, /) -> t.List[str]:
     '''
 
     l = []
-    for permission in __PERMISSIONS_MAPPING__:
+    for permission, text in __PERMISSIONS_MAPPING__.items():
         if permissions & permission:
-            l.append(f"`{__PERMISSIONS_MAPPING__[permission]}`")
+            l.append(f"`{text}`")
     return l
 
 def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed:

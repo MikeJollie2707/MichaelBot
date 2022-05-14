@@ -1,3 +1,5 @@
+'''Developer-only commands.'''
+
 import datetime as dt
 
 import hikari
@@ -141,7 +143,7 @@ async def force_sync_cache_guild(ctx: lightbulb.Context):
 @lightbulb.command("cache-view", "View the cache content.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def cache_view(ctx: lightbulb.Context):
-    pass
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @cache_view.child
 @lightbulb.option("guild_id", "The guild's id to view.", type = hikari.Guild)

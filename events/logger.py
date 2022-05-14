@@ -96,7 +96,7 @@ plugin.add_checks(
 @lightbulb.command("log-set", "Set a channel as a log channel.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def log_set(ctx: lightbulb.Context):
-    pass
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @log_set.child
 @lightbulb.set_help(dedent('''
@@ -155,7 +155,7 @@ async def log_enable_option(ctx: lightbulb.Context):
             if not not guild_dbcache.logging_module:
                 await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, True)
             else:
-                await ctx.respond(f"Logging is not enabled.", reply = True, mentions_reply = True)
+                await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
                 return
     await ctx.respond(f"Log option `{logging_option}` is enabled.", reply = True)
 
@@ -166,7 +166,7 @@ async def log_enable_option(ctx: lightbulb.Context):
 @lightbulb.command("log-disable", "Disable logging or part of the logging system.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def log_disable(ctx: lightbulb.Context):
-    pass
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @log_disable.child
 @lightbulb.set_help(dedent('''
@@ -185,7 +185,7 @@ async def log_disable_all(ctx: lightbulb.Context):
             else:
                 await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
 
-    await ctx.respond(f"Logging disabled successfully.", reply = True)
+    await ctx.respond("Logging disabled successfully.", reply = True)
 
 @log_disable.child
 @lightbulb.set_help(dedent('''
@@ -208,7 +208,7 @@ async def log_disable_option(ctx: lightbulb.Context):
             if not not guild_dbcache.logging_module:
                 await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, False)
             else:
-                await ctx.respond(f"Logging is not enabled.", reply = True, mentions_reply = True)
+                await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
                 return
     await ctx.respond(f"Log option `{logging_option}` is disabled.", reply = True)
 
@@ -234,7 +234,7 @@ async def log_view(ctx: lightbulb.Context):
                 if guild_dbcache.logging_module[logging_option] is not None:
                     embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(guild_dbcache.logging_module[logging_option]).mention}\n"
                 else:
-                    embed.description += f"**Log Destination:** `None`\n"
+                    embed.description += "**Log Destination:** `None`\n"
             else:
                 embed.description += f"`{logging_option}`: {'Enabled' if guild_dbcache.logging_module[logging_option] else 'Disabled'}\n"
     else:
@@ -982,7 +982,7 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
             if before is None:
                 log_time = after.edited_timestamp
                 embed.title = "Message Edited"
-                embed.description = dedent(f'''
+                embed.description = dedent('''
                     ⚠ The original content of the message cannot be found.
                 ''')
             else:

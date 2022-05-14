@@ -1,3 +1,5 @@
+'''Define the behavior of the 'help' command for the bot. Includes help-specific utilities.'''
+
 import datetime as dt
 import typing as t
 from textwrap import dedent
@@ -163,6 +165,10 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
     return embed
 
 class MenuLikeHelp(lightbulb.DefaultHelpCommand):
+    '''
+    A custom help command that's tailored for `MichaelBot`.
+    '''
+    
     async def send_help(self, ctx: lightbulb.Context, obj: t.Optional[str]) -> None:
         '''
         The main logic for the help command.

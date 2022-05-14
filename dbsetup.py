@@ -1,3 +1,5 @@
+'''Run this script once if the database or a table is missing.'''
+
 import asyncio
 import sys
 import asyncpg

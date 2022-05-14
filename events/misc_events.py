@@ -1,3 +1,5 @@
+'''Various other events to handle. Most of them are related to dealing with database connection.'''
+
 import datetime as dt
 import logging
 

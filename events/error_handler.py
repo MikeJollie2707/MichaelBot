@@ -1,3 +1,5 @@
+'''Global error handler for `MichaelBot`.'''
+
 # Inspired by: https://github.com/kamfretoz/XJ9/blob/main/meta/error_handler.py
 # Lightbulb error hierachy: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/errors.html
 
@@ -44,8 +46,6 @@ async def send_error_message(error_type: str, event: lightbulb.CommandErrorEvent
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True)
 
 async def on_command_error(event: lightbulb.CommandErrorEvent):
-    bot: models.MichaelBot = event.bot
-
     exception = event.exception
     # Unwrap exception.
     if isinstance(event.exception, lightbulb.CommandInvocationError):

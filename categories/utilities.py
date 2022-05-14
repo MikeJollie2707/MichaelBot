@@ -1,10 +1,14 @@
+'''Utility Commands'''
+
 # API commands are inspired by: https://github.com/kamfretoz/XJ9/tree/main/extensions/utils
 import datetime as dt
+import json
 from textwrap import dedent
 
 import hikari
 import humanize
 import lightbulb
+import py_expression_eval
 from lightbulb.ext import tasks
 
 import utils.checks as checks
@@ -69,7 +73,6 @@ async def base_convert(ctx: lightbulb.Context):
 @lightbulb.command("calc", "Calculate a math expression.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def calc(ctx: lightbulb.Context):
-    import py_expression_eval
     parser = py_expression_eval.Parser()
 
     try:
@@ -77,7 +80,7 @@ async def calc(ctx: lightbulb.Context):
         await ctx.respond(f"Result: `{result}`")
     except ZeroDivisionError:
         await ctx.respond("Zero division detected!", reply = True, mentions_reply = True)
-    except:
+    except Exception:
         await ctx.respond("An error occurred!", reply = True, mentions_reply = True)
 
 @plugin.command()
@@ -99,11 +102,10 @@ async def embed_from_json(ctx: lightbulb.Context):
 
     raw_embed = raw_embed.strip("```").strip()
     
-    import json
     try:
         json_embed = json.loads(raw_embed)
         if not isinstance(json_embed, dict):
-            raise json.JSONDecodeError("JSON object must be enclosed in `{{}}`.")
+            raise json.JSONDecodeError("JSON object must be enclosed in `{{}}`.", doc = raw_embed, pos = 0)
         
         embed = helpers.embed_from_dict(json_embed)
         await ctx.respond(embed = embed)
@@ -113,7 +115,7 @@ async def embed_from_json(ctx: lightbulb.Context):
             await ctx.event.message.delete()
     except json.JSONDecodeError as js:
         await ctx.respond(f"{ctx.author.mention} The JSON you provided is not valid. Detail message: `{js}`", user_mentions = True)
-    except ValueError as color_error:
+    except ValueError:
         await ctx.respond(f"{ctx.author.mention} The color you provided is invalid. It must be an integer of base 10.", user_mentions = True)
     except hikari.BadRequestError as bad:
         await ctx.respond(f"{ctx.author.mention} The JSON you provided is ill-formed. Detail message: `{bad}`", user_mentions = True)
@@ -138,7 +140,6 @@ async def embed_to_json(ctx: lightbulb.Context):
     elif not message_id.embeds:
         await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
     else:
-        import json
         for embed in message_id.embeds:
             d = helpers.embed_to_dict(embed)
             
@@ -180,7 +181,7 @@ async def embed_simple(ctx: lightbulb.Context):
             await ctx.respond("Sent!")
             await ctx.bot.rest.create_message(channel, embed = embed)
 @embed_simple.autocomplete("color")
-async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption, _interaction: hikari.AutocompleteInteraction):
     if option.value != "":
         return [color for color in models.DefaultColor._member_names_ if color.startswith(option.value)]
     return models.DefaultColor._member_names_[:25]
@@ -383,16 +384,16 @@ async def remind_view(ctx: lightbulb.Context):
         await ctx.respond(embed = embed, reply = True)
     else:
         builder = ItemListBuilder(reminders, max_item_per_page = 5)
-        def start_format(index, item):
+        def start_format(_, __):
             embed = helpers.get_default_embed(
                 title = "Reminders",
                 description = "",
                 author = ctx.author,
                 timestamp = dt.datetime.now().astimezone()
             )
-            embed.description = f"**Format:** 0. `remind_id` Reminder message - 0h0m\n\n"
+            embed.description = "**Format:** 0. `remind_id` Reminder message - 0h0m\n\n"
             return embed
-        def entry_format(embed, index, item):
+        def entry_format(embed: hikari.Embed, index: int, item: dict):
             message = item["message"]
             if len(item["message"]) > 30:
                 message = item["message"][:27] + "..."
@@ -507,7 +508,7 @@ async def weather(ctx: lightbulb.Context):
                 description = f"Condition: {current['condition']['text']}",
                 timestamp = dt.datetime.now().astimezone()
             ).set_footer(
-                text = f"Powered by: weatherapi.com",
+                text = "Powered by: weatherapi.com",
                 icon = "http://cdn.weatherapi.com/v4/images/weatherapi_logo.png"
             )
             embed.add_field(
