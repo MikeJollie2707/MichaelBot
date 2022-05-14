@@ -1,11 +1,11 @@
-import lightbulb
-import hikari
-import humanize
-import psutil
-
 import datetime as dt
 import platform
 from textwrap import dedent
+
+import hikari
+import humanize
+import lightbulb
+import psutil
 
 import utils.checks as checks
 import utils.helpers as helpers

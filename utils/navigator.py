@@ -3,13 +3,13 @@
 # For self-typing. Not sure why this is not part of Python.
 from __future__ import annotations
 
+import asyncio
+import typing as t
+
+import hikari
 import lightbulb
 # Default callback functions
 from lightbulb.utils.nav import *
-import hikari
-
-import asyncio
-import typing as t
 
 import utils.helpers as helpers
 

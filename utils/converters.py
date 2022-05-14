@@ -1,7 +1,7 @@
-import lightbulb
-import hikari
-
 import datetime
+
+import hikari
+import lightbulb
 import pytimeparse
 
 class IntervalConverter(lightbulb.converters.BaseConverter):

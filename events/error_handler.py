@@ -1,14 +1,14 @@
 # Inspired by: https://github.com/kamfretoz/XJ9/blob/main/meta/error_handler.py
 # Lightbulb error hierachy: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/errors.html
 
-import lightbulb
-import hikari
-
 import datetime as dt
 import logging
 
-import utils.helpers as helpers
+import hikari
+import lightbulb
+
 import utils.errors as errors
+import utils.helpers as helpers
 import utils.models as models
 
 logger = logging.getLogger("MichaelBot")

@@ -1,9 +1,9 @@
-import lightbulb
-import hikari
-
 import datetime as dt
 import random
 from textwrap import dedent
+
+import hikari
+import lightbulb
 
 import utils.checks as checks
 import utils.errors as errors

@@ -1,8 +1,8 @@
-import lightbulb
 import hikari
+import lightbulb
 
-import utils.models as models
 import utils.errors as errors
+import utils.models as models
 import utils.psql as psql
 
 @lightbulb.Check

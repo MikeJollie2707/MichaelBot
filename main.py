@@ -1,10 +1,10 @@
-import lightbulb
-import hikari
-from lightbulb.ext import tasks
-
-import sys
 import json
 import os
+import sys
+
+import hikari
+import lightbulb
+from lightbulb.ext import tasks
 
 from utils.models import MichaelBot
 

@@ -1,10 +1,10 @@
 # Current flaw is adding/removing won't give any special status if entry doesn't exist.
+import datetime as dt
+import typing as t
+
 import asyncpg
 import hikari
 import lightbulb
-
-import typing as t
-import datetime as dt
 
 def record_to_dict(record: asyncpg.Record, /) -> t.Optional[dict]:
     '''Convert a `Record` into a `dict` or `None` if the object is already `None`.
