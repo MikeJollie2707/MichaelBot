@@ -1,6 +1,7 @@
 '''Utility Commands'''
 
 # API commands are inspired by: https://github.com/kamfretoz/XJ9/tree/main/extensions/utils
+import asyncio
 import datetime as dt
 import json
 from textwrap import dedent
@@ -275,8 +276,148 @@ async def embed_interactive(ctx: lightbulb.Context):
             color = color
         )
         await bot.rest.create_message(channel, embed = embed)
-    except TimeoutError:
+    except asyncio.TimeoutError:
         await ctx.respond("Session timed out.")
+
+@_embed.child
+@lightbulb.set_help(dedent('''
+    Bot needs to have `Manage Messages`.
+    This is an alternative to `embed simple`.
+'''))
+@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
+@lightbulb.command("interactive2", "Create a simple embed with visual prompts.")
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def embed_interactive2(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    embed = hikari.Embed(
+        title = "Template Embed",
+        description = "Choose one of the below buttons to get started."
+    )
+
+    available_colors = models.DefaultColor._member_names_
+    channel = ctx.get_channel()
+    timeout = 120
+
+    row = bot.rest.build_action_row()
+    button = row.add_button(hikari.ButtonStyle.SECONDARY, "edit_title")
+    button.set_label("Edit Title")
+    button.add_to_container()
+    button = row.add_button(hikari.ButtonStyle.SECONDARY, "edit_description")
+    button.set_label("Edit Description")
+    button.add_to_container()
+    button = row.add_button(hikari.ButtonStyle.SECONDARY, "edit_color")
+    button.set_label("Edit Color")
+    button.add_to_container()
+    button = row.add_button(hikari.ButtonStyle.SECONDARY, "edit_destination")
+    button.set_label("Edit Destination")
+    button.add_to_container()
+    button = row.add_button(hikari.ButtonStyle.PRIMARY, "send")
+    button.set_label("Send")
+    button.set_emoji(helpers.get_emote(":arrow_forward:"))
+    button.add_to_container()
+    msg = await ctx.respond(f"Destination: {channel.mention}", embed = embed, components = [row])
+    
+    def is_valid_interaction(event: hikari.InteractionCreateEvent) -> bool:
+        if not isinstance(event.interaction, hikari.ComponentInteraction):
+            return False
+        
+        return event.interaction.custom_id in ("edit_title", "edit_description", "edit_color", "edit_destination", "send")
+    
+    def is_response(event: hikari.GuildMessageCreateEvent):
+        msg = event.message
+        return msg.author == ctx.author and msg.channel_id == ctx.channel_id
+    
+    while True:
+        try:
+            event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = timeout, predicate = is_valid_interaction)
+            interaction: hikari.ComponentInteraction = event.interaction
+            if interaction.custom_id == "edit_title":
+                await interaction.create_initial_response(
+                    hikari.ResponseType.MESSAGE_CREATE,
+                    "What's the title? (Type `None` to clear)",
+                    flags = hikari.MessageFlag.EPHEMERAL
+                )
+                
+                try:
+                    setter_event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = timeout, predicate = is_response)
+                    if setter_event.message.content.strip('`') != "None":
+                        embed.title = setter_event.message.content
+                    else:
+                        embed.title = ""
+                    
+                    await msg.edit(embed = embed)
+                    await setter_event.message.delete()
+                except asyncio.TimeoutError:
+                    await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+            elif interaction.custom_id == "edit_description":
+                await interaction.create_initial_response(
+                    hikari.ResponseType.MESSAGE_CREATE,
+                    "What's the description? (Type `None` to clear)",
+                    flags = hikari.MessageFlag.EPHEMERAL
+                )
+                
+                try:
+                    setter_event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = timeout, predicate = is_response)
+                    if setter_event.message.content.strip('`') != "None":
+                        embed.description = setter_event.message.content
+                    else:
+                        embed.description = ""
+                    
+                    await msg.edit(embed = embed)
+                    await setter_event.message.delete()
+                except asyncio.TimeoutError:
+                    await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+            elif interaction.custom_id == "edit_color":
+                await interaction.create_initial_response(
+                    hikari.ResponseType.MESSAGE_CREATE,
+                    f"What's the color? You can enter a hex number or one of the following predefined colors: `{helpers.striplist(available_colors)}`",
+                    flags = hikari.MessageFlag.EPHEMERAL
+                )
+
+                try:
+                    setter_event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = timeout, predicate = is_response)
+                    color_content = setter_event.message.content.lower()
+
+                    if color_content in available_colors:
+                        embed.color = models.DefaultColor[color_content].value
+                    else:
+                        try:
+                            embed.color = hikari.Color(int(color_content, base = 16))
+                        except ValueError:
+                            pass
+                    
+                    await msg.edit(embed = embed)
+                    await setter_event.message.delete()
+                except asyncio.TimeoutError:
+                    await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+            elif interaction.custom_id == "edit_destination":
+                await interaction.create_initial_response(
+                    hikari.ResponseType.MESSAGE_CREATE,
+                    "Which channel to send this embed? (Type `None` to send it here)",
+                    flags = hikari.MessageFlag.EPHEMERAL
+                )
+
+                try:
+                    setter_event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = timeout, predicate = is_response)
+                    if setter_event.message.content.strip('`') != "None":
+                        channel = await lightbulb.TextableGuildChannelConverter(ctx).convert(setter_event.message.content.strip('`'))
+                    elif channel is None or setter_event.message.content.strip('`') == "None":
+                        channel = ctx.get_channel()
+                    
+                    await msg.edit(f"Destination: {channel.mention}")
+                    await setter_event.message.delete()
+                except asyncio.TimeoutError:
+                    await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+            elif interaction.custom_id == "send":
+                # No need to response to the interaction if we just delete the message.
+                await bot.rest.create_message(channel, embed = embed)
+                await msg.delete()
+                return
+        except asyncio.TimeoutError:
+            await msg.edit("Session expired.", embeds = None, components = None)
+            return
 
 async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, when: dt.datetime = None, remind_id: int = None):
     '''Send `user` a DM about `message` at time `when`.
