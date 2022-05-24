@@ -155,10 +155,12 @@ def embed_to_dict(embed: hikari.Embed) -> dict[str, t.Any]:
         d["thumbnail"] = embed.thumbnail.url
     if bool(embed.author):
         d["author"] = {
-            "icon": embed.author.icon.url,
             "name": embed.author.name,
             "url": embed.author.url
         }
+
+        if bool(embed.author.icon):
+            d["author"]["icon"] = embed.author.icon.url
     if bool(embed.fields):
         d["fields"] = []
         for field in embed.fields:
@@ -171,9 +173,11 @@ def embed_to_dict(embed: hikari.Embed) -> dict[str, t.Any]:
         d["image"] = embed.image.url
     if bool(embed.footer):
         d["footer"] = {
-            "text": embed.footer.text,
-            "icon": embed.footer.icon.url
+            "text": embed.footer.text
         }
+
+        if bool(embed.footer.icon):
+            d["footer"]["icon"] = embed.footer.icon.url
     
     return d
 
