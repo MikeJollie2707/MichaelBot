@@ -125,24 +125,35 @@ async def embed_from_json(ctx: lightbulb.Context):
     This is useful when you want to change slightly from an existing embed.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("message_id", "The message ID. The bot can't get a message that's too old.", modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("channel", "The channel the message is in. Default to the current channel.", type = hikari.TextableGuildChannel, default = None, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("message_id", "The message ID. The bot can't get a message that's too old.")
 @lightbulb.command("to-json", "Take the embed from a message and convert it to a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_to_json(ctx: lightbulb.Context):
     message_id = ctx.options.message_id
+    channel = ctx.options.channel
     bot: models.MichaelBot = ctx.bot
 
-    if isinstance(message_id, str):
-        message_id = await bot.rest.fetch_message(ctx.channel_id, message_id)
+    channel_id: int = 0
+    if ctx.options.channel is None:
+        channel_id = ctx.channel_id
+    else:
+        channel_id = channel.id
     
-    if message_id is None:
+    message: hikari.Message = None
+    try:
+        message = await bot.rest.fetch_message(channel_id, message_id)
+    except hikari.NotFoundError:
         await ctx.respond("I can't get this message!", reply = True, mentions_reply = True)
-    elif not message_id.embeds:
+        return
+    
+    if not message.embeds:
         await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
     else:
-        for embed in message_id.embeds:
+        for embed in message.embeds:
             d = helpers.embed_to_dict(embed)
             
+            # Might raise message too long error.
             await ctx.respond(f"```{json.dumps(d, indent = 4)}```")
 
 @_embed.child
