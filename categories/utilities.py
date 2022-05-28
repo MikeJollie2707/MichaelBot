@@ -208,9 +208,6 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
 @lightbulb.command("interactive", "Create a simple embed with prompts.")
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def embed_interactive(ctx: lightbulb.Context):
-    # TODO: Change this to interactive button instead.
-    # Send an empty embed with buttons, user click buttons then send messages to edit the embed, embed changes according to user input.
-    # Then send by pressing the "Send" button.
     bot: models.MichaelBot = ctx.bot
 
     def is_response(event: hikari.GuildMessageCreateEvent):
@@ -293,7 +290,7 @@ async def embed_interactive2(ctx: lightbulb.Context):
 
     embed = hikari.Embed(
         title = "Template Embed",
-        description = "Choose one of the below buttons to get started."
+        description = "Choose one of the below buttons to edit the embed. Any changes will be reflected on this embed."
     )
 
     available_colors = models.DefaultColor._member_names_
@@ -323,7 +320,10 @@ async def embed_interactive2(ctx: lightbulb.Context):
         if not isinstance(event.interaction, hikari.ComponentInteraction):
             return False
         
-        return event.interaction.custom_id in ("edit_title", "edit_description", "edit_color", "edit_destination", "send")
+        return (
+            event.interaction.custom_id in ("edit_title", "edit_description", "edit_color", "edit_destination", "send")
+            and event.interaction.member.id == ctx.author.id
+        )
     
     def is_response(event: hikari.GuildMessageCreateEvent):
         msg = event.message
@@ -627,7 +627,7 @@ async def urban(ctx: lightbulb.Context):
             else:
                 await ctx.respond("Sorry, that word doesn't exist on urban dictionary.", reply = True, mentions_reply = True)
         else:
-            await ctx.respond("Something went wrong.", reply = True, mentions_reply = True)
+            #await ctx.respond("Something went wrong.", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
@@ -708,7 +708,7 @@ async def weather(ctx: lightbulb.Context):
             await ctx.respond("City not found.", reply = True, mentions_reply = True)
         else:
             resp_json = await resp.json()
-            await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
+            #await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 def load(bot: models.MichaelBot):
