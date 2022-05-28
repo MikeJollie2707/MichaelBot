@@ -50,34 +50,41 @@ async def setup_database(user, password, database, host, port):
                 command_complete BOOL NOT NULL DEFAULT FALSE,
                 command_error BOOL NOT NULL DEFAULT TRUE,
                 CONSTRAINT fk_guildslogs_guilds
-                    FOREIGN KEY (guild_id) REFERENCES Guilds(id)
+                    FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
             );
         ''')
         print("Done!")
 
-        print("Creating LogsGuildChannelUpdate...", end = '')
         await conn.execute('''
-            CREATE TABLE IF NOT EXISTS LogsGuildChannelUpdate (
-                guild_id INT8 UNIQUE NOT NULL,
-                is_enabled BOOL REFERENCES GuildsLogs(guild_channel_update) ON UPDATE CASCADE ON DELETE CASCADE,
-                ignore_channels INT8[],
-                CONSTRAINT fk_logsguildchannelupdate_guildslogs
-                    FOREIGN KEY (guild_id) REFERENCES GuildsLogs(guild_id)
+            CREATE TYPE LogConfig AS (
+                guild_channel_create BOOL,
+                guild_channel_delete BOOL,
+                guild_channel_update BOOL,
+                guild_ban BOOL,
+                guild_unban BOOL,
+                guild_update BOOL,
+                member_join BOOL,
+                member_leave BOOL,
+                member_update BOOL,
+                guild_bulk_message_delete BOOL,
+                guild_message_delete BOOL,
+                guild_message_update BOOL,
+                role_create BOOL,
+                role_update BOOL,
+                command_complete BOOL,
+                command_error BOOL
             );
         ''')
-        print("Done!")
 
-        print("Creating LogsGuildMessageUpdate...", end = '')
         await conn.execute('''
-            CREATE TABLE IF NOT EXISTS LogsGuildMessageUpdate (
+            CREATE TABLE GuildsLogsTest (
                 guild_id INT8 UNIQUE NOT NULL,
-                is_enabled BOOL REFERENCES GuildsLogs(guild_message_update) ON UPDATE CASCADE ON DELETE CASCADE,
-                ignore_channels INT8[],
-                CONSTRAINT fk_logsguildmessageupdate_guildslogs
-                    FOREIGN KEY (guild_id) REFERENCES GuildsLogs(guild_id)
+                log_channel INT8 DEFAULT NULL,
+                config LogConfig,
+                CONSTRAINT fk_guildslogstest_guilds
+                    FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
             );
         ''')
-        print("Done!")
 
         print("Creating Users table...", end = '')
         await conn.execute('''
