@@ -29,6 +29,7 @@ __error_responses__ = {
     "CheckFailure": "Command `{}` does not satisfy the following requirement: {}.",
     "ConverterFailure": "The following option cannot be converted properly: `{}`.",
     "NotEnoughArguments": "You're missing the following arguments: {}.",
+    "CustomAPIFailed": "{}",
     "Others": "There's an unhandled error.\nError message: `{}`.\nThis is a developer-side issue."
 }
 
@@ -95,6 +96,10 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
     
     elif isinstance(exception, lightbulb.errors.NotEnoughArguments):
         await send_error_message("NotEnoughArguments", event, helpers.striplist([f"`{option.name}`" for option in exception.missing_options]))
+
+    elif isinstance(exception, errors.CustomAPIFailed):
+        await send_error_message("CustomAPIFailed", event, exception.message)
+    
     else:
         await send_error_message("Others", event, f"{type(exception).__name__}: {exception}")
         logger.error(f"An error occurred in '{event.context.command.qualname}', but is not handled!", exc_info = exception)
