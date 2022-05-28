@@ -15,7 +15,8 @@ EXTENSIONS = (
     "categories.bot",
     "categories.fun",
     "categories.help",
-    "categories.music",
+    "categories.moderation",
+    #"categories.music",
     "categories.test",
     "categories.utilities",
     "events.error_handler",
@@ -79,5 +80,5 @@ if __name__ == "__main__":
         bot.load_extensions(extension)
     
     bot.run(
-        activity = hikari.Activity(name = "P3 All Bindings", type = hikari.ActivityType.PLAYING)
+        activity = hikari.Activity(name = "P4 All Bindings", type = hikari.ActivityType.PLAYING)
     )
