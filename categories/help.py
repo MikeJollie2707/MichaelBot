@@ -137,7 +137,7 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
             value = "- " + ', '.join(f"`{alias}`" for alias in command.aliases)
         )
     
-    if not command.get_help(ctx):
+    if bool(command.get_help(ctx)):
         embed.add_field(
             name = "Note",
             value = dedent(command.get_help(ctx))
