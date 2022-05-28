@@ -57,7 +57,7 @@ __RANDOM_ACTIONS = [
 
 def uwuify(text: str, /, *, allow_nyvowels = True, stutter_chance: float = 0.20, emote_chance: float = 0.8, action_chance: float = 0.05) -> str:
     '''
-    Transfrom a text into uwu text.
+    Transform a text into uwu text.
 
     Parameters:
     - `text`: The text to transform.
