@@ -128,7 +128,7 @@ async def dadjoke(ctx: lightbulb.Context):
             resp_json = await resp.json()
             await ctx.respond(resp_json["joke"], reply = True)
         else:
-            await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
+            #await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
@@ -173,7 +173,7 @@ async def do(ctx: lightbulb.Context):
 
             await ctx.respond(content = msg_content, embed = embed, reply = True)
         else:
-            await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
+            #await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
