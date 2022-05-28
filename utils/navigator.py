@@ -32,7 +32,7 @@ __default_emojis__ = {
 # When subclass the default navigators/menus, these buttons will call those hidden callback.
 # The problem with the default `stop` behavior is it deletes the message regardless, which is pretty bad ._.
 # So we need a stop function that essentially calls the "destructor" of the navigators/menus to make it do whatever it wants.
-async def __cleanup_stop__(nav, _: hikari.Event) -> None:
+async def __cleanup_stop__(nav: t.Union[ReactionPages, ButtonPages], _: hikari.Event) -> None:
     """
     As opposed to the default behavior, this stop will call the Navigator's destructor (which is `_on_stop()`) instead of deleting message.
     """
