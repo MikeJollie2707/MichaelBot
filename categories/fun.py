@@ -139,7 +139,7 @@ async def dice(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    It is recommended to use the `Slash Command` version of the command.
+    - It is recommended to use the `Slash Command` version of the command.
 '''))
 @lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
@@ -178,7 +178,7 @@ async def do(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+    - Bot needs to have `Manage Messages` permission if used as a Prefix Command.
 '''))
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to repeat.", modifier = helpers.CONSUME_REST_OPTION)
@@ -191,7 +191,7 @@ async def echo(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    It is recommended to use the `Slash Command` version of this command.
+    - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.option("target", "The target to measure", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("measure_unit", "The unit to measure")
@@ -206,8 +206,8 @@ async def how(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    The text will be sent through DM if it exceeds 1500 characters.
-    It is recommended to use the `Slash Command` version of this command.
+    - The text will be sent through DM if it exceeds 1500 characters.
+    - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1.0, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to mock.", modifier = helpers.CONSUME_REST_OPTION)
@@ -251,7 +251,7 @@ async def peko(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+    - Bot needs to have `Manage Messages` permission if used as a Prefix Command.
 '''))
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)
@@ -264,7 +264,7 @@ async def speak(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    It is recommended to use the `Message Command` version of this command.
+    - It is recommended to use the `Message Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to uwuify.", modifier = helpers.CONSUME_REST_OPTION)

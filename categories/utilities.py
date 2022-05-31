@@ -68,7 +68,7 @@ async def base_convert(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Rounding errors, along with other debatable values such as `0^0` is incorrect due to language limitation.
+    - Rounding errors, along with other debatable values such as `0^0` is incorrect due to language limitation.
 '''))
 @lightbulb.option("expression", "The math expression.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("calc", "Calculate a math expression.")
@@ -86,7 +86,7 @@ async def calc(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    This command only works with subcommands.
+    - This command only works with subcommands.
 '''))
 @lightbulb.command("embed", "Send an embed.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
@@ -123,7 +123,7 @@ async def embed_from_json(ctx: lightbulb.Context):
     
 @_embed.child
 @lightbulb.set_help(dedent('''
-    This is useful when you want to change slightly from an existing embed.
+    - This is useful when you want to change slightly from an existing embed.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("channel", "The channel the message is in. Default to the current channel.", type = hikari.TextableGuildChannel, default = None, modifier = helpers.CONSUME_REST_OPTION)
@@ -159,8 +159,8 @@ async def embed_to_json(ctx: lightbulb.Context):
 
 @_embed.child
 @lightbulb.set_help(dedent('''
-    This is an alternative to `embed interactive`.
-    Either `title` or `description` must be non-empty.
+    - This is an alternative to `embed interactive`.
+    - Either `title` or `description` must be non-empty.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("channel", "The channel to send this embed. Default to the current one.", type = hikari.TextableGuildChannel, default = None)
@@ -200,8 +200,8 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
 
 @_embed.child
 @lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages`.
-    This is an alternative to `embed simple`.
+    - Bot needs to have `Manage Messages`.
+    - This is an alternative to `embed simple`.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
@@ -278,8 +278,8 @@ async def embed_interactive(ctx: lightbulb.Context):
 
 @_embed.child
 @lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages`.
-    This is an alternative to `embed simple`.
+    - Bot needs to have `Manage Messages`.
+    - This is an alternative to `embed simple`.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
@@ -476,7 +476,7 @@ async def scan_reminders(bot: models.MichaelBot):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    This command only works with subcommands.
+    - This command only works with subcommands.
 '''))
 @lightbulb.command("remindme", "Create a reminder. Make sure your DM is open to the bot.", hidden = True, aliases = ["rmd", "notify", "timer"])
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
@@ -485,7 +485,7 @@ async def remind(ctx: lightbulb.Context):
 
 @remind.child
 @lightbulb.set_help(dedent(f'''
-    An interval of less than {NOTIFY_REFRESH} seconds is considered to be a "short reminder".
+    - An interval of less than {NOTIFY_REFRESH} seconds is considered to be a "short reminder".
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("message", "The message the bot will send after the interval.", modifier = helpers.CONSUME_REST_OPTION)
@@ -514,7 +514,7 @@ async def remind_create(ctx: lightbulb.Context):
 
 @remind.child
 @lightbulb.set_help(dedent('''
-    Due to optimization, this command won't display short reminders.
+    - Due to optimization, this command won't display short reminders.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("view", "View all your long reminders.")
@@ -559,7 +559,7 @@ async def remind_view(ctx: lightbulb.Context):
 
 @remind.child
 @lightbulb.set_help(dedent('''
-    Due to optimization, this command won't remove short reminders.
+    - Due to optimization, this command won't remove short reminders.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("remind_id", "The reminder's id. You can find it in `remindme view`.", type = int)

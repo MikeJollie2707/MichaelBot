@@ -41,7 +41,7 @@ def get_memory_size(byte: int, /, suffix: str = "B") -> str:
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Bot needs to have `Manage Messages` permission if used as a Prefix Command.
+    - Bot needs to have `Manage Messages` permission if used as a Prefix Command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", choices = ("dev", "development", "stable"), default = "stable")
@@ -441,7 +441,7 @@ async def ping(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Author needs to have `Manage Messages`.
+    - Author needs to have `Manage Messages`.
 '''))
 @lightbulb.add_checks(checks.is_db_connected, lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
@@ -468,7 +468,7 @@ async def prefix(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    It is recommended to use the `Slash Command` version of this command.
+    - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
