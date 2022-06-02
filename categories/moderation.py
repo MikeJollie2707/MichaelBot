@@ -15,12 +15,22 @@ def get_purge_iterator(
     bot: models.MichaelBot, 
     channel_id: int, 
     *, 
-    amount: int = None, 
+    amount: int, 
     predicate: t.Callable[[hikari.Message], bool] = lambda m: True
 ) -> hikari.LazyIterator[hikari.Message]:
-    
+    '''Get an iterator of messages based on the criteria specified.
+
+    Args:
+        bot (models.MichaelBot): The bot instance.
+        channel_id (int): The channel to purge.
+        amount (int, optional): The maximum amount of messages to delete. If None, then there's no max.
+        predicate (Callable[[hikari.Message], bool], optional): A callback that filter out the message to delete. By default, no filter is applied.
+
+    Returns:
+        hikari.LazyIterator[hikari.Message]: _description_
+    '''
     bulk_delete_limit = dt.datetime.now().astimezone() - dt.timedelta(days = 1)
-    if amount is not None:
+    if amount > 0:
         return (
             bot.rest.fetch_messages(channel_id)
             .take_while(lambda message: message.created_at > bulk_delete_limit)
@@ -38,7 +48,18 @@ async def do_purge(
     bot: models.MichaelBot,
     iterator: hikari.LazyIterator[hikari.Message],
     channel_id: int
-):
+) -> int:
+    '''This is a coroutine. Purge messages using the iterator provided.
+
+    Args:
+        bot (models.MichaelBot): The bot instance.
+        iterator (hikari.LazyIterator[hikari.Message]): An iterator of Message. Should be obtained via `get_purge_iterator()`.
+        channel_id (int): The channel to delete. This must match what is passed through `get_purge_iterator()`.
+    
+    Return:
+        int: The number of messages successfully deleted.
+    '''
+
     count: int = 0
     async for messages in iterator.chunk(100):
         try:
@@ -52,24 +73,28 @@ async def do_purge(
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
-@lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("purge", "Purge all messages that meet certain conditions.")
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, default = 0)
+@lightbulb.command("purge", "Purge the most recent messages.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def purge(ctx: lightbulb.Context):
-    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+    await purge_messages(ctx)
 
 @purge.child
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
-@lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 1, max_value = 500, default = None)
-@lightbulb.command("messages", "Purge the most recent messages.", inherit_checks = True, auto_defer = True)
+@lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 0, max_value = 500, default = 0)
+@lightbulb.command("messages", "Purge the most recent messages.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_messages(ctx: lightbulb.Context):
     amount = ctx.options.amount
     bot: models.MichaelBot = ctx.bot
 
-    if amount is not None:
+    if amount != 0:
         amount = max(1, min(amount, 500))
         if isinstance(ctx, lightbulb.PrefixContext):
             # Delete the command just sent.
@@ -84,20 +109,23 @@ async def purge_messages(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
-@lightbulb.option("amount", "The amount of messages to delete. Default to 1.", type = int, min_value = 1, max_value = 500, default = 1)
+@lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("member", "The member to delete.", type = hikari.Member)
-@lightbulb.command("user", "Purge the most recent messages from a user.", inherit_checks = True, auto_defer = True)
+@lightbulb.command("member", "Purge the most recent messages from a user.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def purge_user(ctx: lightbulb.Context):
+async def purge_member(ctx: lightbulb.Context):
     member: hikari.Member = ctx.options.member
     amount: int = ctx.options.amount
     bot: models.MichaelBot = ctx.bot
 
-    amount = max(1, min(amount, 500))
-    if isinstance(ctx, lightbulb.PrefixContext):
-        amount += 1
+    if amount != 0:
+        amount = max(1, min(amount, 500))
+        if isinstance(ctx, lightbulb.PrefixContext) and ctx.author.id == member.id:
+            amount += 1
+
+    predicate = lambda m: m.author.id == member.id
     
-    iterator = get_purge_iterator(bot, ctx.channel_id, predicate = lambda m: m.author.id == member.id, amount = amount)
+    iterator = get_purge_iterator(bot, ctx.channel_id, predicate = predicate, amount = amount)
     count = await do_purge(bot, iterator, ctx.channel_id)
 
     await ctx.respond(f"Successfully deleted {count} messages from user `{member}`.", delete_after = 5)
@@ -106,25 +134,20 @@ async def purge_user(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
-@lightbulb.option("flags", "Additional flag to set. Default flag is `--delete-with-embeds`.", choices = ["--delete-with-embeds", "--delete-embeds-only"], default = "--delete-with-embeds")
-@lightbulb.option("amount", "The amount of messages to delete. Default to 1.", type = int, min_value = 1, max_value = 500, default = 1)
-@lightbulb.command("embed", "Purge the most recent messages with embeds.", inherit_checks = True, auto_defer = True)
+@lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
+@lightbulb.command("embed", "Purge the most recent messages with embeds.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_embed(ctx: lightbulb.Context):
     amount: int = ctx.options.amount
-    flags: str = ctx.options.flags
     bot: models.MichaelBot = ctx.bot
 
-    amount = max(1, min(amount, 500))
-    if isinstance(ctx, lightbulb.PrefixContext) and bool(ctx.event.message.embeds):
-        amount += 1
+    if amount != 0:
+        amount = max(1, min(amount, 500))
+        if isinstance(ctx, lightbulb.PrefixContext) and bool(ctx.event.message.embeds):
+            amount += 1
     
     iterator = get_purge_iterator(bot, ctx.channel_id, predicate = lambda m: bool(m.embeds), amount = amount)
-    count: int = 0
-    if flags == "--delete-with-embeds":
-        count = await do_purge(bot, iterator, ctx.channel_id)
-    else:
-        raise NotImplementedError("This flag is not implemented due to possible rate limiting.")
+    count = await do_purge(bot, iterator, ctx.channel_id)
     
     await ctx.respond(f"Successfully deleted {count} messages with embeds.", delete_after = 5)
 
@@ -134,16 +157,16 @@ async def purge_embed(ctx: lightbulb.Context):
     - To delete messages that contain any of the provided words, consider using `purge words`.
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
-@lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 1, max_value = 500, default = None)
+@lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("string", "The words to delete. Any messages with this string occurrence will be deleted.")
-@lightbulb.command("string", "Purge the most recent messages contain the string specified.", inherit_checks = True, auto_defer = True)
+@lightbulb.command("string", "Purge the most recent messages contain the string specified.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_string(ctx: lightbulb.Context):
     string: str = ctx.options.string
     amount: int = ctx.options.amount
     bot: models.MichaelBot = ctx.bot
 
-    if amount is not None:
+    if amount != 0:
         amount = max(1, min(amount, 500))
         if isinstance(ctx, lightbulb.PrefixContext) and string in ctx.event.message.content:
             amount += 1
@@ -163,7 +186,7 @@ async def purge_string(ctx: lightbulb.Context):
     - To delete messages that contain all the provided words, consider using `purge string`.
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
-@lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 1, max_value = 500, default = None)
+@lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("words", "The words to filter, separated by white space.")
 @lightbulb.command("words", "Purge the most recent messages contain any of the words specified.", inherit_checks = True, auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -182,7 +205,7 @@ async def purge_words(ctx: lightbulb.Context):
                 return True
         return False
 
-    if amount is not None:
+    if amount != 0:
         amount = max(1, min(amount, 500))
         if isinstance(ctx, lightbulb.PrefixContext) and has_word(ctx.event.message):
             amount += 1
