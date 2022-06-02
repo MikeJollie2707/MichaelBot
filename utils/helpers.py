@@ -70,12 +70,20 @@ CONSUME_REST_OPTION = lightbulb.OptionModifier.CONSUME_REST
 GREEDY_OPTION = lightbulb.OptionModifier.GREEDY
 
 # Read Messages is too standard so we don't include it.
-COMMAND_STANDARD_PERMISSIONS = [
+COMMAND_STANDARD_PERMISSIONS = (
     hikari.Permissions.SEND_MESSAGES,
     hikari.Permissions.READ_MESSAGE_HISTORY,
-]
+)
 
-def embed_from_dict(data: dict[str, t.Any]) -> hikari.Embed:
+def embed_from_dict(data: dict[str, t.Any], /) -> hikari.Embed:
+    '''Generate an embed from a dictionary.
+
+    Args:
+        data (dict[str, t.Any]): A valid dict representation of an embed.
+
+    Returns:
+        hikari.Embed: The embed from the dict.
+    '''
     embed = hikari.Embed()
 
     embed.title = data.get("title", None)
@@ -137,7 +145,15 @@ def embed_from_dict(data: dict[str, t.Any]) -> hikari.Embed:
 
     return embed
 
-def embed_to_dict(embed: hikari.Embed) -> dict[str, t.Any]:
+def embed_to_dict(embed: hikari.Embed, /) -> dict[str, t.Any]:
+    '''Convert an embed into a dict object.
+
+    Args:
+        embed (hikari.Embed): An embed object to convert.
+
+    Returns:
+        dict[str, t.Any]: A dictionary that conforms Discord's structure.
+    '''
     d = {}
 
     if bool(embed.title):
