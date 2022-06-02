@@ -27,7 +27,7 @@ __error_responses__ = {
     "CheckFailure": "Command `{}` does not satisfy the following requirement: {}.",
     "ConverterFailure": "The following option cannot be converted properly: `{}`.",
     "NotEnoughArguments": "You're missing the following arguments: {}.",
-    "CustomAPIFailed": "{}",
+    "CustomAPIFailed": "The web request failed! {}.",
     "Others": "There's an unhandled error.\nError message: `{}`.\nThis is a developer-side issue."
 }
 

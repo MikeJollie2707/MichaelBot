@@ -14,9 +14,6 @@ plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore
 plugin.d.emote = helpers.get_emote(":grin:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
-# TODO: Deal with errors.CustomAPIFailed more appropriately.
-# Currently, it's sending a command-scope error message and a global unhandled message.
-
 ANIME_ACTIONS = {
     "angry": {
         "url": ["http://api.satou-chan.xyz/api/endpoint/angry"],
@@ -126,7 +123,6 @@ async def dadjoke(ctx: lightbulb.Context):
             resp_json = await resp.json()
             await ctx.respond(resp_json["joke"], reply = True)
         else:
-            #await ctx.respond("Oh, no dad jokes. Forgetti beam!", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
@@ -171,7 +167,6 @@ async def do(ctx: lightbulb.Context):
 
             await ctx.respond(content = msg_content, embed = embed, reply = True)
         else:
-            #await ctx.respond(f"Nuu, the gif server returned an evil {resp.status}. How cruel!", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
@@ -238,8 +233,6 @@ async def mock(ctx: lightbulb.Context):
 @lightbulb.command("pekofy", "Pekofy a message peko.")
 @lightbulb.implements(lightbulb.MessageCommand)
 async def peko(ctx: lightbulb.Context):
-    from utils.funtext import pekofy
-
     message: hikari.Message = ctx.options.target
     if message.content != None:
         text = pekofy(message.content)
@@ -269,8 +262,6 @@ async def speak(ctx: lightbulb.Context):
 @lightbulb.command("uwu", "Turn a text into uwu text.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def uwu(ctx: lightbulb.Context):
-    from utils.funtext import uwuify
-
     text = ""
     if isinstance(ctx, lightbulb.MessageContext):
         message: hikari.Message = ctx.options.target
