@@ -11,6 +11,8 @@ import utils.helpers as helpers
 import utils.models as models
 import utils.psql as psql
 
+from utils import errors
+
 plugin = lightbulb.Plugin(".Experiment", "Sandbox")
 plugin.add_checks(checks.is_dev, checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
 
@@ -19,7 +21,6 @@ plugin.add_checks(checks.is_dev, checks.is_command_enabled, lightbulb.bot_has_gu
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def test(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
-
     pass
 
 def load(bot: models.MichaelBot):
