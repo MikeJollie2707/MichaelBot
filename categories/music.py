@@ -7,9 +7,7 @@ import hikari
 import lavaplayer
 import lightbulb
 
-import utils.checks as checks
-import utils.helpers as helpers
-import utils.models as models
+from utils import checks, helpers, models
 from utils.converters import IntervalConverter
 from utils.models import NodeExtra
 from utils.navigator import ButtonPages

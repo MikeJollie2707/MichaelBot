@@ -13,7 +13,7 @@ import lightbulb
 # Default callback functions
 from lightbulb.utils.nav import *
 
-import utils.helpers as helpers
+from utils import helpers
 
 T = t.TypeVar("T")
 

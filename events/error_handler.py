@@ -9,9 +9,7 @@ import logging
 import hikari
 import lightbulb
 
-import utils.errors as errors
-import utils.helpers as helpers
-import utils.models as models
+from utils import errors, helpers, models
 
 logger = logging.getLogger("MichaelBot")
 

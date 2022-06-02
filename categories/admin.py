@@ -5,10 +5,7 @@ import datetime as dt
 import hikari
 import lightbulb
 
-import utils.checks as checks
-import utils.helpers as helpers
-import utils.models as models
-import utils.psql as psql
+from utils import checks, helpers, models, psql
 from utils.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)

@@ -11,7 +11,7 @@ import hikari
 import lavaplayer
 import lightbulb
 
-import utils.psql as psql
+from utils import psql
 
 class UserCache:
     '''

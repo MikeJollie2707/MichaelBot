@@ -9,9 +9,7 @@ import humanize
 import lightbulb
 import psutil
 
-import utils.checks as checks
-import utils.helpers as helpers
-import utils.models as models
+from utils import checks, helpers, models
 from utils.navigator import ButtonPages
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)

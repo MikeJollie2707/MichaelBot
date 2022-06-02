@@ -7,10 +7,8 @@ from textwrap import dedent
 import hikari
 import lightbulb
 
-import utils.checks as checks
-import utils.errors as errors
-import utils.helpers as helpers
-import utils.models as models
+from utils import checks, errors, helpers, models
+from utils.funtext import pekofy, uwuify
 
 plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":grin:")

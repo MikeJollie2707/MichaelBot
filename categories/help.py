@@ -7,8 +7,7 @@ from textwrap import dedent
 import hikari
 import lightbulb
 
-import utils.helpers as helpers
-import utils.models as models
+from utils import helpers, models
 from utils.navigator import ButtonPages, MenuComponent, MenuInteractionWrapper
 
 __PREFIX_COMMAND_TYPES__ = (

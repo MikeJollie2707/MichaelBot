@@ -6,10 +6,7 @@ import humanize
 import lightbulb
 import mystbin
 
-import utils.checks as checks
-import utils.helpers as helpers
-import utils.models as models
-import utils.psql as psql
+from utils import checks, helpers, models, psql
 
 EVENT_OPTION_MAPPING = {
     hikari.GuildChannelCreateEvent: "guild_channel_create",

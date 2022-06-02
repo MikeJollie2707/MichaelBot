@@ -8,7 +8,7 @@ import emoji
 import hikari
 import lightbulb
 
-import utils.models as models
+from utils import models
 
 __PERMISSIONS_MAPPING__ = {
     # Community Server Permissions

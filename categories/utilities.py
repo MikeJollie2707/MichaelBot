@@ -12,12 +12,7 @@ import lightbulb
 import py_expression_eval
 from lightbulb.ext import tasks
 
-import utils.checks as checks
-import utils.converters as converters
-import utils.errors as errors
-import utils.helpers as helpers
-import utils.models as models
-import utils.psql as psql
+from utils import checks, converters, errors, helpers, models, psql
 from utils.navigator import ItemListBuilder
 
 NOTIFY_REFRESH = 2 * 60
@@ -627,7 +622,6 @@ async def urban(ctx: lightbulb.Context):
             else:
                 await ctx.respond("Sorry, that word doesn't exist on urban dictionary.", reply = True, mentions_reply = True)
         else:
-            #await ctx.respond("Something went wrong.", reply = True, mentions_reply = True)
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
@@ -708,8 +702,7 @@ async def weather(ctx: lightbulb.Context):
             await ctx.respond("City not found.", reply = True, mentions_reply = True)
         else:
             resp_json = await resp.json()
-            #await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
-            raise errors.CustomAPIFailed(f"Endpoint {BASE_URL + '/current.json'} returned with status {resp.status}. Raw response: {await resp.text()}")
+            await ctx.respond(f"Weather API return the following error: `{resp_json['error']['message']}`", reply = True, mentions_reply = True)
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)

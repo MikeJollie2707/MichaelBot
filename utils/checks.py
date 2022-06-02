@@ -2,9 +2,7 @@
 
 import lightbulb
 
-import utils.errors as errors
-import utils.models as models
-import utils.psql as psql
+from utils import errors, models, psql
 
 @lightbulb.Check
 def is_dev(ctx: lightbulb.Context) -> bool:

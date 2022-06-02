@@ -9,8 +9,7 @@ import asyncpg.exceptions as pg_exception
 import hikari
 import lightbulb
 
-import utils.models as models
-import utils.psql as psql
+from utils import models, psql
 
 plugin = lightbulb.Plugin(".Listeners", "Internal Listeners")
 logger = logging.getLogger("MichaelBot")
