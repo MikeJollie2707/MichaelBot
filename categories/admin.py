@@ -85,6 +85,23 @@ async def blacklist_user(ctx: lightbulb.Context):
     await ctx.respond("Blacklisted!", reply = True)
 
 @plugin.command()
+@lightbulb.command("count-slashes", "Count all registered slash commands.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def count_slashes(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    count: int = 0
+    for s_cmd in bot.slash_commands.values():
+        count += 1
+        print(s_cmd.qualname)
+        if isinstance(s_cmd, (lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)):
+            for sub_cmd in s_cmd.subcommands.values():
+                count += 1
+                print(sub_cmd.qualname)
+    
+    await ctx.respond(f"There are {count} slash commands (View details in terminal).", reply = True)
+
+@plugin.command()
 @lightbulb.command("force-sync-cache", "Force update the cache with the current data in database.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def force_sync_cache(ctx: lightbulb.Context):
