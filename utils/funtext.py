@@ -1,5 +1,10 @@
 '''Contains funny text manipulations.'''
 
+__all__ = (
+    "uwuify",
+    "pekofy"
+)
+
 import random
 
 __REPLACE_WORDS = {
