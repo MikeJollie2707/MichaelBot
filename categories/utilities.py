@@ -158,7 +158,7 @@ async def embed_to_json(ctx: lightbulb.Context):
     - Either `title` or `description` must be non-empty.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("channel", "The channel to send this embed. Default to the current one.", type = hikari.TextableGuildChannel, default = None)
+@lightbulb.option("channel", "The channel to send this embed. Default to the current one.", type = hikari.TextableGuildChannel, channel_types = (hikari.ChannelType.GUILD_TEXT,), default = None)
 @lightbulb.option("color", "Your choice of color. Default to green.", autocomplete = True, default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)

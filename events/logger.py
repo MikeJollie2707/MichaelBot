@@ -99,7 +99,11 @@ async def log_set(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     Author needs to have `Manage Server`.
 '''))
-@lightbulb.option("channel", "The Discord channel to dump all the logs. Default to current channel.", type = hikari.TextableGuildChannel, default = None)
+@lightbulb.option("channel", "The Discord channel to dump all the logs. Default to current channel.", 
+    type = hikari.TextableGuildChannel, 
+    channel_types = (hikari.ChannelType.GUILD_TEXT,), 
+    default = None
+)
 @lightbulb.command("all", "Set a channel to dump all the logs. This automatically enables logging system.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def log_set_all(ctx: lightbulb.Context):

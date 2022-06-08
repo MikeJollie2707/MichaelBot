@@ -83,7 +83,11 @@ async def start_lavalink(event: hikari.ShardReadyEvent):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.option(name = "voice_channel", description = "The voice channel to join. Default to the VC you're in.", type = hikari.GuildVoiceChannel, default = None)
+@lightbulb.option(name = "voice_channel", description = "The voice channel to join. Default to the VC you're in.", 
+    type = hikari.GuildVoiceChannel, 
+    channel_types = (hikari.ChannelType.GUILD_VOICE,), 
+    default = None
+)
 @lightbulb.command(name = "join", description = "Join a voice channel.", aliases = ["connect"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def join(ctx: lightbulb.Context):
