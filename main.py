@@ -6,6 +6,7 @@ import sys
 
 import hikari
 import lightbulb
+import miru
 from lightbulb.ext import tasks
 
 from utils.models import MichaelBot
@@ -75,6 +76,7 @@ if __name__ == "__main__":
     )
     
     tasks.load(bot)
+    miru.load(bot)
 
     for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)
