@@ -1,0 +1,2337 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.3">
+    
+    
+      
+        <title>models.py - MichaelBot Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,300i,400,400i,700,700i%7CConsolas:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Ubuntu";--md-code-font:"Consolas"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="teal">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#utils.models.UserCache" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MichaelBot Documentation" class="md-header__button md-logo" aria-label="MichaelBot Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MichaelBot Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              models.py
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MikeJollie2707/MichaelBot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MikeJollie2707/MichaelBot
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MichaelBot Documentation" class="md-nav__button md-logo" aria-label="MichaelBot Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    MichaelBot Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MikeJollie2707/MichaelBot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MikeJollie2707/MichaelBot
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Commands
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Commands" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Commands
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/bot/" class="md-nav__link">
+        Bot
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/fun/" class="md-nav__link">
+        Fun
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/logger/" class="md-nav__link">
+        Logs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/music/" class="md-nav__link">
+        Music
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/utilities/" class="md-nav__link">
+        Utilities
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Developer Corner
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Developer Corner" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Developer Corner
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        errors.py
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funtext/" class="md-nav__link">
+        funtext.py
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../help/" class="md-nav__link">
+        help.py
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helpers/" class="md-nav__link">
+        helpers.py
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          models.py
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        models.py
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.UserCache" class="md-nav__link">
+    UserCache
+  </a>
+  
+    <nav class="md-nav" aria-label="UserCache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.UserCache.add_user_module" class="md-nav__link">
+    add_user_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.UserCache.update_user_module" class="md-nav__link">
+    update_user_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.UserCache.force_sync" class="md-nav__link">
+    force_sync()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.GuildCache" class="md-nav__link">
+    GuildCache
+  </a>
+  
+    <nav class="md-nav" aria-label="GuildCache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.add_guild_module" class="md-nav__link">
+    add_guild_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.update_guild_module" class="md-nav__link">
+    update_guild_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.add_logging_module" class="md-nav__link">
+    add_logging_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.update_logging_module" class="md-nav__link">
+    update_logging_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.force_sync" class="md-nav__link">
+    force_sync()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.DefaultColor" class="md-nav__link">
+    DefaultColor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.NodeExtra" class="md-nav__link">
+    NodeExtra
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.MichaelBot" class="md-nav__link">
+    MichaelBot
+  </a>
+  
+    <nav class="md-nav" aria-label="MichaelBot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.MichaelBot.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.MichaelBot.get_slash_command" class="md-nav__link">
+    get_slash_command()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../menu/" class="md-nav__link">
+        nav
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.UserCache" class="md-nav__link">
+    UserCache
+  </a>
+  
+    <nav class="md-nav" aria-label="UserCache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.UserCache.add_user_module" class="md-nav__link">
+    add_user_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.UserCache.update_user_module" class="md-nav__link">
+    update_user_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.UserCache.force_sync" class="md-nav__link">
+    force_sync()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.GuildCache" class="md-nav__link">
+    GuildCache
+  </a>
+  
+    <nav class="md-nav" aria-label="GuildCache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.add_guild_module" class="md-nav__link">
+    add_guild_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.update_guild_module" class="md-nav__link">
+    update_guild_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.add_logging_module" class="md-nav__link">
+    add_logging_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.update_logging_module" class="md-nav__link">
+    update_logging_module()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.GuildCache.force_sync" class="md-nav__link">
+    force_sync()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.DefaultColor" class="md-nav__link">
+    DefaultColor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.NodeExtra" class="md-nav__link">
+    NodeExtra
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utils.models.MichaelBot" class="md-nav__link">
+    MichaelBot
+  </a>
+  
+    <nav class="md-nav" aria-label="MichaelBot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.MichaelBot.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.MichaelBot.get_slash_command" class="md-nav__link">
+    get_slash_command()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/MikeJollie2707/MichaelBot/edit/master/docs/dev/models.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+  <h1>models.py</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Contains many data structures, including the customized <code>MichaelBot</code> class.</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.UserCache" class="doc doc-heading">
+        <code>UserCache</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Represent a user data in the database.</p>
+<p>This contains one module:</p>
+<ul>
+<li><code>user_module</code>: Represent the <code>Users</code> table.</li>
+</ul>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">UserCache</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Represent a user data in the database.</span>
+
+<span class="sd">    This contains one module:</span>
+
+<span class="sd">    - `user_module`: Represent the `Users` table.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_module</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">user_module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">user_module</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user_module</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_module</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_user_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">User</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a user into the cache and the database.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+        <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_info</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Edit a user data in the cache and the database.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Force this object to update with database.</span>
+<span class="sd">        If the method returns `None`, the entry for this user isn&#39;t on the database, thus you should use `add_user_module()` instead.</span>
+<span class="sd">        Otherwise, it returns itself.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.UserCache.add_user_module" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_user_module</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">User</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Add a user into the cache and the database.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_user_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">User</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add a user into the cache and the database.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+    <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_info</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.UserCache.update_user_module" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_user_module</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Edit a user data in the cache and the database.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_user_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Edit a user data in the cache and the database.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.UserCache.force_sync" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">force_sync</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Force this object to update with database.
+If the method returns <code>None</code>, the entry for this user isn't on the database, thus you should use <code>add_user_module()</code> instead.
+Otherwise, it returns itself.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Force this object to update with database.</span>
+<span class="sd">    If the method returns `None`, the entry for this user isn&#39;t on the database, thus you should use `add_user_module()` instead.</span>
+<span class="sd">    Otherwise, it returns itself.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user</span>
+    <span class="k">return</span> <span class="bp">self</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.GuildCache" class="doc doc-heading">
+        <code>GuildCache</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Represent a guild data in the database.</p>
+<p>This contains two module:</p>
+<ul>
+<li><code>guild_module</code>: Represent the <code>Guilds</code> table.</li>
+<li><code>logging_module</code>: Represent the <code>GuildsLogs</code> table.</li>
+</ul>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GuildCache</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Represent a guild data in the database.</span>
+
+<span class="sd">    This contains two module:</span>
+
+<span class="sd">    - `guild_module`: Represent the `Guilds` table.</span>
+<span class="sd">    - `logging_module`: Represent the `GuildsLogs` table.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guild_module</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logging_module</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">guild_module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">guild_module</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">guild_module</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">logging_module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging_module</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging_module</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;guild_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild_module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">logging_module</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a guild module into the cache and the database.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
+        <span class="n">guild_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild_info</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Edit a guild module data in the cache and the database.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a logging module into the cache and the database.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
+        <span class="n">logging_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">logging_info</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Update a logging module in the cache and the database.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Force this object to update with database.</span>
+<span class="sd">        If the method returns `None`, the entry for this guild isn&#39;t on the database, thus you should use `add_guild_module()` instead.</span>
+<span class="sd">        Otherwise, it returns itself.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">guild</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">guild</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">guild</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">guild_log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">guild_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">guild_log</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">guild_log</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;guild_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">guild_log</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.GuildCache.add_guild_module" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_guild_module</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Add a guild module into the cache and the database.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add a guild module into the cache and the database.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
+    <span class="n">guild_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild_info</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.GuildCache.update_guild_module" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_guild_module</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Edit a guild module data in the cache and the database.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Edit a guild module data in the cache and the database.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.GuildCache.add_logging_module" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add_logging_module</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Add a logging module into the cache and the database.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add a logging module into the cache and the database.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
+    <span class="n">logging_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">logging_info</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.GuildCache.update_logging_module" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_logging_module</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Update a logging module in the cache and the database.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Update a logging module in the cache and the database.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.GuildCache.force_sync" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">force_sync</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Force this object to update with database.
+If the method returns <code>None</code>, the entry for this guild isn't on the database, thus you should use <code>add_guild_module()</code> instead.
+Otherwise, it returns itself.</p>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Force this object to update with database.</span>
+<span class="sd">    If the method returns `None`, the entry for this guild isn&#39;t on the database, thus you should use `add_guild_module()` instead.</span>
+<span class="sd">    Otherwise, it returns itself.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">guild</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">guild</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">guild</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">guild_log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">guild_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">guild_log</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">guild_log</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;guild_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">guild_log</span>
+    <span class="k">return</span> <span class="bp">self</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.DefaultColor" class="doc doc-heading">
+        <code>DefaultColor</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+  
+      <p>Store several default colors to use instantly.</p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DefaultColor</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Store several default colors to use instantly.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">teal</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x1abc9c</span><span class="p">)</span>
+    <span class="n">dark_teal</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x11806a</span><span class="p">)</span>
+    <span class="n">brand_green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x57F287</span><span class="p">)</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x2ecc71</span><span class="p">)</span>
+    <span class="n">dark_green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x1f8b4c</span><span class="p">)</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x3498db</span><span class="p">)</span>
+    <span class="n">dark_blue</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x206694</span><span class="p">)</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x9b59b6</span><span class="p">)</span>
+    <span class="n">dark_purple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x71368a</span><span class="p">)</span>
+    <span class="n">magenta</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe91e63</span><span class="p">)</span>
+    <span class="n">dark_magenta</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xad1457</span><span class="p">)</span>
+    <span class="n">gold</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xf1c40f</span><span class="p">)</span>
+    <span class="n">dark_gold</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xc27c0e</span><span class="p">)</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe67e22</span><span class="p">)</span>
+    <span class="n">dark_orange</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xa84300</span><span class="p">)</span>
+    <span class="n">brand_red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xED4245</span><span class="p">)</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe74c3c</span><span class="p">)</span>
+    <span class="n">dark_red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x992d22</span><span class="p">)</span>
+    <span class="n">lighter_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x95a5a6</span><span class="p">)</span>
+    <span class="n">dark_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x607d8b</span><span class="p">)</span>
+    <span class="n">light_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x979c9f</span><span class="p">)</span>
+    <span class="n">darker_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x546e7a</span><span class="p">)</span>
+    <span class="n">og_blurple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x7289da</span><span class="p">)</span>
+    <span class="n">blurple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x5865F2</span><span class="p">)</span>
+    <span class="n">greyple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x5865F2</span><span class="p">)</span>
+    <span class="n">dark_theme</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x36393F</span><span class="p">)</span>
+    <span class="n">fuchsia</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xEB459E</span><span class="p">)</span>
+    <span class="n">yellow</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xFEE75C</span><span class="p">)</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x000000</span><span class="p">)</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xFFFFFF</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.NodeExtra" class="doc doc-heading">
+        <code>NodeExtra</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>A class to store extra data for the <code>lavaplayer.Node</code></p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NodeExtra</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;A class to store extra data for the `lavaplayer.Node`&#39;&#39;&#39;</span>
+    <span class="n">queue_loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">working_channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.MichaelBot" class="doc doc-heading">
+        <code>MichaelBot</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code>lightbulb.<span title="lightbulb.BotApp">BotApp</span></code></p>
+
+  
+      <p>A subclass of <code>lightbulb.BotApp</code>. This allows syntax highlight on many custom attributes.</p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.&#39;&#39;&#39;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;info&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;secrets&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;online_at&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logging&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pool&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;aio_session&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;guild_cache&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user_cache&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lavalink&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;node_extra&quot;</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="n">token</span><span class="p">,</span> 
+        <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">ignore_bots</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">owner_ids</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> 
+        <span class="n">default_enabled_guilds</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> 
+        <span class="n">help_class</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">help_slash_command</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">delete_unbound_commands</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">case_insensitive_prefix_commands</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        info : dict</span>
+<span class="sd">            The bot info. Store the one in `config.json`.</span>
+<span class="sd">        secrets : dict</span>
+<span class="sd">            The bot&#39;s secrets such as token, database info, etc.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secrets</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;secrets&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">online_at</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">asyncpg</span><span class="o">.</span><span class="n">Pool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aio_session</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Store some db info. This allows read-only operation much cheaper.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guild_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">GuildCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UserCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lavalink</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lavaplayer</span><span class="o">.</span><span class="n">LavalinkClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Currently lavaplayer doesn&#39;t support adding attr to lavaplayer.objects.Node</span>
+        <span class="c1"># so we&#39;ll make a dictionary to manually track additional info.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NodeExtra</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">launch_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;launch_options&quot;</span><span class="p">)</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+        <span class="k">if</span> <span class="n">launch_options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">launch_options</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">launch_options</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;-d&quot;</span><span class="p">]:</span>
+                <span class="n">default_enabled_guilds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;default_guilds&quot;</span><span class="p">]</span>
+                <span class="n">log_level</span> <span class="o">=</span> <span class="s2">&quot;DEBUG&quot;</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="s2">&quot;-q&quot;</span><span class="p">]:</span>
+                <span class="n">log_level</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">token</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="p">,</span>
+            <span class="n">ignore_bots</span><span class="p">,</span>
+            <span class="n">owner_ids</span><span class="p">,</span>
+            <span class="n">default_enabled_guilds</span><span class="p">,</span>
+            <span class="n">help_class</span><span class="p">,</span>
+            <span class="n">help_slash_command</span><span class="p">,</span>
+            <span class="n">delete_unbound_commands</span><span class="p">,</span>
+            <span class="n">case_insensitive_prefix_commands</span><span class="p">,</span>
+            <span class="n">logs</span> <span class="o">=</span> <span class="n">log_level</span> <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_slash_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]:</span>
+        <span class="sd">&#39;&#39;&#39;Get the slash command with the given name, or `None` if none was found.</span>
+
+<span class="sd">        Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The command name to search.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        t.Optional[lightbulb.SlashCommand]</span>
+<span class="sd">            The slash command with that name, or `None` if none was found.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Reference: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/app.html#BotApp.get_prefix_command</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slash_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">maybe_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slash_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">maybe_group</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommandGroup</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">this</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span>
+                <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommandGroup</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashSubGroup</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashSubCommand</span>
+            <span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">maybe_group</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">this</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashSubCommand</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">this</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">get_subcommand</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">this</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.MichaelBot.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ignore_bots</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">owner_ids</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">default_enabled_guilds</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">help_class</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">help_slash_command</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">delete_unbound_commands</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">case_insensitive_prefix_commands</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>info</code></td>
+          <td>
+                <code>dict</code>
+          </td>
+          <td><p>The bot info. Store the one in <code>config.json</code>.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>secrets</code></td>
+          <td>
+                <code>dict</code>
+          </td>
+          <td><p>The bot's secrets such as token, database info, etc.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+    <span class="n">token</span><span class="p">,</span> 
+    <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+    <span class="n">ignore_bots</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+    <span class="n">owner_ids</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> 
+    <span class="n">default_enabled_guilds</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(),</span> 
+    <span class="n">help_class</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+    <span class="n">help_slash_command</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="n">delete_unbound_commands</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+    <span class="n">case_insensitive_prefix_commands</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------------</span>
+<span class="sd">    info : dict</span>
+<span class="sd">        The bot info. Store the one in `config.json`.</span>
+<span class="sd">    secrets : dict</span>
+<span class="sd">        The bot&#39;s secrets such as token, database info, etc.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">secrets</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;secrets&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">online_at</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">asyncpg</span><span class="o">.</span><span class="n">Pool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">aio_session</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Store some db info. This allows read-only operation much cheaper.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">guild_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">GuildCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UserCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">lavalink</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lavaplayer</span><span class="o">.</span><span class="n">LavalinkClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Currently lavaplayer doesn&#39;t support adding attr to lavaplayer.objects.Node</span>
+    <span class="c1"># so we&#39;ll make a dictionary to manually track additional info.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">node_extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">NodeExtra</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">launch_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;launch_options&quot;</span><span class="p">)</span>
+    <span class="n">log_level</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+    <span class="k">if</span> <span class="n">launch_options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">launch_options</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">launch_options</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="s2">&quot;-d&quot;</span><span class="p">]:</span>
+            <span class="n">default_enabled_guilds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;default_guilds&quot;</span><span class="p">]</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="s2">&quot;DEBUG&quot;</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="s2">&quot;-q&quot;</span><span class="p">]:</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">token</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">,</span>
+        <span class="n">ignore_bots</span><span class="p">,</span>
+        <span class="n">owner_ids</span><span class="p">,</span>
+        <span class="n">default_enabled_guilds</span><span class="p">,</span>
+        <span class="n">help_class</span><span class="p">,</span>
+        <span class="n">help_slash_command</span><span class="p">,</span>
+        <span class="n">delete_unbound_commands</span><span class="p">,</span>
+        <span class="n">case_insensitive_prefix_commands</span><span class="p">,</span>
+        <span class="n">logs</span> <span class="o">=</span> <span class="n">log_level</span> <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.MichaelBot.get_slash_command" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_slash_command</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the slash command with the given name, or <code>None</code> if none was found.</p>
+<p>Unlike the default behavior in <code>lightbulb.BotApp</code>, this also searches for subcommands.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>name</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>The command name to search.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing">t</span>.<span title="typing.Optional">Optional</span>[lightbulb.<span title="lightbulb.SlashCommand">SlashCommand</span>]</code>
+          </td>
+          <td><p>The slash command with that name, or <code>None</code> if none was found.</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_slash_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]:</span>
+    <span class="sd">&#39;&#39;&#39;Get the slash command with the given name, or `None` if none was found.</span>
+
+<span class="sd">    Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The command name to search.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    t.Optional[lightbulb.SlashCommand]</span>
+<span class="sd">        The slash command with that name, or `None` if none was found.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Reference: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/app.html#BotApp.get_prefix_command</span>
+
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slash_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">maybe_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slash_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">maybe_group</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommandGroup</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">this</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span>
+            <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommandGroup</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashSubGroup</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashSubCommand</span>
+        <span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">maybe_group</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">this</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashSubCommand</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">this</span> <span class="o">=</span> <span class="n">this</span><span class="o">.</span><span class="n">get_subcommand</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">this</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../helpers/" class="md-footer__link md-footer__link--prev" aria-label="Previous: helpers.py" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              helpers.py
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../menu/" class="md-footer__link md-footer__link--next" aria-label="Next: nav" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              nav
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["search.highlight"], "search": "../../assets/javascripts/workers/search.b028fd86.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f758a944.min.js"></script>
+      
+    
+  </body>
+</html>
