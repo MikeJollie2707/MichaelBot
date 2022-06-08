@@ -78,12 +78,17 @@ COMMAND_STANDARD_PERMISSIONS = (
 def embed_from_dict(data: dict[str, t.Any], /) -> hikari.Embed:
     '''Generate an embed from a dictionary.
 
-    Args:
-        data (dict[str, t.Any]): A valid dict representation of an embed.
+    Parameters
+    ----------
+    data : dict[str, t.Any]
+        A valid dict representation of an embed.
 
-    Returns:
-        hikari.Embed: The embed from the dict.
+    Returns
+    -------
+    hikari.Embed
+        The embed from the dict.
     '''
+
     embed = hikari.Embed()
 
     embed.title = data.get("title", None)
@@ -148,12 +153,17 @@ def embed_from_dict(data: dict[str, t.Any], /) -> hikari.Embed:
 def embed_to_dict(embed: hikari.Embed, /) -> dict[str, t.Any]:
     '''Convert an embed into a dict object.
 
-    Args:
-        embed (hikari.Embed): An embed object to convert.
+    Parameters
+    ----------
+    embed : hikari.Embed
+        An embed object to convert.
 
-    Returns:
-        dict[str, t.Any]: A dictionary that conforms Discord's structure.
+    Returns
+    -------
+    dict[str, t.Any]
+        A dictionary that conforms Discord's structure.
     '''
+
     d = {}
 
     if bool(embed.title):
@@ -200,11 +210,20 @@ def embed_to_dict(embed: hikari.Embed, /) -> dict[str, t.Any]:
 def get_emote(discord_text: str, /) -> str:
     '''Return the Unicode emoji based on the name provided.
 
-    Parameter:
-    - `discord_text`: Discord/Twitter name of the emoji including `:`. Example: `:grin:`.
+    Parameters
+    ----------
+    discord_text : str
+        Discord/Twitter name of the emoji including `:`. Example: `:grin:`.
 
-    Exception:
-    - `KeyError`: Cannot find the emoji based on the text.
+    Returns
+    -------
+    str
+        The Unicode emoji matching the text.
+
+    Raises
+    ------
+    KeyError
+        Cannot find the emoji based on the text.
     '''
 
     ret = emoji.emojize(discord_text, language = "alias")
@@ -213,14 +232,22 @@ def get_emote(discord_text: str, /) -> str:
     return ret
 
 def get_friendly_permissions(permissions: hikari.Permissions, /) -> t.List[str]:
-    '''
-    Return a list of highlighted permissions string presented in the permission provided.
+    '''Return a list of highlighted permissions string presented in the permission provided.
     This returns the exact Discord's string of the permission.
 
-    Parameter:
-    - `permissions`: A permission object.
+    Parameters
+    ----------
+    permissions : hikari.Permissions
+        A permission object.
 
-    Note: `Manage Events` cannot be found in Hikari's doc.
+    Returns
+    -------
+    t.List[str]
+        A list of highlighted permissions string represented in the permission provided.
+
+    Notes
+    -----
+    `Manage Events` cannot be found in Hikari's documentation. Therefore, it is not included.
     '''
 
     l = []
@@ -235,6 +262,18 @@ def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed
     Args:
         author: The author to set in the footer.
         **kwargs: `hikari.Embed` constructor.
+
+    Parameters
+    ----------
+    author : hikari.Member, optional
+        The author to set in the footer. If not provided, the footer will not be edited.
+    **kwargs : dict
+        The options passed into `hikari.Embed()`.
+
+    Returns
+    -------
+    hikari.Embed
+        The default embed.
     '''
 
     title = kwargs.get("title")
@@ -260,12 +299,20 @@ def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed
 
 def mention(mentionable_object: t.Union[hikari.PartialUser, hikari.PartialRole, hikari.TextableGuildChannel], /) -> str:
     '''Return the appropriate mention string for a mentionable object.
-    
-    If the object is a `hikari.PartialRole` and it has the name "@everyone", then it'll return the name directly.
-    Otherwise, it returns the object's default mention.
 
-    Args:
-        mentionable_object: The object to mention.
+    Parameters
+    ----------
+    mentionable_object : t.Union[hikari.PartialUser, hikari.PartialRole, hikari.TextableGuildChannel]
+        The object to mention.
+
+    Returns
+    -------
+    str
+        The object's default mention string.
+    
+    Notes
+    -----
+    If the object is a `hikari.PartialRole` and it has the name `@everyone`, it'll return the name directly.
     '''
 
     if isinstance(mentionable_object, hikari.PartialRole):
@@ -277,21 +324,39 @@ def mention(mentionable_object: t.Union[hikari.PartialUser, hikari.PartialRole, 
 async def sleep_until(when: dt.datetime, /):
     '''Wait until the specified time.
 
-    Args:
-        when (dt.datetime): The time to resume. Must be tz aware and in utc.
+    Parameters
+    ----------
+    when : dt.datetime
+        The time to resume. Must be tz aware and in utc.
     '''
     time = when - dt.datetime.now().astimezone()
     if time.total_seconds() > 0:
         await asyncio.sleep(time.total_seconds())
 
-def striplist(arr: t.Sequence, /) -> str:
+def striplist(arr: t.Sequence[str], /) -> str:
     '''Return a string from a list, separated by comma.
 
-    Args:
-        arr (t.Sequence): Any sequence.
+    Parameters
+    ----------
+    arr : t.Sequence[str]
+        A sequence of objects that are convertible to `str`.
 
-    Returns:
-        str: The final string. Empty if sequence is empty.
+    Returns
+    -------
+    str
+        The final string. Empty if sequence is empty.
     '''
 
     return ", ".join(arr)
+
+# Default emojis for the navigators and stuffs. Just save it here for now.
+__default_emojis__ = {
+    "first_page": get_emote(":last_track_button:"),
+    "prev_page": get_emote(":arrow_backward:"),
+    "next_page": get_emote(":arrow_forward:"),
+    "last_page": get_emote(":next_track_button:"),
+    "terminate": get_emote(":stop_button:"),
+    "timeout": get_emote(":clock12:"),
+    "success": get_emote(":white_check_mark:"),
+    "return": get_emote(":arrow_up_small:"),
+}

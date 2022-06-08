@@ -61,16 +61,27 @@ __RANDOM_ACTIONS = [
 ]
 
 def uwuify(text: str, /, *, allow_nyvowels = True, stutter_chance: float = 0.20, emote_chance: float = 0.8, action_chance: float = 0.05) -> str:
-    '''
-    Transform a text into uwu text.
+    '''Transform a text into uwu text.
 
-    Parameters:
-    - `text`: The text to transform.
-    - `allow_nyvowels`: Whether or not to transform `na`, `no`, etc. into `nya`, `nyo`, etc.
-    - `stutter_chance`: The chance to stutter a word. Must be `[0, 1]`.
-    - `emote_chance`: The chance to put an emote after a punctuation like `,` or `.` Must be `[0, 1]`.
-    - `action_chance`: The chance to put an action string after a word. Must be `[0, 1]`.
+    Parameters
+    ----------
+    text : str
+        The text to transform.
+    allow_nyvowels : bool, optional
+        Whether or not to transform `na`, `no`, etc. into `nya`, `nyo`, etc. Default to `True`.
+    stutter_chance : float, optional
+        The chance to stutter a word. Must be `[0, 1]`. Default to `0.20`.
+    emote_chance : float, optional
+        The chance to put an emote after a punctuation like `,` or `.` Must be `[0, 1]`. Default to `0.8`.
+    action_chance : float, optional
+        The chance to put an action string after a word. Must be `[0, 1]`. Default to `0.05`.
+
+    Returns
+    -------
+    str
+        The uwu text.
     '''
+
     words = text.split()
 
     for index, word in enumerate(words):
@@ -113,9 +124,18 @@ def uwuify(text: str, /, *, allow_nyvowels = True, stutter_chance: float = 0.20,
     
     return ' '.join(words)
 
-def pekofy(text: str) -> str:
-    '''
-    Simple implementation of pekofy by just adding `peko` after each sentences.
+def pekofy(text: str, /) -> str:
+    '''A simple implementation of `pekofy` which simply adds `peko` at the end of a sentence.
+
+    Parameters
+    ----------
+    text : str
+        The text to transform.
+
+    Returns
+    -------
+    str
+        The pekofy text.
     '''
 
     words = text.split()

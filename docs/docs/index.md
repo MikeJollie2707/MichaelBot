@@ -2,7 +2,7 @@
 
 Welcome to MichaelBot's documentation. This documents all the bot's commands along with its features.
 
-- For general purposes, please refers to the `Categories` heading.
+- For general purposes, please refers to the `Commands` heading.
 - For those who are interested in some of the more secret stuffs, feel free to look at the bot source code.
 
 Below are some of the topics that are might not obvious from a user perspective.

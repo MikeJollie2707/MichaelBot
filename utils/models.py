@@ -18,6 +18,7 @@ class UserCache:
     Represent a user data in the database.
     
     This contains one module:
+    
     - `user_module`: Represent the `Users` table.
     '''
     def __init__(self, user_module: dict = None):
@@ -63,6 +64,7 @@ class GuildCache:
     Represent a guild data in the database.
     
     This contains two module:
+    
     - `guild_module`: Represent the `Guilds` table.
     - `logging_module`: Represent the `GuildsLogs` table.
     '''
@@ -177,7 +179,7 @@ class NodeExtra:
     working_channel: int = 0
 
 class MichaelBot(lightbulb.BotApp):
-    '''A custom bot with additional attribute and some logic fixes.'''
+    '''A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.'''
 
     __slots__ = (
         "info", 
@@ -204,11 +206,12 @@ class MichaelBot(lightbulb.BotApp):
         **kwargs
     ) -> None:
         '''
-        A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.
-
-        Unique Parameters:
-        - `info`: The bot info. Store the one in `config.json`.
-        - `secrets`: The bot's secrets such as token, database info, etc.
+        Parameters
+        -----------------
+        info : dict
+            The bot info. Store the one in `config.json`.
+        secrets : dict
+            The bot's secrets such as token, database info, etc.
         '''
         self.info: dict = kwargs.pop("info")
         self.secrets: dict = kwargs.pop("secrets")
@@ -253,10 +256,19 @@ class MichaelBot(lightbulb.BotApp):
         )
     
     def get_slash_command(self, name: str) -> t.Optional[lightbulb.SlashCommand]:
-        '''
-        Get the slash command with the given name, or `None` if none was found.
+        '''Get the slash command with the given name, or `None` if none was found.
 
         Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.
+
+        Parameters
+        ----------
+        name : str
+            The command name to search.
+
+        Returns
+        -------
+        t.Optional[lightbulb.SlashCommand]
+            The slash command with that name, or `None` if none was found.
         '''
         # Reference: https://hikari-lightbulb.readthedocs.io/en/latest/_modules/lightbulb/app.html#BotApp.get_prefix_command
         
