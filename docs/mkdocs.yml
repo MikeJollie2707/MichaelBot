@@ -32,17 +32,18 @@ nav:
   - Home: index.md
   - Installation: INSTALLATION.md
   - Commands:
-    - Bot: categories/bot.md
-    - Fun: categories/fun.md
-    - Logs: categories/logger.md
-    - Music: categories/music.md
-    - Utilities: categories/utilities.md
+    - Bot: user/bot.md
+    - Fun: user/fun.md
+    - Logs: user/logger.md
+    - Music: user/music.md
+    - Utilities: user/utilities.md
   - Developer Corner:
-    - errors.py: utils/errors.md
-    - funtext.py: utils/funtext.md
-    - helpers.py: utils/helpers.md
-    - models.py: utils/models.md
-    - nav: utils/menu.md
+    - errors.py: dev/errors.md
+    - funtext.py: dev/funtext.md
+    - help.py: dev/help.md
+    - helpers.py: dev/helpers.md
+    - models.py: dev/models.md
+    - nav: dev/menu.md
 
 dev_addr: '127.0.0.1:8001'
 
