@@ -492,7 +492,10 @@ async def report(ctx: lightbulb.Context):
         )
 
         try:
-            await bot.rest.create_message(REPORT_CHANNEL, embed = embed)
+            msg = await bot.rest.create_message(REPORT_CHANNEL, embed = embed)
+            if report_type.upper() == "SUGGEST":
+                await bot.rest.add_reaction(msg.channel_id, msg, helpers.get_emote(":thumbs_up:"))
+                await bot.rest.add_reaction(msg.channel_id, msg, helpers.get_emote(":thumbs_down:"))
             await ctx.respond("Report sent successfully! Thank you.", reply = True)
         except hikari.ForbiddenError:
             await ctx.respond("I can't send the report for some reasons. Join the support server and notify them about this, along with whatever you're trying to send.", reply = True, mentions_reply = True)
