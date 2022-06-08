@@ -7,6 +7,8 @@ import hikari
 
 from utils import checks, helpers, models
 
+# TODO: Remember to change 1d to 2weeks.
+
 plugin = lightbulb.Plugin("Moderation", "Moderation Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":hammer:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
