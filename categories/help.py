@@ -8,7 +8,8 @@ import hikari
 import lightbulb
 
 from utils import helpers, models
-from utils.navigator import ButtonPages, MenuComponent, MenuInteractionWrapper
+from utils.nav import menu
+from utils.nav import navigator
 
 __PREFIX_COMMAND_TYPES__ = (
     lightbulb.PrefixCommand, 
@@ -242,11 +243,17 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
                 
                 plugin_info[plugin.name] = public_commands_len
         
-        menu_root = MenuComponent(main_page)
+        menu_root = menu.MenuComponent(main_page)
         for name in plugin_info:
-            menu_root.add_list_options(plugins[name].d.emote, plugin_help_format(ctx, plugins[name]))
+            menu_root.add_list_options(
+                menu.MenuButton(
+                    label = name,
+                    emoji = plugins[name].d.emote,
+                ),
+                plugin_help_format(ctx, plugins[name])
+            )
         
-        await MenuInteractionWrapper(menu_root).run(ctx)
+        await menu.ComplexView(menu_root).run(ctx)
     
     async def send_plugin_help(self, ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> None:
         '''
@@ -264,7 +271,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
             if page is not None:
                 embeds.append(page)
         
-        await ButtonPages(embeds).run(ctx)
+        await navigator.ButtonNavigator(pages = embeds).send(ctx.channel_id)
     
     async def send_command_help(self, ctx: lightbulb.Context, command: lightbulb.Command) -> None:
         '''

@@ -10,7 +10,7 @@ import lightbulb
 import psutil
 
 from utils import checks, helpers, models
-from utils.navigator import ButtonPages
+from utils.nav.navigator import ButtonNavigator
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")
@@ -73,8 +73,8 @@ async def changelog(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone(),
             author = ctx.author
         ))
-    pages = ButtonPages(embeds)
-    await pages.run(ctx)
+    pages = ButtonNavigator(pages = embeds)
+    await pages.send(ctx.channel_id)
 
 @plugin.command()
 @lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)

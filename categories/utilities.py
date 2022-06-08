@@ -13,7 +13,7 @@ import py_expression_eval
 from lightbulb.ext import tasks
 
 from utils import checks, converters, errors, helpers, models, psql
-from utils.navigator import ItemListBuilder
+from utils.nav.navigator import ItemListBuilder
 
 NOTIFY_REFRESH = 2 * 60
 
@@ -550,7 +550,7 @@ async def remind_view(ctx: lightbulb.Context):
         
         builder.set_page_start_formatter(start_format)
         builder.set_entry_formatter(entry_format)
-        await builder.build().run(ctx)
+        await builder.build().send(ctx.channel_id)
 
 @remind.child
 @lightbulb.set_help(dedent('''
