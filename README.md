@@ -26,7 +26,7 @@ More features will be added as I work on to restore the bot to its glory.
 
 These are the libraries I used. All of these can be installed with `requirement.txt`.
 
-- [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb)
+- [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb) & [hikari-miru](https://github.com/HyperGH/hikari-miru)
 - [Lavalink](https://github.com/freyacodes/Lavalink) & [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
 - [asyncpg](https://github.com/MagicStack/asyncpg)
 - [emoji](https://github.com/carpedm20/emoji/)
@@ -37,7 +37,7 @@ These are the libraries I used. All of these can be installed with `requirement.
 - [mystbin.py](https://github.com/AbstractUmbra/mystbin.py)
 - [pylint](https://github.com/PyCQA/pylint)
 
-Detail instructions available [here](./docs/docs/INSTALLATION.md).
+Build instructions available [here](./docs/docs/INSTALLATION.md).
 
 ## License
 
