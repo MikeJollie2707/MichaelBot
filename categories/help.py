@@ -32,13 +32,21 @@ __COMMAND_GROUPS_TYPES__ = (
 )
 
 def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequence[t.Type], remove_hidden: bool = False) -> t.List[lightbulb.Command]:
-    '''
-    Filter commands with one of the type mentioned in `types`.
+    '''Filter commands with one of the type mentioned in `types`.
 
-    Parameter:
-    - `commands`: A sequence of commands.
-    - `types`: A sequence of command's types to filter. Example: `(lightbulb.PrefixCommand, lightbulb.SlashCommand)`.
-    - `remove_hidden`: Whether or not to remove hidden commands. Default to `False`.
+    Parameters
+    ----------
+    commands : t.Sequence[lightbulb.Command]
+        A sequence of commands.
+    types : t.Sequence[t.Type]
+        A sequence of command's types to filter. Example: `(lightbulb.PrefixCommand, lightbulb.SlashCommand)`.
+    remove_hidden : bool, optional
+        Whether or not to remove hidden commands. Default to `False`.
+
+    Returns
+    -------
+    t.List[lightbulb.Command]
+        A list of commands filtered out by types.
     '''
     
     l = []
@@ -49,8 +57,22 @@ def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequen
     return l
 
 def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.List[hikari.Embed]:
-    bot: models.MichaelBot = ctx.bot
+    '''Return a list of formatted embed for a plugin help.
+    This list can be passed into a paginator to display.
 
+    Parameters
+    ----------
+    ctx : lightbulb.Context
+        The context.
+    plugin : lightbulb.Plugin
+        The plugin to display the help.
+
+    Returns
+    -------
+    t.List[hikari.Embed]
+        A list of formatted embed for a plugin help.
+    '''
+    
     MAX_COMMANDS = 10
     display = ""
     plugins = []
@@ -88,6 +110,25 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
     return plugins
 
 def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> hikari.Embed:
+    '''Return a formatted embed for a command help.
+
+    Notes
+    -----
+    For command group, the embed will also include all subcommands.
+
+    Parameters
+    ----------
+    ctx : lightbulb.Context
+        The context.
+    command : lightbulb.Command
+        The command to display the help. Can also be a command group/subcommand/...
+
+    Returns
+    -------
+    hikari.Embed
+        The formatted embed for a command help.
+    '''
+
     bot: models.MichaelBot = ctx.bot
 
     # Signature includes full command name.
