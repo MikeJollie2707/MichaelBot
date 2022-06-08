@@ -121,7 +121,12 @@ async def embed_from_json(ctx: lightbulb.Context):
     - This is useful when you want to change slightly from an existing embed.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("channel", "The channel the message is in. Default to the current channel.", type = hikari.TextableGuildChannel, default = None, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("channel", "The channel the message is in. Default to the current channel.", 
+    type = hikari.TextableGuildChannel, 
+    channel_types = (hikari.ChannelType.GUILD_TEXT,),
+    default = None, 
+    modifier = helpers.CONSUME_REST_OPTION
+)
 @lightbulb.option("message_id", "The message ID. The bot can't get a message that's too old.")
 @lightbulb.command("to-json", "Take the embed from a message and convert it to a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
