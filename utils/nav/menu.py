@@ -8,7 +8,7 @@ import miru
 import lightbulb
 
 from utils import helpers
-from utils.nav.navigator import timeout_button
+from utils.nav.navigator import timeout_button, run_view
 
 PageLike = t.TypeVar("PageLike", str, hikari.Embed)
 
@@ -441,7 +441,4 @@ class ComplexView(miru.View):
         '''
 
         self._update_button()
-        resp_proxy = await ctx.respond(self.menu.content, components = self.build())
-        
-        self.start(await resp_proxy.message())
-        await self.wait()
+        await run_view(self, ctx, self.menu.content)

@@ -3,6 +3,7 @@
 import typing as t
 
 import hikari
+import lightbulb
 import miru
 from miru.ext import nav
 
@@ -10,8 +11,41 @@ from utils import helpers
 
 T = t.TypeVar("T")
 
+async def run_view(view: miru.View, ctx: lightbulb.Context, initial_content: t.Union[str, hikari.Embed] = None) -> None:
+    '''A simplified way to run a `miru.View`.
+
+    Parameters
+    ----------
+    view : miru.View
+        A `miru.View` or its subclasses.
+    ctx : lightbulb.Context
+        A context to send the view.
+    initial_content : t.Union[str, hikari.Embed], optional
+        The content to first display. This is optional for `nav.NavigatorView` and its subclasses.
+
+    Raises
+    ------
+    TypeError
+        `initial_content` is not provided, but `view` is not type `nav.NavigatorView`.
+    '''
+    if initial_content is None:
+        if isinstance(view, nav.NavigatorView):
+            # Need to ensure the buttons are updated.
+            # Reference: https://github.com/HyperGH/hikari-miru/blob/main/miru/ext/nav/navigator.py#L227
+            for button in view.children:
+                if isinstance(button, nav.NavButton):
+                    await button.before_page_change()
+
+            initial_content = view.pages[view.current_page]
+        else:
+            raise TypeError("'initial_content' must be provided if 'view' is not type 'NavigatorView'.")
+    
+    resp_proxy = await ctx.respond(initial_content, components = view.build())
+    view.start(await resp_proxy.message())
+    await view.wait()
+
 def timeout_button() -> nav.NavButton:
-    '''Return a `NavButton` to be use in `nav.NavigatorView`.
+    '''Return a `nav.NavButton` to be use in `nav.NavigatorView`.
     This button is safe to use in `miru.View`.
 
     Returns

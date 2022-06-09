@@ -312,7 +312,9 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
             if page is not None:
                 embeds.append(page)
         
-        await navigator.ButtonNavigator(pages = embeds).send(ctx.channel_id)
+        page_nav = navigator.ButtonNavigator(pages = embeds)
+        await navigator.run_view(page_nav, ctx)
+        
     
     async def send_command_help(self, ctx: lightbulb.Context, command: lightbulb.Command) -> None:
         '''

@@ -6,6 +6,7 @@ import hikari
 import miru
 
 from utils import helpers
+from utils.nav.menu import run_view
 
 class ConfirmView(miru.View):
     '''

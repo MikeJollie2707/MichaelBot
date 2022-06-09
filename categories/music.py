@@ -10,7 +10,7 @@ import lightbulb
 from utils import checks, helpers, models
 from utils.converters import IntervalConverter
 from utils.models import NodeExtra
-from utils.nav.navigator import ButtonNavigator
+from utils.nav.navigator import ButtonNavigator, run_view
 
 plugin = lightbulb.Plugin("Music", description = "Music Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":musical_note:")
@@ -399,7 +399,8 @@ async def queue(ctx: lightbulb.Context):
                 )
                 page_list.append(embed)
             
-            await ButtonNavigator(pages = page_list).send(ctx.channel_id)
+            page_nav = ButtonNavigator(pages = page_list)
+            await run_view(page_nav, ctx)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
