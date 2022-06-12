@@ -55,37 +55,6 @@ async def setup_database(user, password, database, host, port):
         ''')
         print("Done!")
 
-        await conn.execute('''
-            CREATE TYPE LogConfig AS (
-                guild_channel_create BOOL,
-                guild_channel_delete BOOL,
-                guild_channel_update BOOL,
-                guild_ban BOOL,
-                guild_unban BOOL,
-                guild_update BOOL,
-                member_join BOOL,
-                member_leave BOOL,
-                member_update BOOL,
-                guild_bulk_message_delete BOOL,
-                guild_message_delete BOOL,
-                guild_message_update BOOL,
-                role_create BOOL,
-                role_update BOOL,
-                command_complete BOOL,
-                command_error BOOL
-            );
-        ''')
-
-        await conn.execute('''
-            CREATE TABLE GuildsLogsTest (
-                guild_id INT8 UNIQUE NOT NULL,
-                log_channel INT8 DEFAULT NULL,
-                config LogConfig,
-                CONSTRAINT fk_guildslogstest_guilds
-                    FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
-            );
-        ''')
-
         print("Creating Users table...", end = '')
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS Users (
