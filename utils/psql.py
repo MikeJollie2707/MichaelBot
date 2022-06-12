@@ -204,34 +204,6 @@ class GuildsLogs:
 
         await conn.execute(query, new_value, id)
 
-class GuildsLogsTest:
-    @staticmethod
-    async def get_all(conn):
-        return GuildsLogsTest.get_all_where(conn)
-    
-    @staticmethod
-    async def get_all_where(conn, *, where: t.Callable[[dict], bool] = lambda r: True):
-        query = '''
-            SELECT * FROM GuildsLogsTest;
-        '''
-        return await __get_all__(conn, query, where = where)
-    @staticmethod
-    async def get_one(conn, guild_id: int):
-        query = '''
-            SELECT * FROM GuildsLogsTest
-            WHERE guild_id = ($1);
-        '''
-
-        return await __get_one__(conn, query, guild_id)
-    @staticmethod
-    async def add_one(conn, guild: hikari.Guild):
-        query = '''
-            INSERT INTO GuildsLogsTest
-            VALUES ($1, $2, $3::LogConfig) ON CONFLICT DO NOTHING;
-        '''
-
-        await conn.execute(query, guild.id, None, tuple([True] * 16))
-
 class Users:
     '''Functions to interact with the `Users` table.'''
     @classmethod
