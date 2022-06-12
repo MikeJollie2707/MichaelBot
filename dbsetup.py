@@ -7,7 +7,7 @@ import asyncpg
 from main import load_info
 
 async def setup_database(user, password, database, host, port):
-    conn = await asyncpg.connect(
+    conn: asyncpg.Connection = await asyncpg.connect(
         host = host,
         port = port,
         user = user,
@@ -72,6 +72,17 @@ async def setup_database(user, password, database, host, port):
                 user_id INT8 NOT NULL,
                 awake_time TIMESTAMP WITH TIME ZONE NOT NULL,
                 message TEXT NOT NULL
+            );
+        ''')
+        print("Done!")
+
+        print("Creating Lockdown table...", end = '')
+        await conn.execute('''
+            CREATE TABLE IF NOT EXISTS Lockdown (
+                guild_id INT8 UNIQUE NOT NULL,
+                channels INT8[] DEFAULT ARRAY[]::INT8[],
+                CONSTRAINT fk_lockdown_guilds
+                    FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
             );
         ''')
         print("Done!")

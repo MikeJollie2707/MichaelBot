@@ -5,13 +5,120 @@ import typing as t
 import lightbulb
 import hikari
 
-from utils import checks, helpers, models
+from utils import checks, helpers, models, psql
+from utils.nav.navigator import ButtonNavigator, ItemListBuilder, run_view
 
 # TODO: Remember to change 1d to 2weeks.
 
 plugin = lightbulb.Plugin("Moderation", "Moderation Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":hammer:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+
+@plugin.command()
+@lightbulb.command("lockdown", "A system to lock many channels from communications.")
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
+async def lockdown(ctx: lightbulb.Context):
+    pass
+
+@lockdown.child
+@lightbulb.option("option", "Optional flag to set to run this command.", choices = ["default", "all", "except"], default = "default")
+@lightbulb.command("lock", "Make all configured channels to be read-only.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def lockdown_lock(ctx: lightbulb.Context):
+    pass
+
+@lockdown.child
+@lightbulb.option("channel", "A channel to lock. Can be text or voice channels.", 
+    type = hikari.GuildChannel,
+    channel_types = (hikari.ChannelType.GUILD_TEXT, hikari.ChannelType.GUILD_VOICE)
+)
+@lightbulb.command("add", "Add a channel to lock during a lockdown.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def lockdown_add(ctx: lightbulb.Context):
+    channel: hikari.GuildChannel = ctx.options.channel
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        channel = ctx.get_guild().get_channel(channel.id)
+
+    async with bot.pool.acquire() as conn:
+        async with conn.transaction():
+            try:
+                count = await psql.Lockdown.add_channel(conn, ctx.guild_id, channel.id)
+                
+                if count == 0:
+                    return await ctx.respond(f"Channel {channel.mention} is already added. To remove, use `lockdown remove`.",
+                        reply = True, mentions_reply = True
+                    )
+            except psql.GetError:
+                await psql.Lockdown.insert_one(conn, ctx.guild_id, [channel.id])
+            
+            await ctx.respond(f"Added {channel.mention} to the lockdown list. To remove, use `lockdown remove`.", reply = True)
+
+@lockdown.child
+@lightbulb.option("channel", "A channel to remove. Can be text or voice channels.", 
+    type = hikari.GuildChannel,
+    channel_types = (hikari.ChannelType.GUILD_TEXT, hikari.ChannelType.GUILD_VOICE)
+)
+@lightbulb.command("remove", "Remove a channel to lock during a lockdown.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def lockdown_remove(ctx: lightbulb.Context):
+    channel: hikari.GuildChannel = ctx.options.channel
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        channel = ctx.get_guild().get_channel(channel.id)
+
+    async with bot.pool.acquire() as conn:
+        async with conn.transaction():
+            try:
+                count = await psql.Lockdown.remove_channel(conn, ctx.guild_id, channel.id)
+                
+                if count != 0:
+                    return await ctx.respond(f"Removed {channel.mention} from the lockdown list. To add, use `lockdown add`.", reply = True)
+            except psql.GetError:
+                pass
+            
+            await ctx.respond(f"Channel {channel.mention} is not added, no need to remove.",
+                reply = True, mentions_reply = True
+            )
+
+@lockdown.child
+@lightbulb.command("view", "View current lockdown channels.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def lockdown_view(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    entry: dict = None
+    async with bot.pool.acquire() as conn:
+        entry = await psql.Lockdown.get_one(conn, ctx.guild_id)
+    
+    if entry is None or not entry["channels"]:
+        embed = helpers.get_default_embed(
+            title = "Lockdown Channels",
+            description = "*Cricket noises*",
+            timestamp = dt.datetime.now().astimezone()
+        )
+
+        await ctx.respond(embed = embed, reply = True)
+    else:
+        entry = [ctx.get_guild().get_channel(channel_id) for channel_id in entry["channels"]]
+        builder = ItemListBuilder(entry, 10)
+
+        @builder.set_page_start_formatter
+        def start_format(index: int, item: hikari.GuildChannel) -> hikari.Embed:
+            return helpers.get_default_embed(
+                title = "Lockdown Channels",
+                description = "",
+                timestamp = dt.datetime.now().astimezone()
+            )
+        
+        @builder.set_entry_formatter
+        def entry_format(embed: hikari.Embed, index: int, item: hikari.GuildChannel):
+            if item is not None:
+                embed.description += item.mention + '\n'
+        
+        await run_view(builder.build(), ctx)
 
 def get_purge_iterator(
     bot: models.MichaelBot, 
@@ -43,9 +150,7 @@ def get_purge_iterator(
         return (
             bot.rest.fetch_messages(channel_id)
             .take_while(lambda message: message.created_at > bulk_delete_limit)
-            .filter(predicate)
-        )
-
+            .filter(predicate))
 async def do_purge(
     bot: models.MichaelBot,
     iterator: hikari.LazyIterator[hikari.Message],
@@ -70,7 +175,6 @@ async def do_purge(
         except hikari.BulkDeleteError as bulk_delete_error:
             count += len(bulk_delete_error.messages_deleted)
     return count
-
 @plugin.command()
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
