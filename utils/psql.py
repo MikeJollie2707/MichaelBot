@@ -3,7 +3,7 @@
 
 '''Contains many functions that hide all "naked" SQL to use.'''
 
-# NOTE: Current flaw is adding/removing won't give any special status if entry doesn't exist.
+# NOTE: Docstring will be ''' while query/multiline string will be """ for the autoDocstring extension to work.
 import datetime as dt
 import typing as t
 
@@ -71,8 +71,19 @@ async def legacy_insert_into(conn, table_name: str, *args):
     )
 
 def insert_into_query(table_name: str, len_col: int) -> str:
-    '''
-    Return the query to insert into a table that has `len_col` columns.
+    '''Return the query to insert into a table that has `len_col` columns.
+
+    Parameters
+    ----------
+    table_name : str
+        The table to insert.
+    len_col : int
+        How many column does the table have.
+
+    Returns
+    -------
+    str
+        An INSERT SQL statement with query formatter ready to use in `.execute()`
     '''
     arg_str = "("
     for index in range(len_col):
