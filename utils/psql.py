@@ -122,6 +122,36 @@ async def __get_one__(conn, query: str, *constraints) -> t.Optional[dict]:
     record = await conn.fetchrow(query, *constraints)
     return record_to_dict(record)
 
+async def run_and_return_count(conn: asyncpg.Connection, *args, **kwargs) -> t.Optional[int]:
+    '''Execute an SQL operation and return the number of entries affected.
+
+    Warnings
+    --------
+    This is meant to run INSERT, DELETE, and UPDATE statements. Other statement might or might not work.
+
+    Parameters
+    ----------
+    conn : asyncpg.Connection
+        The connection to execute.
+    *args : tuple
+        The arguments to pass into `conn.execute()`
+    **kwargs: dict
+        The arguments to pass into `conn.execute()`
+
+    Returns
+    -------
+    t.Optional[int]
+        The number of rows affected. If the operation doesn't return the row count, `None` is returned.
+    '''
+    status = await conn.execute(*args, **kwargs)
+    
+    # INSERT returns "INSERT oid count".
+    try:
+        count = int(status.split()[-1])
+        return count
+    except ValueError:
+        return None
+    
 class Guilds:
     '''Functions to interact with the `Guilds` table.'''
     @classmethod
