@@ -78,7 +78,7 @@ async def changelog(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("help", "Get help information for the bot.", aliases = ['h'], auto_defer = True)
+@lightbulb.command("help", "Get help information for the bot.", aliases = ['h'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _help(ctx: lightbulb.Context):
     obj = ctx.options.name
