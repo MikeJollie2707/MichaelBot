@@ -357,3 +357,156 @@ class Reminders:
         '''
 
         await conn.execute(query, remind_id, user_id)
+
+class Lockdown:
+    @staticmethod
+    async def get_all(conn):
+        return await Lockdown.get_all_where(conn)
+
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[dict], bool] = lambda r: True):
+        query = '''
+            SELECT * FROM Lockdown;
+        '''
+
+        return await __get_all__(conn, query, where = where)
+    
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, guild_id: int):
+        query = '''
+            SELECT * FROM Lockdown
+            WHERE guild_id = ($1);
+        '''
+
+        return await __get_one__(conn, query, guild_id)
+    
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, guild_id: int, channels: list[int] = None):
+        if channels is None:
+            channels = []
+        
+        query = insert_into_query("Lockdown", 2)
+
+        #await conn.execute(query, guild_id, channels)
+        return await run_and_return_count(conn, query, guild_id, channels)
+    
+    @staticmethod
+    async def delete(conn: asyncpg.Connection, guild_id: int) -> int:
+        '''Delete an entry from the table.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        guild_id : int
+            The pkey to the entry.
+        
+        Returns
+        -------
+        int
+            The number of entries deleted.
+        '''
+
+        query = """
+            DELETE FROM Lockdown
+            WHERE guild_id = ($1);
+        """
+
+        #status = await conn.execute(query, guild_id)
+        #return status.split()[1]
+        return await run_and_return_count(conn, query, guild_id)
+    
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, guild_id: int, column: str, new_value) -> int:
+        '''Update a column with a new value.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        guild_id : int
+            The entry pkey to update.
+        column : str
+            The column's name.
+        new_value : _type_
+            The new value to update.
+
+        Returns
+        -------
+        int
+            The number of entries updated.
+        '''
+
+        query = f"""
+            UPDATE Lockdown
+            SET {column} = ($1)
+            WHERE guild_id = ($2);
+        """
+
+        return await run_and_return_count(conn, query, new_value, guild_id)
+
+    @staticmethod
+    async def add_channel(conn: asyncpg.Connection, guild_id: int, channel_id: int) -> int:
+        '''Append a channel to the guild provided.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        guild_id : int
+            The guild id to add.
+        channel_id : int
+            The channel id to add.
+
+        Returns
+        -------
+        int
+            The number of entries added. Should be 1 or 0.
+
+        Raises
+        ------
+        GetError
+            The entry `guild_id` doesn't exist in the table.
+        '''
+
+        # There's probably a postgres way to append the element directly but I'm not gonna risk it.
+        existed = await Lockdown.get_one(conn, guild_id)
+        if not existed:
+            raise GetError(f"Entry {guild_id} is not found in table 'Lockdown'.")
+        if channel_id in existed["channels"]:
+            return 0
+        
+        existed["channels"].append(channel_id)
+        return await Lockdown.update_column(conn, guild_id, "channels", existed["channels"])
+    @staticmethod
+    async def remove_channel(conn: asyncpg.Connection, guild_id: int, channel_id: int) -> int:
+        '''Remove a channel from the guild provided.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        guild_id : int
+            The guild id to remove.
+        channel_id : int
+            The channel id to remove.
+
+        Returns
+        -------
+        int
+            The number of entries removed. Should be 1 or 0.
+
+        Raises
+        ------
+        GetError
+            The entry `guild_id` doesn't exist in the table.
+        '''
+        
+        existed = await Lockdown.get_one(conn, guild_id)
+        if not existed:
+            raise GetError(f"Entry {guild_id} is not found in table 'Lockdown'.")
+        if channel_id not in existed["channels"]:
+            return 0
+        
+        existed["channels"].remove(channel_id)
+        return await Lockdown.update_column(conn, guild_id, "channels", existed["channels"])
