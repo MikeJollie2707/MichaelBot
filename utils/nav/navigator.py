@@ -120,23 +120,91 @@ class ButtonNavigator(nav.NavigatorView):
         await super().on_timeout()
 
 class ItemListBuilder:
-    def __init__(self, items: list[T], max_item_per_page: int, page_type: t.Type = ButtonNavigator):
+    '''A builder to fit a list of item into a navigator appropriately. (This is experimental and can be removed at any time).'''
+    def __init__(self, items: list[T], max_item_per_page: int):
+        '''Construct the builder.
+
+        Parameters
+        ----------
+        items : list[T]
+            A list of items.
+        max_item_per_page : int
+            The max amount of item to display before moving to a new page.
+        '''
+
         self.items = items
         self.max_item = max_item_per_page
-        self.page_type = page_type
 
-        self.page_start_formatter: t.Callable[[int, T], hikari.Embed] = lambda index, item: hikari.Embed()
-        self.entry_formatter: t.Callable[[hikari.Embed, int, T], None] = lambda embed, index, item: None
+        self.page_start_formatter: t.Callable[[int, T], hikari.Embed] = None
+        self.entry_formatter: t.Callable[[hikari.Embed, int, T], None] = None
         self.page_end_formatter: t.Callable[[hikari.Embed, int, T], None] = lambda embed, index, item: None
     
     def set_page_start_formatter(self, callback: t.Callable[[int, T], hikari.Embed], /):
+        '''Set this callback as the formatter to run whenever a new page is requested to be created.
+
+        Notes
+        -----
+        This is recommended to use as a decorator.
+
+        Parameters
+        ----------
+        callback : t.Callable[[int, T], hikari.Embed]
+            The callback to use. It must accept an `int` (index of the item), the item itself, and return a `hikari.Embed`.
+        '''
         self.page_start_formatter = callback
     def set_entry_formatter(self, callback: t.Callable[[hikari.Embed, int, T], None], /):
+        '''Set this callback as the formatter to run while iterating through the item list.
+
+        Notes
+        -----
+        This is recommended to use as a decorator.
+
+        Parameters
+        ----------
+        callback : t.Callable[[hikari.Embed, int, T], None]
+            The callback to use. It must accept a `hikari.Embed` (the page it's editing), an `int` (index of the item), and the item itself.
+        '''
         self.entry_formatter = callback
     def set_page_end_formatter(self, callback: t.Callable[[hikari.Embed, int, T], None], /):
+        '''Set this callback as the formatter to run once adding items to a page is finished.
+
+        Notes
+        -----
+        This is recommended to use as a decorator.
+
+        Parameters
+        ----------
+        callback : t.Callable[[hikari.Embed, int, T], None]
+            The callback to use. It must accept a `hikari.Embed` (the page it's editing), an `int` (index of the item), and the item itself.
+        '''
         self.page_end_formatter = callback
     
-    def build(self):
+    def build(self, *, page_type = ButtonNavigator):
+        '''Start the formatting process and return an object of `page_type`.
+
+        Warnings
+        --------
+        The builder must provide at least `page_start_formatter` and either `entry_formatter` or `page_end_formatter` before this method is called.
+
+        Parameters
+        ----------
+        page_type : t.Type, optional
+            The type of navigator to use, by default ButtonNavigator. This must have a `pages` argument accepting a list of `hikari.Embed`.
+
+        Returns
+        -------
+        t.Any
+            The type passed into the constructor, by default ButtonNavigator.
+
+        Raises
+        ------
+        NotImplementedError
+            `page_start_formatter` is empty or both `entry_formatter` and `page_end_formatter` are empty.
+        '''
+
+        if self.page_start_formatter is None or (self.entry_formatter is None and self.page_end_formatter is None):
+            raise NotImplementedError("Not enough formatters are defined.")
+
         embeds: list[hikari.Embed] = []
         embed: hikari.Embed = None
         for index, item in enumerate(self.items):
@@ -156,4 +224,4 @@ class ItemListBuilder:
             self.page_end_formatter(embed, index, item)
             embeds.append(embed)
 
-        return self.page_type(pages = embeds)
+        return page_type(pages = embeds)
