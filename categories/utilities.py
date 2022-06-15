@@ -440,7 +440,7 @@ async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, whe
 
         if remind_id is not None:
             async with bot.pool.acquire() as conn:
-                await psql.Reminders.remove_reminder(conn, remind_id, user.id)
+                await psql.Reminders.delete_reminder(conn, remind_id, user.id)
     except hikari.ForbiddenError:
         # Don't remove reminder if the sending fails, will retry to send on next refresh cycle.
         pass
@@ -509,7 +509,7 @@ async def remind_create(ctx: lightbulb.Context):
         await ctx.respond("A short reminder has been created. Expect the bot to DM you soon:tm:", reply = True)
     else:
         async with bot.pool.acquire() as conn:
-            await psql.Reminders.add_reminder(conn, ctx.author.id, when, ctx.options.message)
+            await psql.Reminders.insert_reminder(conn, ctx.author.id, when, ctx.options.message)
         await ctx.respond(f"I'll remind you about '{ctx.options.message}' in `{humanize.precisedelta(interval, format = '%0.0f')}`.", reply = True)
 
 @remind.child
@@ -569,7 +569,7 @@ async def remind_remove(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        await psql.Reminders.remove_reminder(conn, ctx.options.remind_id, ctx.author.id)
+        await psql.Reminders.delete_reminder(conn, ctx.options.remind_id, ctx.author.id)
     
     await ctx.respond(f"Removed the reminder `{ctx.options.remind_id}`.")
 

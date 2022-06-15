@@ -33,7 +33,7 @@ class UserCache:
         '''
         Add a user into the cache and the database.
         '''
-        await psql.Users.add_one(conn, user.id, user.username)
+        await psql.Users.insert_one(conn, user.id, user.username)
         user_info = await psql.Users.get_one(conn, user.id)
         self.user_module = user_info
     async def update_user_module(self, conn, user_id: int, column: str, new_value):
@@ -86,7 +86,7 @@ class GuildCache:
         '''
         Add a guild module into the cache and the database.
         '''
-        await psql.Guilds.add_one(conn, guild)
+        await psql.Guilds.insert_one(conn, guild)
         guild_info = await psql.Guilds.get_one(conn, guild.id)
         self.guild_module = guild_info
     
@@ -101,7 +101,7 @@ class GuildCache:
         '''
         Add a logging module into the cache and the database.
         '''
-        await psql.GuildsLogs.add_one(conn, guild)
+        await psql.GuildsLogs.insert_one(conn, guild)
         logging_info = await psql.GuildsLogs.get_one(conn, guild.id)
         self.logging_module = logging_info
     

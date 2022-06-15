@@ -92,20 +92,25 @@ def insert_into_query(table_name: str, len_col: int) -> str:
 
     return f"INSERT INTO {table_name} VALUES {arg_str} ON CONFLICT DO NOTHING;"
 
-async def __get_all__(conn, query: str, *, where: t.Callable[[dict], bool] = lambda r: True) -> list[dict]:
+async def __get_all__(conn: asyncpg.Connection, query: str, *, where: t.Callable[[dict], bool] = lambda r: True) -> list[dict]:
     '''Run a `SELECT` statement and return a list of objects.
 
     This should NOT be used outside of the module. Instead, use `table_name.get_all()`.
 
-    Args:
-        conn: Database connection.
-        query (str): The `SELECT` statement to run. This should not contain `WHERE` clause.
-            Conditions should be set in `where` parameter.
-        where (Callable[[dict], bool], optional): Additional conditions to filter.
-            By default, no condition is applied (always return `True`).
+    Parameters
+    ----------
+    conn : asyncpg.Connection
+        The connection to use.
+    query : str 
+        The `SELECT` statement to run. This should not contain `WHERE` clause.
+        Conditions should be set in `where` parameter.
+    where : t.Callable[[dict], bool]
+        Additional conditions to filter. By default, no condition is applied (always return `True`).
 
-    Returns:
-        list[dict]: A list of `dict` or empty list.
+    Returns
+    -------
+    list[dict]
+        A list of `dict` or empty list.
     '''
 
     result = await conn.fetch(query)
@@ -118,22 +123,28 @@ async def __get_all__(conn, query: str, *, where: t.Callable[[dict], bool] = lam
     
     return l
 
-async def __get_one__(conn, query: str, *constraints) -> t.Optional[dict]:
+async def __get_one__(conn: asyncpg.Connection, query: str, *constraints) -> t.Optional[dict]:
     '''Run a `SELECT` statement and return the first object that matches the constraints.
 
-    Args:
-        conn: Database connection.
-        query (str): The `SELECT` statement to run. This should contain a `WHERE` clause.
-        constraints: Arguments to be formatted into the query.
+    Parameters
+    ----------
+    conn : asyncpg.Connection
+        The connection to use.
+    query : str 
+        The `SELECT` statement to run. This should contain a `WHERE` clause.
+    constraints : str
+        Arguments to be formatted into the query.
 
-    Returns:
-        Optional[dict]: A `dict` or `None` if no object is found.
+    Returns
+    -------
+    t.Optional[dict]
+        A `dict` or `None` if no object is found.
     '''
     
     record = await conn.fetchrow(query, *constraints)
     return record_to_dict(record)
 
-async def run_and_return_count(conn: asyncpg.Connection, *args, **kwargs) -> t.Optional[int]:
+async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kwargs) -> t.Optional[int]:
     '''Execute an SQL operation and return the number of entries affected.
 
     Warnings
@@ -154,7 +165,7 @@ async def run_and_return_count(conn: asyncpg.Connection, *args, **kwargs) -> t.O
     t.Optional[int]
         The number of rows affected. If the operation doesn't return the row count, `None` is returned.
     '''
-    status = await conn.execute(*args, **kwargs)
+    status = await conn.execute(query, *args, **kwargs)
     
     # INSERT returns "INSERT oid count".
     try:
@@ -165,33 +176,39 @@ async def run_and_return_count(conn: asyncpg.Connection, *args, **kwargs) -> t.O
     
 class Guilds:
     '''Functions to interact with the `Guilds` table.'''
-    @classmethod
-    async def get_all(cls, conn):
-        return await cls.get_all_where(conn)
-    @classmethod
-    async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
-        query = '''
+    @staticmethod
+    async def get_all(conn):
+        '''Get all entries in the table.'''
+        
+        return await Guilds.get_all_where(conn)
+    @staticmethod
+    async def get_all_where(conn, *, where: t.Callable[[dict], bool] = lambda r: True):
+        '''Get all entires in the table that matches the condition.'''
+        
+        query = """
             SELECT * FROM Guilds
             ORDER BY Guilds.name;
-        '''
-
+        """
         return await __get_all__(conn, query, where = where)
-    @classmethod
-    async def get_one(cls, conn, id: int):
-        query = '''
+    @staticmethod
+    async def get_one(conn, id: int):
+        '''Get the first entry in the table that matches the condition.'''
+        
+        query = """
             SELECT * FROM Guilds
             WHERE id = ($1);
-        '''
-
+        """
         return await __get_one__(conn, query, id)
     
-    @classmethod
-    async def add_one(cls, conn, guild: hikari.Guild):
-        query = insert_into_query("Guilds", 4)
+    @staticmethod
+    async def insert_one(conn, guild: hikari.Guild) -> int:
+        '''Insert an entry into the table.'''
         
-        await conn.execute(query, guild.id, guild.name, True, '$')
+        query = insert_into_query("Guilds", 4)
+        #await conn.execute(query, guild.id, guild.name, True, '$')
+        return await run_and_return_count(conn, query, guild.id, guild.name, True, '$')
     @classmethod
-    async def add_many(cls, conn, guilds: t.Tuple[hikari.Guild]):
+    async def _add_many(cls, conn, guilds: t.Tuple[hikari.Guild]):
         query = insert_into_query("Guilds", 4)
 
         args = []
@@ -199,48 +216,61 @@ class Guilds:
             args.append((guild.id, guild.name, True, '$'))
         
         await conn.executemany(query, args)
-    @classmethod
-    async def remove(cls, conn, id: int):
-        query = '''
+    @staticmethod
+    async def delete(conn, id: int) -> int:
+        '''Delete an entry in the table based on the provided key.'''
+        
+        query = """
             DELETE FROM Guilds
             WHERE id = ($1);
+        """
+        #await conn.execute(query, id)
+        return await run_and_return_count(conn, query, id)
+    @staticmethod
+    async def update_column(conn, id: int, column: str, new_value) -> int:
+        '''Update a specific column with a new value.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
         '''
 
-        await conn.execute(query, id)
-    @classmethod
-    async def update_column(cls, conn, id: int, column: str, new_value):
-        query = f'''
+        query = f"""
             UPDATE Guilds
             SET {column} = ($1)
             WHERE id = ($2);
-        '''
-
-        await conn.execute(query, new_value, id)
+        """
+        #await conn.execute(query, new_value, id)
+        return await run_and_return_count(conn, query, new_value, id)
     
 class GuildsLogs:
     '''Functions to interact with the `GuildsLogs` table.'''
-    @classmethod
-    async def get_all(cls, conn):
-        return await cls.get_all_where(conn)
-    @classmethod
-    async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
-        query = '''
+    @staticmethod
+    async def get_all(conn):
+        '''Get all entries in the table.'''
+        
+        return await GuildsLogs.get_all_where(conn)
+    @staticmethod
+    async def get_all_where(conn, *, where: t.Callable[[dict], bool] = lambda r: True):
+        '''Get all entires in the table that matches the condition.'''
+        
+        query = """
             SELECT * FROM GuildsLogs;
-        '''
-
+        """
         return await __get_all__(conn, query, where = where)
-    @classmethod
-    async def get_one(cls, conn, id: int):
-        query = '''
+    @staticmethod
+    async def get_one(conn, id: int):
+        '''Get the first entry in the table that matches the condition.'''
+        
+        query = """
             SELECT * FROM GuildsLogs
             WHERE guild_id = ($1);
-        '''
-
+        """
         return await __get_one__(conn, query, id)
     
     # Only 2 columns are required, rest are defaults.
     @classmethod
-    async def add_many(cls, conn, guilds: t.Tuple[hikari.Guild]):
+    async def _add_many(cls, conn, guilds: t.Tuple[hikari.Guild]):
         query = '''
             INSERT INTO GuildsLogs
             VALUES ($1) ON CONFLICT DO NOTHING;
@@ -251,52 +281,77 @@ class GuildsLogs:
             args.append((guild.id))
 
         await conn.executemany(query, args)
-    @classmethod
-    async def add_one(cls, conn, guild: hikari.Guild):
-        query = '''
+    @staticmethod
+    async def insert_one(conn, guild: hikari.Guild) -> int:
+        '''Insert an entry into the table.'''
+
+        query = """
             INSERT INTO GuildsLogs
             VALUES ($1) ON CONFLICT DO NOTHING;
+        """
+        #await conn.execute(query, (guild.id))
+        return await run_and_return_count(conn, query, guild.id)
+    @staticmethod
+    async def delete(conn, id: int) -> int:
+        '''Delete an entry in the table based on the provided key.'''
+
+        query = """
+            DELETE FROM GuildsLogs
+            WHERE guild_id = ($1);
+        """
+        #await conn.execute(query, id)
+        return await run_and_return_count(conn, query, id)
+    @staticmethod
+    async def update_column(conn, id: int, column: str, new_value) -> int:
+        '''Update a specific column with a new value.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
         '''
 
-        await conn.execute(query, (guild.id))
-    @classmethod
-    async def update_column(cls, conn, id: int, column: str, new_value):
-        query = f'''
+        query = f"""
             UPDATE GuildsLogs
             SET {column} = ($1)
             WHERE guild_id = ($2);
-        '''
-
-        await conn.execute(query, new_value, id)
+        """
+        #await conn.execute(query, new_value, id)
+        return await run_and_return_count(conn, query, new_value, id)
 
 class Users:
     '''Functions to interact with the `Users` table.'''
-    @classmethod
-    async def get_all(cls, conn):
-        return await cls.get_all_where(conn)
-    @classmethod
-    async def get_all_where(cls, conn, *, where: t.Callable[[dict], bool] = lambda r: True):
-        query = '''
+    @staticmethod
+    async def get_all(conn):
+        '''Get all entries in the table.'''
+        
+        return await Users.get_all_where(conn)
+    @staticmethod
+    async def get_all_where(conn, *, where: t.Callable[[dict], bool] = lambda r: True):
+        '''Get all entires in the table that matches the condition.'''
+
+        query = """
             SELECT * FROM Users
             ORDER BY Users.name;
-        '''
-
+        """
         return await __get_all__(conn, query, where = where)
-    @classmethod
-    async def get_one(cls, conn, id: int):
-        query = '''
+    @staticmethod
+    async def get_one(conn, id: int):
+        '''Get the first entry in the table that matches the condition.'''
+
+        query = """
             SELECT * FROM Users
             WHERE id = ($1);
-        '''
-
+        """
         return await __get_one__(conn, query, id)
-    @classmethod
-    async def add_one(cls, conn, user_id: int, user_name: str):
-        query = insert_into_query("Users", 3)
+    @staticmethod
+    async def insert_one(conn, user_id: int, user_name: str) -> int:
+        '''Insert an entry into the table.'''
 
-        await conn.execute(query, user_id, user_name, True)
+        query = insert_into_query("Users", 3)
+        #await conn.execute(query, user_id, user_name, True)
+        return await run_and_return_count(conn, query, user_id, user_name, True)
     @classmethod
-    async def add_many(cls, conn, users: list[hikari.User]):
+    async def _add_many(cls, conn, users: list[hikari.User]):
         query = insert_into_query("Users", 3)
 
         args = []
@@ -304,74 +359,94 @@ class Users:
             args.append((user.id, user.username, True))
         
         await conn.executemany(query, args)
-    @classmethod
-    async def remove(cls, conn, id: int):
-        query = '''
+    @staticmethod
+    async def delete(conn, id: int) -> int:
+        '''Delete an entry in the table based on the provided key.'''
+
+        query = """
             DELETE FROM Users
             WHERE id = ($1);
+        """
+        #await conn.execute(query, id)
+        return await run_and_return_count(conn, query, id)
+    @staticmethod
+    async def update_column(conn, id: int, column: str, new_value) -> int:
+        '''Update a specific column with a new value.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
         '''
 
-        await conn.execute(query, id)
-    @classmethod
-    async def update_column(cls, conn, id: int, column: str, new_value):
-        query = f'''
+        query = f"""
             UPDATE Users
             SET {column} = ($1)
             WHERE id = ($2);
-        '''
-
-        await conn.execute(query, new_value, id)
+        """
+        #await conn.execute(query, new_value, id)
+        return await run_and_return_count(conn, query, new_value, id)
 
 class Reminders:
     '''Functions to interact with the `Reminders` table.'''
-    @classmethod
-    async def get_user_reminders(cls, conn, user_id: int) -> list[dict]:
-        query = '''
+    @staticmethod
+    async def get_user_reminders(conn, user_id: int) -> list[t.Optional[dict]]:
+        '''Get a list of reminders a user have.'''
+        
+        query = """
             SELECT * FROM Reminders
             WHERE user_id = ($1);
-        '''
+        """
 
         result = await conn.fetch(query, user_id)
         return [record_to_dict(record) for record in result]
-    @classmethod
-    async def get_reminders(cls, conn, lower_time: dt.datetime, upper_time: dt.datetime) -> list[dict]:
-        query = '''
+    @staticmethod
+    async def get_reminders(conn, lower_time: dt.datetime, upper_time: dt.datetime) -> list[t.Optional[dict]]:
+        '''Get a list of reminders within the time range.'''
+
+        query = """
             SELECT * FROM Reminders
             WHERE awake_time > ($1) AND awake_time <= ($2);
-        '''
+        """
 
         result = await conn.fetch(query, lower_time, upper_time)
         return [record_to_dict(record) for record in result]
-    @classmethod
-    async def get_past_reminders(cls, conn, now: dt.datetime) -> list[dict]:
-        query = '''
+    @staticmethod
+    async def get_past_reminders(conn, now: dt.datetime) -> list[t.Optional[dict]]:
+        '''Get a list of reminders that are supposed to be cleared before the time provided.'''
+        
+        query = """
             SELECT * FROM Reminders
             WHERE awake_time < ($1);
-        '''
+        """
 
         result = await conn.fetch(query, now)
         return [record_to_dict(record) for record in result]
-    @classmethod
-    async def add_reminder(cls, conn, user_id: int, when: dt.datetime, message: str):
-        query = '''
+    @staticmethod
+    async def insert_reminder(conn, user_id: int, when: dt.datetime, message: str) -> int:
+        '''Insert a reminder entry.'''
+        
+        query = """
             INSERT INTO Reminders (user_id, awake_time, message)
                 VALUES ($1, $2, $3);
-        '''
-        
-        await conn.execute(query, user_id, when, message)
-    @classmethod
-    async def remove_reminder(cls, conn, remind_id: int, user_id: int):
+        """
+        #await conn.execute(query, user_id, when, message)
+        return await run_and_return_count(conn, query, user_id, when, message)
+    @staticmethod
+    async def delete_reminder(conn, remind_id: int, user_id: int) -> int:
+        '''Delete a reminder entry.'''
+
         # Although remind_id is sufficient, user_id is to make sure a user can't remove another reminder.
-        query = '''
+        query = """
             DELETE FROM Reminders
             WHERE remind_id = ($1) AND user_id = ($2);
-        '''
-
-        await conn.execute(query, remind_id, user_id)
+        """
+        #await conn.execute(query, remind_id, user_id)
+        return await run_and_return_count(conn, query, remind_id, user_id)
 
 class Lockdown:
+    '''Functions to interact with the `Lockdown` table.'''
     @staticmethod
-    async def get_all(conn):
+    async def get_all(conn: asyncpg.Connection):
         return await Lockdown.get_all_where(conn)
 
     @staticmethod
