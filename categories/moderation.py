@@ -174,6 +174,10 @@ async def do_purge(
             count += len(messages)
         except hikari.BulkDeleteError as bulk_delete_error:
             count += len(bulk_delete_error.messages_deleted)
+        
+        # Hard limit to purging. Will need to see how big this can go.
+        if count >= 1000:
+            break
     return count
 @plugin.command()
 @lightbulb.set_help(dedent('''
