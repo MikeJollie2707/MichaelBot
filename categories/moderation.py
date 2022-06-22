@@ -259,6 +259,44 @@ async def purge_embed(ctx: lightbulb.Context):
 
 @purge.child
 @lightbulb.set_help(dedent('''
+    - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
+'''))
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
+@lightbulb.option("to_message", "The link to the ending message. Default to the latest message.", type = hikari.Message, default = None)
+@lightbulb.option("from_message", "The link to the starting message.", type = hikari.Message)
+@lightbulb.command("range", "Purge the messages within between two messages.", inherit_checks = True)
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def purge_range(ctx: lightbulb.Context):
+    from_message: hikari.Message = ctx.options.from_message
+    to_message: hikari.Message = ctx.options.to_message
+    bot: models.MichaelBot = ctx.bot
+    
+    if to_message is None:
+        if isinstance(ctx, lightbulb.PrefixContext):
+            to_message = ctx.event.message
+        else:
+            channel: hikari.GuildTextChannel = ctx.get_channel()
+            msg_history = await channel.fetch_history(around = dt.datetime.now().astimezone()).limit(1)
+            to_message = msg_history[0]
+    else:
+        to_message = await lightbulb.MessageConverter(ctx).convert(to_message)
+    from_message = await lightbulb.MessageConverter(ctx).convert(from_message)
+
+    from_date = from_message.created_at
+    to_date = to_message.created_at
+    def between_date(msg: hikari.Message):
+        return from_date <= msg.created_at <= to_date
+    iterator = get_purge_iterator(bot, ctx.channel_id, predicate = between_date)
+    count = await do_purge(bot, iterator, ctx.channel_id)
+
+    await ctx.respond(f"Successfully deleted {count} messages between the range specified.", delete_after = 5)
+
+@purge.child
+@lightbulb.set_help(dedent('''
     - This command will delete any occurrence of the provided pattern. If the string is `e e` and the message is `the end` then it'll be deleted.
     - To delete messages that contain any of the provided words, consider using `purge words`.
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
