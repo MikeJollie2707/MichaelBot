@@ -124,7 +124,7 @@ def get_purge_iterator(
     bot: models.MichaelBot, 
     channel_id: int, 
     *, 
-    amount: int, 
+    amount: int = 0, 
     predicate: t.Callable[[hikari.Message], bool] = lambda m: True
 ) -> hikari.LazyIterator[hikari.Message]:
     '''Get an iterator of messages based on the criteria specified.
@@ -132,7 +132,7 @@ def get_purge_iterator(
     Args:
         bot (models.MichaelBot): The bot instance.
         channel_id (int): The channel to purge.
-        amount (int, optional): The maximum amount of messages to delete. If None, then there's no max.
+        amount (int, optional): The maximum amount of messages to delete. If 0, then there's no max.
         predicate (Callable[[hikari.Message], bool], optional): A callback that filter out the message to delete. By default, no filter is applied.
 
     Returns:
