@@ -6,7 +6,7 @@ import lightbulb
 import hikari
 
 from utils import checks, helpers, models, psql
-from utils.nav.navigator import ButtonNavigator, ItemListBuilder, run_view
+from utils.nav.navigator import ItemListBuilder, run_view
 
 # TODO: Remember to change 1d to 2weeks.
 
@@ -187,6 +187,7 @@ async def do_purge(
     lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
     lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
 )
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, default = 0)
 @lightbulb.command("purge", "Purge the most recent messages.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
@@ -197,6 +198,11 @@ async def purge(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.command("messages", "Purge the most recent messages.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -219,6 +225,11 @@ async def purge_messages(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("member", "The member to delete.", type = hikari.Member)
 @lightbulb.command("member", "Purge the most recent messages from a user.", inherit_checks = True)
@@ -244,6 +255,11 @@ async def purge_member(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.command("embed", "Purge the most recent messages with embeds.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -305,6 +321,11 @@ async def purge_range(ctx: lightbulb.Context):
     - To delete messages that contain any of the provided words, consider using `purge words`.
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("string", "The words to delete. Any messages with this string occurrence will be deleted.")
 @lightbulb.command("string", "Purge the most recent messages contain the string specified.", inherit_checks = True)
@@ -334,6 +355,11 @@ async def purge_string(ctx: lightbulb.Context):
     - To delete messages that contain all the provided words, consider using `purge string`.
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
 '''))
+@lightbulb.add_checks(
+    lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES),
+    lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
+)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("words", "The words to filter, separated by white space.")
 @lightbulb.command("words", "Purge the most recent messages contain any of the words specified.", inherit_checks = True, auto_defer = True)
