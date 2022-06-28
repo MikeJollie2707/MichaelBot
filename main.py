@@ -11,6 +11,8 @@ from lightbulb.ext import tasks
 
 from utils.models import MichaelBot
 
+# Comment out the extensions that you don't want to load.
+# An example would be categories.test or categories.music
 EXTENSIONS = (
     "categories.admin",
     "categories.bot",
