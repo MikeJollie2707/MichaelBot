@@ -32,15 +32,17 @@ async def run_view(view: miru.View, ctx: lightbulb.Context, initial_content: t.U
     '''
     if initial_content is None:
         if isinstance(view, nav.NavigatorView):
-            # Need to ensure the buttons are updated.
+            # nav.NavigatorView cannot be run on an interaction with a response already (typically deferring)
+            # so we have to do things manually here.
             # Reference: https://github.com/HyperGH/hikari-miru/blob/main/miru/ext/nav/navigator.py#L227
-            #for button in view.children:
-            #    if isinstance(button, nav.NavButton):
-            #        await button.before_page_change()
+            for button in view.children:
+                if isinstance(button, nav.NavButton):
+                    await button.before_page_change()
 
-            #initial_content = view.pages[view.current_page]
-            await view.send(ctx.interaction)
-            return
+            initial_content = view.pages[view.current_page]
+            
+            #await view.send(ctx.interaction)
+            #return
         else:
             raise TypeError("'initial_content' must be provided if 'view' is not type 'NavigatorView'.")
     

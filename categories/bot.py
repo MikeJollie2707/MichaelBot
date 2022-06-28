@@ -43,7 +43,7 @@ def get_memory_size(byte: int, /, suffix: str = "B") -> str:
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", choices = ("dev", "development", "stable"), default = "stable")
-@lightbulb.command("changelog", "Show 10 latest changes to the bot.")
+@lightbulb.command("changelog", "Show 10 latest changes to the bot.", auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def changelog(ctx: lightbulb.Context):
     '''
@@ -78,7 +78,7 @@ async def changelog(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("help", "Get help information for the bot.", aliases = ['h'])
+@lightbulb.command("help", "Get help information for the bot.", aliases = ['h'], auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _help(ctx: lightbulb.Context):
     obj = ctx.options.name
