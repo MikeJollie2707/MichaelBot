@@ -69,6 +69,7 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
 
     if bot.pool is not None:
         async with bot.pool.acquire() as conn:
+            async with conn.transaction():
             # Only cache guilds that are available to bot, not all guilds in db.
             async for guild in bot.rest.fetch_my_guilds():
                 if bot.guild_cache.get(guild.id) is None:
