@@ -44,6 +44,7 @@ nav:
     - helpers.py: dev/helpers.md
     - models.py: dev/models.md
     - nav: dev/menu.md
+    - psql.py: dev/psql.md
 
 dev_addr: '127.0.0.1:8001'
 
