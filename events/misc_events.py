@@ -1,11 +1,11 @@
 '''Various other events to handle. Most of them are related to dealing with database connection.'''
 
 import datetime as dt
+import json
 import logging
 
 import aiohttp
 import asyncpg
-import asyncpg.exceptions as pg_exception
 import hikari
 import lightbulb
 
@@ -43,10 +43,9 @@ async def on_starting(event: hikari.StartingEvent):
                 user = bot.secrets["user"],
                 password = bot.secrets["password"]
             )
-            logger.info("Bot successfully connected to the database.")
-        except pg_exception.InvalidPasswordError:
+        except asyncpg.InvalidPasswordError:
             logger.error(f"Invalid password for user '{bot.secrets['user']}'.")
-        except pg_exception.InvalidCatalogNameError:
+        except asyncpg.InvalidCatalogNameError:
             logger.error(f"Unable to find database '{bot.secrets['database']}'")
         except ConnectionRefusedError:
             logger.error(f"Unable to connect to a database at {bot.secrets['host']}, port {bot.secrets['port']}")
