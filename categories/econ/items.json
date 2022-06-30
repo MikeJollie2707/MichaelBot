@@ -1,0 +1,36 @@
+[
+    {
+        "id": "sample_item",
+        "name": "Sample Item",
+        "aliases": ["Optional", "Test Item"],
+        "emoji": "Discord emoji or Unicode emoji",
+        "description": "This is a sample structure of an item. This must not be loaded into the database.",
+        "buy_price": null,
+        "sell_price": 100
+    },
+    {
+        "id": "wood",
+        "name": "Wood",
+        "emoji": "🪵",
+        "description": "A basic material needed for every uses.",
+        "buy_price": 60,
+        "sell_price": 50
+    },
+    {
+        "id": "stick",
+        "name": "Stick",
+        "emoji": "<:stick:819615522878521434>",
+        "description": "A small stick. Can be used to craft all sort of tools.",
+        "buy_price": 15,
+        "sell_price": 10
+    },
+    {
+        "id": "wood_pickaxe",
+        "name": "Wood Pickaxe",
+        "aliases": ["Wooden Pickaxe"],
+        "emoji": "<:wood_pickaxe:819617302164930570>",
+        "description": "A fragile pickaxe. It can only mine a small amount of things before breaking apart.",
+        "buy_price": null,
+        "sell_price": 15
+    }
+]
