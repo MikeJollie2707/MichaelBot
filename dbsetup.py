@@ -95,7 +95,8 @@ async def setup_database(user, password, database, host, port):
                 aliases TEXT[] DEFAULT ARRAY[]::TEXT[],
                 emoji TEXT UNIQUE NOT NULL,
                 description TEXT NOT NULL,
-                price INT NOT NULL
+                buy_price INT,
+                sell_price INT NOT NULL
             );
         """)
     except Exception as e:
