@@ -624,6 +624,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../psql/" class="md-nav__link">
+        psql.py
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -903,14 +917,14 @@
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a user into the cache and the database.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
-        <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
+        <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_info</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Edit a user data in the cache and the database.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
@@ -920,7 +934,7 @@
 <span class="sd">        Otherwise, it returns itself.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -973,8 +987,8 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Add a user into the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
-    <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
+    <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_info</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1011,7 +1025,7 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Edit a user data in the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1062,7 +1076,7 @@ Otherwise, it returns itself.</p>
 <span class="sd">    Otherwise, it returns itself.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1182,7 +1196,8 @@ Otherwise, it returns itself.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GuildCache</span><span class="p">:</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GuildCache</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Represent a guild data in the database.</span>
 
@@ -1209,23 +1224,24 @@ Otherwise, it returns itself.</p>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a guild module into the cache and the database.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
-        <span class="n">guild_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="c1">#await psql.Guilds._insert_one(conn, guild)</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="p">(</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">guild_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild_info</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">update_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Edit a guild module data in the cache and the database.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">add_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a logging module into the cache and the database.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
-        <span class="n">logging_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">logging_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">logging_info</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">update_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
@@ -1242,13 +1258,13 @@ Otherwise, it returns itself.</p>
 <span class="sd">        Otherwise, it returns itself.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="n">guild</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+        <span class="n">guild</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">guild</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">guild</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">guild_log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+        <span class="n">guild_log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">guild_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">guild_log</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1298,12 +1314,14 @@ Otherwise, it returns itself.</p>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Add a guild module into the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
-    <span class="n">guild_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="c1">#await psql.Guilds._insert_one(conn, guild)</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="p">(</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+    <span class="n">guild_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span> <span class="o">=</span> <span class="n">guild_info</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1331,16 +1349,16 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">93</span>
-<span class="normal">94</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">94</span>
 <span class="normal">95</span>
 <span class="normal">96</span>
 <span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_guild_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Edit a guild module data in the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">guild_module</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1368,18 +1386,18 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
-<span class="normal">101</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">add_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Guild</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Add a logging module into the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">add_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="p">)</span>
-    <span class="n">logging_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="n">logging_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logging_module</span> <span class="o">=</span> <span class="n">logging_info</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1407,12 +1425,12 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
-<span class="normal">109</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+<span class="normal">113</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">update_logging_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Update a logging module in the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -1446,8 +1464,7 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
-<span class="normal">116</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
@@ -1467,20 +1484,21 @@ Otherwise, it returns itself.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="normal">136</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">force_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Force this object to update with database.</span>
 <span class="sd">    If the method returns `None`, the entry for this guild isn&#39;t on the database, thus you should use `add_guild_module()` instead.</span>
 <span class="sd">    Otherwise, it returns itself.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="n">guild</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guilds</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+    <span class="n">guild</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Guild</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">guild</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">guild</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="n">guild_log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">)</span>
+    <span class="n">guild_log</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">GuildsLogs</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">guild_id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">guild_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">guild_log</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1524,8 +1542,7 @@ Otherwise, it returns itself.</p>
 
         <details class="quote">
           <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
@@ -1558,7 +1575,8 @@ Otherwise, it returns itself.</p>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
-<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DefaultColor</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DefaultColor</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Store several default colors to use instantly.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -1639,11 +1657,11 @@ Otherwise, it returns itself.</p>
 
         <details class="quote">
           <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
-<span class="normal">176</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
-<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">179</span>
+<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">NodeExtra</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;A class to store extra data for the `lavaplayer.Node`&#39;&#39;&#39;</span>
     <span class="n">queue_loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1692,8 +1710,7 @@ Otherwise, it returns itself.</p>
 
         <details class="quote">
           <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
-<span class="normal">182</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
@@ -1804,7 +1821,8 @@ Otherwise, it returns itself.</p>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
-<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
+<span class="normal">293</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.&#39;&#39;&#39;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
@@ -1981,8 +1999,7 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
-<span class="normal">197</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
@@ -2041,7 +2058,8 @@ Otherwise, it returns itself.</p>
 <span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<span class="normal">256</span>
+<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
     <span class="n">token</span><span class="p">,</span> 
     <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">ignore_bots</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
@@ -2167,8 +2185,7 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
-<span class="normal">259</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
@@ -2202,7 +2219,8 @@ Otherwise, it returns itself.</p>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
-<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_slash_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]:</span>
+<span class="normal">293</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_slash_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]:</span>
     <span class="sd">&#39;&#39;&#39;Get the slash command with the given name, or `None` if none was found.</span>
 
 <span class="sd">    Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.</span>
