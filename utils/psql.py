@@ -594,5 +594,96 @@ class Lockdown:
         if channel_id not in existed["channels"]:
             return 0
         
-        existed["channels"].remove(channel_id)
-        return await Lockdown.update_column(conn, guild_id, "channels", existed["channels"])
+        existed.channels.remove(channel_id)
+        return await Lockdown.update_column(conn, guild_id, "channels", existed.channels)
+
+@dataclasses.dataclass(slots = True)
+class Item:
+    '''Represent an entry in the `Items` table along with possible operations related to the table.'''
+    
+    id: str
+    sort_id: int
+    name: str
+    emoji: str
+    description: str
+    sell_price: int
+    buy_price: int = None
+    aliases: list[str] = dataclasses.field(default_factory = list)
+
+    @staticmethod
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Item, dict]]:
+        return await Item.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Item], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Item, dict]]:
+        query = """
+            SELECT * FROM Items
+            ORDER by sort_id;
+        """
+        return await __get_all__(conn, query, where = where, result_type = Item if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, id: str, *, as_dict: bool = False) -> t.Union[Item, dict]:
+        query = """
+            SELECT * FROM Items
+            WHERE id = ($1);
+        """
+        return await __get_one__(conn, query, id, result_type = Item if not as_dict else dict)
+    @staticmethod
+    async def get_by_name(conn: asyncpg.Connection, name_or_alias: str, *, as_dict: bool = False) -> t.Union[Item, dict]:
+        def filter_name_alias(record: Item):
+            return record.name == name_or_alias or name_or_alias in record.aliases
+        
+        res = await Item.get_all_where(conn, where = filter_name_alias, as_dict = as_dict)
+        assert len(res) == 1
+        return res[0]
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, item: Item):
+        query = insert_into_query("Items", len(item.__slots__))
+        return await run_and_return_count(conn, query, 
+            item.id, 
+            item.sort_id, 
+            item.name, 
+            item.aliases, 
+            item.emoji, 
+            item.description, 
+            item.buy_price,
+            item.sell_price,
+        )
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, id: str, column: str, new_value) -> int:
+        query = f"""
+            UPDATE Items
+            SET {column} = ($2)
+            WHERE id = ($1);
+        """
+        return await run_and_return_count(conn, query, id, new_value)
+    @staticmethod
+    async def sync(conn: asyncpg.Connection, item: Item):
+        '''Update the item in the database with the new values, or insert it if not exist.
+
+        Notes
+        -----
+        This is a rather expensive call since it'll call `Items.get_one()` in addition to updating.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        item : Item
+            The new item. `item.id` will be used to find the item, while the rest of the values will update.
+        '''
+
+        existing_item = await Item.get_one(conn, item.id)
+        if existing_item is None:
+            await Item.insert_one(conn, item)
+            logger.info("Loaded new item '%s' into the database.", item.id)
+        else:
+            diff_col = []
+            for col in existing_item.__slots__:
+                if getattr(existing_item, col) != getattr(item, col):
+                    diff_col.append(col)
+
+            for change in diff_col:
+                await Item.update_column(conn, item.id, change, getattr(item, change))
+
+            if diff_col:
+                logger.info("Updated item '%s' in the following columns: %s.", item.id, diff_col)
