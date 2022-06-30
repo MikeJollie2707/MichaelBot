@@ -465,14 +465,14 @@ async def scan_reminders(bot: models.MichaelBot):
         upcoming = await psql.Reminders.get_reminders(conn, current, future)
     
     for missed_reminder in passed:
-        user = bot.cache.get_user(missed_reminder["user_id"])
+        user = bot.cache.get_user(missed_reminder.user_id)
         assert user is not None
-        bot.create_task(do_remind(bot, user, missed_reminder["message"], current, missed_reminder["remind_id"]))
+        bot.create_task(do_remind(bot, user, missed_reminder.message, current, missed_reminder.remind_id))
     
     for upcoming_reminder in upcoming:
-        user = bot.cache.get_user(upcoming_reminder["user_id"])
+        user = bot.cache.get_user(upcoming_reminder.user_id)
         assert user is not None
-        bot.create_task(do_remind(bot, user, upcoming_reminder["message"], upcoming_reminder["awake_time"], upcoming_reminder["remind_id"]))
+        bot.create_task(do_remind(bot, user, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -536,6 +536,8 @@ async def remind_view(ctx: lightbulb.Context):
         await ctx.respond(embed = embed, reply = True)
     else:
         builder = ItemListBuilder(reminders, max_item_per_page = 5)
+        
+        @builder.set_page_start_formatter
         def start_format(_, __):
             embed = helpers.get_default_embed(
                 title = "Reminders",
@@ -545,16 +547,16 @@ async def remind_view(ctx: lightbulb.Context):
             )
             embed.description = "**Format:** 0. `remind_id` Reminder message - 0h0m\n\n"
             return embed
-        def entry_format(embed: hikari.Embed, index: int, item: dict):
-            message = item["message"]
-            if len(item["message"]) > 30:
-                message = item["message"][:27] + "..."
-            
-            time_till_awake: dt.timedelta = item["awake_time"] - dt.datetime.now().astimezone()
-            embed.description += f"{index + 1}. `{item['remind_id']}` {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
         
-        builder.set_page_start_formatter(start_format)
-        builder.set_entry_formatter(entry_format)
+        @builder.set_entry_formatter
+        def entry_format(embed: hikari.Embed, index: int, item: psql.Reminders):
+            message = item.message
+            if len(item.message) > 30:
+                message = item.message[:27] + "..."
+            
+            time_till_awake: dt.timedelta = item.awake_time - dt.datetime.now().astimezone()
+            embed.description += f"{index + 1}. `{item.remind_id}` {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
+        
         await run_view(builder.build(), ctx)
 
 @remind.child

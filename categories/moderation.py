@@ -51,7 +51,7 @@ async def lockdown_add(ctx: lightbulb.Context):
                         reply = True, mentions_reply = True
                     )
             except psql.GetError:
-                await psql.Lockdown.insert_one(conn, ctx.guild_id, [channel.id])
+                await psql.Lockdown.insert_one(conn, psql.Lockdown(ctx.guild_id, [channel.id]))
             
             await ctx.respond(f"Added {channel.mention} to the lockdown list. To remove, use `lockdown remove`.", reply = True)
 
@@ -89,11 +89,11 @@ async def lockdown_remove(ctx: lightbulb.Context):
 async def lockdown_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    entry: dict = None
+    entry: psql.Lockdown = None
     async with bot.pool.acquire() as conn:
         entry = await psql.Lockdown.get_one(conn, ctx.guild_id)
     
-    if entry is None or not entry["channels"]:
+    if entry is None or not entry.channels:
         embed = helpers.get_default_embed(
             title = "Lockdown Channels",
             description = "*Cricket noises*",
@@ -102,7 +102,7 @@ async def lockdown_view(ctx: lightbulb.Context):
 
         await ctx.respond(embed = embed, reply = True)
     else:
-        entry = [ctx.get_guild().get_channel(channel_id) for channel_id in entry["channels"]]
+        entry = [ctx.get_guild().get_channel(channel_id) for channel_id in entry.channels]
         builder = ItemListBuilder(entry, 10)
 
         @builder.set_page_start_formatter

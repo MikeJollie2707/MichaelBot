@@ -34,7 +34,7 @@ async def blacklist_guild(ctx: lightbulb.Context):
         async with conn.transaction():
             guild_cache = bot.guild_cache.get(guild_id)
             if guild_cache is None:
-                guild_db = await psql.Guilds.get_one(conn, guild_id)
+                guild_db = await psql.Guild.get_one(conn, guild_id)
                 if guild_db is None:
                     await ctx.respond("Can't blacklist a guild that's not available in guild.", reply = True, mentions_reply = True)
                     return
@@ -72,7 +72,7 @@ async def blacklist_user(ctx: lightbulb.Context):
         async with conn.transaction():
             user_cache = bot.user_cache.get(user_id)
             if user_cache is None:
-                user_db = await psql.Users.get_one(conn, user_id)
+                user_db = await psql.User.get_one(conn, user_id)
                 if user_db is None:
                     await ctx.respond("Can't blacklist a user that's not available in database.", reply = True, mentions_reply = True)
                     return
@@ -109,15 +109,17 @@ async def force_sync_cache(ctx: lightbulb.Context):
 
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guilds = await psql.Guilds.get_all(conn)
+            guilds = await psql.Guild.get_all(conn)
             for guild in guilds:
-                guild_id = guild["id"]
+                #guild_id = guild["id"]
+                guild_id = guild.id
                 bot.guild_cache[guild_id] = models.GuildCache()
                 await bot.guild_cache[guild_id].force_sync(conn, guild_id)
             
-            users = await psql.Users.get_all(conn)
+            users = await psql.User.get_all(conn)
             for user in users:
-                user_id = user["id"]
+                #user_id = user["id"]
+                user_id = user.id
                 bot.user_cache[user_id] = models.UserCache()
                 await bot.user_cache[user_id].force_sync(conn, user_id)
     

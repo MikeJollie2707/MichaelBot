@@ -33,14 +33,14 @@ class UserCache:
         '''
         Add a user into the cache and the database.
         '''
-        await psql.Users.insert_one(conn, user.id, user.username)
-        user_info = await psql.Users.get_one(conn, user.id)
+        await psql.User.insert_one(conn, psql.User(user.id, user.username))
+        user_info = await psql.User.get_one(conn, user.id, as_dict = True)
         self.user_module = user_info
     async def update_user_module(self, conn, user_id: int, column: str, new_value):
         '''
         Edit a user data in the cache and the database.
         '''
-        await psql.Users.update_column(conn, user_id, column, new_value)
+        await psql.User.update_column(conn, user_id, column, new_value)
         self.user_module[column] = new_value
     
     async def force_sync(self, conn, user_id: int):
@@ -50,7 +50,7 @@ class UserCache:
         Otherwise, it returns itself.
         '''
 
-        user = await psql.Users.get_one(conn, user_id)
+        user = await psql.User.get_one(conn, user_id, as_dict = True)
         if user is None:
             return None
         else:
@@ -86,23 +86,24 @@ class GuildCache:
         '''
         Add a guild module into the cache and the database.
         '''
-        await psql.Guilds.insert_one(conn, guild)
-        guild_info = await psql.Guilds.get_one(conn, guild.id)
+        #await psql.Guilds._insert_one(conn, guild)
+        await psql.Guild.insert_one(conn, psql.Guild(guild.id, guild.name))
+        guild_info = await psql.Guild.get_one(conn, guild.id, as_dict = True)
         self.guild_module = guild_info
     
     async def update_guild_module(self, conn, guild_id: int, column: str, new_value):
         '''
         Edit a guild module data in the cache and the database.
         '''
-        await psql.Guilds.update_column(conn, guild_id, column, new_value)
+        await psql.Guild.update_column(conn, guild_id, column, new_value)
         self.guild_module[column] = new_value
     
     async def add_logging_module(self, conn, guild: hikari.Guild):
         '''
         Add a logging module into the cache and the database.
         '''
-        await psql.GuildsLogs.insert_one(conn, guild)
-        logging_info = await psql.GuildsLogs.get_one(conn, guild.id)
+        await psql.GuildsLogs.insert_one(conn, guild.id)
+        logging_info = await psql.GuildsLogs.get_one(conn, guild.id, as_dict = True)
         self.logging_module = logging_info
     
     async def update_logging_module(self, conn, guild_id: int, column: str, new_value):
@@ -119,13 +120,13 @@ class GuildCache:
         Otherwise, it returns itself.
         '''
 
-        guild = await psql.Guilds.get_one(conn, guild_id)
+        guild = await psql.Guild.get_one(conn, guild_id, as_dict = True)
         if guild is None:
             return None
         else:
             guild.pop("id", None)
         
-        guild_log = await psql.GuildsLogs.get_one(conn, guild_id)
+        guild_log = await psql.GuildsLogs.get_one(conn, guild_id, as_dict = True)
         if guild_log is None:
             guild_log = {}
         else:

@@ -42,7 +42,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
         guild_cache = models.GuildCache()
         async with bot.pool.acquire() as conn:
             async with conn.transaction():
-                guild = await psql.Guilds.get_one(conn, ctx.guild_id)
+                guild = await psql.Guild.get_one(conn, ctx.guild_id)
                 if guild is None:
                     await guild_cache.add_guild_module(conn, ctx.get_guild())
                 else:
@@ -51,7 +51,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
         user_cache = models.UserCache()
         async with bot.pool.acquire() as conn:
             async with conn.transaction():
-                user = await psql.Users.get_one(conn, ctx.author.id)
+                user = await psql.User.get_one(conn, ctx.author.id)
                 if user is None:
                     await user_cache.add_user_module(conn, ctx.author)
                 else:
