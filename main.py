@@ -16,6 +16,7 @@ from utils.models import MichaelBot
 EXTENSIONS = (
     "categories.admin",
     "categories.bot",
+    "categories.economy",
     "categories.fun",
     "categories.help",
     "categories.moderation",
