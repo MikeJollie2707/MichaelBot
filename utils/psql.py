@@ -696,3 +696,10 @@ class Item:
 
             if diff_col:
                 logger.info("Updated item '%s' in the following columns: %s.", item.id, diff_col)
+
+class Economy:
+    @staticmethod
+    async def add_money(conn: asyncpg.Connection, user_id: int, amount: int):
+        user = await User.get_one(conn, user_id)
+        user.balance += amount
+        await User.update_column(conn, user_id, "balance", user.balance)
