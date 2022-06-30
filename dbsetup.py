@@ -6,6 +6,15 @@ import asyncpg
 
 from main import load_info
 
+async def create_table(conn: asyncpg.Connection, table_name: str, query: str):
+    print(f"Creating {table_name} table...", end = '')
+    try:
+        await conn.execute(query)
+    except asyncpg.DuplicateTableError:
+        print(f"Table {table_name} already existed, moving on!")
+    else:
+        print("Done!")
+
 async def setup_database(user, password, database, host, port):
     conn: asyncpg.Connection = await asyncpg.connect(
         host = host,
@@ -15,21 +24,18 @@ async def setup_database(user, password, database, host, port):
         database = database
     )
 
-    async with conn.transaction():
-        print("Creating Guilds table...", end = '')
-        await conn.execute('''
-            CREATE TABLE IF NOT EXISTS Guilds (
+    try:
+        await create_table(conn, "Guilds", """
+            CREATE TABLE Guilds (
                 id INT8 PRIMARY KEY,
                 name TEXT NOT NULL,
                 is_whitelist BOOL NOT NULL DEFAULT TRUE,
                 prefix TEXT NOT NULL DEFAULT '$'
             );
-        ''')
-        print("Done!")
-
-        print("Creating GuildsLogs table...", end = '')
-        await conn.execute('''
-            CREATE TABLE IF NOT EXISTS GuildsLogs (
+        """)
+        
+        await create_table(conn, "GuildsLogs", """
+            CREATE TABLE GuildsLogs (
                 guild_id INT8 UNIQUE NOT NULL,
                 log_channel INT8 DEFAULT NULL,
                 guild_channel_create BOOL NOT NULL DEFAULT TRUE,
@@ -52,42 +58,50 @@ async def setup_database(user, password, database, host, port):
                 CONSTRAINT fk_guildslogs_guilds
                     FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
             );
-        ''')
-        print("Done!")
-
-        print("Creating Users table...", end = '')
-        await conn.execute('''
-            CREATE TABLE IF NOT EXISTS Users (
+        """)
+        
+        await create_table(conn, "Users", """
+            CREATE TABLE Users (
                 id INT8 PRIMARY KEY,
                 name TEXT NOT NULL,
-                is_whitelist BOOL NOT NULL DEFAULT TRUE
+                is_whitelist BOOL NOT NULL DEFAULT TRUE,
+                balance INT NOT NULL DEFAULT 0
             );
-        ''')
-        print("Done!")
+        """)
 
-        print("Creating Reminders table...", end = '')
-        await conn.execute('''
-            CREATE TABLE IF NOT EXISTS Reminders (
+        await create_table(conn, "Reminders", """
+            CREATE TABLE Reminders (
                 remind_id SERIAL PRIMARY KEY,
                 user_id INT8 NOT NULL,
                 awake_time TIMESTAMP WITH TIME ZONE NOT NULL,
                 message TEXT NOT NULL
             );
-        ''')
-        print("Done!")
+        """)
 
-        print("Creating Lockdown table...", end = '')
-        await conn.execute('''
-            CREATE TABLE IF NOT EXISTS Lockdown (
+        await create_table(conn, "Lockdown", """
+            CREATE TABLE Lockdown (
                 guild_id INT8 UNIQUE NOT NULL,
                 channels INT8[] DEFAULT ARRAY[]::INT8[],
                 CONSTRAINT fk_lockdown_guilds
                     FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
             );
-        ''')
-        print("Done!")
+        """)
 
-    await conn.close()
+        await create_table(conn, "Items", """
+            CREATE TABLE Items (
+                id TEXT PRIMARY KEY,
+                sort_id INT NOT NULL,
+                name TEXT UNIQUE NOT NULL,
+                aliases TEXT[] DEFAULT ARRAY[]::TEXT[],
+                emoji TEXT UNIQUE NOT NULL,
+                description TEXT NOT NULL,
+                price INT NOT NULL
+            );
+        """)
+    except Exception as e:
+        raise e
+    finally:
+        await conn.close()
 
 if __name__ == "__main__":
     argc = len(sys.argv)
