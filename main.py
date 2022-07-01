@@ -85,5 +85,5 @@ if __name__ == "__main__":
         bot.load_extensions(extension)
     
     bot.run(
-        activity = hikari.Activity(name = "P4 All Bindings", type = hikari.ActivityType.PLAYING)
+        activity = hikari.Activity(name = "o7 Technoblade", type = hikari.ActivityType.PLAYING)
     )
