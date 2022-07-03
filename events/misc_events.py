@@ -20,7 +20,7 @@ async def update_item(conn: asyncpg.Connection):
         with open("./categories/econ/items.json", encoding = "utf-8") as fin:
             item_data = json.load(fin)
     except FileNotFoundError:
-        logging.warning("Bot is trying to load './categories/econ/items.json', but it is not found.")
+        logger.warning("Bot is trying to load './categories/econ/items.json', but it is not found.")
     else:    
         for index, item in enumerate(item_data):
             # Ignore the sample item.
