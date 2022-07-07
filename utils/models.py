@@ -33,9 +33,10 @@ class UserCache:
         '''
         Add a user into the cache and the database.
         '''
-        await psql.User.insert_one(conn, psql.User(user.id, user.username))
-        user_info = await psql.User.get_one(conn, user.id, as_dict = True)
-        self.user_module = user_info
+        puser = psql.User(user.id, user.username)
+        await psql.User.insert_one(conn, puser)
+        #user_info = await psql.User.get_one(conn, user.id, as_dict = True)
+        self.user_module = puser.to_dict()
     async def update_user_module(self, conn, user_id: int, column: str, new_value):
         '''
         Edit a user data in the cache and the database.
