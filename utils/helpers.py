@@ -75,6 +75,16 @@ COMMAND_STANDARD_PERMISSIONS = (
     hikari.Permissions.READ_MESSAGE_HISTORY,
 )
 
+class ClassToDict:
+    def to_dict(self) -> dict:
+        if not hasattr(self, "__slots__") or not self.__slots__:
+            return self.__dict__
+        
+        d = {}
+        for attr in self.__slots__:
+            d[attr] = getattr(self, attr)
+        return d
+
 def embed_from_dict(data: dict[str, t.Any], /) -> hikari.Embed:
     '''Generate an embed from a dictionary.
 
