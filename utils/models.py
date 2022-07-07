@@ -137,6 +137,37 @@ class GuildCache:
         self.logging_module = guild_log
         return self
 
+class ItemCache:
+    def __init__(self, item_module: dict = None):
+        if item_module is None:
+            item_module = {}
+        
+        self.__CACHE_COLUMNS = ("sort_id", "name", "aliases", "emoji")
+        self.item_module = self.__filter_unrelated_keys(item_module)
+    
+    def __filter_unrelated_keys(self, info: dict) -> dict:
+        d = {}
+        for key in info:
+            if key in self.__CACHE_COLUMNS:
+                d[key] = info[key]
+        return d
+    
+    async def add_item_module(self, conn, item: psql.Item):
+        await psql.Item.insert_one(conn, item)
+        self.item_module = self.__filter_unrelated_keys(item.to_dict())
+    async def update_item_module(self, conn, item_id: int, column: str, new_value):
+        if column not in self.__CACHE_COLUMNS:
+            return
+        await psql.Item.update_column(conn, item_id, column, new_value)
+        self.item_module[column] = new_value
+    async def force_sync(self, conn, item_id: int):
+        item = await psql.Item.get_one(conn, item_id, as_dict = True)
+        if item is None:
+            return None
+        
+        self.item_module = self.__filter_unrelated_keys(item)
+        return self
+
 # Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
 class DefaultColor(Enum):
     '''
@@ -192,6 +223,7 @@ class MichaelBot(lightbulb.BotApp):
         "aio_session",
         "guild_cache",
         "user_cache",
+        "item_cache",
         "lavalink",
         "node_extra"
     )
@@ -226,6 +258,7 @@ class MichaelBot(lightbulb.BotApp):
         # Store some db info. This allows read-only operation much cheaper.
         self.guild_cache: dict[int, GuildCache] = {}
         self.user_cache: dict[int, UserCache] = {}
+        self.item_cache: dict[str, ItemCache] = {}
 
         self.lavalink: t.Optional[lavaplayer.LavalinkClient] = None
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
