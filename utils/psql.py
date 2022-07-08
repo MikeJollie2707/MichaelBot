@@ -14,7 +14,7 @@ import typing as t
 import asyncpg
 import hikari
 
-from helpers import ClassToDict
+from utils.helpers import ClassToDict
 
 logger = logging.getLogger("MichaelBot")
 T = t.TypeVar('T')
