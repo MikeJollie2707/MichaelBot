@@ -14,6 +14,8 @@ import typing as t
 import asyncpg
 import hikari
 
+from helpers import ClassToDict
+
 logger = logging.getLogger("MichaelBot")
 T = t.TypeVar('T')
 
@@ -199,9 +201,9 @@ async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kw
         return count
     except ValueError:
         return None
-    
+
 @dataclasses.dataclass(slots = True)
-class Guild:
+class Guild(ClassToDict):
     '''Represent an entry in the `Guilds` table along with possible operations related to the table.'''
 
     id: int
@@ -262,7 +264,7 @@ class Guild:
         return await run_and_return_count(conn, query, new_value, id)
 
 @dataclasses.dataclass(slots = True)    
-class GuildsLogs:
+class GuildsLogs(ClassToDict):
     '''Represent an entry in the `GuildsLogs` table along with possible operations related to the table.'''
 
     guild_id: int
@@ -342,7 +344,7 @@ class GuildsLogs:
         return await run_and_return_count(conn, query, new_value, id)
 
 @dataclasses.dataclass(slots = True)
-class User:
+class User(ClassToDict):
     '''Represent an entry in the `Users` table along with possible operations related to the table.'''
 
     id: int
@@ -403,7 +405,7 @@ class User:
         return await run_and_return_count(conn, query, new_value, id)
 
 @dataclasses.dataclass(slots = True)
-class Reminders:
+class Reminders(ClassToDict):
     '''Represent an entry in the `Reminders` table along with possible operations related to the table.'''
 
     remind_id: int
@@ -465,7 +467,7 @@ class Reminders:
         return await run_and_return_count(conn, query, remind_id, user_id)
 
 @dataclasses.dataclass(slots = True)
-class Lockdown:
+class Lockdown(ClassToDict):
     '''Represent an entry in the `Lockdown` table along with possible operations related to the table.'''
     
     guild_id: int
@@ -607,7 +609,7 @@ class Lockdown:
         return await Lockdown.update_column(conn, guild_id, "channels", existed.channels)
 
 @dataclasses.dataclass(slots = True)
-class Item:
+class Item(ClassToDict):
     '''Represent an entry in the `Items` table along with possible operations related to the table.'''
     
     id: str
