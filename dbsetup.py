@@ -65,7 +65,9 @@ async def setup_database(user, password, database, host, port):
                 id INT8 PRIMARY KEY,
                 name TEXT NOT NULL,
                 is_whitelist BOOL NOT NULL DEFAULT TRUE,
-                balance INT NOT NULL DEFAULT 0
+                balance INT NOT NULL DEFAULT 0 CHECK (balance >= 0),
+                daily_streak INT NOT NULL DEFAULT 0 CHECK (daily_streak >= 0),
+                last_daily TIMESTAMP WITH TIME ZONE
             );
         """)
 
