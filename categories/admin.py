@@ -186,6 +186,28 @@ async def cache_view_guild(ctx: lightbulb.Context):
     else:
         await ctx.respond("Cache for this guild doesn't exist.", reply = True, mentions_reply = True)
 
+@cache_view.child
+@lightbulb.option("item_id", "The item's id to view.")
+@lightbulb.command("item", "View the cache of an item.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def cache_view_item(ctx: lightbulb.Context):
+    item_id = ctx.options.item_id
+    bot: models.MichaelBot = ctx.bot
+
+    item_cache = bot.item_cache.get(item_id)
+    if item_cache is not None:
+        embed = helpers.get_default_embed(
+            title = "Item Cache View",
+            author = ctx.author,
+            timestamp = dt.datetime.now().astimezone()
+        ).add_field(
+            name = "Guild Module",
+            value = f"```{item_cache.item_module}```"
+        )
+        await ctx.respond(embed = embed, reply = True)
+    else:
+        await ctx.respond("Cache for this item doesn't exist.", reply = True, mentions_reply = True)
+
 @plugin.command()
 @lightbulb.command("purge-guild-slashes", "Force delete every slash commands in test guilds.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
