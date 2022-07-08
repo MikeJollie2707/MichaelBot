@@ -662,6 +662,7 @@ class Item(ClassToDict):
     sell_price: int
     buy_price: int = None
     aliases: list[str] = dataclasses.field(default_factory = list)
+    durability: int = None
 
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Item, dict]]:
@@ -700,6 +701,7 @@ class Item(ClassToDict):
             item.description, 
             item.buy_price,
             item.sell_price,
+            item.durability,
         )
     @staticmethod
     async def update_column(conn: asyncpg.Connection, id: str, column: str, new_value) -> int:
