@@ -41,9 +41,9 @@ class UpdateError(Error):
     '''A base error for UPDATE operations.'''
 
 class DuplicateArrayElement(UpdateError):
-    '''Raised when trying to add an element that's already available in a non-duplicate list.'''
+    '''Raised when trying to add an element that's already available in a unique-only list (set).'''
 
-def record_to_type(record: asyncpg.Record, result_type: t.Type[T] = dict, /) -> T:
+def record_to_type(record: asyncpg.Record, /, result_type: t.Type[T] = dict) -> T:
     '''Convert a `asyncpg.Record` into a `dict` or `None` if the object is already `None`.
 
     This is for convenience purpose, where `dict(Record)` will return `{}` which is not an accurate
