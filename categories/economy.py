@@ -1,7 +1,27 @@
+import datetime as dt
+from textwrap import dedent
+
 import lightbulb
 import hikari
+import humanize
 
+from categories.econ import loot
 from utils import checks, helpers, models, psql
+from utils.nav import navigator
+
+CURRENCY_ICON = "<:emerald:993835688137072670>"
+
+def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote: bool = False) -> str:
+    rewards: list = []
+    for item_id, amount in loot_table.items():
+        item_cache = bot.item_cache.get(item_id)
+        if item_cache is not None:
+            item = item_cache.item_module
+            if emote:
+                rewards.append(f"{item['emoji']} x {amount}")
+            else:
+                rewards.append(f"{amount}x *{item['name']}*")
+    return ', '.join(rewards)
 
 plugin = lightbulb.Plugin("Economy", "Money stuffs", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
@@ -19,7 +39,7 @@ async def balance(ctx: lightbulb.Context):
 
     async with bot.pool.acquire() as conn:
         user = await psql.User.get_one(conn, ctx.author.id)
-        await ctx.respond(f"You have ${user.balance}.")
+        await ctx.respond(f"You have {CURRENCY_ICON}{user.balance}.")
 
 @plugin.command()
 @lightbulb.add_checks(checks.is_dev)
@@ -30,8 +50,8 @@ async def addmoney(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        await psql.Economy.add_money(conn, ctx.author.id, amount = min(500, max(1, ctx.options.amount)))
-    await ctx.respond(f"Added ${ctx.options.amount}.")
+        await psql.User.add_money(conn, ctx.author.id, min(500, max(1, ctx.options.amount)))
+    await ctx.respond(f"Added {CURRENCY_ICON}{ctx.options.amount}.")
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
