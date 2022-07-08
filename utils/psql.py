@@ -687,8 +687,11 @@ class Item(ClassToDict):
             return record.name.lower() == name_or_alias.lower() or name_or_alias.lower() in [alias.lower() for alias in record.aliases]
         
         res = await Item.get_all_where(conn, where = filter_name_alias, as_dict = as_dict)
-        assert len(res) == 1
-        return res[0]
+        
+        assert len(res) <= 1
+        if res:
+            return res[0]
+        return None
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, item: Item):
         query = insert_into_query("Items", len(item.__slots__))
