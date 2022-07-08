@@ -746,9 +746,288 @@ class Item(ClassToDict):
             if diff_col:
                 logger.info("Updated item '%s' in the following columns: %s.", item.id, diff_col)
 
-class Economy:
+@dataclasses.dataclass(slots = True)
+class Inventory(ClassToDict):
+    user_id: int
+    item_id: str
+    amount: int
+
+    # Have to fill the rest as default values because these are meant to be read, not to be created.
+    sort_id: int = None
+    name: str = None
+    emoji: str = None
+    description: str = None
+    sell_price: int = None
+    buy_price: int = None
+    aliases: list[str] = None
+    durability: int = None
+
     @staticmethod
-    async def add_money(conn: asyncpg.Connection, user_id: int, amount: int):
-        user = await User.get_one(conn, user_id)
-        user.balance += amount
-        await User.update_column(conn, user_id, "balance", user.balance)
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
+        return await Inventory.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Inventory], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
+        query = """
+            SELECT UserInventory.*, Items.sort_id, Items.name, Items.aliases, Items.emoji, Items.description, Items.sell_price, Items.buy_price, Items.durability
+            FROM UserInventory
+                INNER JOIN Items ON UserInventory.item_id = Items.id
+            ORDER BY UserInventory.amount DESC;
+        """
+        return await __get_all__(conn, query, where = where, result_type = Inventory if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, user_id: int, item_id: str, *, as_dict: bool = False) -> t.Union[Inventory, dict]:
+        query = """
+            SELECT UserInventory.*, Items.sort_id, Items.name, Items.aliases, Items.emoji, Items.description, Items.sell_price, Items.buy_price, Items.durability
+            FROM UserInventory
+                INNER JOIN Items ON UserInventory.item_id = Items.id
+            WHERE UserInventory.user_id = ($1) AND
+                UserInventory.item_id = ($2);
+        """
+
+        return await __get_one__(conn, query, user_id, item_id, result_type = Inventory if not as_dict else dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, inventory: Inventory) -> int:
+        # Only 3 because that's the actual amount of column.
+        query = insert_into_query("UserInventory", 3)
+        return await run_and_return_count(conn, query, inventory.user_id, inventory.item_id, inventory.amount)
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
+        query = f"""
+            UPDATE UserInventory
+            SET {column} = ($3)
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+        return await run_and_return_count(conn, query, user_id, item_id, new_value)
+    @staticmethod
+    async def delete(conn: asyncpg.Connection, user_id: int, item_id: str) -> int:
+        query = """
+            DELETE FROM UserInventory
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+        return await run_and_return_count(conn, query, user_id, item_id)
+    @staticmethod
+    async def add(conn: asyncpg.Connection, user_id: int, item_id: str, amount: int = 1) -> int:
+        '''Add item into the user's inventory.
+
+        Notes
+        -----
+        This should be preferred over `Inventory.insert_one()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        user_id : int
+            The user's id to insert.
+        item_id : str
+            The item's id to insert.
+        amount : int, optional
+            The amount of items to add. Default to 1.
+
+        Returns
+        -------
+        int
+            The number of entries affected. Should be 1 or 0.
+        '''
+
+        existed = await Inventory.get_one(conn, user_id, item_id)
+        if not existed:
+            return await Inventory.insert_one(conn, Inventory(user_id, item_id, amount))
+        else:
+            return await Inventory.update_column(conn, user_id, item_id, "amount", existed.amount + amount)
+    @staticmethod
+    async def remove(conn: asyncpg.Connection, user_id: int, item_id: str, amount: int = 1) -> int:
+        '''Remove item from the user's inventory.
+
+        Notes
+        -----
+        This should be preferred over `Inventory.delete()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        user_id : int
+            The user's id to insert.
+        item_id : str
+            The item's id to insert.
+        amount : int, optional
+            The amount of items to remove. Default to 1.
+
+        Returns
+        -------
+        int
+            The number of entries affected. Should be 1 or 0.
+        '''
+        existed = await Inventory.get_one(conn, user_id, item_id)
+        if not existed:
+            return 0
+        elif existed.amount <= amount:
+            return await Inventory.delete(conn, user_id, item_id)
+        else:
+            return await Inventory.update_column(conn, user_id, item_id, "amount", existed.amount - amount)
+    @staticmethod
+    async def sync(conn: asyncpg.Connection, inventory: Inventory) -> int:
+        existing_inv = await Inventory.get_one(conn, inventory.user_id, inventory.item_id)
+        if not existing_inv:
+            return await Inventory.insert_one(conn, inventory)
+        
+        if inventory.amount <= 0:
+            return await Inventory.delete(conn, inventory.user_id, inventory.item_id)
+
+        diff_col = []
+        for col in existing_inv.__slots__:
+            if col in ("user_id", "item_id", "amount"):
+                if getattr(existing_inv, col) != getattr(inventory, col):
+                    diff_col.append(col)
+
+        for change in diff_col:
+            await Inventory.update_column(conn, inventory.user_id, inventory.item_id, change, getattr(inventory, change))
+
+@dataclasses.dataclass(slots = True)
+class Equipment(ClassToDict):
+    user_id: int
+    item_id: str
+    eq_type: str
+    remain_durability: int
+    __EQUIPMENT_TYPE__ = ("_sword", "_pickaxe", "_axe", "_potion")
+
+    @staticmethod
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        return await Equipment.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Equipment], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        query = """
+            SELECT * FROM UserEquipment;
+        """
+
+        return await __get_all__(conn, query, where = where, result_type = Equipment if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, user_id: int, item_id: str, *, as_dict: bool = False) -> t.Union[Equipment, dict]:
+        query = """
+            SELECT * FROM UserEquipment
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+
+        return await __get_one__(conn, query, user_id, item_id, result_type = Equipment if not as_dict else dict)
+    @staticmethod
+    async def get_equipment(conn: asyncpg.Connection, user_id: int, equipment_type: str, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        query = """
+            SELECT * FROM UserEquipment
+            WHERE user_id = ($1) AND eq_type = ($2);
+        """
+
+        return await __get_one__(conn, query, user_id, equipment_type, result_type = Equipment if not as_dict else dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, equipment: Equipment) -> int:
+        query = insert_into_query("UserEquipment", len(equipment.__slots__))
+        return await run_and_return_count(conn, query, equipment.user_id, equipment.item_id, equipment.eq_type, equipment.remain_durability)
+    @staticmethod
+    async def transfer_from_inventory(conn: asyncpg.Connection, inventory: Inventory) -> int:
+        '''Transfer an equipment from the inventory.
+
+        Warnings
+        --------
+        This does not check whether the user already has that equipment. 
+        This must be checked by the user, otherwise an `asyncpg.UniqueViolationError` might be raised.
+
+        Notes
+        -----
+        This function already has its own transaction. There is no need to wrap a transaction for this function.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        inventory : Inventory
+            The inventory wrapping the equipment.
+
+        Returns
+        -------
+        int
+            The number of entries affected. Should be 1 or 0.
+        
+        Raises
+        ------
+        asyncpg.UniqueViolationError
+            The unique constraint on `(user_id, eq_type)` is violated.
+        '''
+
+        is_equipment = False
+        for eq_type in Equipment.__EQUIPMENT_TYPE__:
+            if eq_type in inventory.item_id:
+                is_equipment = True
+                equipment = Equipment(inventory.user_id, inventory.item_id, eq_type, inventory.durability)
+                break
+        
+        if not is_equipment:
+            return 0
+        
+        async with conn.transaction():
+            status = await Inventory.remove(conn, inventory.user_id, inventory.item_id)
+            if status == 0:
+                return 0
+            
+            # TODO: Add a check to see if the same equipment type is already there.
+            return await Equipment.insert_one(conn, equipment)
+    @staticmethod
+    async def delete(conn: asyncpg.Connection, user_id: int, item_id: str) -> int:
+        query = """
+            DELETE FROM UserEquipment
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+
+        return await run_and_return_count(conn, query, user_id, item_id)
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
+        if column != "remain_durability":
+            return 0
+        
+        query = """
+            UPDATE UserEquipment
+            SET ($3) = ($4)
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+
+        return await run_and_return_count(conn, query, user_id, item_id, column, new_value)
+    @staticmethod
+    async def update_durability(conn: asyncpg.Connection, user_id: int, item_id: str, new_durability: int) -> int:
+        if new_durability <= 0:
+            return await Equipment.delete(conn, user_id, item_id)
+        return await Equipment.update_column(conn, user_id, item_id, "remain_durability", new_durability)
+    @staticmethod
+    def is_equipment(item_id: str) -> bool:
+        '''Check if the item is an equipment or not.
+
+        Parameters
+        ----------
+        item_id : str
+            The item's id to check.
+
+        Returns
+        -------
+        bool
+            Whether the item is an equipment or not.
+        '''
+        for eq_type in Equipment.__EQUIPMENT_TYPE__:
+            if eq_type in item_id:
+                return True
+        return False
+    @staticmethod
+    def get_equipment_type(item_id: str) -> t.Optional[str]:
+        '''Return the equipment type of the equipment.
+
+        Parameters
+        ----------
+        item_id : str
+            The item's id.
+
+        Returns
+        -------
+        t.Optional[str]
+            The equipment type of the equipment, or `None` if it is not an equipment.
+        '''
+        if not Equipment.is_equipment(item_id):
+            return None
+        
+        return '_' + item_id.split('_')[-1]
