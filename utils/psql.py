@@ -684,7 +684,7 @@ class Item(ClassToDict):
     @staticmethod
     async def get_by_name(conn: asyncpg.Connection, name_or_alias: str, *, as_dict: bool = False) -> t.Union[Item, dict]:
         def filter_name_alias(record: Item):
-            return record.name == name_or_alias or name_or_alias in record.aliases
+            return record.name.lower() == name_or_alias.lower() or name_or_alias.lower() in [alias.lower() for alias in record.aliases]
         
         res = await Item.get_all_where(conn, where = filter_name_alias, as_dict = as_dict)
         assert len(res) == 1
