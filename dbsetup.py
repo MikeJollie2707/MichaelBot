@@ -97,10 +97,33 @@ async def setup_database(user, password, database, host, port):
                 aliases TEXT[] DEFAULT ARRAY[]::TEXT[],
                 emoji TEXT UNIQUE NOT NULL,
                 description TEXT NOT NULL,
-                buy_price INT,
-                sell_price INT NOT NULL
+                buy_price INT CHECK (buy_price >= 0),
+                sell_price INT NOT NULL CHECK (sell_price >= 0),
+                durability INT CHECK (durability > 0)
             );
         """)
+
+        await create_table(conn, "UserInventory", """
+            CREATE TABLE UserInventory (
+                user_id INT8 NOT NULL REFERENCES Users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id TEXT NOT NULL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                amount INT NOT NULL CHECK (amount >= 0),
+                PRIMARY KEY (user_id, item_id)
+            );
+        """)
+
+        await create_table(conn, "UserEquipment", """
+            CREATE TABLE UserEquipment (
+                user_id INT8 NOT NULL REFERENCES Users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id TEXT NOT NULL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                eq_type TEXT NOT NULL,
+                remain_durability INT NOT NULL CHECK (remain_durability >= 0),
+                PRIMARY KEY (user_id, item_id),
+                CONSTRAINT equipment_type
+                    CHECK (eq_type IN ('_pickaxe', '_sword', '_axe', '_potion'))
+            );
+        """)
+
     except Exception as e:
         raise e
     finally:
