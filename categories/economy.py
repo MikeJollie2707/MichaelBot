@@ -1,4 +1,5 @@
 import datetime as dt
+import random
 from textwrap import dedent
 
 import lightbulb
@@ -7,7 +8,7 @@ import humanize
 
 from categories.econ import loot
 from utils import checks, helpers, models, psql
-from utils.nav import navigator
+from utils.nav import confirm, navigator
 
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 
