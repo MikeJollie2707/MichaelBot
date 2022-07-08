@@ -137,7 +137,8 @@ async def daily(ctx: lightbulb.Context):
                 response += "Yooo first time collecting daily, welcome!\n"
                 existed.daily_streak = 1
             elif now - existed.last_daily < dt.timedelta(days = 1):
-                await ctx.respond(f"You're a bit too early. You have `{humanize.precisedelta(now - existed.last_daily, format = '%0.0f')}` left.")
+                remaining_time = dt.timedelta(days = 1) + existed.last_daily - now
+                await ctx.respond(f"You're a bit too early. You have `{humanize.precisedelta(remaining_time, format = '%0.0f')}` left.")
                 return
             # A user need to collect the daily before the second day.
             elif now - existed.last_daily >= dt.timedelta(days = 2):
