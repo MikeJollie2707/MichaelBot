@@ -8,7 +8,6 @@ plugin.d.emote = helpers.get_emote(":dollar:")
 plugin.add_checks(
     checks.is_db_connected, 
     checks.is_command_enabled, 
-    checks.is_dev, 
     lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS)
 )
 
@@ -23,6 +22,7 @@ async def balance(ctx: lightbulb.Context):
         await ctx.respond(f"You have ${user.balance}.")
 
 @plugin.command()
+@lightbulb.add_checks(checks.is_dev)
 @lightbulb.option("amount", "Amount to add.", type = int, min_value = 1, max_value = 500)
 @lightbulb.command("addmoney", "Add money.")
 @lightbulb.implements(lightbulb.PrefixCommand)
