@@ -42,6 +42,54 @@ async def balance(ctx: lightbulb.Context):
         await ctx.respond(f"You have {CURRENCY_ICON}{user.balance}.")
 
 @plugin.command()
+@lightbulb.option("money", "The amount to bet. You'll either lose this or get 2x back. At least 1.", type = int, default = 1, min_value = 1)
+@lightbulb.option("number", "Your guessing number. Stay within 0-50!", type = int, min_value = 0, max_value = 50)
+@lightbulb.command("bet", "Bet your money to guess a number in the range 0-50. Don't worry, I won't cheat :)")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def bet(ctx: lightbulb.Context):
+    number: int = ctx.options.number
+    money: int = ctx.options.money
+    bot: models.MichaelBot = ctx.bot
+
+    if number < 0 or number > 50:
+        number = random.randint(0, 50)
+    
+    if money < 1:
+        money = 1
+    
+    async with bot.pool.acquire() as conn:
+        user = await psql.User.get_one(conn, ctx.author.id)
+        if user.balance < money:
+            await ctx.respond(f"You don't have enough money to bet {CURRENCY_ICON}{money}!", reply = True, mentions_reply = True)
+            return
+        if user.balance == money:
+            confirm_menu = confirm.ConfirmView(timeout = 10)
+            resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
+            confirm_menu.start(await resp.message())
+            res = await confirm_menu.wait()
+            if not res:
+                if res is None:
+                    await ctx.respond("Confirmation timed out. I'll take it as a \"No\".", reply = True, mentions_reply = True)
+                else:
+                    await ctx.respond("Aight stay safe!", reply = True, mentions_reply = True)
+                return
+        
+        # No this is not a register.
+        rsp: str = f"You placed your bet of {CURRENCY_ICON}{money} and guessed `{number}`...\n"
+        actual_num = random.randint(0, 50)
+        if actual_num == number:
+            rsp += f"And it is correct! You receive your money back and another {CURRENCY_ICON}{money}!\n"
+            await psql.User.add_money(conn, ctx.author.id, money)
+            user.balance += money
+        else:
+            rsp += f"And it is incorrect! The number is `{actual_num}`. Better luck next time!\n"
+            await psql.User.remove_money(conn, ctx.author.id, money)
+            user.balance -= money
+        
+        rsp += f"Your balance now: {CURRENCY_ICON}{user.balance}."
+        await ctx.respond(rsp, reply = True)
+
+@plugin.command()
 @lightbulb.add_checks(checks.is_dev)
 @lightbulb.option("amount", "Amount to add.", type = int, min_value = 1, max_value = 500)
 @lightbulb.command("addmoney", "Add money.")
