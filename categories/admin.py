@@ -239,9 +239,16 @@ async def reload(ctx: lightbulb.Context):
     await ctx.respond(f"Reloaded extension {ctx.options.extension}.", reply = True)
 @reload.set_error_handler()
 async def reload_error(event: lightbulb.CommandErrorEvent):
-    exception = event.exception.__cause__ or event.exception
+    exception = event.exception
+    # Unwrap exception.
+    if isinstance(event.exception, lightbulb.CommandInvocationError):
+        exception = exception.__cause__
+    
     if isinstance(exception, lightbulb.ExtensionNotFound):
         await event.context.respond("This extension does not exist.", reply = True, mentions_reply = True)
+    elif isinstance(exception, lightbulb.ExtensionNotLoaded):
+        await event.context.respond("This extension is not found or is not loaded.", reply = True, mentions_reply = True)
+    return True
 
 @plugin.command()
 @lightbulb.command("shutdown", "Shut the bot down.", hidden = True)
