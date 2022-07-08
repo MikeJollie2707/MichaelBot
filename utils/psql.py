@@ -351,6 +351,8 @@ class User(ClassToDict):
     name: str
     is_whitelist: bool = True
     balance: int = 0
+    daily_streak: int = 0
+    last_daily: dt.datetime = None
 
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[User]:
@@ -378,7 +380,7 @@ class User(ClassToDict):
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, user: User) -> int:
         query = insert_into_query("Users", len(user.__slots__))
-        return await run_and_return_count(conn, query, user.id, user.name, user.is_whitelist, user.balance)
+        return await run_and_return_count(conn, query, user.id, user.name, user.is_whitelist, user.balance, user.daily_streak, user.last_daily)
     @staticmethod
     async def delete(conn: asyncpg.Connection, id: int) -> int:
         '''Delete an entry in the table based on the provided key.'''
@@ -403,6 +405,46 @@ class User(ClassToDict):
             WHERE id = ($2);
         """
         return await run_and_return_count(conn, query, new_value, id)
+    @staticmethod
+    async def update_balance(conn: asyncpg.Connection, id: int, new_balance: int) -> int:
+        if new_balance < 0:
+            # Might raise a warning here?
+            return 0
+        
+        return await User.update_column(conn, id, "balance", new_balance)
+    @staticmethod
+    async def update_streak(conn: asyncpg.Connection, id: int, new_streak: int) -> int:
+        if new_streak < 0:
+            # Might raise a warning here?
+            return 0
+        
+        return await User.update_column(conn, id, "daily_streak", new_streak)
+    @staticmethod
+    async def add_money(conn: asyncpg.Connection, id: int, amount: int) -> int:
+        if amount <= 0:
+            return 0
+        
+        existed = await User.get_one(conn, id)
+        if not existed:
+            raise UpdateError(f"Trying to update entry '{id}', but it is not found.")
+        
+        return await User.update_balance(conn, id, existed.balance + amount)
+    @staticmethod
+    async def remove_money(conn: asyncpg.Connection, id: int, amount: int) -> int:
+        if amount <= 0:
+            return 0
+        
+        existed = await User.get_one(conn, id)
+        if not existed:
+            raise UpdateError(f"Trying to update entry '{id}', but it is not found.")
+        
+        if existed.balance <= amount:
+            # Might raise a warning here? Idk.
+            existed.balance = 0
+        else:
+            existed.balance -= amount
+        
+        return await User.update_balance(conn, id, existed.balance)
 
 @dataclasses.dataclass(slots = True)
 class Reminders(ClassToDict):
