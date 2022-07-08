@@ -32,7 +32,7 @@ plugin.add_checks(
 )
 
 @plugin.command()
-@lightbulb.command("balance", "View balance", aliases = ["bal"])
+@lightbulb.command("balance", "View your balance.", aliases = ["bal"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def balance(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
