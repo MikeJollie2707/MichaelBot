@@ -80,15 +80,6 @@ async def setup_database(user, password, database, host, port):
             );
         """)
 
-        await create_table(conn, "Lockdown", """
-            CREATE TABLE Lockdown (
-                guild_id INT8 UNIQUE NOT NULL,
-                channels INT8[] DEFAULT ARRAY[]::INT8[],
-                CONSTRAINT fk_lockdown_guilds
-                    FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
-            );
-        """)
-
         await create_table(conn, "Items", """
             CREATE TABLE Items (
                 id TEXT PRIMARY KEY,
