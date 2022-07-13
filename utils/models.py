@@ -12,53 +12,6 @@ import lightbulb
 
 from utils import psql
 
-class UserCache:
-    '''
-    Represent a user data in the database.
-    
-    This contains one module:
-    
-    - `user_module`: Represent the `Users` table.
-    '''
-    def __init__(self, user_module: dict = None):
-        if user_module is None:
-            user_module = {}
-        else:
-            user_module.pop("id", None)
-        
-        self.user_module = user_module
-    
-    async def add_user_module(self, conn, user: hikari.User):
-        '''
-        Add a user into the cache and the database.
-        '''
-        puser = psql.User(user.id, user.username)
-        await psql.User.insert_one(conn, puser)
-        #user_info = await psql.User.get_one(conn, user.id, as_dict = True)
-        self.user_module = puser.to_dict()
-    async def update_user_module(self, conn, user_id: int, column: str, new_value):
-        '''
-        Edit a user data in the cache and the database.
-        '''
-        await psql.User.update_column(conn, user_id, column, new_value)
-        self.user_module[column] = new_value
-    
-    async def force_sync(self, conn, user_id: int):
-        '''
-        Force this object to update with database.
-        If the method returns `None`, the entry for this user isn't on the database, thus you should use `add_user_module()` instead.
-        Otherwise, it returns itself.
-        '''
-
-        user = await psql.User.get_one(conn, user_id, as_dict = True)
-        if user is None:
-            return None
-        else:
-            user.pop("id", None)
-        
-        self.user_module = user
-        return self
-
 class GuildCache:
     '''
     Represent a guild data in the database.
@@ -135,6 +88,63 @@ class GuildCache:
         self.guild_module = guild
         self.logging_module = guild_log
         return self
+
+class UserCache:
+    def __init__(self) -> None:
+        self.__user_mapping: dict[str, psql.User] = {}
+    
+    def __getitem__(self, user_id: int):
+        return self.__user_mapping[user_id]
+    def get(self, user_id: int):
+        return self.__user_mapping.get(user_id)
+    def keys(self):
+        return self.__user_mapping.keys()
+    def items(self):
+        return self.__user_mapping.items()
+    def values(self):
+        return self.__user_mapping.values()
+    
+    async def insert(self, conn: asyncpg.Connection, user: psql.User):
+        '''Explicitly add a new user to the cache and to the db.
+
+        This is mostly used to save overheads within `psql.User.sync()`
+
+        Warnings
+        --------
+        Using this method means you're 100% sure the user doesn't exist. For entries that *might* exist,
+        consider using `sync_user()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        user : psql.User
+            The user to insert.
+        '''
+
+        await psql.User.insert_one(conn, user)
+        self.__user_mapping[user.id] = user
+    async def sync_user(self, conn: asyncpg.Connection, user: psql.User):
+        '''Sync the database with the new value.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        user : psql.User
+            The user value to update with.
+        '''
+
+        await psql.User.sync(conn, user)
+        self.__user_mapping[user.id] = user
+    async def sync_from_db(self, conn: asyncpg.Connection, user_id: int):
+        user = await psql.User.get_one(conn, user_id)
+        if user is None:
+            del self.__user_mapping[user_id]
+        
+        self.__user_mapping[user.id] = user
+    def local_sync(self, user: psql.User):
+        self.__user_mapping[user.id] = user
 
 class ItemCache:
     '''A wrapper around `dict[str, psql.Item]`
@@ -290,8 +300,8 @@ class MichaelBot(lightbulb.BotApp):
 
         # Store some db info. This allows read-only operation much cheaper.
         self.guild_cache: dict[int, GuildCache] = {}
-        self.user_cache: dict[int, UserCache] = {}
-        self.item_cache: ItemCache = ItemCache()
+        self.user_cache = UserCache()
+        self.item_cache = ItemCache()
 
         self.lavalink: t.Optional[lavaplayer.LavalinkClient] = None
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node

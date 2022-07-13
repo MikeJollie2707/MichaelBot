@@ -83,11 +83,10 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
                         res = await bot.guild_cache[guild.id].force_sync(conn, guild)
                 
                 logger.info("Populated guild cache with stored info.")
-
-                users_info = await psql.User.get_all(conn, as_dict = True)
-                for user in users_info:
-                    user_id = user["id"]
-                    bot.user_cache[user_id] = models.UserCache(user_module = user)
+                
+                users = await psql.User.get_all(conn)
+                for user in users:
+                    bot.user_cache.local_sync(user)
                 logger.info("Populated user cache with stored info.")
     
     logger.info("Bot is now ready to go!")

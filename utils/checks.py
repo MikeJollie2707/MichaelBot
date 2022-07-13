@@ -12,7 +12,8 @@ def is_dev(ctx: lightbulb.Context) -> bool:
     Exceptions:
     - `errors.CustomCheckFailed`: The user is not a MichaelBot developer.
     '''
-    if ctx.author.id not in [472832990012243969, 462726152377860109]: raise errors.CustomCheckFailed("`Author must be a MichaelBot developer`")
+    if ctx.author.id not in [472832990012243969, 462726152377860109]:
+        raise errors.CustomCheckFailed("`Author must be a MichaelBot developer`")
     return True
 
 @lightbulb.Check
@@ -36,30 +37,33 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
         return True
     
     guild_cache = bot.guild_cache.get(ctx.guild_id)
+    #user_cache = bot.user_cache.get(ctx.author.id)
     user_cache = bot.user_cache.get(ctx.author.id)
 
-    if guild_cache is None:
-        guild_cache = models.GuildCache()
+    if guild_cache is None or user_cache is None:
         async with bot.pool.acquire() as conn:
-            async with conn.transaction():
-                guild = await psql.Guild.get_one(conn, ctx.guild_id)
-                if guild is None:
-                    await guild_cache.add_guild_module(conn, ctx.get_guild())
-                else:
-                    await guild_cache.force_sync(conn, ctx.author.id)
-    if user_cache is None:
-        user_cache = models.UserCache()
-        async with bot.pool.acquire() as conn:
-            async with conn.transaction():
+            if guild_cache is None:
+                guild_cache = models.GuildCache()
+                async with conn.transaction():
+                    guild = await psql.Guild.get_one(conn, ctx.guild_id)
+                    if guild is None:
+                        await guild_cache.add_guild_module(conn, ctx.get_guild())
+                    else:
+                        await guild_cache.force_sync(conn, ctx.author.id)
+            
+            if user_cache is None:
                 user = await psql.User.get_one(conn, ctx.author.id)
                 if user is None:
-                    await user_cache.add_user_module(conn, ctx.author)
+                    user = psql.User(ctx.author.id, ctx.author.username)
+                    await bot.user_cache.insert(conn, psql.User(ctx.author.id, ctx.author.username))
                 else:
-                    await user_cache.force_sync(conn, ctx.author.id)
+                    bot.user_cache.local_sync(user)
+                
+                user_cache = user
     
     if not guild_cache.guild_module["is_whitelist"]:
         raise errors.GuildBlacklisted
-    if not user_cache.user_module["is_whitelist"]:
+    if not user_cache.is_whitelist:
         raise errors.UserBlacklisted
         
     return True

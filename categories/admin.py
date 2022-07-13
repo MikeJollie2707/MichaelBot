@@ -69,18 +69,18 @@ async def blacklist_user(ctx: lightbulb.Context):
         return
     
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            user_cache = bot.user_cache.get(user_id)
-            if user_cache is None:
-                user_db = await psql.User.get_one(conn, user_id)
-                if user_db is None:
-                    await ctx.respond("Can't blacklist a user that's not available in database.", reply = True, mentions_reply = True)
-                    return
-                else:
-                    user_cache = models.UserCache()
-                    await user_cache.force_sync(conn, user_id)
+        user_cache = bot.user_cache.get(user_id)
+        if user_cache is None:
+            user = await psql.User.get_one(conn, user_id)
+            if user is None:
+                await ctx.respond("Can't blacklist a user that's not available in database.", reply = True, mentions_reply = True)
+                return
             
-            await user_cache.update_user_module(conn, user_id, "is_whitelist", False)
+            bot.user_cache.local_sync(user)
+            user_cache = user
+        
+        user_cache.is_whitelist = not user_cache.is_whitelist
+        await bot.user_cache.sync_user(conn, user_cache)
     
     await ctx.respond("Blacklisted!", reply = True)
 
@@ -118,10 +118,7 @@ async def force_sync_cache(ctx: lightbulb.Context):
             
             users = await psql.User.get_all(conn)
             for user in users:
-                #user_id = user["id"]
-                user_id = user.id
-                bot.user_cache[user_id] = models.UserCache()
-                await bot.user_cache[user_id].force_sync(conn, user_id)
+                bot.user_cache.local_sync(user)
     
     await ctx.respond("Cache is now sync to the database.", reply = True)
 
@@ -134,9 +131,8 @@ async def force_sync_cache_user(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            bot.user_cache[user_id] = models.UserCache()
-            await bot.user_cache[user_id].force_sync(conn, user_id)
+        user = await psql.User.get_one(conn, ctx.author.id)
+        bot.user_cache.local_sync(user)
     
     await ctx.respond(f"User cache for {ctx.options.user_id} synced.", reply = True)
 
@@ -185,6 +181,29 @@ async def cache_view_guild(ctx: lightbulb.Context):
         await ctx.respond(embed = embed, reply = True)
     else:
         await ctx.respond("Cache for this guild doesn't exist.", reply = True, mentions_reply = True)
+
+@cache_view.child
+@lightbulb.option("user_id", "The user's id.", type = hikari.User)
+@lightbulb.command("user", "View the cache of a user.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def cache_view_user(ctx: lightbulb.Context):
+    user_id = ctx.options.user_id.id
+    bot: models.MichaelBot = ctx.bot
+
+    user_cache = bot.user_cache.get(user_id)
+    if user_cache is not None:
+        embed = helpers.get_default_embed(
+            title = "User Cache View",
+            author = ctx.author,
+            timestamp = dt.datetime.now().astimezone()
+        ).add_field(
+            name = "Item Module",
+            value = f"```{user_cache.to_dict()}```"
+        )
+        await ctx.respond(embed = embed, reply = True)
+    else:
+        await ctx.respond("Cache for this user doesn't exist.", reply = True, mentions_reply = True)
+
 
 @cache_view.child
 @lightbulb.option("item_id", "The item's id to view.")

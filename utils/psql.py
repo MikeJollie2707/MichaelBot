@@ -447,6 +447,20 @@ class User(ClassToDict):
             existed.balance -= amount
         
         return await User.update_balance(conn, id, existed.balance)
+    @staticmethod
+    async def sync(conn: asyncpg.Connection, user: User) -> int:
+        existed_user = await User.get_one(conn, user.id)
+        if not existed_user:
+            return await User.insert_one(conn, user)
+
+        diff_col = []
+        for col in existed_user.__slots__:
+            if getattr(existed_user, col) != getattr(user, col):
+                diff_col.append(col)
+        
+        async with conn.transaction():
+            for change in diff_col:
+                await User.update_column(conn, user.id, change, getattr(user, change))
 
 @dataclasses.dataclass(slots = True)
 class Reminders(ClassToDict):
