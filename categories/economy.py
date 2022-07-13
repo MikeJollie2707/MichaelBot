@@ -150,12 +150,13 @@ async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, 
         return name.lower().startswith(input_value.lower())
 
     valid_match = []
-    for cache in bot.item_cache.values():
-        valid_match.append(cache.item_module["name"])
-        # Cache might not load aliases if the json don't specify it.
-        if cache.item_module.get("aliases"):
-            for alias in cache.item_module["aliases"]:
-                valid_match.append(alias)
+    for item_id, cache in bot.item_cache.items():
+        if loot.get_craft_recipe(item_id):
+            valid_match.append(cache.item_module["name"])
+            # Cache might not load aliases if the json don't specify it.
+            if cache.item_module.get("aliases"):
+                for alias in cache.item_module["aliases"]:
+                    valid_match.append(alias)
     
     if option.value == '':
         return valid_match[:25]
