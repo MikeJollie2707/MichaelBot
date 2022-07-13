@@ -626,36 +626,21 @@ class Inventory(ClassToDict):
     item_id: str
     amount: int
 
-    # Have to fill the rest as default values because these are meant to be read, not to be created.
-    sort_id: int = None
-    name: str = None
-    emoji: str = None
-    description: str = None
-    sell_price: int = None
-    buy_price: int = None
-    aliases: list[str] = None
-    durability: int = None
-
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
         return await Inventory.get_all_where(conn, as_dict = as_dict)
     @staticmethod
     async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Inventory], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
         query = """
-            SELECT UserInventory.*, Items.sort_id, Items.name, Items.aliases, Items.emoji, Items.description, Items.sell_price, Items.buy_price, Items.durability
-            FROM UserInventory
-                INNER JOIN Items ON UserInventory.item_id = Items.id
-            ORDER BY UserInventory.amount DESC;
+            SELECT * FROM UserInventory
+            ORDER BY amount DESC;
         """
         return await __get_all__(conn, query, where = where, result_type = Inventory if not as_dict else dict)
     @staticmethod
     async def get_one(conn: asyncpg.Connection, user_id: int, item_id: str, *, as_dict: bool = False) -> t.Union[Inventory, dict]:
         query = """
-            SELECT UserInventory.*, Items.sort_id, Items.name, Items.aliases, Items.emoji, Items.description, Items.sell_price, Items.buy_price, Items.durability
-            FROM UserInventory
-                INNER JOIN Items ON UserInventory.item_id = Items.id
-            WHERE UserInventory.user_id = ($1) AND
-                UserInventory.item_id = ($2);
+            SELECT * FROM UserInventory
+            WHERE user_id = ($1) AND item_id = ($2);
         """
 
         return await __get_one__(conn, query, user_id, item_id, result_type = Inventory if not as_dict else dict)
