@@ -644,6 +644,9 @@ class Inventory(ClassToDict):
 
         return await __get_one__(conn, query, user_id, item_id, result_type = Inventory if not as_dict else dict)
     @staticmethod
+    async def get_user_inventory(conn, user_id: int, *, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
+        return await Inventory.get_all_where(conn, where = lambda r: r.user_id == user_id, as_dict = as_dict)
+    @staticmethod
     async def insert_one(conn: asyncpg.Connection, inventory: Inventory) -> int:
         # Only 3 because that's the actual amount of column.
         query = insert_into_query("UserInventory", 3)
