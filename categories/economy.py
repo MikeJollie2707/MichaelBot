@@ -183,7 +183,6 @@ async def daily(ctx: lightbulb.Context):
         now = dt.datetime.now().astimezone()
         async with conn.transaction():
             if existed.last_daily is None:
-                # The code for this and late daily is similar, but we need to send different message.
                 response += "Yooo first time collecting daily, welcome!\n"
                 existed.daily_streak = 1
             elif now - existed.last_daily < dt.timedelta(days = 1):
@@ -220,6 +219,9 @@ async def daily(ctx: lightbulb.Context):
         await ctx.respond(response, reply = True)
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    - It is recommended to use the `Slash Command` version of this command.
+'''))
 @lightbulb.option("equipment", "The equipment to equip.", autocomplete = True)
 @lightbulb.command("equip", "Equip some tools boi. Get to work!")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -274,7 +276,7 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
 async def inventory(ctx: lightbulb.Context):
     view_option = ctx.options.view_option
     bot: models.MichaelBot = ctx.bot
-
+    
     async with bot.pool.acquire() as conn:
         inventories = await psql.Inventory.get_all(conn)
         if not inventories:
