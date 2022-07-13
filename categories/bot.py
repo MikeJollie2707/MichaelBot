@@ -500,6 +500,7 @@ async def report(ctx: lightbulb.Context):
         except hikari.ForbiddenError:
             await ctx.respond("I can't send the report for some reasons. Join the support server and notify them about this, along with whatever you're trying to send.", reply = True, mentions_reply = True)
     else:
+        await bot.reset_cooldown(ctx)
         await ctx.respond("`type` argument must be either `bug` or `suggest`.", reply = True, mentions_reply = True)
 
 def load(bot: lightbulb.BotApp):

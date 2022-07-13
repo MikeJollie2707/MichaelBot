@@ -96,12 +96,14 @@ async def _embed(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_from_json(ctx: lightbulb.Context):
     raw_embed: str = ctx.options.raw_embed
+    bot: models.MichaelBot = ctx.bot
 
     raw_embed = raw_embed.strip("```").strip()
     
     try:
         json_embed = json.loads(raw_embed)
         if not isinstance(json_embed, dict):
+            await bot.reset_cooldown(ctx)
             raise json.JSONDecodeError("JSON object must be enclosed in `{{}}`.", doc = raw_embed, pos = 0)
         
         embed = helpers.embed_from_dict(json_embed)
@@ -150,6 +152,7 @@ async def embed_to_json(ctx: lightbulb.Context):
         return
     
     if not message.embeds:
+        await bot.reset_cooldown(ctx)
         await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
     else:
         for embed in message.embeds:
@@ -164,7 +167,11 @@ async def embed_to_json(ctx: lightbulb.Context):
     - Either `title` or `description` must be non-empty.
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("channel", "The channel to send this embed. Default to the current one.", type = hikari.TextableGuildChannel, channel_types = (hikari.ChannelType.GUILD_TEXT,), default = None)
+@lightbulb.option("channel", "The channel to send this embed. Default to the current one.", 
+    type = hikari.TextableGuildChannel, 
+    channel_types = (hikari.ChannelType.GUILD_TEXT,), 
+    default = None
+)
 @lightbulb.option("color", "Your choice of color. Default to green.", autocomplete = True, default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)
@@ -175,8 +182,10 @@ async def embed_simple(ctx: lightbulb.Context):
     description = ctx.options.description
     color = ctx.options.color
     channel = ctx.options.channel
+    bot: models.MichaelBot = ctx.bot
 
     if not title and not description:
+        await bot.reset_cooldown(ctx)
         await ctx.respond("Embed cannot be empty!", reply = True, mentions_reply = True)
     else:
         if color not in models.DefaultColor.available_names:

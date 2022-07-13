@@ -117,11 +117,13 @@ async def craft(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         item = await psql.Item.get_by_name(conn, ctx.options.item)
         if item is None:
+            await bot.reset_cooldown(ctx)
             await ctx.respond("This item doesn't exist!", reply = True, mentions_reply = True)
             return
         
         recipe = loot.get_craft_recipe(item.id)
         if not recipe:
+            await bot.reset_cooldown(ctx)
             await ctx.respond(f"Item *{item.name}* cannot be crafted.", reply = True, mentions_reply = True)
             return
         
@@ -135,6 +137,7 @@ async def craft(ctx: lightbulb.Context):
                 success = False
         
         if not success:
+            await bot.reset_cooldown(ctx)
             await ctx.respond(f"You're missing the following items: {display_reward(bot, missing)}")
             return
         
@@ -165,7 +168,6 @@ async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, 
 @lightbulb.set_help(dedent('''
     - The higher the daily streak, the better your reward will be.
     - If you don't collect your daily within 48 hours since the last time you collect, your streak will be reset to 1.
-    - This command has a hard cooldown. This means the only way to reset is to tamper with the bot's database.
 '''))
 @lightbulb.command("daily", "Receive rewards everyday. Don't miss it though!")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -232,14 +234,17 @@ async def equip(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         item = await psql.Item.get_by_name(conn, equipment)
         if not item:
+            await bot.reset_cooldown(ctx)
             await ctx.respond("This equipment doesn't exist!", reply = True, mentions_reply = True)
             return
         if not psql.Equipment.is_equipment(item.id):
+            await bot.reset_cooldown(ctx)
             await ctx.respond("This is not an equipment!", reply = True, mentions_reply = True)
             return
         
         inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
         if not inv:
+            await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have this equipment in your inventory!", reply = True, mentions_reply = True)
             return
         
@@ -249,6 +254,7 @@ async def equip(ctx: lightbulb.Context):
             await psql.Equipment.transfer_from_inventory(conn, inv)
             await ctx.respond(f"Equipped *{item.name}*.", reply = True)
         else:
+            await bot.reset_cooldown(ctx)
             await ctx.respond(f"You already have *{bot.item_cache[existed.item_id].name}* equipped!", reply = True, mentions_reply = True)
 @equip.autocomplete("equipment")
 async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
@@ -279,7 +285,7 @@ async def inventory(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
     
     async with bot.pool.acquire() as conn:
-        inventories = await psql.Inventory.get_all(conn)
+        inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
         if not inventories:
             await ctx.respond("*Cricket noises*", reply = True)
             return
@@ -305,16 +311,18 @@ async def inventory(ctx: lightbulb.Context):
                 )
             @page.set_entry_formatter
             def entry_format(embed: hikari.Embed, index: int, inv: psql.Inventory):
+                item = bot.item_cache[inv.item_id]
                 embed.add_field(
-                    name = f"{inv.amount}x {inv.emoji} {inv.name}",
-                    value = f"*{inv.description}*\nTotal value: {CURRENCY_ICON}{inv.sell_price * inv.amount}"
+                    name = f"{inv.amount}x {item.emoji} {item.name}",
+                    value = f"*{item.description}*\nTotal value: {CURRENCY_ICON}{item.sell_price * inv.amount}"
                 )
             
             await navigator.run_view(page.build(), ctx)
         elif view_option == "value":
             value = 0
             for inv in inventories:
-                value += inv.sell_price * inv.amount
+                item = bot.item_cache[inv.item_id]
+                value += item.sell_price * inv.amount
             await ctx.respond(f"If you sell all your items in your inventory, you'll get: {CURRENCY_ICON}{value}.", reply = True)
 
 @plugin.command()
@@ -333,6 +341,7 @@ async def mine(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         pickaxe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_pickaxe")
         if not pickaxe_existed:
+            await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have a pickaxe!", reply = True, mentions_reply = True)
             return
         
@@ -341,6 +350,7 @@ async def mine(ctx: lightbulb.Context):
         
         loot_table = loot.get_mine_loot(pickaxe_existed.item_id, user.world)
         if not loot_table:
+            await bot.reset_cooldown(ctx)
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
