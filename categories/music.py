@@ -10,7 +10,7 @@ import lightbulb
 from utils import checks, helpers, models
 from utils.converters import IntervalConverter
 from utils.models import NodeExtra
-from utils.nav.navigator import ButtonNavigator, run_view
+from utils.nav import ButtonNavigator, run_view
 
 plugin = lightbulb.Plugin("Music", description = "Music Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":musical_note:")

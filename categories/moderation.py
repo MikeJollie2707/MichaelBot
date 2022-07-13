@@ -5,8 +5,7 @@ import typing as t
 import lightbulb
 import hikari
 
-from utils import checks, helpers, models, psql
-from utils.nav.navigator import ItemListBuilder, run_view
+from utils import checks, helpers, models
 
 # TODO: Remember to change 1d to 2weeks.
 

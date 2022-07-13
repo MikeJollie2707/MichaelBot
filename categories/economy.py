@@ -7,8 +7,7 @@ import hikari
 import humanize
 
 from categories.econ import loot
-from utils import checks, helpers, models, psql
-from utils.nav import confirm, navigator
+from utils import checks, helpers, models, nav, psql
 
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 
@@ -63,7 +62,7 @@ async def bet(ctx: lightbulb.Context):
             await ctx.respond(f"You don't have enough money to bet {CURRENCY_ICON}{money}!", reply = True, mentions_reply = True)
             return
         if user.balance == money:
-            confirm_menu = confirm.ConfirmView(timeout = 10)
+            confirm_menu = nav.ConfirmView(timeout = 10)
             resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
             confirm_menu.start(await resp.message())
             res = await confirm_menu.wait()
@@ -296,7 +295,7 @@ async def inventory(ctx: lightbulb.Context):
                 inv_dict[inv.item_id] = inv.amount
             await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{display_reward(bot, inv_dict, emote = True)}", reply = True)
         elif view_option == "full":
-            page = navigator.ItemListBuilder(inventories, 5)
+            page = nav.ItemListBuilder(inventories, 5)
             @page.set_page_start_formatter
             def start_format(index: int, inv: psql.Inventory) -> hikari.Embed:
                 return helpers.get_default_embed(
@@ -317,7 +316,7 @@ async def inventory(ctx: lightbulb.Context):
                     value = f"*{item.description}*\nTotal value: {CURRENCY_ICON}{item.sell_price * inv.amount}"
                 )
             
-            await navigator.run_view(page.build(), ctx)
+            await nav.run_view(page.build(), ctx)
         elif view_option == "value":
             value = 0
             for inv in inventories:

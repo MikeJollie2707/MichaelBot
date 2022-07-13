@@ -7,9 +7,7 @@ from textwrap import dedent
 import hikari
 import lightbulb
 
-from utils import helpers, models
-from utils.nav import menu
-from utils.nav import navigator
+from utils import helpers, models, nav
 
 __PREFIX_COMMAND_TYPES__ = (
     lightbulb.PrefixCommand, 
@@ -284,17 +282,17 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
                 
                 plugin_info[plugin.name] = public_commands_len
         
-        menu_root = menu.MenuComponent(main_page)
+        menu_root = nav.MenuComponent(main_page)
         for name in plugin_info:
             menu_root.add_list_options(
-                menu.MenuButton(
+                nav.MenuButton(
                     label = name,
                     emoji = plugins[name].d.emote,
                 ),
                 plugin_help_format(ctx, plugins[name])
             )
         
-        await menu.ComplexView(menu_root).run(ctx)
+        await nav.ComplexView(menu_root).run(ctx)
     
     async def send_plugin_help(self, ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> None:
         '''
@@ -312,8 +310,8 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
             if page is not None:
                 embeds.append(page)
         
-        page_nav = navigator.ButtonNavigator(pages = embeds)
-        await navigator.run_view(page_nav, ctx)
+        page_nav = nav.ButtonNavigator(pages = embeds)
+        await nav.run_view(page_nav, ctx)
         
     
     async def send_command_help(self, ctx: lightbulb.Context, command: lightbulb.Command) -> None:

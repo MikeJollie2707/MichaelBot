@@ -14,7 +14,7 @@ import py_expression_eval
 from lightbulb.ext import tasks
 
 from utils import checks, converters, errors, helpers, models, psql
-from utils.nav.navigator import ItemListBuilder, run_view
+from utils.nav import ItemListBuilder, run_view
 
 NOTIFY_REFRESH = 2 * 60
 
