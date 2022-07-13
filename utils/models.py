@@ -138,35 +138,53 @@ class GuildCache:
         return self
 
 class ItemCache:
-    def __init__(self, item_module: dict = None):
-        if item_module is None:
-            item_module = {}
-        
-        self.__CACHE_COLUMNS = ("sort_id", "name", "aliases", "emoji")
-        self.item_module = self.__filter_unrelated_keys(item_module)
+    '''A wrapper around `dict[str, psql.Item]`
     
-    def __filter_unrelated_keys(self, info: dict) -> dict:
-        d = {}
-        for key in info:
-            if key in self.__CACHE_COLUMNS:
-                d[key] = info[key]
-        return d
+    This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     
-    async def add_item_module(self, conn, item: psql.Item):
-        await psql.Item.insert_one(conn, item)
-        self.item_module = self.__filter_unrelated_keys(item.to_dict())
-    async def update_item_module(self, conn, item_id: int, column: str, new_value):
-        if column not in self.__CACHE_COLUMNS:
-            return
-        await psql.Item.update_column(conn, item_id, column, new_value)
-        self.item_module[column] = new_value
-    async def force_sync(self, conn, item_id: int):
-        item = await psql.Item.get_one(conn, item_id, as_dict = True)
-        if item is None:
-            return None
+    To edit the cache, use either `sync_item()` (update db with new values) or `local_sync()` (update the local cache with new values).
+    '''
+    def __init__(self):
+        self.__item_mapping: dict[str, psql.Item] = {}
+    
+    def __getitem__(self, item_id: str):
+        return self.__item_mapping[item_id]
+    def get(self, item_id: str):
+        return self.__item_mapping.get(item_id)
+    def keys(self):
+        return self.__item_mapping.keys()
+    def items(self):
+        return self.__item_mapping.items()
+    def values(self):
+        return self.__item_mapping.values()
+
+    async def sync_item(self, conn: asyncpg.Connection, item: psql.Item):
+        '''Sync the database with the new value.
+
+        This is basically a call to `psql.Item.sync()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        item : psql.Item
+            The item value to update with.
+        '''
+
+        await psql.Item.sync(conn, item)
+        self.__item_mapping[item.id] = item
+    def local_sync(self, item: psql.Item):
+        '''Set the cache item with the new value.
+
+        This basically sets the internal mapping with the new item.
+
+        Parameters
+        ----------
+        item : psql.Item
+            The item value to update with.
+        '''
         
-        self.item_module = self.__filter_unrelated_keys(item)
-        return self
+        self.__item_mapping[item.id] = item
 
 # Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
 class DefaultColor(Enum):
@@ -258,7 +276,7 @@ class MichaelBot(lightbulb.BotApp):
         # Store some db info. This allows read-only operation much cheaper.
         self.guild_cache: dict[int, GuildCache] = {}
         self.user_cache: dict[int, UserCache] = {}
-        self.item_cache: dict[str, ItemCache] = {}
+        self.item_cache: ItemCache = ItemCache()
 
         self.lavalink: t.Optional[lavaplayer.LavalinkClient] = None
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node

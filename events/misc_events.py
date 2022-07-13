@@ -27,8 +27,7 @@ async def update_item(conn: asyncpg.Connection, bot: models.MichaelBot):
             if index == 0: continue
 
             item["sort_id"] = index
-            await psql.Item.sync(conn, psql.Item(**item))
-            bot.item_cache[item["id"]] = models.ItemCache(item)
+            await bot.item_cache.sync_item(conn, psql.Item(**item))
 
 @plugin.listener(hikari.StartingEvent)
 async def on_starting(event: hikari.StartingEvent):

@@ -201,8 +201,8 @@ async def cache_view_item(ctx: lightbulb.Context):
             author = ctx.author,
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
-            name = "Guild Module",
-            value = f"```{item_cache.item_module}```"
+            name = "Item Module",
+            value = f"```{item_cache.to_dict()}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:

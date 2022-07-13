@@ -15,13 +15,12 @@ CURRENCY_ICON = "<:emerald:993835688137072670>"
 def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote: bool = False) -> str:
     rewards: list = []
     for item_id, amount in loot_table.items():
-        item_cache = bot.item_cache.get(item_id)
-        if item_cache is not None:
-            item = item_cache.item_module
+        item = bot.item_cache.get(item_id)
+        if item is not None:
             if emote:
-                rewards.append(f"{item['emoji']} x {amount}")
+                rewards.append(f"{item.emoji} x {amount}")
             else:
-                rewards.append(f"{amount}x *{item['name']}*")
+                rewards.append(f"{amount}x *{item.name}*")
     return ', '.join(rewards)
 
 plugin = lightbulb.Plugin("Economy", "Money stuffs", include_datastore = True)
@@ -150,12 +149,11 @@ async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, 
         return name.lower().startswith(input_value.lower())
 
     valid_match = []
-    for item_id, cache in bot.item_cache.items():
-        if loot.get_craft_recipe(item_id):
-            valid_match.append(cache.item_module["name"])
-            # Cache might not load aliases if the json don't specify it.
-            if cache.item_module.get("aliases"):
-                for alias in cache.item_module["aliases"]:
+    for item in bot.item_cache.values():
+        if loot.get_craft_recipe(item.id):
+            valid_match.append(item.name)
+            if item.aliases:
+                for alias in item.aliases:
                     valid_match.append(alias)
     
     if option.value == '':
@@ -249,7 +247,7 @@ async def equip(ctx: lightbulb.Context):
             await psql.Equipment.transfer_from_inventory(conn, inv)
             await ctx.respond(f"Equipped *{item.name}*.", reply = True)
         else:
-            await ctx.respond(f"You already have *{bot.item_cache[existed.item_id]['name']}* equipped!", reply = True, mentions_reply = True)
+            await ctx.respond(f"You already have *{bot.item_cache[existed.item_id].name}* equipped!", reply = True, mentions_reply = True)
 @equip.autocomplete("equipment")
 async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
@@ -258,11 +256,11 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
         return name.lower().startswith(input_value.lower())
 
     equipments = []
-    for item_id, item_cache in bot.item_cache.items():
-        if psql.Equipment.is_equipment(item_id):
-            equipments.append(item_cache.item_module["name"])
-            if item_cache.item_module.get("aliases"):
-                for alias in item_cache.item_module["aliases"]:
+    for item in bot.item_cache.values():
+        if psql.Equipment.is_equipment(item.id):
+            equipments.append(item.name)
+            if item.aliases:
+                for alias in item.aliases:
                     equipments.append(alias)
     
     if option.value == '':
@@ -350,7 +348,7 @@ async def mine(ctx: lightbulb.Context):
     
     await ctx.respond(f"You mined and received {display_reward(bot, loot_table, emote = True)}", reply = True)
     if pickaxe_existed.remain_durability - 1 == 0:
-        await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].item_module['emoji']} *{bot.item_cache[pickaxe_existed.item_id].item_module['name']}* broke after the last mining session!")
+        await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].emoji} *{bot.item_cache[pickaxe_existed.item_id].name}* broke after the last mining session!", reply = True)
 
 @plugin.command()
 @lightbulb.command("trade", "Periodic trade for rarer items.")
