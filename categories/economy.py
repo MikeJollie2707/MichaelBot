@@ -105,6 +105,7 @@ async def addmoney(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
+@lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
 @lightbulb.option("item", "Item to craft.", autocomplete = True)
 @lightbulb.command("craft", "Craft various items.")
@@ -220,6 +221,7 @@ async def daily(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("equipment", "The equipment to equip.", autocomplete = True)
 @lightbulb.command("equip", "Equip some tools boi. Get to work!")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -268,6 +270,7 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
     return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("view_option", "Options to view inventory.", choices = ("compact", "full", "value"), default = "compact")
 @lightbulb.command("inventory", "View inventory boi.", aliases = ["inv"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -321,6 +324,7 @@ async def market(ctx: lightbulb.Context):
     raise NotImplementedError
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("mine", "Mine something cool.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def mine(ctx: lightbulb.Context):
