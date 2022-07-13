@@ -67,6 +67,11 @@ def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
             return {
                 "stone": random.randint(1, 2),
             }
+        elif pickaxe_id == "stone_pickaxe":
+            return {
+                "stone": random.randint(3, 5),
+                "iron": random.choice((0, 0, 0, 0, 0, 1, 1, 2))
+            }
     return None
 
 def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:

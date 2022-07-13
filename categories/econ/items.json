@@ -47,5 +47,24 @@
         "rarity": "common",
         "buy_price": 5,
         "sell_price": 3
+    },
+    {
+        "id": "stone_pickaxe",
+        "name": "Stone Pickaxe",
+        "emoji": "<:stone_pickaxe:820044330613866497>",
+        "description": "A somewhat reliable pickaxe. It can mine slightly more stuff.",
+        "rarity": "common",
+        "buy_price": null,
+        "sell_price": 2,
+        "durability": 35
+    },
+    {
+        "id": "iron",
+        "name": "Iron",
+        "emoji": "<:iron:820009715286671410>",
+        "description": "A fairly modern material. It can be used to craft pretty good tools.",
+        "rarity": "common+",
+        "buy_price": null,
+        "sell_price": 7
     }
 ]
