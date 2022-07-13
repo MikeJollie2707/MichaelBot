@@ -821,7 +821,8 @@ class Equipment(ClassToDict):
         for eq_type in Equipment.__EQUIPMENT_TYPE__:
             if eq_type in inventory.item_id:
                 is_equipment = True
-                equipment = Equipment(inventory.user_id, inventory.item_id, eq_type, inventory.durability)
+                item = await Item.get_one(conn, inventory.item_id)
+                equipment = Equipment(inventory.user_id, inventory.item_id, eq_type, item.durability)
                 break
         
         if not is_equipment:
