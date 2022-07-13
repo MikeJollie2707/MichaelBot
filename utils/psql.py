@@ -351,8 +351,10 @@ class User(ClassToDict):
     name: str
     is_whitelist: bool = True
     balance: int = 0
+    world: str = "overworld"
     daily_streak: int = 0
     last_daily: dt.datetime = None
+    __WORLD_TYPE__ = ("overworld", "nether", "end")
 
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[User]:
@@ -380,7 +382,7 @@ class User(ClassToDict):
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, user: User) -> int:
         query = insert_into_query("Users", len(user.__slots__))
-        return await run_and_return_count(conn, query, user.id, user.name, user.is_whitelist, user.balance, user.daily_streak, user.last_daily)
+        return await run_and_return_count(conn, query, user.id, user.name, user.is_whitelist, user.balance, user.world, user.daily_streak, user.last_daily)
     @staticmethod
     async def delete(conn: asyncpg.Connection, id: int) -> int:
         '''Delete an entry in the table based on the provided key.'''
