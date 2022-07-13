@@ -561,6 +561,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#utils.models.ItemCache" class="md-nav__link">
+    ItemCache
+  </a>
+  
+    <nav class="md-nav" aria-label="ItemCache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.ItemCache.sync_item" class="md-nav__link">
+    sync_item()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.ItemCache.local_sync" class="md-nav__link">
+    local_sync()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#utils.models.DefaultColor" class="md-nav__link">
     DefaultColor
   </a>
@@ -751,6 +778,33 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#utils.models.ItemCache" class="md-nav__link">
+    ItemCache
+  </a>
+  
+    <nav class="md-nav" aria-label="ItemCache">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.ItemCache.sync_item" class="md-nav__link">
+    sync_item()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utils.models.ItemCache.local_sync" class="md-nav__link">
+    local_sync()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#utils.models.DefaultColor" class="md-nav__link">
     DefaultColor
   </a>
@@ -853,7 +907,8 @@
 
         <details class="quote">
           <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
+<span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
@@ -917,9 +972,10 @@
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a user into the cache and the database.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
-        <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_info</span>
+        <span class="n">puser</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">puser</span><span class="p">)</span>
+        <span class="c1">#user_info = await psql.User.get_one(conn, user.id, as_dict = True)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">puser</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Edit a user data in the cache and the database.</span>
@@ -977,7 +1033,8 @@
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
@@ -987,9 +1044,10 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Add a user into the cache and the database.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
-    <span class="n">user_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">get_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">as_dict</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">user_info</span>
+    <span class="n">puser</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">puser</span><span class="p">)</span>
+    <span class="c1">#user_info = await psql.User.get_one(conn, user.id, as_dict = True)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">user_module</span> <span class="o">=</span> <span class="n">puser</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1525,24 +1583,25 @@ Otherwise, it returns itself.</p>
 
 
 
-<h2 id="utils.models.DefaultColor" class="doc doc-heading">
-        <code>DefaultColor</code>
+<h2 id="utils.models.ItemCache" class="doc doc-heading">
+        <code>ItemCache</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="enum.Enum">Enum</span></code></p>
 
   
-      <p>Store several default colors to use instantly.</p>
+      <p>A wrapper around <code>dict[str, psql.Item]</code></p>
+<p>This includes many ways to obtain info, such as <code>get()</code>, <code>keys()</code>, <code>items()</code>, <code>values()</code>, and <code>__getitem__()</code>.</p>
+<p>To edit the cache, use either <code>sync_item()</code> (update db with new values) or <code>local_sync()</code> (update the local cache with new values).</p>
 
 
         <details class="quote">
           <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
+<span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
@@ -1576,41 +1635,66 @@ Otherwise, it returns itself.</p>
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DefaultColor</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Store several default colors to use instantly.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ItemCache</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;A wrapper around `dict[str, psql.Item]`</span>
 
-    <span class="n">teal</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x1abc9c</span><span class="p">)</span>
-    <span class="n">dark_teal</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x11806a</span><span class="p">)</span>
-    <span class="n">brand_green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x57F287</span><span class="p">)</span>
-    <span class="n">green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x2ecc71</span><span class="p">)</span>
-    <span class="n">dark_green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x1f8b4c</span><span class="p">)</span>
-    <span class="n">blue</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x3498db</span><span class="p">)</span>
-    <span class="n">dark_blue</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x206694</span><span class="p">)</span>
-    <span class="n">purple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x9b59b6</span><span class="p">)</span>
-    <span class="n">dark_purple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x71368a</span><span class="p">)</span>
-    <span class="n">magenta</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe91e63</span><span class="p">)</span>
-    <span class="n">dark_magenta</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xad1457</span><span class="p">)</span>
-    <span class="n">gold</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xf1c40f</span><span class="p">)</span>
-    <span class="n">dark_gold</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xc27c0e</span><span class="p">)</span>
-    <span class="n">orange</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe67e22</span><span class="p">)</span>
-    <span class="n">dark_orange</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xa84300</span><span class="p">)</span>
-    <span class="n">brand_red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xED4245</span><span class="p">)</span>
-    <span class="n">red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe74c3c</span><span class="p">)</span>
-    <span class="n">dark_red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x992d22</span><span class="p">)</span>
-    <span class="n">lighter_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x95a5a6</span><span class="p">)</span>
-    <span class="n">dark_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x607d8b</span><span class="p">)</span>
-    <span class="n">light_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x979c9f</span><span class="p">)</span>
-    <span class="n">darker_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x546e7a</span><span class="p">)</span>
-    <span class="n">og_blurple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x7289da</span><span class="p">)</span>
-    <span class="n">blurple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x5865F2</span><span class="p">)</span>
-    <span class="n">greyple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x5865F2</span><span class="p">)</span>
-    <span class="n">dark_theme</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x36393F</span><span class="p">)</span>
-    <span class="n">fuchsia</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xEB459E</span><span class="p">)</span>
-    <span class="n">yellow</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xFEE75C</span><span class="p">)</span>
-    <span class="n">black</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x000000</span><span class="p">)</span>
-    <span class="n">white</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xFFFFFF</span><span class="p">)</span>
+<span class="sd">    This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.</span>
+
+<span class="sd">    To edit the cache, use either `sync_item()` (update db with new values) or `local_sync()` (update the local cache with new values).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="p">[</span><span class="n">item_id</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">sync_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="n">asyncpg</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Sync the database with the new value.</span>
+
+<span class="sd">        This is basically a call to `psql.Item.sync()`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conn : asyncpg.Connection</span>
+<span class="sd">            The connection to use.</span>
+<span class="sd">        item : psql.Item</span>
+<span class="sd">            The item value to update with.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+    <span class="k">def</span> <span class="nf">local_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set the cache item with the new value.</span>
+
+<span class="sd">        This basically sets the internal mapping with the new item.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        item : psql.Item</span>
+<span class="sd">            The item value to update with.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1626,6 +1710,166 @@ Otherwise, it returns itself.</p>
 
 
 
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.ItemCache.sync_item" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sync_item</span><span class="p">(</span><span class="n">conn</span><span class="p">:</span> <span class="n">asyncpg</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Sync the database with the new value.</p>
+<p>This is basically a call to <code>psql.Item.sync()</code>.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>conn</code></td>
+          <td>
+                <code>asyncpg.<span title="asyncpg.Connection">Connection</span></code>
+          </td>
+          <td><p>The connection to use.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>item</code></td>
+          <td>
+                <code><span title="utils.psql">psql</span>.<a class="autorefs autorefs-internal" title="utils.psql.Item" href="../psql/#utils.psql.Item">Item</a></code>
+          </td>
+          <td><p>The item value to update with.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">sync_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="n">asyncpg</span><span class="o">.</span><span class="n">Connection</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Sync the database with the new value.</span>
+
+<span class="sd">    This is basically a call to `psql.Item.sync()`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conn : asyncpg.Connection</span>
+<span class="sd">        The connection to use.</span>
+<span class="sd">    item : psql.Item</span>
+<span class="sd">        The item value to update with.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">await</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="utils.models.ItemCache.local_sync" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">local_sync</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Set the cache item with the new value.</p>
+<p>This basically sets the internal mapping with the new item.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>item</code></td>
+          <td>
+                <code><span title="utils.psql">psql</span>.<a class="autorefs autorefs-internal" title="utils.psql.Item" href="../psql/#utils.psql.Item">Item</a></code>
+          </td>
+          <td><p>The item value to update with.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>utils\models.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">local_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">psql</span><span class="o">.</span><span class="n">Item</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Set the cache item with the new value.</span>
+
+<span class="sd">    This basically sets the internal mapping with the new item.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    item : psql.Item</span>
+<span class="sd">        The item value to update with.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">__item_mapping</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
 
 
   </div>
@@ -1638,8 +1882,8 @@ Otherwise, it returns itself.</p>
 
 
 
-<h2 id="utils.models.NodeExtra" class="doc doc-heading">
-        <code>NodeExtra</code>
+<h2 id="utils.models.DefaultColor" class="doc doc-heading">
+        <code>DefaultColor</code>
 
   
   <span class="doc doc-labels">
@@ -1652,72 +1896,12 @@ Otherwise, it returns itself.</p>
   <div class="doc doc-contents ">
 
   
-      <p>A class to store extra data for the <code>lavaplayer.Node</code></p>
+      <p>Store several default colors to use instantly.</p>
 
 
         <details class="quote">
           <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">NodeExtra</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;A class to store extra data for the `lavaplayer.Node`&#39;&#39;&#39;</span>
-    <span class="n">queue_loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">working_channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-</code></pre></div></td></tr></table></div>
-        </details>
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="utils.models.MichaelBot" class="doc doc-heading">
-        <code>MichaelBot</code>
-
-
-</h2>
-
-
-  <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code>lightbulb.<span title="lightbulb.BotApp">BotApp</span></code></p>
-
-  
-      <p>A subclass of <code>lightbulb.BotApp</code>. This allows syntax highlight on many custom attributes.</p>
-
-
-        <details class="quote">
-          <summary>Source code in <code>utils\models.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
@@ -1767,15 +1951,157 @@ Otherwise, it returns itself.</p>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
+<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">DefaultColor</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Store several default colors to use instantly.&#39;&#39;&#39;</span>
+
+    <span class="n">teal</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x1abc9c</span><span class="p">)</span>
+    <span class="n">dark_teal</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x11806a</span><span class="p">)</span>
+    <span class="n">brand_green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x57F287</span><span class="p">)</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x2ecc71</span><span class="p">)</span>
+    <span class="n">dark_green</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x1f8b4c</span><span class="p">)</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x3498db</span><span class="p">)</span>
+    <span class="n">dark_blue</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x206694</span><span class="p">)</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x9b59b6</span><span class="p">)</span>
+    <span class="n">dark_purple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x71368a</span><span class="p">)</span>
+    <span class="n">magenta</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe91e63</span><span class="p">)</span>
+    <span class="n">dark_magenta</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xad1457</span><span class="p">)</span>
+    <span class="n">gold</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xf1c40f</span><span class="p">)</span>
+    <span class="n">dark_gold</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xc27c0e</span><span class="p">)</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe67e22</span><span class="p">)</span>
+    <span class="n">dark_orange</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xa84300</span><span class="p">)</span>
+    <span class="n">brand_red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xED4245</span><span class="p">)</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xe74c3c</span><span class="p">)</span>
+    <span class="n">dark_red</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x992d22</span><span class="p">)</span>
+    <span class="n">lighter_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x95a5a6</span><span class="p">)</span>
+    <span class="n">dark_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x607d8b</span><span class="p">)</span>
+    <span class="n">light_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x979c9f</span><span class="p">)</span>
+    <span class="n">darker_gray</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x546e7a</span><span class="p">)</span>
+    <span class="n">og_blurple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x7289da</span><span class="p">)</span>
+    <span class="n">blurple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x5865F2</span><span class="p">)</span>
+    <span class="n">greyple</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x5865F2</span><span class="p">)</span>
+    <span class="n">dark_theme</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x36393F</span><span class="p">)</span>
+    <span class="n">fuchsia</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xEB459E</span><span class="p">)</span>
+    <span class="n">yellow</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xFEE75C</span><span class="p">)</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0x000000</span><span class="p">)</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mh">0xFFFFFF</span><span class="p">)</span>
+
+    <span class="n">available_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">DefaultColor</span><span class="o">.</span><span class="n">available_names</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">DefaultColor</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;get_color&quot;</span><span class="p">,</span> <span class="s2">&quot;available_names&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">DefaultColor</span><span class="o">.</span><span class="n">available_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_color</span><span class="p">(</span><span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">DefaultColor</span><span class="p">(),</span> <span class="n">color</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.NodeExtra" class="doc doc-heading">
+        <code>NodeExtra</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>A class to store extra data for the <code>lavaplayer.Node</code></p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
+<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NodeExtra</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;A class to store extra data for the `lavaplayer.Node`&#39;&#39;&#39;</span>
+    <span class="n">queue_loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">working_channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="utils.models.MichaelBot" class="doc doc-heading">
+        <code>MichaelBot</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code>lightbulb.<span title="lightbulb.BotApp">BotApp</span></code></p>
+
+  
+      <p>A subclass of <code>lightbulb.BotApp</code>. This allows syntax highlight on many custom attributes.</p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>utils\models.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
@@ -1822,7 +2148,74 @@ Otherwise, it returns itself.</p>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.&#39;&#39;&#39;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
@@ -1834,6 +2227,7 @@ Otherwise, it returns itself.</p>
         <span class="s2">&quot;aio_session&quot;</span><span class="p">,</span>
         <span class="s2">&quot;guild_cache&quot;</span><span class="p">,</span>
         <span class="s2">&quot;user_cache&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;item_cache&quot;</span><span class="p">,</span>
         <span class="s2">&quot;lavalink&quot;</span><span class="p">,</span>
         <span class="s2">&quot;node_extra&quot;</span>
     <span class="p">)</span>
@@ -1868,6 +2262,7 @@ Otherwise, it returns itself.</p>
         <span class="c1"># Store some db info. This allows read-only operation much cheaper.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">guild_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">GuildCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UserCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">item_cache</span><span class="p">:</span> <span class="n">ItemCache</span> <span class="o">=</span> <span class="n">ItemCache</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lavalink</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lavaplayer</span><span class="o">.</span><span class="n">LavalinkClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Currently lavaplayer doesn&#39;t support adding attr to lavaplayer.objects.Node</span>
@@ -1999,67 +2394,68 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
     <span class="n">token</span><span class="p">,</span> 
     <span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">ignore_bots</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
@@ -2090,6 +2486,7 @@ Otherwise, it returns itself.</p>
     <span class="c1"># Store some db info. This allows read-only operation much cheaper.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">guild_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">GuildCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">user_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UserCache</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">item_cache</span><span class="p">:</span> <span class="n">ItemCache</span> <span class="o">=</span> <span class="n">ItemCache</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">lavalink</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lavaplayer</span><span class="o">.</span><span class="n">LavalinkClient</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># Currently lavaplayer doesn&#39;t support adding attr to lavaplayer.objects.Node</span>
@@ -2185,42 +2582,42 @@ Otherwise, it returns itself.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils\models.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_slash_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_slash_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">SlashCommand</span><span class="p">]:</span>
     <span class="sd">&#39;&#39;&#39;Get the slash command with the given name, or `None` if none was found.</span>
 
 <span class="sd">    Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.</span>
