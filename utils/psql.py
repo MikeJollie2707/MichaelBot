@@ -841,13 +841,13 @@ class Equipment(ClassToDict):
         if column != "remain_durability":
             return 0
         
-        query = """
+        query = f"""
             UPDATE UserEquipment
-            SET ($3) = ($4)
+            SET {column} = ($3)
             WHERE user_id = ($1) AND item_id = ($2);
         """
 
-        return await run_and_return_count(conn, query, user_id, item_id, column, new_value)
+        return await run_and_return_count(conn, query, user_id, item_id, new_value)
     @staticmethod
     async def update_durability(conn: asyncpg.Connection, user_id: int, item_id: str, new_durability: int) -> int:
         if new_durability <= 0:
