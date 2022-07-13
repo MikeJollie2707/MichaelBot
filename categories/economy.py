@@ -127,7 +127,7 @@ async def craft(ctx: lightbulb.Context):
         
         success: bool = True
         missing: dict[str, int] = {}
-        inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe)
+        inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
         for inv in inventories:
             inv.amount -= recipe[inv.item_id] * times
             if inv.amount < 0:
