@@ -33,6 +33,14 @@
         "description": "A fragile pickaxe. It can only mine a small amount of things before breaking apart.",
         "buy_price": null,
         "sell_price": 1,
-        "durability": 50
+        "durability": 25
+    },
+    {
+        "id": "stone",
+        "name": "Stone",
+        "emoji": "<:stone:819728758160097290>",
+        "description": "A hard material. Can be used to make somewhat good tools.",
+        "buy_price": 5,
+        "sell_price": 3
     }
 ]
