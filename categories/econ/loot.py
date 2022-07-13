@@ -1,4 +1,30 @@
+'''Define the loot tables for the economy system.'''
+
+# A few special keywords that are reserved in the loot tables:
+# - "result": Usually in crafting-related stuff, it defines how many items will end up as the result of the craft.
+# - "money": The money as a reward.
+# - "cost": The money lost.
+
+import random
 import typing as t
+
+RESERVED_KEYS = (
+    "result",
+    "money",
+    "cost",
+)
+
+__CRAFT_RECIPE__ = {
+    "stick": {
+        "wood": 1,
+        "result": 2
+    },
+    "wood_pickaxe": {
+        "wood": 3,
+        "stick": 2,
+        "result": 1
+    }
+}
 
 def get_daily_loot(streak: int) -> dict[str, int]:
     if streak <= 1:
@@ -61,16 +87,4 @@ def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
         A `dict` denoting the crafting recipe, or `None` if no crafting recipe is found.
     '''
 
-    recipe = {
-        "stick": {
-            "wood": 1,
-            "result": 2
-        },
-        "wood_pickaxe": {
-            "wood": 3,
-            "stick": 2,
-            "result": 1
-        }
-    }
-
-    return recipe.get(item_id)
+    return __CRAFT_RECIPE__.get(item_id)
