@@ -320,6 +320,36 @@ async def market(ctx: lightbulb.Context):
     raise NotImplementedError
 
 @plugin.command()
+@lightbulb.command("mine", "Mine something cool.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def mine(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        pickaxe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_pickaxe")
+        if not pickaxe_existed:
+            await ctx.respond("You don't have a pickaxe!", reply = True, mentions_reply = True)
+            return
+        
+        user = await psql.User.get_one(conn, ctx.author.id)
+        assert user is not None
+        
+        loot_table = loot.get_mine_loot(pickaxe_existed.item_id, user.world)
+        if not loot_table:
+            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        async with conn.transaction():
+            for item_id, amount in loot_table.items():
+                await psql.Inventory.add(conn, ctx.author.id, item_id, amount)
+            
+            await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
+    
+    await ctx.respond(f"You mined and received {display_reward(bot, loot_table, emote = True)}", reply = True)
+    if pickaxe_existed.remain_durability - 1 == 0:
+        await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].item_module['emoji']} *{bot.item_cache[pickaxe_existed.item_id].item_module['name']}* broke after the last mining session!")
+
+@plugin.command()
 @lightbulb.command("trade", "Periodic trade for rarer items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def trade(ctx: lightbulb.Context):

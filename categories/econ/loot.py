@@ -35,6 +35,14 @@ def get_daily_loot(streak: int) -> dict[str, int]:
         "wood": 200
     }
 
+def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
+    if world == "overworld":
+        if pickaxe_id == "wood_pickaxe":
+            return {
+                "stone": random.randint(1, 2),
+            }
+    return None
+
 def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
     '''Return the crafting recipe for an item if existed.
 
