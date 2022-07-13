@@ -179,13 +179,13 @@ async def embed_simple(ctx: lightbulb.Context):
     if not title and not description:
         await ctx.respond("Embed cannot be empty!", reply = True, mentions_reply = True)
     else:
-        if color not in models.DefaultColor._member_names_:
+        if color not in models.DefaultColor.available_names:
             color = "green"
         
         embed = hikari.Embed(
             title = title,
             description = description,
-            color = models.DefaultColor[color].value
+            color = models.DefaultColor.get_color(color)
         )
 
         if channel is None:
@@ -196,8 +196,8 @@ async def embed_simple(ctx: lightbulb.Context):
 @embed_simple.autocomplete("color")
 async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption, _interaction: hikari.AutocompleteInteraction):
     if option.value != "":
-        return [color for color in models.DefaultColor._member_names_ if color.startswith(option.value)]
-    return models.DefaultColor._member_names_[:25]
+        return [color for color in models.DefaultColor.available_names if color.startswith(option.value)]
+    return models.DefaultColor.available_names[:25]
 
 @_embed.child
 @lightbulb.set_help(dedent('''
@@ -219,7 +219,7 @@ async def embed_interactive(ctx: lightbulb.Context):
     description = ""
     color = None
     channel = None
-    available_colors = models.DefaultColor._member_names_
+    available_colors = models.DefaultColor.available_names
 
     await ctx.event.message.delete()
     try:
@@ -247,7 +247,7 @@ async def embed_interactive(ctx: lightbulb.Context):
         event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
         color_content = event.message.content.lower()
         if color_content in available_colors:
-            color = models.DefaultColor[color_content].value
+            color = models.DefaultColor.get_color(color_content)
         else:
             try:
                 color = hikari.Color(int(color_content, base = 16))
@@ -294,7 +294,7 @@ async def embed_interactive2(ctx: lightbulb.Context):
         description = "Choose one of the below options to edit the embed. Any changes will be reflected on this embed."
     )
 
-    available_colors = models.DefaultColor._member_names_
+    available_colors = models.DefaultColor.available_names
     channel = ctx.get_channel()
     timeout = 120
     
@@ -387,7 +387,7 @@ async def embed_interactive2(ctx: lightbulb.Context):
                         color_content = setter_event.message.content.lower()
 
                         if color_content in available_colors:
-                            embed.color = models.DefaultColor[color_content].value
+                            embed.color = models.DefaultColor.get_color(color_content)
                         else:
                             try:
                                 embed.color = hikari.Color(int(color_content, base = 16))
@@ -706,9 +706,9 @@ async def weather(ctx: lightbulb.Context):
             embed.set_thumbnail("http:" + current["condition"]["icon"])
 
             if current["is_day"] == 1:
-                embed.color = models.DefaultColor.gold.value
+                embed.color = models.DefaultColor.gold
             else:
-                embed.color = models.DefaultColor.dark_blue.value
+                embed.color = models.DefaultColor.dark_blue
 
             await ctx.respond(embed = embed, reply = True)
         elif resp.status == 400:

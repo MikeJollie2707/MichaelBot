@@ -3,7 +3,6 @@
 import datetime as dt
 import typing as t
 from dataclasses import dataclass
-from enum import Enum
 
 import aiohttp
 import asyncpg
@@ -183,15 +182,14 @@ class ItemCache:
         item : psql.Item
             The item value to update with.
         '''
-        
+
         self.__item_mapping[item.id] = item
 
 # Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
-class DefaultColor(Enum):
-    '''
-    Store several default colors to use instantly.
-    '''
-
+@dataclass(frozen = True)
+class DefaultColor:
+    '''Store several default colors to use instantly.'''
+    
     teal = hikari.Color(0x1abc9c)
     dark_teal = hikari.Color(0x11806a)
     brand_green = hikari.Color(0x57F287)
@@ -222,6 +220,23 @@ class DefaultColor(Enum):
     yellow = hikari.Color(0xFEE75C)
     black = hikari.Color(0x000000)
     white = hikari.Color(0xFFFFFF)
+    
+    available_names = []
+
+    def __init__(self):
+        if DefaultColor.available_names:
+            return
+        
+        for attr in DefaultColor.__dict__:
+            if attr.startswith("__"):
+                continue
+            if attr in ("get_color", "available_names"):
+                continue
+            DefaultColor.available_names.append(attr)
+
+    @staticmethod
+    def get_color(color: str):
+        return getattr(DefaultColor(), color)
 
 @dataclass
 class NodeExtra:
