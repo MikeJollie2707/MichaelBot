@@ -533,6 +533,7 @@ class Item(ClassToDict):
     name: str
     emoji: str
     description: str
+    rarity: str
     sell_price: int
     buy_price: int = None
     aliases: list[str] = dataclasses.field(default_factory = list)
@@ -576,6 +577,7 @@ class Item(ClassToDict):
             item.aliases, 
             item.emoji, 
             item.description, 
+            item.rarity,
             item.buy_price,
             item.sell_price,
             item.durability,
