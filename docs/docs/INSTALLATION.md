@@ -6,7 +6,7 @@ All instructions are geared towards Ubuntu (Kubuntu specifically) because that's
 
 ## Prerequisites
 
-- Requires: Python 3.8+ (ideally latest), Git, `pip`, `virtualenv`/`python3-venv` under Python.
+- Requires: Python 3.10+ (ideally latest), Git, `pip`, `virtualenv`/`python3-venv` under Python.
 - Optional: Lavalink (more information below), Docker (for Lavalink), PostgreSQL (more information below).
 
 ## About Lavalink
