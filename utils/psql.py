@@ -769,7 +769,7 @@ class Equipment(ClassToDict):
 
         return await __get_one__(conn, query, user_id, item_id, result_type = Equipment if not as_dict else dict)
     @staticmethod
-    async def get_equipment(conn: asyncpg.Connection, user_id: int, equipment_type: str, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+    async def get_equipment(conn: asyncpg.Connection, user_id: int, equipment_type: str, *, as_dict: bool = False) -> t.Union[Equipment, dict]:
         query = """
             SELECT * FROM UserEquipment
             WHERE user_id = ($1) AND eq_type = ($2);
