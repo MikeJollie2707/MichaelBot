@@ -11,6 +11,7 @@ import typing as t
 RESERVED_KEYS = (
     "result",
     "money",
+    "bonus",
     "cost",
 )
 
@@ -21,6 +22,11 @@ __CRAFT_RECIPE__ = {
     },
     "wood_pickaxe": {
         "wood": 3,
+        "stick": 2,
+        "result": 1
+    },
+    "stone_pickaxe": {
+        "stone": 3,
         "stick": 2,
         "result": 1
     }
@@ -35,30 +41,30 @@ def get_daily_loot(streak: int) -> dict[str, int]:
     if streak <= 6:
         return {
             "money": 10,
-            "wood": 15
+            "wood": random.randint(10, 15)
         }
     if streak <= 13:
         return {
-            "money": 20,
+            "money": 10,
             "bonus": streak,
-            "wood": 12
+            "wood": random.randint(10, 15)
         }
     if streak <= 27:
         return {
             "money": 20,
             "bonus": 5 * (streak - 12),
-            "wood": 16
+            "wood": random.randint(11, 16)
         }
     if streak <= 60:
         return {
             "money": 100,
             "bonus": 2 * (streak - 20),
-            "wood": 100
+            "wood": random.randint(95, 105)
         }
     return {
         "money": 200,
         "bonus": 5 * (streak - 60),
-        "wood": 200
+        "wood": random.randint(190, 210)
     }
 
 def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
