@@ -369,3 +369,14 @@ class MichaelBot(lightbulb.BotApp):
             this = this.get_subcommand(part)
 
         return this
+    
+    async def reset_cooldown(self, ctx: lightbulb.Context):
+        '''A shortcut to reset a command's cooldown.
+
+        Parameters
+        ----------
+        ctx : lightbulb.Context
+            The context the command is invoked.
+        '''
+        
+        await ctx.invoked.cooldown_manager.reset_cooldown(ctx)
