@@ -148,7 +148,7 @@ async def addmoney(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
-@lightbulb.option("item", "Item to craft.", autocomplete = True)
+@lightbulb.option("item", "Item to craft.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("craft", "Craft various items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def craft(ctx: lightbulb.Context):
@@ -170,11 +170,18 @@ async def craft(ctx: lightbulb.Context):
         await ctx.respond(f"Item *{item.name}* cannot be crafted.", reply = True, mentions_reply = True)
         return
     
+    # Emulate executing the command multiple times.
+    if times > 1:
+        for item_id in recipe:
+            recipe[item_id] *= times
+
+    async with bot.pool.acquire() as conn:
+        # Try removing the items; if any falls below 0, it fails to craft.
         success: bool = True
         missing: dict[str, int] = {}
         inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
         for inv in inventories:
-            inv.amount -= recipe[inv.item_id] * times
+            inv.amount -= recipe[inv.item_id]
             if inv.amount < 0:
                 missing[inv.item_id] = -inv.amount
                 success = False
@@ -186,8 +193,8 @@ async def craft(ctx: lightbulb.Context):
         
         for inv in inventories:
             await psql.Inventory.sync(conn, inv)
-        await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"] * times)
-    await ctx.respond(f"Successfully crafted {display_reward(bot, {item.id: recipe['result'] * times})}.", reply = True)
+        await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"])
+    await ctx.respond(f"Successfully crafted {display_reward(bot, {item.id: recipe['result']})}.", reply = True)
 @craft.autocomplete("item")
 async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
@@ -312,7 +319,7 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("view_option", "Options to view inventory.", choices = ("compact", "full", "value"), default = "compact")
-@lightbulb.command("inventory", "View inventory boi.", aliases = ["inv"])
+@lightbulb.command("inventory", "View your inventory.", aliases = ["inv"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def inventory(ctx: lightbulb.Context):
     view_option = ctx.options.view_option
@@ -506,7 +513,7 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("mine", "Mine something cool.")
+@lightbulb.command("mine", "Mine for resources. You'll need a pickaxe equipped.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def mine(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
