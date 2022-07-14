@@ -3,6 +3,7 @@
 # A few special keywords that are reserved in the loot tables:
 # - "result": Usually in crafting-related stuff, it defines how many items will end up as the result of the craft.
 # - "money": The money as a reward.
+# - "bonus": Same as "money", just different message.
 # - "cost": The money lost.
 
 import random
