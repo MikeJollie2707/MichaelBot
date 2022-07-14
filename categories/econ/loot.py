@@ -156,3 +156,18 @@ def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
     '''
 
     return __CRAFT_RECIPE__.get(item_id)
+
+if __name__ == "__main__":
+    rate_tracker: dict[str, int] = {"total" : 0}
+
+    for i in range(0, 1000):
+        loot_rate = get_mine_loot("stone_pickaxe", "overworld")
+        for reward in loot_rate:
+            if reward not in rate_tracker:
+                rate_tracker[reward] = loot_rate[reward]
+            else:
+                rate_tracker[reward] += loot_rate[reward]
+            
+            rate_tracker["total"] += loot_rate[reward]
+        
+    print(rate_tracker)
