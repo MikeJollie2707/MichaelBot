@@ -363,7 +363,146 @@ async def inventory(ctx: lightbulb.Context):
 @lightbulb.command("market", "Public trades")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def market(ctx: lightbulb.Context):
-    raise NotImplementedError
+    await market_view(ctx)
+
+@market.child
+@lightbulb.command("view", "View public purchases.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def market_view(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    items = bot.item_cache.values()
+    builder = nav.ItemListBuilder(items, 5)
+    @builder.set_page_start_formatter
+    def start_format(index: int, item: psql.Item):
+        embed = helpers.get_default_embed(
+            title = "Market",
+            timestamp = dt.datetime.now().astimezone()
+        ).set_author(
+            name = bot.get_me().username,
+            icon = bot.get_me().avatar_url
+        ).set_thumbnail(
+            bot.get_me().avatar_url
+        )
+        return embed
+    @builder.set_entry_formatter
+    def entry_format(embed: hikari.Embed, index: int, item: psql.Item):
+        embed.add_field(
+            name = f"{item.emoji} {item.name}",
+            value = dedent(f'''
+                *{item.description}*
+                Buy: {f"{CURRENCY_ICON}{item.buy_price}" if item.buy_price else "N/A"}
+                Sell: {CURRENCY_ICON}{item.sell_price}
+            ''')
+        )
+    
+    await builder.build().send(ctx.channel_id)
+
+@market.child
+@lightbulb.option("amount", "The amount to purchase. Default to 1.", type = int, min_value = 1, default = 1)
+@lightbulb.option("item", "The item to purchase.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("buy", "Buy an item from the market.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def market_buy(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
+    amount: int = ctx.options.amount
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if amount < 1:
+        await ctx.respond("You'll need to buy at least one item!", reply = True, mentions_reply = True)
+        return
+    
+    if item is None:
+        await ctx.respond("This is not a valid item.", reply = True, mentions_reply = True)
+        return
+    
+    if not item.buy_price:
+        await ctx.respond("This item cannot be purchased from the market.", reply = True, mentions_reply = True)
+        return
+    
+    cost = item.buy_price * amount
+    user = bot.user_cache[ctx.author.id]
+    if user.balance < cost:
+        await ctx.respond(f"You don't have enough money to buy this many. Total cost: {CURRENCY_ICON}{cost}", reply = True, mentions_reply = True)
+        return
+    
+    user.balance -= cost
+
+    async with bot.pool.acquire() as conn:
+        async with conn.transaction():
+            await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
+            await bot.user_cache.sync_user(conn, user)
+    
+    await ctx.respond(f"Successfully purchased {display_reward(bot, {item.id : amount}, emote = True)}.", reply = True)
+
+@market.child
+@lightbulb.option("amount", "The amount to sell, or 0 to sell all. Default to 1.", type = int, min_value = 0, default = 1)
+@lightbulb.option("item", "The item to sell.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("sell", "Sell items from your inventory.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def market_sell(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
+    amount: int = ctx.options.amount
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if amount < 0:
+        await ctx.respond("You'll need to sell at least one item!", reply = True, mentions_reply = True)
+        return
+    
+    if item is None:
+        await ctx.respond("This is not a valid item.", reply = True, mentions_reply = True)
+        return
+    
+    if not item.sell_price:
+        await ctx.respond("This item cannot be sold to the market.", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
+        if not inv or inv.amount < amount:
+            await ctx.respond("You don't have enough of this item to sell.", reply = True, mentions_reply = True)
+            return
+        
+        if amount == 0:
+            amount = inv.amount
+        
+        profit = item.sell_price * amount
+        user = bot.user_cache[ctx.author.id]
+        user.balance += profit
+
+        async with conn.transaction():
+            await psql.Inventory.remove(conn, ctx.author.id, item.id, amount)
+            await bot.user_cache.sync_user(conn, user)
+    
+    await ctx.respond(f"Successfully sold {display_reward(bot, {item.id : amount}, emote = True)} for {CURRENCY_ICON}{profit}.", reply = True)
+
+@market_buy.autocomplete("item")
+@market_sell.autocomplete("item")
+async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    # Specifically for this command, we can autocomplete items
+    # that appears in inventory, but we'll need to cache, 
+    # otherwise it'll be very expensive to request DB every character.
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    items = []
+    for item in bot.item_cache.values():
+        items.append(item.name)
+        if item.aliases:
+            for alias in item.aliases:
+                items.append(alias)
+    
+    if option.value == '':
+        return items[:25]
+    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
