@@ -536,7 +536,6 @@ async def mine(ctx: lightbulb.Context):
         
         async with conn.transaction():
             await add_reward(conn, ctx.author.id, loot_table)
-            
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
     
     await ctx.respond(f"You mined and received {display_reward(bot, loot_table, emote = True)}", reply = True)
