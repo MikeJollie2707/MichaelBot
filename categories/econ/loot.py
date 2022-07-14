@@ -6,7 +6,6 @@
 # - "bonus": Same as "money", just different message.
 # - "cost": The money lost.
 
-import dataclasses
 import random
 import typing as t
 
@@ -84,7 +83,6 @@ class RewardRNG:
         
         return self.max_amount
 
-
 def get_daily_loot(streak: int) -> dict[str, int]:
     if streak <= 1:
         return {
@@ -157,10 +155,16 @@ def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
 
     return __CRAFT_RECIPE__.get(item_id)
 
-if __name__ == "__main__":
-    rate_tracker: dict[str, int] = {"total" : 0}
+def __driver_code__():
+    '''DO NOT CALL THIS FUNCTION.
 
-    for i in range(0, 1000):
+    This is a function only because all variables used will be public when exporting (thank you Python for its scoping "rule").
+    '''
+    
+    SIMULATION_TIME = 10000000
+    rate_tracker: dict[str, int] = {"total": 0}
+
+    for i in range(0, SIMULATION_TIME):
         loot_rate = get_mine_loot("stone_pickaxe", "overworld")
         for reward in loot_rate:
             if reward not in rate_tracker:
@@ -169,5 +173,13 @@ if __name__ == "__main__":
                 rate_tracker[reward] += loot_rate[reward]
             
             rate_tracker["total"] += loot_rate[reward]
-        
-    print(rate_tracker)
+    
+    total = rate_tracker["total"]
+    del rate_tracker["total"]
+
+    print(f"Sim {SIMULATION_TIME} times, total amount: {total}")
+    for item, amount in rate_tracker.items():
+        print(f"- {item}: {amount}/{total} ({float(amount) / total * 100 :.5f}%)")
+
+if __name__ == "__main__":
+    __driver_code__()
