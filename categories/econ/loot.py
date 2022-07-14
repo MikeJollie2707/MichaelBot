@@ -34,7 +34,6 @@ __CRAFT_RECIPE__ = {
     }
 }
 
-@dataclasses.dataclass()
 class RewardRNG:
     '''Define an item's drop rate.
 
@@ -48,10 +47,43 @@ class RewardRNG:
         Define the minimum amount of this item to drop if it happens to roll. This should be positive.
     max_amount : int
         Define the maximum amount of this item to drop if it happens to roll. This should be positive.
+    amount_layout : tuple[float]
+        Define the rng distribution between `min_amount` and `max_amount`. This should satisfy `len(amount_layout) == (max_amount - min_amount + 1) and sum(amount_layout) == 1`
     '''
-    rate: float
-    min_amount: int
-    max_amount: int
+    
+    def __init__(self, rate: float, min_amount: int, max_amount: int, amount_layout: tuple[float] = None):
+        self.rate = rate
+        self.min_amount = min_amount
+        self.max_amount = max_amount
+
+        self.amount_layout = amount_layout
+
+    def roll(self) -> int:
+        '''Roll the RNG and return the amount of items as the result.
+
+        Return
+        ------
+        int
+            The amount of item, taken RNG into account.
+        '''
+
+        if self.rate < 1:
+            r = random.random()
+            if self.rate > r:
+                return 0
+        
+        if not self.amount_layout:
+            return random.choice(range(self.min_amount, self.max_amount + 1))
+        
+        r = random.random()
+        rate = 0
+        for index, amount_rate in enumerate(self.amount_layout):
+            rate += amount_rate
+            if r <= rate:
+                return min(self.min_amount + index, self.max_amount)
+        
+        return self.max_amount
+
 
 def get_daily_loot(streak: int) -> dict[str, int]:
     if streak <= 1:
@@ -88,17 +120,21 @@ def get_daily_loot(streak: int) -> dict[str, int]:
         "wood": random.randint(190, 210)
     }
 
-def get_mine_loot_rate(pickaxe_id: str, world: str) -> dict[str, RewardRNG]:
+def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
+    reward: dict[str, int] = {}
+
     if world == "overworld":
         if pickaxe_id == "wood_pickaxe":
-            return {
-                "stone": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            reward = {
+                "stone": RewardRNG(rate = 1, min_amount = 1, max_amount = 2).roll(),
             }
+            return reward
         elif pickaxe_id == "stone_pickaxe":
-            return {
-                "stone": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
-                "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
+            reward = {
+                "stone": RewardRNG(rate = 1, min_amount = 3, max_amount = 5).roll(),
+                "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2, amount_layout = (0.75, 0.25)).roll(),
             }
+            return reward
     return None
 
 def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
