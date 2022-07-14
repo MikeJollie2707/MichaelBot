@@ -6,6 +6,7 @@
 # - "bonus": Same as "money", just different message.
 # - "cost": The money lost.
 
+import dataclasses
 import random
 import typing as t
 
@@ -32,6 +33,25 @@ __CRAFT_RECIPE__ = {
         "result": 1
     }
 }
+
+@dataclasses.dataclass()
+class RewardRNG:
+    '''Define an item's drop rate.
+
+    There are 3 attributes: `rate`, `min_amount`, and `max_amount`.
+    
+    Attributes
+    ----------
+    rate : float
+        Define the drop rate of the associated item. Must be between 0 and 1.
+    min_amount : int
+        Define the minimum amount of this item to drop if it happens to roll. This should be positive.
+    max_amount : int
+        Define the maximum amount of this item to drop if it happens to roll. This should be positive.
+    '''
+    rate: float
+    min_amount: int
+    max_amount: int
 
 def get_daily_loot(streak: int) -> dict[str, int]:
     if streak <= 1:
@@ -68,16 +88,16 @@ def get_daily_loot(streak: int) -> dict[str, int]:
         "wood": random.randint(190, 210)
     }
 
-def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
+def get_mine_loot_rate(pickaxe_id: str, world: str) -> dict[str, RewardRNG]:
     if world == "overworld":
         if pickaxe_id == "wood_pickaxe":
             return {
-                "stone": random.randint(1, 2),
+                "stone": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
             }
         elif pickaxe_id == "stone_pickaxe":
             return {
-                "stone": random.randint(3, 5),
-                "iron": random.choice((0, 0, 0, 0, 0, 1, 1, 2))
+                "stone": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
+                "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             }
     return None
 
