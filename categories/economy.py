@@ -96,37 +96,37 @@ async def bet(ctx: lightbulb.Context):
     if money < 1:
         money = 1
     
-    async with bot.pool.acquire() as conn:
-        user = await psql.User.get_one(conn, ctx.author.id)
-        if user.balance < money:
-            await ctx.respond(f"You don't have enough money to bet {CURRENCY_ICON}{money}!", reply = True, mentions_reply = True)
+    user = bot.user_cache[ctx.author.id]
+    if user.balance < money:
+        await ctx.respond(f"You don't have enough money to bet {CURRENCY_ICON}{money}!", reply = True, mentions_reply = True)
+        return
+    if user.balance == money:
+        confirm_menu = nav.ConfirmView(timeout = 10)
+        resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
+        confirm_menu.start(await resp.message())
+        res = await confirm_menu.wait()
+        if not res:
+            if res is None:
+                await ctx.respond("Confirmation timed out. I'll take it as a \"No\".", reply = True, mentions_reply = True)
+            else:
+                await ctx.respond("Aight stay safe!", reply = True, mentions_reply = True)
             return
-        if user.balance == money:
-            confirm_menu = nav.ConfirmView(timeout = 10)
-            resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
-            confirm_menu.start(await resp.message())
-            res = await confirm_menu.wait()
-            if not res:
-                if res is None:
-                    await ctx.respond("Confirmation timed out. I'll take it as a \"No\".", reply = True, mentions_reply = True)
-                else:
-                    await ctx.respond("Aight stay safe!", reply = True, mentions_reply = True)
-                return
+    
+    # No this is not a register.
+    rsp: str = f"You placed your bet of {CURRENCY_ICON}{money} and guessed `{number}`...\n"
+    actual_num = random.randint(0, 50)
+    if actual_num == number:
+        rsp += f"And it is correct! You receive your money back and another {CURRENCY_ICON}{money}!\n"
+        user.balance += money
+    else:
+        rsp += f"And it is incorrect! The number is `{actual_num}`. Better luck next time!\n"
+        user.balance -= money
+
+    async with bot.pool.acquire() as conn:    
+        await bot.user_cache.sync_user(conn, user)
         
-        # No this is not a register.
-        rsp: str = f"You placed your bet of {CURRENCY_ICON}{money} and guessed `{number}`...\n"
-        actual_num = random.randint(0, 50)
-        if actual_num == number:
-            rsp += f"And it is correct! You receive your money back and another {CURRENCY_ICON}{money}!\n"
-            await psql.User.add_money(conn, ctx.author.id, money)
-            user.balance += money
-        else:
-            rsp += f"And it is incorrect! The number is `{actual_num}`. Better luck next time!\n"
-            await psql.User.remove_money(conn, ctx.author.id, money)
-            user.balance -= money
-        
-        rsp += f"Your balance now: {CURRENCY_ICON}{user.balance}."
-        await ctx.respond(rsp, reply = True)
+    rsp += f"Your balance now: {CURRENCY_ICON}{user.balance}."
+    await ctx.respond(rsp, reply = True)
 
 @plugin.command()
 @lightbulb.add_checks(checks.is_dev)
@@ -137,7 +137,9 @@ async def addmoney(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        await psql.User.add_money(conn, ctx.author.id, min(500, max(1, ctx.options.amount)))
+        user = bot.user_cache[ctx.author.id]
+        user.balance += min(500, max(1, ctx.options.amount))
+        await bot.user_cache.sync_user(conn, user)
     await ctx.respond(f"Added {CURRENCY_ICON}{ctx.options.amount}.")
 
 @plugin.command()
@@ -150,22 +152,24 @@ async def addmoney(ctx: lightbulb.Context):
 @lightbulb.command("craft", "Craft various items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def craft(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
     times: int = max(1, min(100, ctx.options.times))
     bot: models.MichaelBot = ctx.bot
 
-    async with bot.pool.acquire() as conn:
-        item = await psql.Item.get_by_name(conn, ctx.options.item)
-        if item is None:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("This item doesn't exist!", reply = True, mentions_reply = True)
-            return
-        
-        recipe = loot.get_craft_recipe(item.id)
-        if not recipe:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond(f"Item *{item.name}* cannot be crafted.", reply = True, mentions_reply = True)
-            return
-        
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if item is None:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This item doesn't exist!", reply = True, mentions_reply = True)
+        return
+    
+    recipe = loot.get_craft_recipe(item.id)
+    if not recipe:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond(f"Item *{item.name}* cannot be crafted.", reply = True, mentions_reply = True)
+        return
+    
         success: bool = True
         missing: dict[str, int] = {}
         inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
@@ -215,7 +219,7 @@ async def daily(ctx: lightbulb.Context):
 
     response: str = ""
     async with bot.pool.acquire() as conn:
-        existed = await psql.User.get_one(conn, ctx.author.id)
+        existed = bot.user_cache.get(ctx.author.id)
         
         # User should be guaranteed to be created via checks.is_command_enabled() check.
         assert existed is not None
@@ -238,8 +242,8 @@ async def daily(ctx: lightbulb.Context):
                 existed.daily_streak += 1
                 response += f"You gained a new streak! Your streak now: `{existed.daily_streak}x`\n"
             
-            await psql.User.update_streak(conn, existed.id, existed.daily_streak)
-            await psql.User.update_column(conn, existed.id, "last_daily", now)
+            existed.last_daily = now
+            await bot.user_cache.sync_user(conn, existed)
 
             daily_loot = loot.get_daily_loot(existed.daily_streak)
             await add_reward(conn, ctx.author.id, daily_loot)
@@ -252,24 +256,26 @@ async def daily(ctx: lightbulb.Context):
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("equipment", "The equipment to equip.", autocomplete = True)
-@lightbulb.command("equip", "Equip some tools boi. Get to work!")
+@lightbulb.option("equipment", "The equipment to equip.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("equip", "Equip a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def equip(ctx: lightbulb.Context):
-    equipment = ctx.options.equipment
+    item: psql.Item = ctx.options.equipment
     bot: models.MichaelBot = ctx.bot
 
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+
+    if not item:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This equipment doesn't exist!", reply = True, mentions_reply = True)
+        return
+    if not psql.Equipment.is_equipment(item.id):
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This is not an equipment!", reply = True, mentions_reply = True)
+        return
+    
     async with bot.pool.acquire() as conn:
-        item = await psql.Item.get_by_name(conn, equipment)
-        if not item:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("This equipment doesn't exist!", reply = True, mentions_reply = True)
-            return
-        if not psql.Equipment.is_equipment(item.id):
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("This is not an equipment!", reply = True, mentions_reply = True)
-            return
-        
         inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
         if not inv:
             await bot.reset_cooldown(ctx)
