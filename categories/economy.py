@@ -12,14 +12,21 @@ from utils import checks, helpers, models, nav, psql
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 
 def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote: bool = False) -> str:
-    rewards: list = []
+    rewards: list[str] = []
+    money: int = 0
     for item_id, amount in loot_table.items():
-        item = bot.item_cache.get(item_id)
-        if item is not None:
-            if emote:
-                rewards.append(f"{item.emoji} x {amount}")
+        if amount > 0:
+            if item_id in ("money", "bonus"):
+                money += amount
             else:
-                rewards.append(f"{amount}x *{item.name}*")
+                item = bot.item_cache.get(item_id)
+                if item is not None:
+                    if emote:
+                        rewards.append(f"{item.emoji} x {amount}")
+                    else:
+                        rewards.append(f"{amount}x *{item.name}*")
+    if money > 0:
+        rewards.insert(0, f"{CURRENCY_ICON}{money}")
     return ', '.join(rewards)
 
 async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
