@@ -94,9 +94,9 @@ class UserCache:
         self.__user_mapping: dict[str, psql.User] = {}
     
     def __getitem__(self, user_id: int):
-        return self.__user_mapping[user_id]
+        return copy.deepcopy(self.__user_mapping[user_id])
     def get(self, user_id: int):
-        return self.__user_mapping.get(user_id)
+        return copy.deepcopy(self.__user_mapping.get(user_id))
     def keys(self):
         return self.__user_mapping.keys()
     def items(self):
