@@ -7,7 +7,7 @@ import hikari
 import humanize
 
 from categories.econ import loot
-from utils import checks, helpers, models, nav, psql
+from utils import checks, converters, helpers, models, nav, psql
 
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 
