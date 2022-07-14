@@ -159,7 +159,19 @@ class ItemCache:
     def __getitem__(self, item_id: str):
         return self.__item_mapping[item_id]
     def get(self, item_id: str):
-        return self.__item_mapping.get(item_id)
+        return copy.deepcopy(self.__item_mapping.get(item_id))
+    def get_by_name(self, name_or_alias: str):
+        if self.get(name_or_alias):
+            return self.get(name_or_alias)
+        
+        name = name_or_alias.lower()
+        
+        for item in self.__item_mapping.values():
+            if name == item.name.lower():
+                return item
+            if item.aliases and name in [alias.lower() for alias in item.aliases]:
+                return item
+        return None
     def keys(self):
         return self.__item_mapping.keys()
     def items(self):
