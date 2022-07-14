@@ -1,5 +1,6 @@
 '''Contains many data structures, including the customized `MichaelBot` class.'''
 
+import copy
 import datetime as dt
 import typing as t
 from dataclasses import dataclass
@@ -90,6 +91,11 @@ class GuildCache:
         return self
 
 class UserCache:
+    '''A wrapper around `dict[str, psql.User]`
+
+    This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
+    These methods will return a deep copy of the desired object, so you can freely edit them.
+    '''
     def __init__(self) -> None:
         self.__user_mapping: dict[str, psql.User] = {}
     
@@ -150,6 +156,7 @@ class ItemCache:
     '''A wrapper around `dict[str, psql.Item]`
     
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
+    These methods will return a deep copy of the desired object, so you can freely edit them.
     
     To edit the cache, use either `sync_item()` (update db with new values) or `local_sync()` (update the local cache with new values).
     '''
@@ -157,7 +164,7 @@ class ItemCache:
         self.__item_mapping: dict[str, psql.Item] = {}
     
     def __getitem__(self, item_id: str):
-        return self.__item_mapping[item_id]
+        return copy.deepcopy(self.__item_mapping[item_id])
     def get(self, item_id: str):
         return copy.deepcopy(self.__item_mapping.get(item_id))
     def get_by_name(self, name_or_alias: str):
