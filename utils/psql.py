@@ -19,6 +19,8 @@ from utils.helpers import ClassToDict
 logger = logging.getLogger("MichaelBot")
 T = t.TypeVar('T')
 
+# TODO: Add constraint checking when updating values.
+
 class Error(Exception):
     '''A base error for high-level PostgreSQL operations.'''
 
@@ -345,7 +347,10 @@ class GuildsLogs(ClassToDict):
 
 @dataclasses.dataclass(slots = True)
 class User(ClassToDict):
-    '''Represent an entry in the `Users` table along with possible operations related to the table.'''
+    '''Represent an entry in the `Users` table along with possible operations related to the table.
+
+    This is mostly used for the bot's cache purpose. If you're using this directly in a code, you're probably doing it wrong.
+    '''
 
     id: int
     name: str
@@ -526,7 +531,10 @@ class Reminders(ClassToDict):
 
 @dataclasses.dataclass(slots = True)
 class Item(ClassToDict):
-    '''Represent an entry in the `Items` table along with possible operations related to the table.'''
+    '''Represent an entry in the `Items` table along with possible operations related to the table.
+
+    This is mostly used for the bot's cache purpose. If you're using this directly in a code, you're probably doing it wrong.
+    '''
     
     id: str
     sort_id: int
