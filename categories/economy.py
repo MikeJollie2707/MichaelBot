@@ -22,6 +22,39 @@ def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote:
                 rewards.append(f"{amount}x *{item.name}*")
     return ', '.join(rewards)
 
+async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
+    '''A shortcut to add rewards to the user.
+
+    For some special keys (as defined in `loot.RESERVED_KEYS`), this will attempt to add money also.
+
+    Notes
+    -----
+    This function has its own transaction.
+
+    Parameters
+    ----------
+    conn : asyncpg.Connection
+        The connection to use.
+    user_id : int
+        The user's id.
+    loot_table : dict[str, int]
+        The loot to add. This will be left untouched after the call, so you can check for reserved keys for custom messages.
+    '''
+
+    money: int = 0
+    async with conn.transaction():
+        for item_id, amount in loot_table.items():
+            if item_id not in loot.RESERVED_KEYS:
+                if amount > 0:
+                    await psql.Inventory.add(conn, user_id, item_id, amount)
+            if item_id == "cost":
+                money -= amount
+            else:
+                money += amount
+        await psql.User.add_money(conn, user_id, money)
+async def remove_reward(conn, user_id: int, loot_table: dict[str, int]):
+    pass
+
 plugin = lightbulb.Plugin("Economy", "Money stuffs", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
 plugin.add_checks(
@@ -202,18 +235,7 @@ async def daily(ctx: lightbulb.Context):
             await psql.User.update_column(conn, existed.id, "last_daily", now)
 
             daily_loot = loot.get_daily_loot(existed.daily_streak)
-            money: int = 0
-            for item_id, amount in daily_loot.items():
-                if item_id in ("money", "bonus"):
-                    money += amount
-                    if item_id == "bonus":
-                        response += f"You got an extra {CURRENCY_ICON}{amount}!\n"
-                    else:
-                        response += f"You received {CURRENCY_ICON}{amount}.\n"
-                else:
-                    await psql.Inventory.add(conn, ctx.author.id, item_id, amount)
-            if money > 0:
-                await psql.User.add_money(conn, ctx.author.id, money)
+            await add_reward(conn, ctx.author.id, daily_loot)
             response += f"You received: {display_reward(bot, daily_loot, emote = True)}\n"
 
         await ctx.respond(response, reply = True)
@@ -354,8 +376,7 @@ async def mine(ctx: lightbulb.Context):
             return
         
         async with conn.transaction():
-            for item_id, amount in loot_table.items():
-                await psql.Inventory.add(conn, ctx.author.id, item_id, amount)
+            await add_reward(conn, ctx.author.id, loot_table)
             
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
     
