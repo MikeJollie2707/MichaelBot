@@ -317,7 +317,7 @@ class GuildsLogs(ClassToDict):
         """
         return await __get_all__(conn, query, where = where, result_type = GuildsLogs if not as_dict else dict)
     @staticmethod
-    async def get_one(conn: asyncpg.Connection, id: int, *, as_dict: bool = False) -> list[t.Union[GuildsLogs, dict]]:
+    async def get_one(conn: asyncpg.Connection, id: int, *, as_dict: bool = False) -> t.Union[GuildsLogs, dict]:
         '''Get the first entry in the table that matches the condition.'''
         
         query = """
