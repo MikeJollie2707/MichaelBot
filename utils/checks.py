@@ -37,31 +37,32 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
         return True
     
     guild_cache = bot.guild_cache.get(ctx.guild_id)
-    #user_cache = bot.user_cache.get(ctx.author.id)
     user_cache = bot.user_cache.get(ctx.author.id)
 
     if guild_cache is None or user_cache is None:
         async with bot.pool.acquire() as conn:
+            # Checking cache to sync if needed.
             if guild_cache is None:
-                guild_cache = models.GuildCache()
-                async with conn.transaction():
-                    guild = await psql.Guild.get_one(conn, ctx.guild_id)
-                    if guild is None:
-                        await guild_cache.add_guild_module(conn, ctx.get_guild())
-                    else:
-                        await guild_cache.force_sync(conn, ctx.author.id)
+                guild = await psql.Guild.get_one(conn, ctx.guild_id)
+                if guild is None:
+                    guild = psql.Guild(ctx.guild_id, ctx.get_guild().name)
+                    await bot.guild_cache.insert(conn, guild)
+                else:
+                    bot.guild_cache.sync_local(guild)
+                
+                guild_cache = guild
             
             if user_cache is None:
                 user = await psql.User.get_one(conn, ctx.author.id)
                 if user is None:
                     user = psql.User(ctx.author.id, ctx.author.username)
-                    await bot.user_cache.insert(conn, psql.User(ctx.author.id, ctx.author.username))
+                    await bot.user_cache.insert(conn, user)
                 else:
                     bot.user_cache.local_sync(user)
                 
                 user_cache = user
     
-    if not guild_cache.guild_module["is_whitelist"]:
+    if not guild_cache.is_whitelist:
         raise errors.GuildBlacklisted
     if not user_cache.is_whitelist:
         raise errors.UserBlacklisted

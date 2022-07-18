@@ -31,18 +31,18 @@ async def blacklist_guild(ctx: lightbulb.Context):
         guild_id = ctx.options.guild.id
     
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            guild_cache = bot.guild_cache.get(guild_id)
-            if guild_cache is None:
-                guild_db = await psql.Guild.get_one(conn, guild_id)
-                if guild_db is None:
-                    await ctx.respond("Can't blacklist a guild that's not available in guild.", reply = True, mentions_reply = True)
-                    return
-                else:
-                    guild_cache = models.GuildCache()
-                    await guild_cache.force_sync(conn, guild_id)
+        guild_cache = bot.guild_cache.get(guild_id)
+        if guild_cache is None:
+            guild = await psql.Guild.get_one(conn, guild_id)
+            if guild is None:
+                await ctx.respond("Can't blacklist a guild that's not available in database.", reply = True, mentions_reply = True)
+                return
             
-            await guild_cache.update_guild_module(conn, guild_id, "is_whitelist", False)
+            bot.guild_cache.sync_local(guild)
+            guild_cache = guild
+        
+        guild_cache.is_whitelist = False
+        await bot.guild_cache.update_with(conn, guild_cache)
     
     await ctx.respond("Blacklisted!", reply = True)
 
@@ -79,7 +79,7 @@ async def blacklist_user(ctx: lightbulb.Context):
             bot.user_cache.local_sync(user)
             user_cache = user
         
-        user_cache.is_whitelist = not user_cache.is_whitelist
+        user_cache.is_whitelist = False
         await bot.user_cache.sync_user(conn, user_cache)
     
     await ctx.respond("Blacklisted!", reply = True)
@@ -111,10 +111,11 @@ async def force_sync_cache(ctx: lightbulb.Context):
         async with conn.transaction():
             guilds = await psql.Guild.get_all(conn)
             for guild in guilds:
-                #guild_id = guild["id"]
-                guild_id = guild.id
-                bot.guild_cache[guild_id] = models.GuildCache()
-                await bot.guild_cache[guild_id].force_sync(conn, guild_id)
+                bot.guild_cache.sync_local(guild)
+            
+            logs = await psql.GuildsLogs.get_all(conn)
+            for log in logs:
+                bot.log_cache.update_local(log)
             
             users = await psql.User.get_all(conn)
             for user in users:
@@ -131,8 +132,7 @@ async def force_sync_cache_user(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        user = await psql.User.get_one(conn, ctx.author.id)
-        bot.user_cache.local_sync(user)
+        await bot.user_cache.sync_from_db(conn, user_id)
     
     await ctx.respond(f"User cache for {ctx.options.user_id} synced.", reply = True)
 
@@ -145,9 +145,8 @@ async def force_sync_cache_guild(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            bot.guild_cache[guild_id] = models.GuildCache()
-            await bot.guild_cache[guild_id].force_sync(conn, guild_id)
+        await bot.guild_cache.sync_from_db(conn, guild_id)
+        await bot.log_cache.update_from_db(conn, guild_id)
     
     await ctx.respond(f"Guild cache for {ctx.options.guild_id} synced.", reply = True)
 
@@ -173,10 +172,29 @@ async def cache_view_guild(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Guild Module",
-            value = f"```{guild_cache.guild_module}```"
+            value = f"```{guild_cache.to_dict()}```"
+        )
+        await ctx.respond(embed = embed, reply = True)
+    else:
+        await ctx.respond("Cache for this guild doesn't exist.", reply = True, mentions_reply = True)
+
+@cache_view.child
+@lightbulb.option("guild_id", "The guild's id to view.", type = hikari.Guild)
+@lightbulb.command("log", "View the cache of a guild.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def cache_view_log(ctx: lightbulb.Context):
+    guild_id = ctx.options.guild_id.id
+    bot: models.MichaelBot = ctx.bot
+
+    log_cache = bot.log_cache.get(guild_id)
+    if log_cache is not None:
+        embed = helpers.get_default_embed(
+            title = "Log Cache View",
+            author = ctx.author,
+            timestamp = dt.datetime.now().astimezone()
         ).add_field(
-            name = "Logging Module",
-            value = f"```{guild_cache.logging_module}```"
+            name = "Log Module",
+            value = f"```{log_cache.to_dict()}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -197,7 +215,7 @@ async def cache_view_user(ctx: lightbulb.Context):
             author = ctx.author,
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
-            name = "Item Module",
+            name = "User Module",
             value = f"```{user_cache.to_dict()}```"
         )
         await ctx.respond(embed = embed, reply = True)

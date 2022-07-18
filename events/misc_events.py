@@ -74,19 +74,23 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
                 # Only cache guilds that are available to bot, not all guilds in db.
                 async for guild in bot.rest.fetch_my_guilds():
                     if bot.guild_cache.get(guild.id) is None:
-                        bot.guild_cache[guild.id] = models.GuildCache()
-                        res = await bot.guild_cache[guild.id].force_sync(conn, guild)
-                        if res is None:
-                            await bot.guild_cache[guild.id].add_guild_module(conn, guild)
+                        # If guild not available in cache, try get it in db.
+                        existed = await psql.Guild.get_one(conn, guild.id)
+                        if not existed:
+                            # Very new guild.
+                            await bot.guild_cache.insert(conn, psql.Guild(guild.id, guild.name))
+                        else:
+                            # Probably some sort of desync.
+                            bot.guild_cache.sync_local(existed)
                     else:
-                        # Handle on reconnect
-                        res = await bot.guild_cache[guild.id].force_sync(conn, guild)
-                
+                        # Probably some sort of desync.
+                        await bot.guild_cache.sync_from_db(conn, guild.id)
                 logger.info("Populated guild cache with stored info.")
+
+                await bot.log_cache.update_all_from_db(conn)
+                logger.info("Populated log cache with stored info.")
                 
-                users = await psql.User.get_all(conn)
-                for user in users:
-                    bot.user_cache.local_sync(user)
+                await bot.user_cache.update_all_from_db(conn)
                 logger.info("Populated user cache with stored info.")
     
     logger.info("Bot is now ready to go!")
@@ -99,18 +103,25 @@ async def on_guild_join(event: hikari.GuildJoinEvent):
     if bot.pool is not None:
         async with bot.pool.acquire() as conn:
             guild = event.guild
+            
+            # Pretty much same code as on_shard_ready().
             if bot.guild_cache.get(guild.id) is None:
-                bot.guild_cache[guild.id] = models.GuildCache()
-                res = await bot.guild_cache[guild.id].force_sync(conn, guild)
-                if res is None:
-                    await bot.guild_cache[guild.id].add_guild_module(conn, guild)
+                existed = await psql.Guild.get_one(conn, guild.id)
+                if not existed:
+                    await bot.guild_cache.insert(conn, psql.Guild(guild.id, guild.name))
+                else:
+                    # Handle on reconnect
+                    await bot.guild_cache.sync_local(existed)
+                
                 logger.info(f"Bot joined guild '{guild.id}'. Cache entry added.")
+            else:
+                await bot.guild_cache.sync_from_db(conn, guild.id)
 
 @plugin.listener(hikari.GuildLeaveEvent)
 async def on_guild_leave(event: hikari.GuildLeaveEvent):
     bot: models.MichaelBot = event.app
     if bot.pool is not None:
-        bot.guild_cache.pop(event.guild_id, None)
+        bot.guild_cache.remove_local(event.guild_id)
         logger.info(f"Bot left guild '{event.guild_id}'. Cache entry removed.")
 
 @plugin.listener(hikari.StoppingEvent)

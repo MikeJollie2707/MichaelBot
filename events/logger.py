@@ -49,33 +49,35 @@ async def send_to_mystbin(content: str) -> str:
     await mystbin_client.close()
     return paste
 
+def bot_has_permission_in(bot: models.MichaelBot, channel: hikari.GuildChannel, permission: hikari.Permissions):
+    bot_permissions = lightbulb.utils.permissions_in(channel, bot.cache.get_member(channel.get_guild().id, bot.get_me().id), True)
+    return bot_permissions & permission == permission
+
 def is_loggable(event: hikari.Event):
+    bot: models.MichaelBot = event.app
     # Since most events we're logging are guild-related, they all have `.get_guild()` method.
     if isinstance(event, hikari.RoleEvent):
-        guild = event.app.cache.get_guild(event.guild_id)
+        guild = bot.cache.get_guild(event.guild_id)
     elif isinstance(event, lightbulb.CommandCompletionEvent) or isinstance(event, lightbulb.CommandErrorEvent):
         guild = event.context.get_guild()
     else:
         guild = event.get_guild()
-    bot: models.MichaelBot = event.app
-    try:
-        cache_info = bot.guild_cache.get(guild.id)
-    except AttributeError:
-        # This means cache is `None`.
-        return False
     
-    if cache_info is None: return False
+    log_cache = bot.log_cache.get(guild.id)
+
+    if log_cache is None: return False
     if type(event) not in EVENT_OPTION_MAPPING: return False
-    # This checks both logging_module is an empty dict and logging_module.log_channel being empty.
-    if cache_info.logging_module.get("log_channel") is None: return False
-    if cache_info.logging_module.get(EVENT_OPTION_MAPPING[type(event)]) is None: return False
-    
-    channel = bot.cache.get_guild_channel(cache_info.logging_module["log_channel"])
+    if log_cache.log_channel is None: return False
+    if getattr(log_cache, EVENT_OPTION_MAPPING[type(event)]) is None: return False
+
+    channel = bot.cache.get_guild_channel(log_cache.log_channel)
     if channel is None: return False
 
-    return  channel.type == hikari.ChannelType.GUILD_TEXT and \
-            lightbulb.utils.permissions_in(channel, bot.cache.get_member(guild.id, bot.get_me().id)) & hikari.Permissions.SEND_MESSAGES == hikari.Permissions.SEND_MESSAGES and \
-            cache_info.logging_module[EVENT_OPTION_MAPPING[type(event)]]
+    is_text_channel = channel.type == hikari.ChannelType.GUILD_TEXT
+    has_send_message = bot_has_permission_in(bot, channel, hikari.Permissions.SEND_MESSAGES)
+    option_enabled = getattr(log_cache, EVENT_OPTION_MAPPING[type(event)])
+
+    return is_text_channel and has_send_message and option_enabled
 
 plugin = lightbulb.Plugin("Logs", "Logging Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":memo:")
@@ -116,21 +118,26 @@ async def log_set_all(ctx: lightbulb.Context):
     # If it's invoked thru slash command.
     if isinstance(channel, hikari.InteractionChannel):
         channel = ctx.get_guild().get_channel(channel.id)
+    
+    if not bot_has_permission_in(bot, channel, hikari.Permissions.SEND_MESSAGES):
+        await ctx.respond(f"{channel.mention} doesn't allow me to send a message!", reply = True, mentions_reply = True)
+        return
 
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
-            if not guild_dbcache.logging_module:
-                existed = await psql.GuildsLogs.get_one(conn, ctx.guild_id)
-                if existed is None:
-                    await guild_dbcache.add_logging_module(conn, ctx.get_guild())
-                else:
-                    await guild_dbcache.force_sync(conn, ctx.guild_id)
-            if not lightbulb.utils.permissions_in(channel, bot.cache.get_member(ctx.guild_id, bot.get_me().id)) & hikari.Permissions.SEND_MESSAGES == hikari.Permissions.SEND_MESSAGES:
-                await ctx.respond(f"{channel.mention} doesn't allow me to send a message!", reply = True, mentions_reply = True)
-                return
+        log_cache = bot.log_cache.get(ctx.guild_id)
+        if log_cache is None:
+            existed = await psql.GuildsLogs.get_one(conn, ctx.guild_id)
+            if existed is None:
+                existed = psql.GuildsLogs(ctx.guild_id, channel.id)
+                await bot.log_cache.insert(conn, existed)
+            else:
+                bot.log_cache.update_local(existed)
             
-            await guild_dbcache.update_logging_module(conn, ctx.guild_id, "log_channel", channel.id)
+            log_cache = existed
+        
+        log_cache.log_channel = True
+        await bot.log_cache.update(conn, log_cache)
+            
     
     await ctx.respond(f"Set channel {channel.mention} as a logging channel.", reply = True)
     await bot.rest.create_message(channel, "This channel is now mine to log, muahahahaha!")
@@ -147,17 +154,17 @@ async def log_enable_option(ctx: lightbulb.Context):
     logging_option = ctx.options.logging_option
     bot: models.MichaelBot = ctx.bot
 
-    if logging_option not in [EVENT_OPTION_MAPPING[event_type] for event_type in EVENT_OPTION_MAPPING]:
+    if logging_option not in EVENT_OPTION_MAPPING.values():
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
     
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
-            if not not guild_dbcache.logging_module:
-                await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, True)
-            else:
-                await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
-                return
+        log_cache = bot.log_cache.get(ctx.guild_id)
+        if log_cache is not None:
+            setattr(log_cache, logging_option, True)
+            await bot.log_cache.update(conn, log_cache)
+        else:
+            await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
+            return
     await ctx.respond(f"Log option `{logging_option}` is enabled.", reply = True)
 
 @plugin.command()
@@ -179,12 +186,13 @@ async def log_disable_all(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
-            if not not guild_dbcache.logging_module:
-                await guild_dbcache.update_logging_module(conn, ctx.guild_id, "log_channel", None)
-            else:
-                await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
+        log_cache = bot.log_cache.get(ctx.guild_id)
+        if log_cache is not None:
+            log_cache.log_channel = None
+            await bot.log_cache.update(conn, log_cache)
+        else:
+            await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
+            return
 
     await ctx.respond("Logging disabled successfully.", reply = True)
 
@@ -200,17 +208,18 @@ async def log_disable_option(ctx: lightbulb.Context):
     logging_option = ctx.options.logging_option
     bot: models.MichaelBot = ctx.bot
 
-    if logging_option not in [EVENT_OPTION_MAPPING[event_type] for event_type in EVENT_OPTION_MAPPING]:
+    if logging_option not in EVENT_OPTION_MAPPING.values():
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
     
     async with bot.pool.acquire() as conn:
-        async with conn.transaction():
-            guild_dbcache = bot.guild_cache.get(ctx.guild_id)
-            if not not guild_dbcache.logging_module:
-                await guild_dbcache.update_logging_module(conn, ctx.guild_id, logging_option, False)
-            else:
-                await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
-                return
+        log_cache = bot.log_cache.get(ctx.guild_id)
+        if log_cache is not None:
+            setattr(log_cache, logging_option, False)
+            await bot.log_cache.update(conn, log_cache)
+        else:
+            await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
+            return
+    
     await ctx.respond(f"Log option `{logging_option}` is disabled.", reply = True)
 
 @plugin.command()
@@ -222,22 +231,22 @@ async def log_disable_option(ctx: lightbulb.Context):
 async def log_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
-    guild_dbcache = bot.guild_cache.get(ctx.guild_id)
+    log_cache = bot.log_cache.get(ctx.guild_id)
     embed = helpers.get_default_embed(
         title = f"Log Settings for {ctx.get_guild().name}",
         description = "",
         author = ctx.author,
         timestamp = dt.datetime.now().astimezone()
     )
-    if len(guild_dbcache.logging_module) > 0:
-        for logging_option in guild_dbcache.logging_module:
+    if log_cache is not None:
+        for logging_option in log_cache.to_dict():
             if logging_option == "log_channel":
-                if guild_dbcache.logging_module[logging_option] is not None:
-                    embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(guild_dbcache.logging_module[logging_option]).mention}\n"
+                if log_cache.log_channel is not None:
+                    embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(log_cache.log_channel).mention}\n"
                 else:
                     embed.description += "**Log Destination:** `None`\n"
             else:
-                embed.description += f"`{logging_option}`: {'Enabled' if guild_dbcache.logging_module[logging_option] else 'Disabled'}\n"
+                embed.description += f"`{logging_option}`: {'Enabled' if getattr(log_cache, logging_option) else 'Disabled'}\n"
     else:
         embed.description += "**Log Destination:** `None`\n"
     embed.set_author(
@@ -251,7 +260,7 @@ async def log_view(ctx: lightbulb.Context):
 async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_CREATE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -322,7 +331,7 @@ async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
 async def on_guild_channel_delete(event: hikari.GuildChannelDeleteEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -390,7 +399,7 @@ async def on_guild_channel_delete(event: hikari.GuildChannelDeleteEvent):
 async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_UPDATE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -694,7 +703,7 @@ async def on_guild_update(event: hikari.GuildUpdateEvent):
 async def on_member_join(event: hikari.MemberCreateEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_CREATE)
         log_time = dt.datetime.now().astimezone()
         
@@ -727,7 +736,7 @@ async def on_member_leave(event: hikari.MemberDeleteEvent):
 async def on_member_update(event: hikari.MemberUpdateEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_UPDATE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -829,7 +838,7 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
 async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time = dt.datetime.now().astimezone()
         executor = None
@@ -896,7 +905,7 @@ async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent
 async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
@@ -972,7 +981,7 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
             return
         elif not event.author.is_bot:
             bot: models.MichaelBot = event.app
-            log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+            log_channel = bot.log_cache[event.guild_id].log_channel
             embed = hikari.Embed(color = COLOR_UPDATE)
             log_time: dt.datetime = dt.datetime.now().astimezone()
             executor = event.author
@@ -1033,7 +1042,7 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
 async def on_role_create(event: hikari.RoleCreateEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_CREATE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
@@ -1082,7 +1091,7 @@ async def on_role_create(event: hikari.RoleCreateEvent):
 async def on_role_delete(event: hikari.RoleDeleteEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_DELETE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
@@ -1146,7 +1155,7 @@ async def on_role_delete(event: hikari.RoleDeleteEvent):
 async def on_role_update(event: hikari.RoleUpdateEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_UPDATE)
         log_time: dt.datetime = dt.datetime.now().astimezone()
         executor = None
@@ -1262,7 +1271,7 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
 async def on_command_invoke(event: lightbulb.CommandCompletionEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.context.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 
@@ -1291,7 +1300,7 @@ async def on_command_invoke(event: lightbulb.CommandCompletionEvent):
 async def on_command_error(event: lightbulb.CommandErrorEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.guild_cache[event.context.guild_id].logging_module["log_channel"]
+        log_channel = bot.log_cache[event.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 

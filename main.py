@@ -36,7 +36,7 @@ async def retrieve_prefix(bot: MichaelBot, message: hikari.Message):
     guild = bot.guild_cache.get(message.guild_id)
     if guild is None:
         return bot.info["prefix"]
-    return guild.guild_module["prefix"]
+    return guild.prefix
 
 def load_info(bot_name: str) -> tuple[dict]:
     '''Return the bot information in `config.json`

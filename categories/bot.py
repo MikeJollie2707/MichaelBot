@@ -450,18 +450,18 @@ async def prefix(ctx: lightbulb.Context):
     new_prefix = ctx.options.new_prefix
     bot: models.MichaelBot = ctx.bot
 
-    guild_dbcache = bot.guild_cache.get(ctx.guild_id)
+    guild_cache = bot.guild_cache.get(ctx.guild_id)
     
     if new_prefix is None:
-        guild_prefix = bot.info["prefix"] if guild_dbcache is None else guild_dbcache.guild_module["prefix"]
+        guild_prefix = bot.info["prefix"] if guild_cache is None else guild_cache.prefix
         await ctx.respond(f"Current prefix: `{guild_prefix}`", reply = True)
     else:
         if len(new_prefix) > 5 or len(new_prefix.split(' ')) > 1:
             await ctx.respond("Invalid prefix.", reply = True, mentions_reply = True)
             return
         async with bot.pool.acquire() as conn:
-            async with conn.transaction():
-                await guild_dbcache.update_guild_module(conn, ctx.guild_id, "prefix", new_prefix)
+            guild_cache.prefix = new_prefix
+            await bot.guild_cache.update_with(conn, guild_cache)
         await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
 
 @plugin.command()
