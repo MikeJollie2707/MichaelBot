@@ -264,6 +264,20 @@ class Guild(ClassToDict):
             WHERE id = ($2);
         """
         return await run_and_return_count(conn, query, new_value, id)
+    @staticmethod
+    async def sync(conn: asyncpg.Connection, guild: Guild) -> int:
+        existed_guild = await Guild.get_one(conn, guild.id)
+        if not existed_guild:
+            return await Guild.insert_one(conn, guild)
+
+        diff_col = []
+        for col in existed_guild.__slots__:
+            if getattr(existed_guild, col) != getattr(guild, col):
+                diff_col.append(col)
+        
+        async with conn.transaction():
+            for change in diff_col:
+                await Guild.update_column(conn, guild.id, change, getattr(guild, change))
 
 @dataclasses.dataclass(slots = True)    
 class GuildsLogs(ClassToDict):
@@ -344,6 +358,20 @@ class GuildsLogs(ClassToDict):
             WHERE guild_id = ($2);
         """
         return await run_and_return_count(conn, query, new_value, id)
+    @staticmethod
+    async def sync(conn: asyncpg.Connection, guild: GuildsLogs) -> int:
+        existed_guild = await GuildsLogs.get_one(conn, guild.guild_id)
+        if not existed_guild:
+            return await GuildsLogs.insert_one(conn, guild.guild_id)
+
+        diff_col = []
+        for col in existed_guild.__slots__:
+            if getattr(existed_guild, col) != getattr(guild, col):
+                diff_col.append(col)
+        
+        async with conn.transaction():
+            for change in diff_col:
+                await GuildsLogs.update_column(conn, guild.guild_id, change, getattr(guild, change))
 
 @dataclasses.dataclass(slots = True)
 class User(ClassToDict):
