@@ -14,81 +14,99 @@ import lightbulb
 from utils import psql
 
 class GuildCache:
-    '''
-    Represent a guild data in the database.
+    def __init__(self) -> None:
+        self.__guild_mapping: dict[str, psql.Guild] = {}
     
-    This contains two module:
+    def __getitem__(self, guild_id: int):
+        return copy.deepcopy(self.__guild_mapping[guild_id])
+    def get(self, guild_id: int):
+        return copy.deepcopy(self.__guild_mapping.get(guild_id))
+    def keys(self):
+        return self.__guild_mapping.keys()
+    def items(self):
+        return self.__guild_mapping.items()
+    def values(self):
+        return self.__guild_mapping.values()
     
-    - `guild_module`: Represent the `Guilds` table.
-    - `logging_module`: Represent the `GuildsLogs` table.
-    '''
-    def __init__(self, guild_module: dict = None, logging_module: dict = None):
-        if guild_module is None:
-            guild_module = {}
-        else:
-            guild_module.pop("id", None)
-        
-        if logging_module is None:
-            logging_module = {}
-        else:
-            logging_module.pop("guild_id", None)
-        
-        self.guild_module = guild_module
-        self.logging_module = logging_module
-    
-    async def add_guild_module(self, conn, guild: hikari.Guild):
-        '''
-        Add a guild module into the cache and the database.
-        '''
-        #await psql.Guilds._insert_one(conn, guild)
-        await psql.Guild.insert_one(conn, psql.Guild(guild.id, guild.name))
-        guild_info = await psql.Guild.get_one(conn, guild.id, as_dict = True)
-        self.guild_module = guild_info
-    
-    async def update_guild_module(self, conn, guild_id: int, column: str, new_value):
-        '''
-        Edit a guild module data in the cache and the database.
-        '''
-        await psql.Guild.update_column(conn, guild_id, column, new_value)
-        self.guild_module[column] = new_value
-    
-    async def add_logging_module(self, conn, guild: hikari.Guild):
-        '''
-        Add a logging module into the cache and the database.
-        '''
-        await psql.GuildsLogs.insert_one(conn, guild.id)
-        logging_info = await psql.GuildsLogs.get_one(conn, guild.id, as_dict = True)
-        self.logging_module = logging_info
-    
-    async def update_logging_module(self, conn, guild_id: int, column: str, new_value):
-        '''
-        Update a logging module in the cache and the database.
-        '''
-        await psql.GuildsLogs.update_column(conn, guild_id, column, new_value)
-        self.logging_module[column] = new_value
-    
-    async def force_sync(self, conn, guild_id: int):
-        '''
-        Force this object to update with database.
-        If the method returns `None`, the entry for this guild isn't on the database, thus you should use `add_guild_module()` instead.
-        Otherwise, it returns itself.
+    async def insert(self, conn: asyncpg.Connection, guild: psql.Guild):
+        '''Explicitly add a new guild to the cache and to the db.
+
+        This is mostly used to save overheads within `psql.Guild.sync()`
+
+        Warnings
+        --------
+        Using this method means you're 100% sure the guild doesn't exist. For entries that *might* exist,
+        consider using `update_with()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        guild : psql.Guild
+            The guild to insert.
         '''
 
-        guild = await psql.Guild.get_one(conn, guild_id, as_dict = True)
+        await psql.Guild.insert_one(conn, guild)
+        self.__guild_mapping[guild.id] = guild
+    async def update_with(self, conn: asyncpg.Connection, guild: psql.Guild):
+        await psql.Guild.sync(conn, guild)
+        self.__guild_mapping[guild.id] = guild
+    async def sync_from_db(self, conn: asyncpg.Connection, guild_id: int):
+        guild = await psql.Guild.get_one(conn, guild_id)
         if guild is None:
-            return None
-        else:
-            guild.pop("id", None)
+            del self.__guild_mapping[guild_id]
         
-        guild_log = await psql.GuildsLogs.get_one(conn, guild_id, as_dict = True)
-        if guild_log is None:
-            guild_log = {}
-        else:
-            guild_log.pop("guild_id", None)
+        self.__guild_mapping[guild.id] = guild
+    async def update_all_from_db(self, conn: asyncpg.Connection):
+        guilds = await psql.Guild.get_all(conn)
         
-        self.guild_module = guild
-        self.logging_module = guild_log
-        return self
+        self.__guild_mapping = {}
+
+        for guild in guilds:
+            self.__guild_mapping[guild.id] = guild
+    def sync_local(self, guild: psql.Guild):
+        self.__guild_mapping[guild.id] = guild
+    def remove_local(self, guild_id: int):
+        del self.__guild_mapping[guild_id]
+
+class LogCache:
+    def __init__(self) -> None:
+        self.__log_mapping: dict[str, psql.GuildsLogs] = {}
+    
+    def __getitem__(self, guild_id: int):
+        return copy.deepcopy(self.__log_mapping[guild_id])
+    def get(self, guild_id: int):
+        return copy.deepcopy(self.__log_mapping.get(guild_id))
+    def keys(self):
+        return self.__log_mapping.keys()
+    def items(self):
+        return self.__log_mapping.items()
+    def values(self):
+        return self.__log_mapping.values()
+    
+    async def insert(self, conn: asyncpg.Connection, guild: psql.GuildsLogs):
+        await psql.GuildsLogs.insert_one(conn, guild.guild_id)
+        self.__log_mapping[guild.guild_id] = guild
+    async def update(self, conn: asyncpg.Connection, guild: psql.GuildsLogs):
+        await psql.GuildsLogs.sync(conn, guild)
+        self.__log_mapping[guild.guild_id] = guild
+    async def update_from_db(self, conn: asyncpg.Connection, guild_id: int):
+        guild = await psql.GuildsLogs.get_one(conn, guild_id)
+        if guild is None:
+            del self.__log_mapping[guild_id]
+        
+        self.__log_mapping[guild.guild_id] = guild
+    async def update_all_from_db(self, conn: asyncpg.Connection):
+        guilds = await psql.GuildsLogs.get_all(conn)
+        
+        self.__log_mapping = {}
+
+        for guild in guilds:
+            self.__log_mapping[guild.guild_id] = guild
+    def update_local(self, guild: psql.GuildsLogs):
+        self.__log_mapping[guild.guild_id] = guild
+    def remove_local(self, guild_id: int):
+        del self.__log_mapping[guild_id]
 
 class UserCache:
     '''A wrapper around `dict[str, psql.User]`
@@ -149,6 +167,13 @@ class UserCache:
             del self.__user_mapping[user_id]
         
         self.__user_mapping[user.id] = user
+    async def update_all_from_db(self, conn: asyncpg.Connection):
+        users = await psql.User.get_all(conn)
+        
+        self.__user_mapping = {}
+        
+        for user in users:
+            self.__user_mapping[user.id] = user
     def local_sync(self, user: psql.User):
         self.__user_mapping[user.id] = user
 
@@ -163,11 +188,17 @@ class ItemCache:
     def __init__(self):
         self.__item_mapping: dict[str, psql.Item] = {}
     
-    def __getitem__(self, item_id: str):
+    def __getitem__(self, item_id: str) -> psql.Item:
+        '''Return a copy of the item matching the item's id.'''
+
         return copy.deepcopy(self.__item_mapping[item_id])
-    def get(self, item_id: str):
+    def get(self, item_id: str) -> t.Optional[psql.Item]:
+        '''Return a copy of the item matching the item's id, or `None` if none was found.'''
+
         return copy.deepcopy(self.__item_mapping.get(item_id))
     def get_by_name(self, name_or_alias: str):
+        '''Return a copy of the item matching the item's name or alias, or `None` if none was found.'''
+
         if self.get(name_or_alias):
             return self.get(name_or_alias)
         
@@ -175,15 +206,21 @@ class ItemCache:
         
         for item in self.__item_mapping.values():
             if name == item.name.lower():
-                return item
+                return copy.deepcopy(item)
             if item.aliases and name in [alias.lower() for alias in item.aliases]:
-                return item
+                return copy.deepcopy(item)
         return None
     def keys(self):
+        '''Return an iterable of keys inside the underlying `dict`.'''
+
         return self.__item_mapping.keys()
     def items(self):
+        '''Return an iterable of items inside the underlying `dict`.'''
+
         return self.__item_mapping.items()
     def values(self):
+        '''Return an iterable of values inside the underlying `dict`.'''
+
         return self.__item_mapping.values()
 
     async def sync_item(self, conn: asyncpg.Connection, item: psql.Item):
@@ -284,6 +321,7 @@ class MichaelBot(lightbulb.BotApp):
         "pool",
         "aio_session",
         "guild_cache",
+        "log_cache",
         "user_cache",
         "item_cache",
         "lavalink",
@@ -318,7 +356,8 @@ class MichaelBot(lightbulb.BotApp):
         self.aio_session: t.Optional[aiohttp.ClientSession] = None
 
         # Store some db info. This allows read-only operation much cheaper.
-        self.guild_cache: dict[int, GuildCache] = {}
+        self.guild_cache = GuildCache()
+        self.log_cache = LogCache()
         self.user_cache = UserCache()
         self.item_cache = ItemCache()
 
