@@ -9,8 +9,10 @@ import humanize
 import lightbulb
 import psutil
 
-from utils import checks, helpers, models
+from utils import checks, converters, helpers, models
 from utils.nav import ButtonNavigator, run_view
+
+from categories.economy import CURRENCY_ICON
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")
@@ -224,6 +226,68 @@ async def info_host(ctx: lightbulb.Context):
     ).set_thumbnail(bot.get_me().avatar_url)
 
     await ctx.respond(embed = embed, reply = True)
+
+@info.child
+@lightbulb.option("item", "The item to show.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("item", "Show information for an item.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def info_item(ctx: lightbulb.Context):
+    item = ctx.options.item
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if item is None:
+        await ctx.respond("This item doesn't exist!", reply = True, mentions_reply = True)
+        return
+    
+    embed = helpers.get_default_embed(
+        title = item.name,
+        description = f"*{item.description}*",
+        author = ctx.author,
+        timestamp = dt.datetime.now().astimezone()
+    )
+
+    embed.add_field(
+        name = "Basic Information",
+        value = dedent(f'''
+            > **Alias(es):** {', '.join(item.aliases) if item.aliases else "`None`"}
+            > **Emoji:** {item.emoji}
+            > **Rarity:** `{item.rarity.capitalize()}`
+        '''),
+        inline = True
+    )
+
+    embed.add_field(
+        name = "Value",
+        value = dedent(f'''
+            > **Buy Price:** {f"{CURRENCY_ICON}{item.buy_price}" if item.buy_price else "N/A"}
+            > **Sell Price:** {f"{CURRENCY_ICON}{item.sell_price}" if item.sell_price else "N/A"}
+            > **Durability:** {item.durability if item.durability else "N/A"}
+        '''),
+        inline = True
+    )
+    
+    await ctx.respond(embed = embed, reply = True)
+
+@info_item.autocomplete("item")
+async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    # Exactly the same as in economy.py
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    items = []
+    for item in bot.item_cache.values():
+        items.append(item.name)
+        if item.aliases:
+            for alias in item.aliases:
+                items.append(alias)
+    
+    if option.value == '':
+        return items[:25]
+    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
 
 @info.child
 @lightbulb.option("member", "A Discord member. Default to yourself.", type = hikari.Member, default = None)
