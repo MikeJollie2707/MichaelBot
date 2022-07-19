@@ -113,7 +113,7 @@ async def force_sync_cache(ctx: lightbulb.Context):
             for guild in guilds:
                 bot.guild_cache.sync_local(guild)
             
-            logs = await psql.GuildsLogs.get_all(conn)
+            logs = await psql.GuildLog.get_all(conn)
             for log in logs:
                 bot.log_cache.update_local(log)
             

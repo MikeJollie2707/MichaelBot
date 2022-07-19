@@ -49,7 +49,7 @@ class GuildCache:
         await psql.Guild.insert_one(conn, guild)
         self.__guild_mapping[guild.id] = guild
     async def update_with(self, conn: asyncpg.Connection, guild: psql.Guild):
-        await psql.Guild.sync(conn, guild)
+        await psql.Guild.update(conn, guild)
         self.__guild_mapping[guild.id] = guild
     async def sync_from_db(self, conn: asyncpg.Connection, guild_id: int):
         guild = await psql.Guild.get_one(conn, guild_id)
@@ -71,7 +71,7 @@ class GuildCache:
 
 class LogCache:
     def __init__(self) -> None:
-        self.__log_mapping: dict[str, psql.GuildsLogs] = {}
+        self.__log_mapping: dict[str, psql.GuildLog] = {}
     
     def __getitem__(self, guild_id: int):
         return copy.deepcopy(self.__log_mapping[guild_id])
@@ -84,26 +84,26 @@ class LogCache:
     def values(self):
         return self.__log_mapping.values()
     
-    async def insert(self, conn: asyncpg.Connection, guild: psql.GuildsLogs):
-        await psql.GuildsLogs.insert_one(conn, guild.guild_id)
+    async def insert(self, conn: asyncpg.Connection, guild: psql.GuildLog):
+        await psql.GuildLog.insert_one(conn, guild.guild_id)
         self.__log_mapping[guild.guild_id] = guild
-    async def update(self, conn: asyncpg.Connection, guild: psql.GuildsLogs):
-        await psql.GuildsLogs.sync(conn, guild)
+    async def update(self, conn: asyncpg.Connection, guild: psql.GuildLog):
+        await psql.GuildLog.update(conn, guild)
         self.__log_mapping[guild.guild_id] = guild
     async def update_from_db(self, conn: asyncpg.Connection, guild_id: int):
-        guild = await psql.GuildsLogs.get_one(conn, guild_id)
+        guild = await psql.GuildLog.get_one(conn, guild_id)
         if guild is None:
             del self.__log_mapping[guild_id]
         
         self.__log_mapping[guild.guild_id] = guild
     async def update_all_from_db(self, conn: asyncpg.Connection):
-        guilds = await psql.GuildsLogs.get_all(conn)
+        guilds = await psql.GuildLog.get_all(conn)
         
         self.__log_mapping = {}
 
         for guild in guilds:
             self.__log_mapping[guild.guild_id] = guild
-    def update_local(self, guild: psql.GuildsLogs):
+    def update_local(self, guild: psql.GuildLog):
         self.__log_mapping[guild.guild_id] = guild
     def remove_local(self, guild_id: int):
         del self.__log_mapping[guild_id]
@@ -159,7 +159,7 @@ class UserCache:
             The user value to update with.
         '''
 
-        await psql.User.sync(conn, user)
+        await psql.User.update(conn, user)
         self.__user_mapping[user.id] = user
     async def sync_from_db(self, conn: asyncpg.Connection, user_id: int):
         user = await psql.User.get_one(conn, user_id)
@@ -236,7 +236,7 @@ class ItemCache:
             The item value to update with.
         '''
 
-        await psql.Item.sync(conn, item)
+        await psql.Item.update(conn, item)
         self.__item_mapping[item.id] = item
     def local_sync(self, item: psql.Item):
         '''Set the cache item with the new value.

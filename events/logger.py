@@ -126,9 +126,9 @@ async def log_set_all(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         log_cache = bot.log_cache.get(ctx.guild_id)
         if log_cache is None:
-            existed = await psql.GuildsLogs.get_one(conn, ctx.guild_id)
+            existed = await psql.GuildLog.get_one(conn, ctx.guild_id)
             if existed is None:
-                existed = psql.GuildsLogs(ctx.guild_id, channel.id)
+                existed = psql.GuildLog(ctx.guild_id, channel.id)
                 await bot.log_cache.insert(conn, existed)
             else:
                 bot.log_cache.update_local(existed)

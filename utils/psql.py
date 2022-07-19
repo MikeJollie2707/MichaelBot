@@ -206,12 +206,17 @@ async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kw
 
 @dataclasses.dataclass(slots = True)
 class Guild(ClassToDict):
-    '''Represent an entry in the `Guilds` table along with possible operations related to the table.'''
+    '''Represent an entry in the `Guilds` table along with possible operations related to the table.
+
+    It is advised to use the cache in the bot instead. These methods are for mostly cache construction.
+    '''
 
     id: int
     name: str
     is_whitelist: bool = True
     prefix: str = '$'
+    
+    __PREVENT_UPDATE = ("id")
     
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Guild, dict]]:
@@ -229,7 +234,7 @@ class Guild(ClassToDict):
         return await __get_all__(conn, query, where = where, result_type = Guild if not as_dict else dict)
     @staticmethod
     async def get_one(conn: asyncpg.Connection, id: int, *, as_dict: bool = False) -> t.Union[Guild, dict]:
-        '''Get the first entry in the table that matches the condition.'''
+        '''Get the first entry in the table that matches the pkey provided.'''
         
         query = """
             SELECT * FROM Guilds
@@ -238,6 +243,8 @@ class Guild(ClassToDict):
         return await __get_one__(conn, query, id, result_type = Guild if not as_dict else dict)
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, guild: Guild) -> int:
+        '''Insert an entry into the table.'''
+
         query = insert_into_query("Guilds", len(guild.__slots__))
         return await run_and_return_count(conn, query, guild.id, guild.name, guild.is_whitelist, guild.prefix)
     @staticmethod
@@ -253,11 +260,18 @@ class Guild(ClassToDict):
     async def update_column(conn: asyncpg.Connection, id: int, column: str, new_value) -> int:
         '''Update a specific column with a new value.
 
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
         Notes
         -----
         Always prefer using other functions to update rather than this function if possible.
         '''
 
+        if column in Guild.__PREVENT_UPDATE:
+            return 0
+        
         query = f"""
             UPDATE Guilds
             SET {column} = ($1)
@@ -265,7 +279,16 @@ class Guild(ClassToDict):
         """
         return await run_and_return_count(conn, query, new_value, id)
     @staticmethod
-    async def sync(conn: asyncpg.Connection, guild: Guild) -> int:
+    async def update(conn: asyncpg.Connection, guild: Guild) -> int:
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+        
         existed_guild = await Guild.get_one(conn, guild.id)
         if not existed_guild:
             return await Guild.insert_one(conn, guild)
@@ -280,11 +303,14 @@ class Guild(ClassToDict):
                 await Guild.update_column(conn, guild.id, change, getattr(guild, change))
 
 @dataclasses.dataclass(slots = True)    
-class GuildsLogs(ClassToDict):
-    '''Represent an entry in the `GuildsLogs` table along with possible operations related to the table.'''
+class GuildLog(ClassToDict):
+    '''Represent an entry in the `GuildsLogs` table along with possible operations related to the table.
+
+    It is advised to use the cache in the bot instead. These methods are for mostly cache construction.
+    '''
 
     guild_id: int
-    log_channel: int
+    log_channel: int = None
     guild_channel_create: bool = True
     guild_channel_delete: bool = True
     guild_channel_update: bool = True
@@ -303,36 +329,36 @@ class GuildsLogs(ClassToDict):
     command_complete: bool = True
     command_error: bool = True
 
+    __PREVENT_UPDATE = ("guild_id")
+
     @staticmethod
-    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[GuildsLogs, dict]]:
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[GuildLog, dict]]:
         '''Get all entries in the table.'''
         
-        return await GuildsLogs.get_all_where(conn, as_dict = as_dict)
+        return await GuildLog.get_all_where(conn, as_dict = as_dict)
     @staticmethod
-    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[dict], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[GuildsLogs, dict]]:
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[dict], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[GuildLog, dict]]:
         '''Get all entires in the table that matches the condition.'''
         
         query = """
             SELECT * FROM GuildsLogs;
         """
-        return await __get_all__(conn, query, where = where, result_type = GuildsLogs if not as_dict else dict)
+        return await __get_all__(conn, query, where = where, result_type = GuildLog if not as_dict else dict)
     @staticmethod
-    async def get_one(conn: asyncpg.Connection, id: int, *, as_dict: bool = False) -> t.Union[GuildsLogs, dict]:
-        '''Get the first entry in the table that matches the condition.'''
+    async def get_one(conn: asyncpg.Connection, id: int, *, as_dict: bool = False) -> t.Union[GuildLog, dict]:
+        '''Get the first entry in the table that matches the pkey provided.'''
         
         query = """
             SELECT * FROM GuildsLogs
             WHERE guild_id = ($1);
         """
-        return await __get_one__(conn, query, id, result_type = GuildsLogs if not as_dict else dict)
+        return await __get_one__(conn, query, id, result_type = GuildLog if not as_dict else dict)
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, guild_id: int) -> int:
         '''Insert an entry into the table.'''
 
-        query = """
-            INSERT INTO GuildsLogs
-            VALUES ($1) ON CONFLICT DO NOTHING;
-        """
+        # Only guild_id is required.
+        query = insert_into_query("GuildsLogs", 1)
         return await run_and_return_count(conn, query, guild_id)
     @staticmethod
     async def delete(conn: asyncpg.Connection, id: int) -> int:
@@ -347,11 +373,18 @@ class GuildsLogs(ClassToDict):
     async def update_column(conn: asyncpg.Connection, id: int, column: str, new_value) -> int:
         '''Update a specific column with a new value.
 
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
         Notes
         -----
         Always prefer using other functions to update rather than this function if possible.
         '''
 
+        if column in GuildLog.__PREVENT_UPDATE:
+            return 0
+        
         query = f"""
             UPDATE GuildsLogs
             SET {column} = ($1)
@@ -359,10 +392,19 @@ class GuildsLogs(ClassToDict):
         """
         return await run_and_return_count(conn, query, new_value, id)
     @staticmethod
-    async def sync(conn: asyncpg.Connection, guild: GuildsLogs) -> int:
-        existed_guild = await GuildsLogs.get_one(conn, guild.guild_id)
+    async def update(conn: asyncpg.Connection, guild: GuildLog) -> int:
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+
+        existed_guild = await GuildLog.get_one(conn, guild.guild_id)
         if not existed_guild:
-            return await GuildsLogs.insert_one(conn, guild.guild_id)
+            return await GuildLog.insert_one(conn, guild.guild_id)
 
         diff_col = []
         for col in existed_guild.__slots__:
@@ -371,13 +413,13 @@ class GuildsLogs(ClassToDict):
         
         async with conn.transaction():
             for change in diff_col:
-                await GuildsLogs.update_column(conn, guild.guild_id, change, getattr(guild, change))
+                await GuildLog.update_column(conn, guild.guild_id, change, getattr(guild, change))
 
 @dataclasses.dataclass(slots = True)
 class User(ClassToDict):
     '''Represent an entry in the `Users` table along with possible operations related to the table.
 
-    This is mostly used for the bot's cache purpose. If you're using this directly in a code, you're probably doing it wrong.
+    It is advised to use the cache in the bot instead. These methods are for mostly cache construction.
     '''
 
     id: int
@@ -387,7 +429,9 @@ class User(ClassToDict):
     world: str = "overworld"
     daily_streak: int = 0
     last_daily: dt.datetime = None
-    __WORLD_TYPE__ = ("overworld", "nether", "end")
+    
+    __WORLD_TYPE = ("overworld", "nether", "end")
+    __PREVENT_UPDATE = ("id")
 
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[User]:
@@ -405,7 +449,7 @@ class User(ClassToDict):
         return await __get_all__(conn, query, where = where, result_type = User if not as_dict else dict)
     @staticmethod
     async def get_one(conn: asyncpg.Connection, id: int, as_dict: bool = False) -> t.Union[User, dict]:
-        '''Get the first entry in the table that matches the condition.'''
+        '''Get the first entry in the table that matches the pkey provided.'''
 
         query = """
             SELECT * FROM Users
@@ -414,6 +458,8 @@ class User(ClassToDict):
         return await __get_one__(conn, query, id, result_type = User if not as_dict else dict)
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, user: User) -> int:
+        '''Insert an entry into the table.'''
+
         query = insert_into_query("Users", len(user.__slots__))
         return await run_and_return_count(conn, query, user.id, user.name, user.is_whitelist, user.balance, user.world, user.daily_streak, user.last_daily)
     @staticmethod
@@ -429,10 +475,17 @@ class User(ClassToDict):
     async def update_column(conn: asyncpg.Connection, id: int, column: str, new_value) -> int:
         '''Update a specific column with a new value.
 
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
         Notes
         -----
         Always prefer using other functions to update rather than this function if possible.
         '''
+
+        if column in User.__PREVENT_UPDATE:
+            return 0
 
         query = f"""
             UPDATE Users
@@ -481,7 +534,16 @@ class User(ClassToDict):
         
         return await User.update_balance(conn, id, existed.balance)
     @staticmethod
-    async def sync(conn: asyncpg.Connection, user: User) -> int:
+    async def update(conn: asyncpg.Connection, user: User) -> int:
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+
         existed_user = await User.get_one(conn, user.id)
         if not existed_user:
             return await User.insert_one(conn, user)
@@ -504,6 +566,8 @@ class Reminders(ClassToDict):
     awake_time: dt.datetime
     message: str
 
+    __PREVENT_UPDATE = ("remind_id", "user_id")
+
     @staticmethod
     async def get_user_reminders(conn: asyncpg.Connection, user_id: int, *, as_dict: bool = False) -> list[t.Optional[t.Union[Reminders, dict]]]:
         '''Get a list of reminders a user have.'''
@@ -517,7 +581,7 @@ class Reminders(ClassToDict):
         return [record_to_type(record, result_type = Reminders if not as_dict else dict) for record in result]
     @staticmethod
     async def get_reminders(conn: asyncpg.Connection, lower_time: dt.datetime, upper_time: dt.datetime, *, as_dict: bool = False) -> list[t.Optional[t.Union[Reminders, dict]]]:
-        '''Get a list of reminders within the time range.'''
+        '''Get a list of reminders within `(lower_time, upper_time]`.'''
 
         query = """
             SELECT * FROM Reminders
@@ -575,11 +639,17 @@ class Item(ClassToDict):
     aliases: list[str] = dataclasses.field(default_factory = list)
     durability: int = None
 
+    __PREVENT_UPDATE = ("id")
+
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Item, dict]]:
+        '''Get all entries in the table.'''
+
         return await Item.get_all_where(conn, as_dict = as_dict)
     @staticmethod
     async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Item], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Item, dict]]:
+        '''Get all entires in the table that matches the condition.'''
+
         query = """
             SELECT * FROM Items
             ORDER by sort_id;
@@ -587,6 +657,8 @@ class Item(ClassToDict):
         return await __get_all__(conn, query, where = where, result_type = Item if not as_dict else dict)
     @staticmethod
     async def get_one(conn: asyncpg.Connection, id: str, *, as_dict: bool = False) -> t.Union[Item, dict]:
+        '''Get the first entry in the table that matches the condition.'''
+
         query = """
             SELECT * FROM Items
             WHERE id = ($1);
@@ -594,6 +666,8 @@ class Item(ClassToDict):
         return await __get_one__(conn, query, id, result_type = Item if not as_dict else dict)
     @staticmethod
     async def get_by_name(conn: asyncpg.Connection, name_or_alias: str, *, as_dict: bool = False) -> t.Union[Item, dict]:
+        '''Get the first item that has its name/aliases match the provided.'''
+
         def filter_name_alias(record: Item):
             return record.name.lower() == name_or_alias.lower() or name_or_alias.lower() in [alias.lower() for alias in record.aliases]
         
@@ -605,6 +679,8 @@ class Item(ClassToDict):
         return None
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, item: Item):
+        '''Insert an entry into the table.'''
+
         query = insert_into_query("Items", len(item.__slots__))
         return await run_and_return_count(conn, query, 
             item.id, 
@@ -620,6 +696,20 @@ class Item(ClassToDict):
         )
     @staticmethod
     async def update_column(conn: asyncpg.Connection, id: str, column: str, new_value) -> int:
+        '''Update a specific column with a new value.
+
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
+        '''
+
+        if column in Item.__PREVENT_UPDATE:
+            return 0
+        
         query = f"""
             UPDATE Items
             SET {column} = ($2)
@@ -627,19 +717,14 @@ class Item(ClassToDict):
         """
         return await run_and_return_count(conn, query, id, new_value)
     @staticmethod
-    async def sync(conn: asyncpg.Connection, item: Item):
-        '''Update the item in the database with the new values, or insert it if not exist.
+    async def update(conn: asyncpg.Connection, item: Item):
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
 
         Notes
         -----
-        This is a rather expensive call since it'll call `Items.get_one()` in addition to updating.
-
-        Parameters
-        ----------
-        conn : asyncpg.Connection
-            The connection to use.
-        item : Item
-            The new item. `item.id` will be used to find the item, while the rest of the values will update.
+        This function has its own transaction.
         '''
 
         existing_item = await Item.get_one(conn, item.id)
@@ -652,23 +737,32 @@ class Item(ClassToDict):
                 if getattr(existing_item, col) != getattr(item, col):
                     diff_col.append(col)
 
-            for change in diff_col:
-                await Item.update_column(conn, item.id, change, getattr(item, change))
+            async with conn.transaction():
+                for change in diff_col:
+                    await Item.update_column(conn, item.id, change, getattr(item, change))
 
             if diff_col:
                 logger.info("Updated item '%s' in the following columns: %s.", item.id, diff_col)
 
 @dataclasses.dataclass(slots = True)
 class Inventory(ClassToDict):
+    '''Represent an entry in the `UserInventory` table along with possible operations related to the table.'''
+
     user_id: int
     item_id: str
     amount: int
 
+    __PREVENT_UPDATE = ("user_id", "item_id")
+
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
+        '''Get all entries in the table.'''
+
         return await Inventory.get_all_where(conn, as_dict = as_dict)
     @staticmethod
     async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Inventory], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
+        '''Get all entires in the table that matches the condition.'''
+
         query = """
             SELECT * FROM UserInventory
             ORDER BY amount DESC;
@@ -676,6 +770,8 @@ class Inventory(ClassToDict):
         return await __get_all__(conn, query, where = where, result_type = Inventory if not as_dict else dict)
     @staticmethod
     async def get_one(conn: asyncpg.Connection, user_id: int, item_id: str, *, as_dict: bool = False) -> t.Union[Inventory, dict]:
+        '''Get the first entry in the table that matches the pkey provided.'''
+
         query = """
             SELECT * FROM UserInventory
             WHERE user_id = ($1) AND item_id = ($2);
@@ -684,20 +780,15 @@ class Inventory(ClassToDict):
         return await __get_one__(conn, query, user_id, item_id, result_type = Inventory if not as_dict else dict)
     @staticmethod
     async def get_user_inventory(conn, user_id: int, *, as_dict: bool = False) -> list[t.Union[Inventory, dict]]:
+        '''Get all entries in the table that belongs to a user.'''
+
         return await Inventory.get_all_where(conn, where = lambda r: r.user_id == user_id, as_dict = as_dict)
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, inventory: Inventory) -> int:
-        # Only 3 because that's the actual amount of column.
-        query = insert_into_query("UserInventory", 3)
+        '''Insert an entry into the table.'''
+
+        query = insert_into_query("UserInventory", len(Inventory.__slots__))
         return await run_and_return_count(conn, query, inventory.user_id, inventory.item_id, inventory.amount)
-    @staticmethod
-    async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
-        query = f"""
-            UPDATE UserInventory
-            SET {column} = ($3)
-            WHERE user_id = ($1) AND item_id = ($2);
-        """
-        return await run_and_return_count(conn, query, user_id, item_id, new_value)
     @staticmethod
     async def delete(conn: asyncpg.Connection, user_id: int, item_id: str) -> int:
         query = """
@@ -705,6 +796,28 @@ class Inventory(ClassToDict):
             WHERE user_id = ($1) AND item_id = ($2);
         """
         return await run_and_return_count(conn, query, user_id, item_id)
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
+        '''Update a specific column with a new value.
+
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
+        '''
+
+        if column in Inventory.__PREVENT_UPDATE:
+            return 0
+        
+        query = f"""
+            UPDATE UserInventory
+            SET {column} = ($3)
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+        return await run_and_return_count(conn, query, user_id, item_id, new_value)
     @staticmethod
     async def add(conn: asyncpg.Connection, user_id: int, item_id: str, amount: int = 1) -> int:
         '''Add item into the user's inventory.
@@ -767,7 +880,16 @@ class Inventory(ClassToDict):
         else:
             return await Inventory.update_column(conn, user_id, item_id, "amount", existed.amount - amount)
     @staticmethod
-    async def sync(conn: asyncpg.Connection, inventory: Inventory) -> int:
+    async def update(conn: asyncpg.Connection, inventory: Inventory) -> int:
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+
         existing_inv = await Inventory.get_one(conn, inventory.user_id, inventory.item_id)
         if not existing_inv:
             return await Inventory.insert_one(conn, inventory)
@@ -780,23 +902,31 @@ class Inventory(ClassToDict):
             if col in ("user_id", "item_id", "amount"):
                 if getattr(existing_inv, col) != getattr(inventory, col):
                     diff_col.append(col)
-
-        for change in diff_col:
-            await Inventory.update_column(conn, inventory.user_id, inventory.item_id, change, getattr(inventory, change))
+        async with conn.transaction():
+            for change in diff_col:
+                await Inventory.update_column(conn, inventory.user_id, inventory.item_id, change, getattr(inventory, change))
 
 @dataclasses.dataclass(slots = True)
 class Equipment(ClassToDict):
+    '''Represent an entry in the `UserEquipment` table along with possible operations related to the table.'''
+
     user_id: int
     item_id: str
     eq_type: str
     remain_durability: int
+    
     __EQUIPMENT_TYPE__ = ("_sword", "_pickaxe", "_axe", "_potion")
+    __PREVENT_UPDATE = ("user_id", "item_id", "eq_type")
 
     @staticmethod
     async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        '''Get all entries in the table.'''
+
         return await Equipment.get_all_where(conn, as_dict = as_dict)
     @staticmethod
     async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Equipment], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        '''Get all entires in the table that matches the condition.'''
+
         query = """
             SELECT * FROM UserEquipment;
         """
@@ -804,6 +934,8 @@ class Equipment(ClassToDict):
         return await __get_all__(conn, query, where = where, result_type = Equipment if not as_dict else dict)
     @staticmethod
     async def get_one(conn: asyncpg.Connection, user_id: int, item_id: str, *, as_dict: bool = False) -> t.Union[Equipment, dict]:
+        '''Get the first entry in the table that matches the pkey provided.'''
+
         query = """
             SELECT * FROM UserEquipment
             WHERE user_id = ($1) AND item_id = ($2);
@@ -812,6 +944,8 @@ class Equipment(ClassToDict):
         return await __get_one__(conn, query, user_id, item_id, result_type = Equipment if not as_dict else dict)
     @staticmethod
     async def get_equipment(conn: asyncpg.Connection, user_id: int, equipment_type: str, *, as_dict: bool = False) -> t.Union[Equipment, dict]:
+        '''Get a user's equipment based on equipment type.'''
+
         query = """
             SELECT * FROM UserEquipment
             WHERE user_id = ($1) AND eq_type = ($2);
@@ -820,6 +954,8 @@ class Equipment(ClassToDict):
         return await __get_one__(conn, query, user_id, equipment_type, result_type = Equipment if not as_dict else dict)
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, equipment: Equipment) -> int:
+        '''Insert an entry into the table.'''
+        
         query = insert_into_query("UserEquipment", len(equipment.__slots__))
         return await run_and_return_count(conn, query, equipment.user_id, equipment.item_id, equipment.eq_type, equipment.remain_durability)
     @staticmethod
@@ -873,6 +1009,8 @@ class Equipment(ClassToDict):
             return await Equipment.insert_one(conn, equipment)
     @staticmethod
     async def delete(conn: asyncpg.Connection, user_id: int, item_id: str) -> int:
+        '''Delete an entry in the table based on the provided key.'''
+
         query = """
             DELETE FROM UserEquipment
             WHERE user_id = ($1) AND item_id = ($2);
@@ -881,7 +1019,18 @@ class Equipment(ClassToDict):
         return await run_and_return_count(conn, query, user_id, item_id)
     @staticmethod
     async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
-        if column != "remain_durability":
+        '''Update a specific column with a new value.
+
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
+        '''
+
+        if column in Equipment.__PREVENT_UPDATE:
             return 0
         
         query = f"""
@@ -893,6 +1042,8 @@ class Equipment(ClassToDict):
         return await run_and_return_count(conn, query, user_id, item_id, new_value)
     @staticmethod
     async def update_durability(conn: asyncpg.Connection, user_id: int, item_id: str, new_durability: int) -> int:
+        '''Update an equipment's durability and remove if needed.'''
+        
         if new_durability <= 0:
             return await Equipment.delete(conn, user_id, item_id)
         return await Equipment.update_column(conn, user_id, item_id, "remain_durability", new_durability)

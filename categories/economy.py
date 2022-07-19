@@ -192,7 +192,7 @@ async def craft(ctx: lightbulb.Context):
             return
         
         for inv in inventories:
-            await psql.Inventory.sync(conn, inv)
+            await psql.Inventory.update(conn, inv)
         await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"])
     await ctx.respond(f"Successfully crafted {display_reward(bot, {item.id: recipe['result']})}.", reply = True)
 @craft.autocomplete("item")
