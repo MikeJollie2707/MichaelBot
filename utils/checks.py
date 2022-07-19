@@ -48,7 +48,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
                     guild = psql.Guild(ctx.guild_id, ctx.get_guild().name)
                     await bot.guild_cache.insert(conn, guild)
                 else:
-                    bot.guild_cache.sync_local(guild)
+                    bot.guild_cache.update_local(guild)
                 
                 guild_cache = guild
             
@@ -58,7 +58,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
                     user = psql.User(ctx.author.id, ctx.author.username)
                     await bot.user_cache.insert(conn, user)
                 else:
-                    bot.user_cache.local_sync(user)
+                    bot.user_cache.update_local(user)
                 
                 user_cache = user
     

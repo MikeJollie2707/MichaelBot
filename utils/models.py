@@ -14,6 +14,12 @@ import lightbulb
 from utils import psql
 
 class GuildCache:
+    '''A wrapper around `dict[str, psql.Guild]`
+
+    This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
+    These methods will return a deep copy of the desired object, so you can freely edit them.
+    '''
+
     def __init__(self) -> None:
         self.__guild_mapping: dict[str, psql.Guild] = {}
     
@@ -48,10 +54,10 @@ class GuildCache:
 
         await psql.Guild.insert_one(conn, guild)
         self.__guild_mapping[guild.id] = guild
-    async def update_with(self, conn: asyncpg.Connection, guild: psql.Guild):
+    async def update(self, conn: asyncpg.Connection, guild: psql.Guild):
         await psql.Guild.update(conn, guild)
         self.__guild_mapping[guild.id] = guild
-    async def sync_from_db(self, conn: asyncpg.Connection, guild_id: int):
+    async def update_from_db(self, conn: asyncpg.Connection, guild_id: int):
         guild = await psql.Guild.get_one(conn, guild_id)
         if guild is None:
             del self.__guild_mapping[guild_id]
@@ -64,12 +70,18 @@ class GuildCache:
 
         for guild in guilds:
             self.__guild_mapping[guild.id] = guild
-    def sync_local(self, guild: psql.Guild):
+    def update_local(self, guild: psql.Guild):
         self.__guild_mapping[guild.id] = guild
     def remove_local(self, guild_id: int):
         del self.__guild_mapping[guild_id]
 
 class LogCache:
+    '''A wrapper around `dict[str, psql.GuildLog]`
+
+    This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
+    These methods will return a deep copy of the desired object, so you can freely edit them.
+    '''
+
     def __init__(self) -> None:
         self.__log_mapping: dict[str, psql.GuildLog] = {}
     
@@ -114,6 +126,7 @@ class UserCache:
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     These methods will return a deep copy of the desired object, so you can freely edit them.
     '''
+
     def __init__(self) -> None:
         self.__user_mapping: dict[str, psql.User] = {}
     
@@ -148,7 +161,7 @@ class UserCache:
 
         await psql.User.insert_one(conn, user)
         self.__user_mapping[user.id] = user
-    async def sync_user(self, conn: asyncpg.Connection, user: psql.User):
+    async def update(self, conn: asyncpg.Connection, user: psql.User):
         '''Sync the database with the new value.
 
         Parameters
@@ -161,7 +174,7 @@ class UserCache:
 
         await psql.User.update(conn, user)
         self.__user_mapping[user.id] = user
-    async def sync_from_db(self, conn: asyncpg.Connection, user_id: int):
+    async def update_from_db(self, conn: asyncpg.Connection, user_id: int):
         user = await psql.User.get_one(conn, user_id)
         if user is None:
             del self.__user_mapping[user_id]
@@ -174,17 +187,16 @@ class UserCache:
         
         for user in users:
             self.__user_mapping[user.id] = user
-    def local_sync(self, user: psql.User):
+    def update_local(self, user: psql.User):
         self.__user_mapping[user.id] = user
 
 class ItemCache:
     '''A wrapper around `dict[str, psql.Item]`
-    
+
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     These methods will return a deep copy of the desired object, so you can freely edit them.
-    
-    To edit the cache, use either `sync_item()` (update db with new values) or `local_sync()` (update the local cache with new values).
     '''
+
     def __init__(self):
         self.__item_mapping: dict[str, psql.Item] = {}
     
@@ -223,22 +235,10 @@ class ItemCache:
 
         return self.__item_mapping.values()
 
-    async def sync_item(self, conn: asyncpg.Connection, item: psql.Item):
-        '''Sync the database with the new value.
-
-        This is basically a call to `psql.Item.sync()`.
-
-        Parameters
-        ----------
-        conn : asyncpg.Connection
-            The connection to use.
-        item : psql.Item
-            The item value to update with.
-        '''
-
+    async def update(self, conn: asyncpg.Connection, item: psql.Item):
         await psql.Item.update(conn, item)
         self.__item_mapping[item.id] = item
-    def local_sync(self, item: psql.Item):
+    def update_local(self, item: psql.Item):
         '''Set the cache item with the new value.
 
         This basically sets the internal mapping with the new item.

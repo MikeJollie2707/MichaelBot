@@ -38,11 +38,11 @@ async def blacklist_guild(ctx: lightbulb.Context):
                 await ctx.respond("Can't blacklist a guild that's not available in database.", reply = True, mentions_reply = True)
                 return
             
-            bot.guild_cache.sync_local(guild)
+            bot.guild_cache.update_local(guild)
             guild_cache = guild
         
         guild_cache.is_whitelist = False
-        await bot.guild_cache.update_with(conn, guild_cache)
+        await bot.guild_cache.update(conn, guild_cache)
     
     await ctx.respond("Blacklisted!", reply = True)
 
@@ -76,11 +76,11 @@ async def blacklist_user(ctx: lightbulb.Context):
                 await ctx.respond("Can't blacklist a user that's not available in database.", reply = True, mentions_reply = True)
                 return
             
-            bot.user_cache.local_sync(user)
+            bot.user_cache.update_local(user)
             user_cache = user
         
         user_cache.is_whitelist = False
-        await bot.user_cache.sync_user(conn, user_cache)
+        await bot.user_cache.update(conn, user_cache)
     
     await ctx.respond("Blacklisted!", reply = True)
 
@@ -111,7 +111,7 @@ async def force_sync_cache(ctx: lightbulb.Context):
         async with conn.transaction():
             guilds = await psql.Guild.get_all(conn)
             for guild in guilds:
-                bot.guild_cache.sync_local(guild)
+                bot.guild_cache.update_local(guild)
             
             logs = await psql.GuildLog.get_all(conn)
             for log in logs:
@@ -119,7 +119,7 @@ async def force_sync_cache(ctx: lightbulb.Context):
             
             users = await psql.User.get_all(conn)
             for user in users:
-                bot.user_cache.local_sync(user)
+                bot.user_cache.update_local(user)
     
     await ctx.respond("Cache is now sync to the database.", reply = True)
 
@@ -132,7 +132,7 @@ async def force_sync_cache_user(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        await bot.user_cache.sync_from_db(conn, user_id)
+        await bot.user_cache.update_from_db(conn, user_id)
     
     await ctx.respond(f"User cache for {ctx.options.user_id} synced.", reply = True)
 
@@ -145,7 +145,7 @@ async def force_sync_cache_guild(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        await bot.guild_cache.sync_from_db(conn, guild_id)
+        await bot.guild_cache.update_from_db(conn, guild_id)
         await bot.log_cache.update_from_db(conn, guild_id)
     
     await ctx.respond(f"Guild cache for {ctx.options.guild_id} synced.", reply = True)

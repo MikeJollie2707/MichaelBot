@@ -461,7 +461,7 @@ async def prefix(ctx: lightbulb.Context):
             return
         async with bot.pool.acquire() as conn:
             guild_cache.prefix = new_prefix
-            await bot.guild_cache.update_with(conn, guild_cache)
+            await bot.guild_cache.update(conn, guild_cache)
         await ctx.respond(f"Successfully set new prefix as `{new_prefix}`.")
 
 @plugin.command()

@@ -27,7 +27,7 @@ async def update_item(conn: asyncpg.Connection, bot: models.MichaelBot):
             if index == 0: continue
 
             item["sort_id"] = index
-            await bot.item_cache.sync_item(conn, psql.Item(**item))
+            await bot.item_cache.update(conn, psql.Item(**item))
 
 @plugin.listener(hikari.StartingEvent)
 async def on_starting(event: hikari.StartingEvent):
@@ -81,10 +81,10 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
                             await bot.guild_cache.insert(conn, psql.Guild(guild.id, guild.name))
                         else:
                             # Probably some sort of desync.
-                            bot.guild_cache.sync_local(existed)
+                            bot.guild_cache.update_local(existed)
                     else:
                         # Probably some sort of desync.
-                        await bot.guild_cache.sync_from_db(conn, guild.id)
+                        await bot.guild_cache.update_from_db(conn, guild.id)
                 logger.info("Populated guild cache with stored info.")
 
                 await bot.log_cache.update_all_from_db(conn)
@@ -111,11 +111,11 @@ async def on_guild_join(event: hikari.GuildJoinEvent):
                     await bot.guild_cache.insert(conn, psql.Guild(guild.id, guild.name))
                 else:
                     # Handle on reconnect
-                    await bot.guild_cache.sync_local(existed)
+                    await bot.guild_cache.update_local(existed)
                 
                 logger.info(f"Bot joined guild '{guild.id}'. Cache entry added.")
             else:
-                await bot.guild_cache.sync_from_db(conn, guild.id)
+                await bot.guild_cache.update_from_db(conn, guild.id)
 
 @plugin.listener(hikari.GuildLeaveEvent)
 async def on_guild_leave(event: hikari.GuildLeaveEvent):

@@ -123,7 +123,7 @@ async def bet(ctx: lightbulb.Context):
         user.balance -= money
 
     async with bot.pool.acquire() as conn:    
-        await bot.user_cache.sync_user(conn, user)
+        await bot.user_cache.update(conn, user)
         
     rsp += f"Your balance now: {CURRENCY_ICON}{user.balance}."
     await ctx.respond(rsp, reply = True)
@@ -139,7 +139,7 @@ async def addmoney(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         user = bot.user_cache[ctx.author.id]
         user.balance += min(500, max(1, ctx.options.amount))
-        await bot.user_cache.sync_user(conn, user)
+        await bot.user_cache.update(conn, user)
     await ctx.respond(f"Added {CURRENCY_ICON}{ctx.options.amount}.")
 
 @plugin.command()
@@ -250,7 +250,7 @@ async def daily(ctx: lightbulb.Context):
                 response += f"You gained a new streak! Your streak now: `{existed.daily_streak}x`\n"
             
             existed.last_daily = now
-            await bot.user_cache.sync_user(conn, existed)
+            await bot.user_cache.update(conn, existed)
 
             daily_loot = loot.get_daily_loot(existed.daily_streak)
             await add_reward(conn, ctx.author.id, daily_loot)
@@ -441,7 +441,7 @@ async def market_buy(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
             await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
-            await bot.user_cache.sync_user(conn, user)
+            await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"Successfully purchased {display_reward(bot, {item.id : amount}, emote = True)}.", reply = True)
 
@@ -485,7 +485,7 @@ async def market_sell(ctx: lightbulb.Context):
 
         async with conn.transaction():
             await psql.Inventory.remove(conn, ctx.author.id, item.id, amount)
-            await bot.user_cache.sync_user(conn, user)
+            await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"Successfully sold {display_reward(bot, {item.id : amount}, emote = True)} for {CURRENCY_ICON}{profit}.", reply = True)
 
