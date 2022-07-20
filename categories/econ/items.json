@@ -104,5 +104,34 @@
         "rarity": "common+",
         "buy_price": null,
         "sell_price": 7
+    },
+    {
+        "id": "iron_pickaxe",
+        "name": "Iron Pickaxe",
+        "emoji": "<:iron_pickaxe:820757966432632854>",
+        "description": "A pretty good pickaxe. It can mine some of the rarer materials in the Overworld.",
+        "rarity": "common+",
+        "buy_price": null,
+        "sell_price": 5,
+        "durability": 50
+    },
+    {
+        "id": "iron_sword",
+        "name": "Iron Sword",
+        "emoji": "<:iron_sword:821448555989696593>",
+        "description": "A pretty good sword. It can slay more enemies.",
+        "rarity": "common+",
+        "buy_price": null,
+        "sell_price": 5,
+        "durability": 50
+    },
+    {
+        "id": "diamond",
+        "name": "Diamond",
+        "emoji": "",
+        "description": "A rare material that shines brightly under the sun. It can be used to craft very good tools that last even longer.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 15
     }
 ]

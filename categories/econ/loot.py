@@ -36,6 +36,16 @@ __CRAFT_RECIPE__ = {
         "stick": 1,
         "result": 1
     },
+    "iron_pickaxe": {
+        "iron": 3,
+        "stick": 2,
+        "result": 1
+    },
+    "iron_sword": {
+        "iron": 2,
+        "stick": 1,
+        "result": 1
+    }
 }
 
 def roll_amount(*, rate: float, min_amount: int, max_amount: int, amount_layout: tuple[float] = None) -> int:
@@ -59,7 +69,7 @@ def roll_amount(*, rate: float, min_amount: int, max_amount: int, amount_layout:
     '''
     if rate < 1:
         r = random.random()
-        if rate > r:
+        if r > rate:
             return 0
     
     if amount_layout is None:
@@ -124,6 +134,13 @@ def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
                 "iron": roll_amount(rate = 0.5, min_amount = 1, max_amount = 2, amount_layout = (0.75, 0.25)),
             }
             return reward
+        elif pickaxe_id == "iron_pickaxe":
+            reward = {
+                "stone": roll_amount(rate = 1, min_amount = 4, max_amount = 7),
+                "iron": roll_amount(rate = 0.5, min_amount = 1, max_amount = 4, amount_layout = (0.50, 0.20, 0.20, 0.10)),
+                "diamond": roll_amount(rate = 0.1, min_amount = 1, max_amount = 2, amount_layout = (0.90, 0.10)),
+            }
+            return reward
     return None
 
 def get_sword_loot(sword_id: str, world: str) -> dict[str, int]:
@@ -134,6 +151,13 @@ def get_sword_loot(sword_id: str, world: str) -> dict[str, int]:
             reward = {
                 "rotten_flesh": roll_amount(rate = 1, min_amount = 2, max_amount = 4),
                 "spider_eye": roll_amount(rate = 0.2, min_amount = 1, max_amount = 2),
+            }
+            return reward
+        elif sword_id == "iron_sword":
+            reward = {
+                "rotten_flesh": roll_amount(rate = 1, min_amount = 3, max_amount = 5),
+                "spider_eye": roll_amount(rate = 0.2, min_amount = 2, max_amount = 3),
+                "gunpowder": roll_amount(rate = 0.2, min_amount = 1, max_amount = 2),
             }
             return reward
 
@@ -165,11 +189,11 @@ def __driver_code__():
     This is a function only because all variables used will be public when exporting (thank you Python for its scoping "rule").
     '''
     
-    SIMULATION_TIME = 1000000
+    SIMULATION_TIME = 10 ** 6
     rate_tracker: dict[str, int] = {"total": 0}
 
     for i in range(0, SIMULATION_TIME):
-        loot_rate = get_sword_loot("stone_sword", "overworld")
+        loot_rate = get_sword_loot("iron_sword", "overworld")
 
         for reward in loot_rate:
             if reward not in rate_tracker:
