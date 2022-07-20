@@ -277,7 +277,7 @@ async def equip(ctx: lightbulb.Context):
         await bot.reset_cooldown(ctx)
         await ctx.respond("This equipment doesn't exist!", reply = True, mentions_reply = True)
         return
-    if not psql.Equipment.is_equipment(item.id):
+    if not psql.Equipment.is_true_equipment(item.id):
         await bot.reset_cooldown(ctx)
         await ctx.respond("This is not an equipment!", reply = True, mentions_reply = True)
         return
@@ -291,12 +291,21 @@ async def equip(ctx: lightbulb.Context):
         
         # Check for equipment type conflict.
         existed: psql.Equipment = await psql.Equipment.get_equipment(conn, ctx.author.id, psql.Equipment.get_equipment_type(item.id))
-        if not existed:
-            await psql.Equipment.transfer_from_inventory(conn, inv)
-            await ctx.respond(f"Equipped *{item.name}*.", reply = True)
+        response_str = ""
+
+        if existed:
+            # Destroy old equipment, then move new one.
+            existed_item = bot.item_cache.get(existed.item_id)
+            async with conn.transaction():
+                await psql.Equipment.delete(conn, ctx.author.id, existed.item_id)
+                await psql.Equipment.transfer_from_inventory(conn, inv)
+                response_str += f"Unequipped *{existed_item.name}* into the void.\n"
         else:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond(f"You already have *{bot.item_cache[existed.item_id].name}* equipped!", reply = True, mentions_reply = True)
+            await psql.Equipment.transfer_from_inventory(conn, inv)
+        response_str += f"Equipped *{item.name}*."
+        
+        await ctx.respond(response_str, reply = True)
+
 @equip.autocomplete("equipment")
 async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
@@ -306,7 +315,7 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
 
     equipments = []
     for item in bot.item_cache.values():
-        if psql.Equipment.is_equipment(item.id):
+        if psql.Equipment.is_true_equipment(item.id):
             equipments.append(item.name)
             if item.aliases:
                 for alias in item.aliases:
@@ -544,7 +553,7 @@ async def mine(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("explore", "Explore the world and get resources through killing monsters. You'll need a sword equipped.")
+@lightbulb.command("explore", "Explore the world and get resources by killing monsters. You'll need a sword equipped.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def explore(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
