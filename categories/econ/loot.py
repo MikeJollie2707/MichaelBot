@@ -169,7 +169,8 @@ def __driver_code__():
     rate_tracker: dict[str, int] = {"total": 0}
 
     for i in range(0, SIMULATION_TIME):
-        loot_rate = get_mine_loot("stone_pickaxe", "overworld")
+        loot_rate = get_sword_loot("stone_sword", "overworld")
+
         for reward in loot_rate:
             if reward not in rate_tracker:
                 rate_tracker[reward] = loot_rate[reward]
@@ -181,9 +182,9 @@ def __driver_code__():
     total = rate_tracker["total"]
     del rate_tracker["total"]
 
-    print(f"Sim {SIMULATION_TIME} times, total amount: {total}")
+    print(f"Sim {SIMULATION_TIME:,} times, total amount: {total:,}")
     for item, amount in rate_tracker.items():
-        print(f"- {item}: {amount}/{total} ({float(amount) / total * 100 :.5f}%)")
+        print(f"- {item}: {amount:,} / {total:,} ({float(amount) / total * 100 :.5f}%)")
 
 if __name__ == "__main__":
     __driver_code__()
