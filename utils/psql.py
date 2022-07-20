@@ -1066,6 +1066,12 @@ class Equipment(ClassToDict):
                 return True
         return False
     @staticmethod
+    def is_true_equipment(item_id: str) -> bool:
+        return Equipment.is_equipment(item_id) and not Equipment.is_potion(item_id)
+    @staticmethod
+    def is_potion(item_id: str) -> bool:
+        return "_potion" in item_id
+    @staticmethod
     def get_equipment_type(item_id: str) -> t.Optional[str]:
         '''Return the equipment type of the equipment.
 
