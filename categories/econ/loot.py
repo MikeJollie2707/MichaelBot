@@ -30,15 +30,18 @@ __CRAFT_RECIPE__ = {
         "stone": 3,
         "stick": 2,
         "result": 1
-    }
+    },
+    "stone_sword": {
+        "stone": 2,
+        "stick": 1,
+        "result": 1
+    },
 }
 
-class RewardRNG:
-    '''Define an item's drop rate.
+def roll_amount(*, rate: float, min_amount: int, max_amount: int, amount_layout: tuple[float] = None) -> int:
+    '''Return the amount of items based on the provided RNG.
 
-    There are 3 attributes: `rate`, `min_amount`, and `max_amount`.
-    
-    Attributes
+    Parameters
     ----------
     rate : float
         Define the drop rate of the associated item. Must be between 0 and 1.
@@ -46,42 +49,30 @@ class RewardRNG:
         Define the minimum amount of this item to drop if it happens to roll. This should be positive.
     max_amount : int
         Define the maximum amount of this item to drop if it happens to roll. This should be positive.
-    amount_layout : tuple[float]
+    amount_layout : tuple[float], optional
         Define the rng distribution between `min_amount` and `max_amount`. This should satisfy `len(amount_layout) == (max_amount - min_amount + 1) and sum(amount_layout) == 1`
+
+    Returns
+    -------
+    int
+        The final amount based on the RNG.
     '''
-    
-    def __init__(self, rate: float, min_amount: int, max_amount: int, amount_layout: tuple[float] = None):
-        self.rate = rate
-        self.min_amount = min_amount
-        self.max_amount = max_amount
-
-        self.amount_layout = amount_layout
-
-    def roll(self) -> int:
-        '''Roll the RNG and return the amount of items as the result.
-
-        Return
-        ------
-        int
-            The amount of item, taken RNG into account.
-        '''
-
-        if self.rate < 1:
-            r = random.random()
-            if self.rate > r:
-                return 0
-        
-        if not self.amount_layout:
-            return random.choice(range(self.min_amount, self.max_amount + 1))
-        
+    if rate < 1:
         r = random.random()
-        rate = 0
-        for index, amount_rate in enumerate(self.amount_layout):
-            rate += amount_rate
-            if r <= rate:
-                return min(self.min_amount + index, self.max_amount)
-        
-        return self.max_amount
+        if rate > r:
+            return 0
+    
+    if amount_layout is None:
+        return random.choice(range(min_amount, max_amount + 1))
+    
+    r = random.random()
+    _rate = 0
+    for index, amount_rate in enumerate(amount_layout):
+        rate += amount_rate
+        if r <= _rate:
+            return min(min_amount + index, max_amount)
+    
+    return max_amount
 
 def get_daily_loot(streak: int) -> dict[str, int]:
     if streak <= 1:
@@ -124,15 +115,28 @@ def get_mine_loot(pickaxe_id: str, world: str) -> dict[str, int]:
     if world == "overworld":
         if pickaxe_id == "wood_pickaxe":
             reward = {
-                "stone": RewardRNG(rate = 1, min_amount = 1, max_amount = 2).roll(),
+                "stone": roll_amount(rate = 1, min_amount = 1, max_amount = 2),
             }
             return reward
         elif pickaxe_id == "stone_pickaxe":
             reward = {
-                "stone": RewardRNG(rate = 1, min_amount = 3, max_amount = 5).roll(),
-                "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2, amount_layout = (0.75, 0.25)).roll(),
+                "stone": roll_amount(rate = 1, min_amount = 3, max_amount = 5),
+                "iron": roll_amount(rate = 0.5, min_amount = 1, max_amount = 2, amount_layout = (0.75, 0.25)),
             }
             return reward
+    return None
+
+def get_sword_loot(sword_id: str, world: str) -> dict[str, int]:
+    reward: dict[str, int] = {}
+
+    if world == "overworld":
+        if sword_id == "stone_sword":
+            reward = {
+                "rotten_flesh": roll_amount(rate = 1, min_amount = 2, max_amount = 4),
+                "spider_eye": roll_amount(rate = 0.2, min_amount = 1, max_amount = 2),
+            }
+            return reward
+
     return None
 
 def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
@@ -161,7 +165,7 @@ def __driver_code__():
     This is a function only because all variables used will be public when exporting (thank you Python for its scoping "rule").
     '''
     
-    SIMULATION_TIME = 10000000
+    SIMULATION_TIME = 1000000
     rate_tracker: dict[str, int] = {"total": 0}
 
     for i in range(0, SIMULATION_TIME):

@@ -543,6 +543,37 @@ async def mine(ctx: lightbulb.Context):
         await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].emoji} *{bot.item_cache[pickaxe_existed.item_id].name}* broke after the last mining session!", reply = True)
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.command("explore", "Explore the world and get resources through killing monsters. You'll need a sword equipped.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def explore(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        sword_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_sword")
+        if not sword_existed:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You don't have a sword!", reply = True, mentions_reply = True)
+            return
+        
+        user = await psql.User.get_one(conn, ctx.author.id)
+        assert user is not None
+        
+        loot_table = loot.get_sword_loot(sword_existed.item_id, user.world)
+        if not loot_table:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        async with conn.transaction():
+            await add_reward(conn, ctx.author.id, loot_table)
+            await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
+    
+    await ctx.respond(f"You explored and collected {display_reward(bot, loot_table, emote = True)}", reply = True)
+    if sword_existed.remain_durability - 1 == 0:
+        await ctx.respond(f"Your {bot.item_cache[sword_existed.item_id].emoji} *{bot.item_cache[sword_existed.item_id].name}* broke after the last exploring session!", reply = True)
+
+@plugin.command()
 @lightbulb.command("trade", "Periodic trade for rarer items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def trade(ctx: lightbulb.Context):
