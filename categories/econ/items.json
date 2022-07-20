@@ -40,6 +40,34 @@
         "durability": 25
     },
     {
+        "id": "rotten_flesh",
+        "name": "Rotten Flesh",
+        "aliases": ["Zombie Meat"],
+        "emoji": "<:zombie_meat:828133597659529276>",
+        "description": "A disgusting drop from killing zombies. This can be used to brew potions.",
+        "rarity": "common",
+        "buy_price": 15,
+        "sell_price": 1
+    },
+    {
+        "id": "spider_eye",
+        "name": "Spider Eye",
+        "emoji": "<:spider_eye:820758868468301864>",
+        "description": "A drop from killing spiders. This can be used to brew potions.",
+        "rarity": "common",
+        "buy_price": 20,
+        "sell_price": 1
+    },
+    {
+        "id": "gunpowder",
+        "name": "Gunpowder",
+        "emoji": "<:gunpowder:821528688646160395>",
+        "description": "A drop from killing creepers. This can be used to brew potions.",
+        "rarity": "common+",
+        "buy_price": 25,
+        "sell_price": 1
+    },
+    {
         "id": "stone",
         "name": "Stone",
         "emoji": "<:stone:819728758160097290>",
@@ -53,6 +81,16 @@
         "name": "Stone Pickaxe",
         "emoji": "<:stone_pickaxe:820044330613866497>",
         "description": "A somewhat reliable pickaxe. It can mine slightly more stuff.",
+        "rarity": "common",
+        "buy_price": null,
+        "sell_price": 2,
+        "durability": 35
+    },
+    {
+        "id": "stone_sword",
+        "name": "Stone Sword",
+        "emoji": "<:stone_sword:820757729790394389>",
+        "description": "A somewhat reliable sword. Don't expect it to kill many stuff.",
         "rarity": "common",
         "buy_price": null,
         "sell_price": 2,
