@@ -68,6 +68,15 @@
         "sell_price": 1
     },
     {
+        "id": "pearl",
+        "name": "Pearl",
+        "emoji": "<:pearl:837479108555440198>",
+        "description": "A rare drop from a rare monster. It emit a strange power towards the sky.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10
+    },
+    {
         "id": "stone",
         "name": "Stone",
         "emoji": "<:stone:819728758160097290>",
@@ -128,10 +137,67 @@
     {
         "id": "diamond",
         "name": "Diamond",
-        "emoji": "",
+        "emoji": "<:diamond:999554762779406376>",
         "description": "A rare material that shines brightly under the sun. It can be used to craft very good tools that last even longer.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 15
+        "sell_price": 10
+    },
+    {
+        "id": "diamond_pickaxe",
+        "name": "Diamond Pickaxe",
+        "emoji": "<:diamond_pickaxe:822530447481372703>",
+        "description": "A good pickaxe that can mine some hard objects and last quite a while.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10,
+        "durability": 100
+    },
+    {
+        "id": "diamond_sword",
+        "name": "Diamond Sword",
+        "emoji": "",
+        "description": "A good sword that can slay even more enemies and last even longer.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10,
+        "durability": 100
+    },
+    {
+        "id": "obsidian",
+        "name": "Obsidian",
+        "emoji": "<:obsidian:822532045673725964>",
+        "description": "A volcanic glass that's hard to mine. They seems to give a mysterious energy linked to the underground.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10
+    },
+    {
+        "id": "overworld_ticket",
+        "name": "Overworld Ticket",
+        "emoji": "<:overworld_ticket:999561159495667783>",
+        "description": "A one-way ticket to the surface of the World.",
+        "rarity": "common",
+        "buy_price": 15,
+        "sell_price": 10
+    },
+    {
+        "id": "nether_ticket",
+        "name": "Nether Ticket",
+        "aliases": ["Hell Ticket"],
+        "emoji": "<:nether_ticket:999561157956341870>",
+        "description": "A one-way ticket to the underworld.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10
+    },
+    {
+        "id": "redstone",
+        "name": "Redstone",
+        "emoji": "<:redstone:822527280777396264>",
+        "description": "A common red rock that can be used as a way to extend potion durability.",
+        "rarity": "common",
+        "buy_price": 5,
+        "sell_price": 3
     }
 ]
