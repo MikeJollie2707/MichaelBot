@@ -412,7 +412,7 @@ async def market_view(ctx: lightbulb.Context):
             ''')
         )
     
-    await builder.build().send(ctx.channel_id)
+    await nav.run_view(builder.build(), ctx)
 
 @market.child
 @lightbulb.option("amount", "The amount to purchase. Default to 1.", type = int, min_value = 1, default = 1)
