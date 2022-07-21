@@ -19,4 +19,5 @@ disable=
     arguments-renamed, # Sometimes library maintainers have stupid naming sense.
     import-error, # All files need to import based on project dir, but pylint doesn't detect that.
     redefined-outer-name, # This seems like a Python scope issue rather than user's fault.
-    logging-fstring-interpolation # Not being able to use f-string is quite annoying to look at.
+    logging-fstring-interpolation, # Not being able to use f-string is quite annoying to look at.
+    pointless-string-statement
