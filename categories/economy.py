@@ -327,6 +327,36 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.command("equipments", "View your current equipments.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def _equipments(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    embed = helpers.get_default_embed(
+        author = ctx.author,
+        timestamp = dt.datetime.now().astimezone()
+    ).set_author(
+        name = f"{ctx.author.username}'s Equipments",
+        icon = ctx.author.avatar_url
+    )
+
+    async with bot.pool.acquire() as conn:
+        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        if not equipments:
+            embed.description = "*Cricket noises*"
+        else:
+            for equipment in equipments:
+                item_form = bot.item_cache[equipment.item_id]
+                embed.add_field(
+                    name = f"{item_form.emoji} {item_form.name} [{equipment.remain_durability}/{item_form.durability}]",
+                    value = f"*{item_form.description}*"
+                )
+            embed.set_thumbnail(ctx.author.avatar_url)
+    
+    await ctx.respond(embed = embed, reply = True, mentions_reply = True)
+
+@plugin.command()
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("view_option", "Options to view inventory.", choices = ("compact", "full", "value"), default = "compact")
 @lightbulb.command("inventory", "View your inventory.", aliases = ["inv"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)

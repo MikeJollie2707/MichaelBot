@@ -953,6 +953,9 @@ class Equipment(ClassToDict):
 
         return await __get_one__(conn, query, user_id, equipment_type, result_type = Equipment if not as_dict else dict)
     @staticmethod
+    async def get_user_equipments(conn: asyncpg.Connection, user_id: int, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        return await Equipment.get_all_where(conn, where = lambda r: r.user_id == user_id, as_dict = as_dict)
+    @staticmethod
     async def insert_one(conn: asyncpg.Connection, equipment: Equipment) -> int:
         '''Insert an entry into the table.'''
         
