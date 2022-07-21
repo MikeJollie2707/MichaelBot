@@ -27,12 +27,12 @@ class RewardRNG:
         Define the minimum amount of this item to drop if it happens to roll. This should be positive.
     max_amount : int
         Define the maximum amount of this item to drop if it happens to roll. This should be positive.
-    amount_layout : tuple[float], optional
-        Define the rng distribution between `min_amount` and `max_amount`. This should satisfy `len(amount_layout) == (max_amount - min_amount + 1) and sum(amount_layout) == 1`
+    amount_layout : tuple[int], optional
+        Define the rng distribution between `min_amount` and `max_amount`. This should satisfy `len(amount_layout) == (max_amount - min_amount + 1) and sum(amount_layout) == 100`
     '''
     __slots__ = ("rate", "min_amount", "max_amount", "amount_layout")
 
-    def __init__(self, rate: float, min_amount: int, max_amount: int, *, amount_layout: tuple[float] = None):
+    def __init__(self, rate: float, min_amount: int, max_amount: int, *, amount_layout: tuple[int] = None):
         if rate < 0 or rate > 1:
             raise ValueError("'rate' must be in [0, 1].")
         if min_amount > max_amount:
@@ -40,8 +40,9 @@ class RewardRNG:
         if amount_layout:
             if len(amount_layout) != (max_amount - min_amount + 1):
                 raise ValueError("'amount_layout' must have the same amount of items as (max_amount - min_amount + 1).")
-            if sum(amount_layout) != 1:
-                raise ValueError("'amount_layout' must sum up to 1.")
+            if sum(amount_layout) != 100:
+                print(sum(amount_layout))
+                raise ValueError("'amount_layout' must sum up to 100.")
 
         self.rate = rate
         self.min_amount = min_amount
@@ -71,7 +72,7 @@ class RewardRNG:
         r = random.random()
         rate = 0
         for index, amount_rate in enumerate(self.amount_layout):
-            rate += amount_rate
+            rate += amount_rate / 100.0
             if r <= rate:
                 return min(self.min_amount + index, self.max_amount)
         
@@ -92,15 +93,15 @@ __ACTIVITY_LOOT = {
             # - stone: 86.49%
             # - iron: 13.51%
             "stone": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
-            "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2, amount_layout = (0.75, 0.25)),
+            "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2, amount_layout = (75, 25)),
         },
         "iron_pickaxe": {
             # - stone: 83.83%
             # - iron: 14.50%
             # - diamond: 1.67%
             "stone": RewardRNG(rate = 1, min_amount = 4, max_amount = 7),
-            "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 4, amount_layout = (0.50, 0.20, 0.20, 0.10)),
-            "diamond": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2, amount_layout = (0.90, 0.10)),
+            "iron": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 4, amount_layout = (50, 20, 20, 10)),
+            "diamond": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2, amount_layout = (90, 10)),
         },
         "diamond_pickaxe": {
             # - stone: 85.85%
@@ -108,8 +109,8 @@ __ACTIVITY_LOOT = {
             # - diamond: 1.50%
             # - obsidian: 1.80%
             "stone": RewardRNG(rate = 1, min_amount = 8, max_amount = 11),
-            "iron": RewardRNG(rate = 0.6, min_amount = 1, max_amount = 5, amount_layout = (0.45, 0.25, 0.20, 0.05, 0.05)),
-            "diamond": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (0.50, 0.40, 0.05, 0.05)),
+            "iron": RewardRNG(rate = 0.6, min_amount = 1, max_amount = 5, amount_layout = (45, 25, 20, 5, 5)),
+            "diamond": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (50, 40, 5, 5)),
             "obsidian": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
 
@@ -135,7 +136,7 @@ __ACTIVITY_LOOT = {
             # - pearl: 0.56%
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
             "spider_eye": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
-            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (0.50, 0.35, 0.15)),
+            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
             "pearl": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
         }
     },
@@ -302,7 +303,7 @@ def __driver_code__():
     rate_tracker: dict[str, int] = {}
 
     for i in range(0, SIMULATION_TIME):
-        loot_rate = get_activity_loot("diamond_sword", "overworld")
+        loot_rate = get_activity_loot("diamond_pickaxe", "overworld")
 
         for reward in loot_rate:
             if reward not in rate_tracker:
