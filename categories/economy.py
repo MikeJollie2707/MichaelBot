@@ -62,7 +62,7 @@ async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
 async def remove_reward(conn, user_id: int, loot_table: dict[str, int]):
     pass
 
-plugin = lightbulb.Plugin("Economy", "Money stuffs", include_datastore = True)
+plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
 plugin.add_checks(
     checks.is_db_connected, 
@@ -537,7 +537,7 @@ async def mine(ctx: lightbulb.Context):
         user = await psql.User.get_one(conn, ctx.author.id)
         assert user is not None
         
-        loot_table = loot.get_mine_loot(pickaxe_existed.item_id, user.world)
+        loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world)
         if not loot_table:
             await bot.reset_cooldown(ctx)
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
@@ -568,7 +568,7 @@ async def explore(ctx: lightbulb.Context):
         user = await psql.User.get_one(conn, ctx.author.id)
         assert user is not None
         
-        loot_table = loot.get_sword_loot(sword_existed.item_id, user.world)
+        loot_table = loot.get_activity_loot(sword_existed.item_id, user.world)
         if not loot_table:
             await bot.reset_cooldown(ctx)
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
@@ -587,6 +587,47 @@ async def explore(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def trade(ctx: lightbulb.Context):
     raise NotImplementedError
+
+@plugin.command()
+@lightbulb.set_help(dedent('''
+    - There is a soft cooldown of 1 day between each travel, so plan ahead before moving.
+    - It is recommended to use the `Slash Command` version of this command.
+'''))
+@lightbulb.add_cooldown(length = 86400, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether"))
+@lightbulb.command("travel", "Travel to another world.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def travel(ctx: lightbulb.Context):
+    world: str = ctx.options.world
+    bot: models.MichaelBot = ctx.bot
+
+    if world not in ("overworld", "nether"):
+        raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["world"]])
+    
+    user = bot.user_cache[ctx.author.id]
+    if user.world == world:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("You're currently in this world already!", reply = True, mentions_reply = True)
+        return
+    
+    async with bot.pool.acquire() as conn:
+        ticket = None
+        if world == "overworld":
+            ticket = await psql.Inventory.get_one(conn, ctx.author.id, "overworld_ticket")
+        elif world == "nether":
+            ticket = await psql.Inventory.get_one(conn, ctx.author.id, "nether_ticket")
+        
+        if ticket is None:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You don't have the ticket to travel!", reply = True, mentions_reply = True)
+            return
+        
+        async with conn.transaction():
+            await psql.Inventory.remove(conn, ctx.author.id, ticket.item_id)
+            user.world = world
+            await bot.user_cache.update(conn, user)
+        
+        await ctx.respond(f"Successfully moved to the `{world.capitalize()}`.", reply = True)
 
 @plugin.command()
 @lightbulb.command("barter", "Barter stuff with gold.")
