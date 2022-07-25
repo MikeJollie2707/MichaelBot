@@ -620,10 +620,9 @@ async def trade(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    - There is a soft cooldown of 1 day between each travel, so plan ahead before moving.
+    - There is a hard cooldown of 24 hours between each travel, so plan ahead before moving.
     - It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.add_cooldown(length = 86400, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether"))
 @lightbulb.command("travel", "Travel to another world.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -635,10 +634,16 @@ async def travel(ctx: lightbulb.Context):
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["world"]])
     
     user = bot.user_cache[ctx.author.id]
+    current = dt.datetime.now().astimezone()
     if user.world == world:
-        await bot.reset_cooldown(ctx)
         await ctx.respond("You're currently in this world already!", reply = True, mentions_reply = True)
         return
+    if user.last_travel is not None:
+        if current - user.last_travel < dt.timedelta(days = 1):
+            await ctx.respond(f"You'll need to wait for `{humanize.precisedelta(user.last_travel + dt.timedelta(days = 1) - current, format = '%0.0f')}` before you can travel again.",
+                reply = True, mentions_reply = True
+            )
+            return
     
     async with bot.pool.acquire() as conn:
         ticket = None
@@ -648,13 +653,13 @@ async def travel(ctx: lightbulb.Context):
             ticket = await psql.Inventory.get_one(conn, ctx.author.id, "nether_ticket")
         
         if ticket is None:
-            await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have the ticket to travel!", reply = True, mentions_reply = True)
             return
         
         async with conn.transaction():
             await psql.Inventory.remove(conn, ctx.author.id, ticket.item_id)
             user.world = world
+            user.last_travel = dt.datetime.now().astimezone()
             await bot.user_cache.update(conn, user)
         
         await ctx.respond(f"Successfully moved to the `{world.capitalize()}`.", reply = True)

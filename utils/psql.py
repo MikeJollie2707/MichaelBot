@@ -427,6 +427,7 @@ class User(ClassToDict):
     is_whitelist: bool = True
     balance: int = 0
     world: str = "overworld"
+    last_travel: dt.datetime = None
     daily_streak: int = 0
     last_daily: dt.datetime = None
     
@@ -461,7 +462,16 @@ class User(ClassToDict):
         '''Insert an entry into the table.'''
 
         query = insert_into_query("Users", len(user.__slots__))
-        return await run_and_return_count(conn, query, user.id, user.name, user.is_whitelist, user.balance, user.world, user.daily_streak, user.last_daily)
+        return await run_and_return_count(conn, query, 
+            user.id, 
+            user.name, 
+            user.is_whitelist, 
+            user.balance, 
+            user.world, 
+            user.last_travel,
+            user.daily_streak, 
+            user.last_daily
+        )
     @staticmethod
     async def delete(conn: asyncpg.Connection, id: int) -> int:
         '''Delete an entry in the table based on the provided key.'''

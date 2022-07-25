@@ -67,6 +67,7 @@ async def setup_database(user, password, database, host, port):
                 is_whitelist BOOL NOT NULL DEFAULT TRUE,
                 balance INT NOT NULL DEFAULT 0 CHECK (balance >= 0),
                 world TEXT NOT NULL DEFAULT 'overworld',
+                last_travel TIMESTAMP WITH TIME ZONE,
                 daily_streak INT NOT NULL DEFAULT 0 CHECK (daily_streak >= 0),
                 last_daily TIMESTAMP WITH TIME ZONE,
                 CONSTRAINT world_type
