@@ -63,6 +63,9 @@ def is_loggable(event: hikari.Event):
     else:
         guild = event.get_guild()
     
+    # Hikari cache is empty.
+    if guild is None: return False
+    
     log_cache = bot.log_cache.get(guild.id)
 
     if log_cache is None: return False
