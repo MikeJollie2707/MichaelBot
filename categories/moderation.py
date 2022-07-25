@@ -7,8 +7,6 @@ import hikari
 
 from utils import checks, helpers, models
 
-# TODO: Remember to change 1d to 2weeks.
-
 plugin = lightbulb.Plugin("Moderation", "Moderation Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":hammer:")
 plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
@@ -31,7 +29,7 @@ def get_purge_iterator(
     Returns:
         hikari.LazyIterator[hikari.Message]: _description_
     '''
-    bulk_delete_limit = dt.datetime.now().astimezone() - dt.timedelta(days = 1)
+    bulk_delete_limit = dt.datetime.now().astimezone() - dt.timedelta(weeks = 2)
     if amount > 0:
         return (
             bot.rest.fetch_messages(channel_id)
