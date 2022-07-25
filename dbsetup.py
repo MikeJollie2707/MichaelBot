@@ -120,6 +120,34 @@ async def setup_database(user, password, database, host, port):
             );
         """)
 
+        await create_table(conn, "ActiveTrades", """
+            CREATE TABLE ActiveTrades (
+                id INT NOT NULL,
+                type TEXT NOT NULL,
+                item_src TEXT NOT NULL,
+                amount_src INT NOT NULL,
+                item_dest TEXT NOT NULL,
+                amount_dest INT NOT NULL,
+                next_reset TIMESTAMP WITH TIME ZONE NOT NULL,
+                hard_limit INT NOT NULL DEFAULT 15,
+                PRIMARY KEY (id, type),
+                CONSTRAINT trade_type
+                    CHECK (type IN ('trade', 'barter'))
+            );
+        """)
+
+        await create_table(conn, "Users_ActiveTrades", """
+            CREATE TABLE Users_ActiveTrades (
+                user_id INT8 NOT NULL REFERENCES Users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                trade_id INT NOT NULL,
+                trade_type TEXT NOT NULL,
+                hard_limit INT NOT NULL,
+                count INT NOT NULL DEFAULT 1 CHECK (count > 0),
+                FOREIGN KEY (trade_id, trade_type) REFERENCES ActiveTrades(id, type) ON UPDATE CASCADE ON DELETE CASCADE,
+                PRIMARY KEY (user_id, trade_id, trade_type)
+            );
+        """)
+
     except Exception as e:
         raise e
     finally:

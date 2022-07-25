@@ -9,6 +9,7 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import logging
+import random
 import typing as t
 
 import asyncpg
@@ -1102,3 +1103,118 @@ class Equipment(ClassToDict):
             return None
         
         return '_' + item_id.split('_')[-1]
+
+@dataclasses.dataclass(slots = True)
+class ActiveTrade(ClassToDict):
+    id: int
+    type: str
+    item_src: str
+    amount_src: int
+    item_dest: str
+    amount_dest: int
+    next_reset: dt.datetime
+    hard_limit: int = 15
+
+    __TRADE_TYPE = ("trade", "barter")
+
+    @staticmethod
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False):
+        return await ActiveTrade.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[ActiveTrade], bool] = lambda r: True, as_dict: bool = False):
+        query = """
+            SELECT * FROM ActiveTrades
+            ORDER BY id;
+        """
+        return await __get_all__(conn, query, where = where, result_type = ActiveTrade if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, id: int, type: str, *, as_dict: bool = False):
+        query = """
+            SELECT * FROM ActiveTrades
+            WHERE id = ($1) AND type = ($2);
+        """
+        return await __get_one__(conn, query, id, type, result_type = ActiveTrade if not as_dict else dict)
+    @staticmethod
+    async def get_by_type(conn: asyncpg.Connection, type: str, *, as_dict: bool = False):
+        return await ActiveTrade.get_all_where(conn, where = lambda r: r.type == type, as_dict = as_dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, trade: ActiveTrade):
+        query = insert_into_query("ActiveTrades", len(ActiveTrade.__slots__))
+        return await run_and_return_count(conn, query, 
+            trade.id,
+            trade.type,
+            trade.item_src,
+            trade.amount_src,
+            trade.item_dest,
+            trade.amount_dest,
+            trade.next_reset,
+            trade.hard_limit,
+        )
+    @staticmethod
+    async def refresh(conn: asyncpg.Connection, trades: list[ActiveTrade]):
+        async with conn.transaction():
+            await conn.execute("TRUNCATE TABLE ActiveTrades CASCADE;")
+            for trade in trades:
+                await ActiveTrade.insert_one(conn, trade)
+
+@dataclasses.dataclass(slots = True)
+class UserTrade:
+    user_id: int
+    trade_id: int
+    trade_type: str
+    hard_limit: int
+    count: int = 1
+
+    __PREVENT_UPDATE = ("user_id", "trade_id", "trade_type", "hard_limit")
+
+    @staticmethod
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False):
+        return await UserTrade.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[UserTrade], bool] = lambda r: True, as_dict: bool = False):
+        query = """
+            SELECT * FROM Users_ActiveTrades
+            ORDER BY trade_id;
+        """
+        return await __get_all__(conn, query, where = where, result_type = UserTrade if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, user_id: int, trade_id: int, trade_type: str, *, as_dict: bool = False):
+        query = """
+            SELECT * FROM Users_ActiveTrades
+            WHERE user_id = ($1) AND trade_id = ($2) AND trade_type = ($3);
+        """
+        return await __get_one__(conn, query, user_id, trade_id, trade_type, result_type = UserTrade if not as_dict else dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, user_trade: UserTrade):
+        query = insert_into_query("Users_ActiveTrades", len(UserTrade.__slots__))
+        return await run_and_return_count(conn, query,
+            user_trade.user_id,
+            user_trade.trade_id,
+            user_trade.trade_type,
+            user_trade.hard_limit,
+            user_trade.count,
+        )
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, user_id: int, trade_id: int, trade_type: str, column: str, new_value):
+        if column in UserTrade.__PREVENT_UPDATE:
+            return 0
+
+        query = f"""
+            UPDATE Users_ActiveTrades
+            SET {column} = ($4)
+            WHERE user_id = ($1) AND trade_id = ($2) AND trade_type = ($3);
+        """
+        return await run_and_return_count(conn, query, user_id, trade_id, trade_type, new_value)
+    @staticmethod
+    async def update(conn: asyncpg.Connection, user_trade: UserTrade):
+        existing_trade = await UserTrade.get_one(conn, user_trade.user_id, user_trade.trade_id, user_trade.trade_type)
+        if not existing_trade:
+            return await UserTrade.insert_one(conn, user_trade)
+
+        diff_col = []
+        for col in existing_trade.__slots__:
+            if getattr(existing_trade, col) != getattr(user_trade, col):
+                diff_col.append(col)
+        async with conn.transaction():
+            for change in diff_col:
+                await UserTrade.update_column(conn, user_trade.user_id, user_trade.trade_id, user_trade.trade_type, change, getattr(user_trade, change))

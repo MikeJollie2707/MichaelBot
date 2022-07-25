@@ -1,15 +1,19 @@
+import asyncio
 import datetime as dt
 import random
 from textwrap import dedent
 
 import lightbulb
+import miru
 import hikari
 import humanize
+from lightbulb.ext import tasks
 
-from categories.econ import loot
+from categories.econ import loot, trader
 from utils import checks, converters, helpers, models, nav, psql
 
 CURRENCY_ICON = "<:emerald:993835688137072670>"
+TRADE_REFRESH = 3600 * 4
 
 def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote: bool = False) -> str:
     rewards: list[str] = []
@@ -611,11 +615,349 @@ async def explore(ctx: lightbulb.Context):
     if sword_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[sword_existed.item_id].emoji} *{bot.item_cache[sword_existed.item_id].name}* broke after the last exploring session!", reply = True)
 
+async def do_refresh_trade(bot: models.MichaelBot, when: dt.datetime = None):
+    '''Renew trades and barters.
+
+    This should be created as a `Task` to avoid logic-blocking (the code itself is not async-blocking).
+
+    Parameters
+    ----------
+    bot : models.MichaelBot
+        The bot's instance. Mostly to access the item's cache and db connection.
+    when : dt.datetime, optional
+        The time to renew. If `None`, then instantly renew.
+    '''
+    if when is not None:
+        await helpers.sleep_until(when)
+    
+    current = dt.datetime.now().astimezone()
+    trades: list[psql.ActiveTrade] = trader.generate_trades(bot.item_cache, current + dt.timedelta(seconds = TRADE_REFRESH))
+    barters: list[psql.ActiveTrade] = trader.generate_barters(bot.item_cache, current + dt.timedelta(seconds = TRADE_REFRESH))
+    
+    async with bot.pool.acquire() as conn:
+        await psql.ActiveTrade.refresh(conn, trades + barters)
+
+@tasks.task(s = TRADE_REFRESH, pass_app = True, wait_before_execution = False)
+async def refresh_trade(bot: models.MichaelBot):
+    '''Attempt to refresh the trades/barters every `TRADE_REFRESH` seconds.
+
+    This has to be manually started instead of `auto_start` since the bot needs to check for current deal
+    when startup.
+    '''
+
+    if bot.pool is None: return
+
+    current = dt.datetime.now().astimezone()
+
+    async with bot.pool.acquire() as conn:
+        trades = await psql.ActiveTrade.get_all(conn)
+        if trades:
+            # Since all trades has virtually the same refresh time, check one is enough.
+            # If trade is not yet reset, create a task to reset.
+            if trades[0].next_reset > current:
+                await bot.create_task(do_refresh_trade(bot, trades[0].next_reset))
+            else:
+                await do_refresh_trade(bot)
+        else:
+            await do_refresh_trade(bot)
+
+@plugin.listener(hikari.ShardReadyEvent)
+async def on_shard_ready(event: hikari.ShardReadyEvent):
+    refresh_trade.start()
+
 @plugin.command()
+@lightbulb.set_help(dedent(f'''
+    - Trades will reset every {TRADE_REFRESH / 3600} hours.
+    - This can only be used when you're in the Overworld.
+'''))
+@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("trade", "Periodic trade for rarer items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def trade(ctx: lightbulb.Context):
-    raise NotImplementedError
+async def _trade(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    user = bot.user_cache[ctx.author.id]
+    if user.world != "overworld":
+        await ctx.respond("You need to be in the Overworld to use this command!", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        trades = await psql.ActiveTrade.get_all_where(conn, where = lambda r: r.type == "trade")
+        user_trades = await psql.UserTrade.get_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "trade")
+
+    embed = helpers.get_default_embed(
+        description = f"*Trades will refresh in {humanize.precisedelta(trades[0].next_reset - dt.datetime.now().astimezone(), format = '%0.0f')}*",
+        author = ctx.author,
+        timestamp = dt.datetime.now().astimezone()
+    ).set_author(
+        name = "Available Trades",
+        icon = bot.get_me().avatar_url
+    ).set_thumbnail(bot.get_me().avatar_url)
+    
+    view = miru.View()
+    options = []
+
+    # Bunch of formatting here.
+    for i, trade in enumerate(trades):
+        user_trade_count: int = 0
+        trade_count: int = trade.hard_limit
+
+        # Get the corresponding user trade to this trade.
+        if user_trades:
+            for u_trade in user_trades:
+                if u_trade.trade_id == trade.id:
+                    user_trade_count = u_trade.count
+                    break
+
+        # A bunch of ugly formatting code.
+        src_str = ""
+        if trade.item_src == "money":
+            src_str = f"{CURRENCY_ICON}{trade.amount_src}"
+        else:
+            item = bot.item_cache[trade.item_src]
+            src_str = f"{item.emoji} x {trade.amount_src}"
+        
+        dest_str = ""
+        if trade.item_dest == "money":
+            dest_str = f"{CURRENCY_ICON}{trade.amount_dest}"
+        else:
+            item = bot.item_cache[trade.item_dest]
+            dest_str = f"{item.emoji} x {trade.amount_dest}"
+        
+        embed.add_field(
+            name = f"Trade {i + 1} ({user_trade_count}/{trade_count})",
+            value = f"{src_str} ---> {dest_str}",
+            inline = True
+        )
+
+        options.append(miru.SelectOption(
+            label = str(i + 1)
+        ))
+    view.add_item(miru.Select(
+        options = options,
+        placeholder = "Select a trade to perform"
+    ))
+
+    # Logically this should be ephemeral, but you can't get an ephemeral message object...
+    resp = await ctx.respond(embed = embed, components = view.build())
+    msg = await resp.message()
+    view.start(msg)
+
+    def is_select_interaction(event: hikari.InteractionCreateEvent):
+        if not isinstance(event.interaction, hikari.ComponentInteraction):
+            return False
+        
+        return event.interaction.message.id == msg.id and event.interaction.member.id == ctx.author.id
+    
+    while True:
+        try:
+            event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = 120, predicate = is_select_interaction)
+            interaction: hikari.ComponentInteraction = event.interaction
+            selected = int(interaction.values[0])
+            selected_trade = trades[selected - 1]
+
+            if selected_trade.next_reset < dt.datetime.now().astimezone():
+                # Maybe edit into an updated trade?
+                await msg.edit("This trade menu is expired. Invoke this command again for a list of updated trades.", embed = None, components = None)
+                break
+            
+            # Process trade here.
+            async with bot.pool.acquire() as conn:
+                user_trade = await psql.UserTrade.get_one(conn, ctx.author.id, selected, "trade")
+                if user_trade is None:
+                    user_trade = psql.UserTrade(ctx.author.id, selected_trade.id, selected_trade.type, selected_trade.hard_limit, 0)
+
+                if user_trade.count + 1 > user_trade.hard_limit:
+                    await ctx.respond("You can't make this trade anymore!", reply = True, mentions_reply = True, 
+                        flags = hikari.MessageFlag.EPHEMERAL
+                    )
+                    continue
+
+                if selected_trade.item_src == "money":
+                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_trade.item_dest)
+
+                    if user.balance < selected_trade.amount_src:
+                        await ctx.respond("You don't have enough money to make this trade!", reply = True, mentions_reply = True, 
+                            flags = hikari.MessageFlag.EPHEMERAL
+                        )
+                        continue
+
+                    async with conn.transaction():
+                        await psql.Inventory.add(conn, ctx.author.id, selected_trade.item_dest, selected_trade.amount_dest)
+                        user.balance -= selected_trade.amount_src
+                        await bot.user_cache.update(conn, user)
+                        user_trade.count += 1
+                        await psql.UserTrade.update(conn, user_trade)
+                elif selected_trade.item_dest == "money":
+                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_trade.item_src)
+
+                    if inv is None or inv.amount < selected_trade.amount_src:
+                        await ctx.respond("You don't have enough items to make this trade!", reply = True, mentions_reply = True,
+                            flags = hikari.MessageFlag.EPHEMERAL
+                        )
+                        continue
+
+                    async with conn.transaction():
+                        await psql.Inventory.remove(conn, ctx.author.id, selected_trade.item_src, selected_trade.amount_src)
+                        user.balance += selected_trade.amount_dest
+                        await bot.user_cache.update(conn, user)
+                        user_trade.count += 1
+                        await psql.UserTrade.update(conn, user_trade)
+                else:
+                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_trade.item_src)
+
+                    if inv is None or inv.amount < selected_trade.amount_src:
+                        await ctx.respond("You don't have enough items to make this trade!", reply = True, mentions_reply = True,
+                            flags = hikari.MessageFlag.EPHEMERAL
+                        )
+                        continue
+
+                    async with conn.transaction():
+                        await psql.Inventory.remove(conn, ctx.author.id, selected_trade.item_src, selected_trade.amount_src)
+                        await psql.Inventory.add(conn, ctx.author.id, selected_trade.item_dest, selected_trade.amount_dest)
+                        user_trade.count += 1
+                        await psql.UserTrade.update(conn, user_trade)
+
+                # Update the menu.
+                embed.fields[selected - 1].name = f"Trade {selected} ({user_trade.count}/{selected_trade.hard_limit})"
+                if user_trade.count == selected_trade.hard_limit:
+                    del options[selected - 1]
+                    view.clear_items()
+                    view.add_item(miru.Select(
+                        options = options,
+                        placeholder = "Select a trade to perform"
+                    ))
+                await msg.edit(embed = embed, components = view.build())
+        except asyncio.TimeoutError:
+            await msg.edit(components = None)
+            break
+
+@plugin.command()
+@lightbulb.set_help(dedent(f'''
+    - Barters will reset every {TRADE_REFRESH / 3600} hours.
+    - This can only be used when you're in the Nether.
+'''))
+@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.command("barter", "Barter stuff with gold.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def _barter(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    user = bot.user_cache[ctx.author.id]
+    if user.world != "nether":
+        await ctx.respond("You need to be in the Nether to use this command!", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        barters = await psql.ActiveTrade.get_all_where(conn, where = lambda r: r.type == "barter")
+        user_barters = await psql.UserTrade.get_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "barter")
+
+    embed = helpers.get_default_embed(
+        description = f"*Trades will refresh in {humanize.precisedelta(barters[0].next_reset - dt.datetime.now().astimezone(), format = '%0.0f')}*",
+        author = ctx.author,
+        timestamp = dt.datetime.now().astimezone()
+    ).set_author(
+        name = "Available Barters",
+        icon = bot.get_me().avatar_url
+    ).set_thumbnail(bot.get_me().avatar_url)
+    
+    view = miru.View()
+    options = []
+
+    # Bunch of formatting here.
+    for i, barter in enumerate(barters):
+        user_barter_count: int = 0
+        barter_count: int = barter.hard_limit
+
+        # Get the corresponding user trade to this trade.
+        if user_barters:
+            for u_barter in user_barters:
+                if u_barter.trade_id == barter.id:
+                    user_barter_count = u_barter.count
+                    break
+
+        item = bot.item_cache[barter.item_src]
+        src_str = f"{item.emoji} x {barter.amount_src}"
+        item = bot.item_cache[barter.item_dest]
+        dest_str = f"{item.emoji} x {barter.amount_dest}"
+        
+        embed.add_field(
+            name = f"Barter {i + 1} ({user_barter_count}/{barter_count})",
+            value = f"{src_str} ---> {dest_str}",
+            inline = True
+        )
+
+        if user_barter_count < barter_count:
+            options.append(miru.SelectOption(
+                label = str(i + 1)
+            ))
+    view.add_item(miru.Select(
+        options = options,
+        placeholder = "Select a barter to perform"
+    ))
+
+    # Logically this should be ephemeral, but you can't get an ephemeral message object...
+    resp = await ctx.respond(embed = embed, components = view.build())
+    msg = await resp.message()
+    view.start(msg)
+
+    def is_select_interaction(event: hikari.InteractionCreateEvent):
+        if not isinstance(event.interaction, hikari.ComponentInteraction):
+            return False
+        
+        return event.interaction.message.id == msg.id and event.interaction.member.id == ctx.author.id
+    
+    while True:
+        try:
+            event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = 120, predicate = is_select_interaction)
+            interaction: hikari.ComponentInteraction = event.interaction
+            selected = int(interaction.values[0])
+            selected_barter = barters[selected - 1]
+
+            if selected_barter.next_reset < dt.datetime.now().astimezone():
+                # Maybe edit into an updated barter?
+                await msg.edit("This barter menu is expired. Invoke this command again for a list of updated barters.", embed = None, components = None)
+                break
+            
+            # Process trade here.
+            async with bot.pool.acquire() as conn:
+                user_trade = await psql.UserTrade.get_one(conn, ctx.author.id, selected, "barter")
+                if user_trade is None:
+                    user_trade = psql.UserTrade(ctx.author.id, selected_barter.id, selected_barter.type, selected_barter.hard_limit, 0)
+
+                if user_trade.count + 1 > user_trade.hard_limit:
+                    await ctx.respond("You can't make this barter anymore!", reply = True, mentions_reply = True, 
+                        flags = hikari.MessageFlag.EPHEMERAL
+                    )
+                    continue
+                
+                inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_barter.item_src)
+
+                if inv is None or inv.amount < selected_barter.amount_src:
+                    await ctx.respond("You don't have enough items to make this barter!", reply = True, mentions_reply = True,
+                        flags = hikari.MessageFlag.EPHEMERAL
+                    )
+                    continue
+
+                async with conn.transaction():
+                    await psql.Inventory.remove(conn, ctx.author.id, selected_barter.item_src, selected_barter.amount_src)
+                    await psql.Inventory.add(conn, ctx.author.id, selected_barter.item_dest, selected_barter.amount_dest)
+                    user_trade.count += 1
+                    await psql.UserTrade.update(conn, user_trade)
+
+                # Update the menu.
+                embed.fields[selected - 1].name = f"Barter {selected} ({user_trade.count}/{selected_barter.hard_limit})"
+                if user_trade.count == selected_barter.hard_limit:
+                    del options[selected - 1]
+                    view.clear_items()
+                    view.add_item(miru.Select(
+                        options = options,
+                        placeholder = "Select a barter to perform"
+                    ))
+                await msg.edit(embed = embed, components = view.build())
+        except asyncio.TimeoutError:
+            await msg.edit(components = None)
+            break
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -662,12 +1004,6 @@ async def travel(ctx: lightbulb.Context):
             await bot.user_cache.update(conn, user)
         
         await ctx.respond(f"Successfully moved to the `{world.capitalize()}`.", reply = True)
-
-@plugin.command()
-@lightbulb.command("barter", "Barter stuff with gold.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def barter(ctx: lightbulb.Context):
-    raise NotImplementedError
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
