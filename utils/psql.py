@@ -645,7 +645,7 @@ class Item(ClassToDict):
     description: str
     rarity: str
     sell_price: int
-    buy_price: int = None
+    buy_price: t.Optional[int] = None
     aliases: list[str] = dataclasses.field(default_factory = list)
     durability: int = None
 
