@@ -199,5 +199,14 @@
         "rarity": "common",
         "buy_price": 5,
         "sell_price": 3
+    },
+    {
+        "id": "gold",
+        "name": "Gold",
+        "emoji": "<:gold:823592599314104331>",
+        "description": "A shiny material in the underworld. It can be used to negotiate with the people living there.",
+        "rarity": "common+",
+        "buy_price": null,
+        "sell_price": 7
     }
 ]
