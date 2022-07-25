@@ -59,8 +59,6 @@ async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
             else:
                 money += amount
         await psql.User.add_money(conn, user_id, money)
-async def remove_reward(conn, user_id: int, loot_table: dict[str, int]):
-    pass
 
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
@@ -216,6 +214,7 @@ async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, 
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
+    - There is a hard cooldown of 24 hours before you can collect the next daily.
     - The higher the daily streak, the better your reward will be.
     - If you don't collect your daily within 48 hours since the last time you collect, your streak will be reset to 1.
 '''))
@@ -406,7 +405,7 @@ async def inventory(ctx: lightbulb.Context):
             await ctx.respond(f"If you sell all your items in your inventory, you'll get: {CURRENCY_ICON}{value}.", reply = True)
 
 @plugin.command()
-@lightbulb.command("market", "Public trades")
+@lightbulb.command("market", "View public purchases.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def market(ctx: lightbulb.Context):
     await market_view(ctx)
