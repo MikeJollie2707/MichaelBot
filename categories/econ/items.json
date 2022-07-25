@@ -65,7 +65,7 @@
         "description": "A drop from killing creepers. This can be used to brew potions.",
         "rarity": "common+",
         "buy_price": 25,
-        "sell_price": 1
+        "sell_price": 5
     },
     {
         "id": "pearl",
@@ -141,7 +141,7 @@
         "description": "A rare material that shines brightly under the sun. It can be used to craft very good tools that last even longer.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 10
+        "sell_price": 15
     },
     {
         "id": "diamond_pickaxe",
@@ -150,17 +150,17 @@
         "description": "A good pickaxe that can mine some hard objects and last quite a while.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 10,
+        "sell_price": 12,
         "durability": 100
     },
     {
         "id": "diamond_sword",
         "name": "Diamond Sword",
-        "emoji": "",
+        "emoji": "<:diamond_sword:822530447715598396>",
         "description": "A good sword that can slay even more enemies and last even longer.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 10,
+        "sell_price": 12,
         "durability": 100
     },
     {
@@ -195,7 +195,7 @@
         "id": "redstone",
         "name": "Redstone",
         "emoji": "<:redstone:822527280777396264>",
-        "description": "A common red rock that can be used as a way to extend potion durability.",
+        "description": "A common red rock that can be used as a way to amplify a potion's power.",
         "rarity": "common",
         "buy_price": 5,
         "sell_price": 3
