@@ -2,6 +2,18 @@
 
 Utility Commands.
 
+## `base-convert <from_base> <to_base> <number>`
+
+Convert a number to the desired base.
+
+Type: `Prefix Command`, `Slash Command`
+
+Parameters:
+
+- `from_base`: The base the number you're converting. Valid options are `2`, `8`, `10`, and `16`.
+- `to_base`: The base you want to convert to. Valid options are the same as `from_base`.
+- `number`: The number you're converting.
+
 ## `calc <expression>`
 
 Calculate a math expression.
@@ -36,7 +48,7 @@ Parameters:
 
 - `raw_embed`: The embed in JSON format.
 
-### `embed to-json <message_id>`
+### `embed to-json <message_id> [channel]`
 
 Take the embed from a message and convert it to a JSON object.
 
@@ -47,6 +59,7 @@ Cooldown: 3 seconds after 1 use per user.
 Parameters:
 
 - `message_id`: The message ID. The bot can't get a message that's too old.
+- `channel`: The channel the message is in. Default to the current channel.
 
 Additional Info:
 
@@ -78,7 +91,19 @@ Create a simple embed with prompts.
 
 Type: `Prefix Command`
 
-Aliases: `embed i`
+Cooldown: 3 seconds after 1 use per user.
+
+Additional Info:
+
+- Bot needs to have `Manage Messages`.
+- This is an alternative to `embed simple`.
+
+
+### `embed interactive2`
+
+Create a simple embed with visual prompts.
+
+Type: `Prefix Command`
 
 Cooldown: 3 seconds after 1 use per user.
 
@@ -154,26 +179,6 @@ Additional Info:
 
 - Due to optimization, this command won't remove short reminders.
 
-## `role-info <role>`
-
-Information about a role in this server.
-
-Type: `Prefix Command`, `Slash Command`
-
-Parameters:
-
-- `role`: A Discord role.
-
-Aliases: `roleinfo`
-
-## `server-info`
-
-Information about this server.
-
-Type: `Prefix Command`, `Slash Command`
-
-Aliases: `serverinfo`
-
 ## `urban <*term>`
 
 Search a term on urbandictionary.
@@ -198,4 +203,4 @@ Parameters:
 
 - `city_name`: The city to check. Example: `Paris`.
 
-*Last updated on Apr 27, 2022*
+*Last updated on Jul 25, 2022*

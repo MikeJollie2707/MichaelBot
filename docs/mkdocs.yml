@@ -31,13 +31,16 @@ theme:
 nav:
   - Home: index.md
   - Installation: INSTALLATION.md
+  - Economy Guide: econ.md
   - Commands:
     - Bot: user/bot.md
+    - Economy: user/economy.md
     - Fun: user/fun.md
     - Logs: user/logger.md
     - Music: user/music.md
     - Utilities: user/utilities.md
   - Developer Corner:
+    - econ: dev/econ.md
     - errors.py: dev/errors.md
     - funtext.py: dev/funtext.md
     - help.py: dev/help.md
@@ -62,7 +65,7 @@ plugins:
             docstring_section_style: table
             show_source: true
             show_submodules: false
-            separate_signature: false
+            separate_signature: true
             show_signature_annotations: true
             show_if_no_docstring: false
 

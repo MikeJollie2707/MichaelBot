@@ -150,7 +150,7 @@ async def addmoney(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
-@lightbulb.option("item", "Item to craft.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The name or alias of the item to craft.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("craft", "Craft various items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def craft(ctx: lightbulb.Context):
@@ -266,7 +266,7 @@ async def daily(ctx: lightbulb.Context):
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("equipment", "The equipment to equip.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("equipment", "The equipment's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("equip", "Equip a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def equip(ctx: lightbulb.Context):
@@ -667,11 +667,12 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
 
 @plugin.command()
 @lightbulb.set_help(dedent(f'''
+    - Trades can contains purchases that can't be made via `market`.
     - Trades will reset every {TRADE_REFRESH / 3600} hours.
     - This can only be used when you're in the Overworld.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("trade", "Periodic trade for rarer items.")
+@lightbulb.command("trade", "View and/or perform a trade. Get your money ready.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _trade(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -834,11 +835,12 @@ async def _trade(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent(f'''
+    - Barters can contains purchases that can't be made via `market`.
     - Barters will reset every {TRADE_REFRESH / 3600} hours.
     - This can only be used when you're in the Nether.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("barter", "Barter stuff with gold.")
+@lightbulb.command("barter", "View and/or perform a barter. Get your gold ready.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _barter(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot

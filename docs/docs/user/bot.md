@@ -38,6 +38,54 @@ Type: `Prefix Command`, `Slash Command`
 
 Aliases: `about`
 
+### `info bot`
+
+Show information about the bot.
+
+Type: `Prefix Command`, `Slash Command`
+
+### `info host`
+
+Show information about the machine hosting the bot.
+
+Type: `Prefix Command`, `Slash Command`
+
+### `info item`
+
+Show information for an item.
+
+Type: `Prefix Command`, `Slash Command`
+
+Additional Note:
+
+- Refer to [this](../econ.md) to have context on this command.
+
+### `info member [member]`
+
+Show information about yourself or another member.
+
+Type: `Prefix Command`, `Slash Command`
+
+Parameters:
+
+- `member`: A Discord member. Default to yourself.
+
+### `info role <role>`
+
+Show information about a role.
+
+Type: `Prefix Command`, `Slash Command`
+
+Parameters:
+
+- `role`: A Discord role.
+
+### `info server`
+
+Show information about this server.
+
+Type: `Prefix Command`, `Slash Command`
+
 ## `ping`
 
 Check the bot if it's alive.
@@ -73,4 +121,4 @@ Parameters:
 - `type`: The type of report you're making. Either `bug` or `suggest`.
 - `reason`: The content you're trying to send.
 
-*Last updated on Apr 25, 2022*
+*Last updated on Jul 25, 2022*

@@ -394,7 +394,7 @@ async def info_role(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @info.child
-@lightbulb.command("server", "Information about this server.")
+@lightbulb.command("server", "Show information about this server.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_server(ctx: lightbulb.Context):
     guild = ctx.get_guild()

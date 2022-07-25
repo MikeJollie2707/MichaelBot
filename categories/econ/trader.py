@@ -17,6 +17,23 @@ __BARTER_WHITELIST = ("gold",
 )
 
 def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amount: int = 6) -> list[psql.ActiveTrade]:
+    '''Generate trades based on pre-determined rules.
+
+    Parameters
+    ----------
+    item_cache : models.ItemCache
+        The bot's item cache. This is to get item's information.
+    next_reset : dt.datetime
+        When these trades will reset.
+    amount : int, optional
+        How many trade to generate, by default 6
+
+    Returns
+    -------
+    list[psql.ActiveTrade]
+        A list of trades to be added.
+    '''
+
     trades = []
     # Avoid duplicate trades.
     traded_item = ["money"]
@@ -120,6 +137,23 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
     return trades
 
 def generate_barters(item_cache: models.ItemCache, next_reset: dt.datetime, amount: int = 9) -> list[psql.ActiveTrade]:
+    '''Generate barters based on pre-determined rules.
+
+    Parameters
+    ----------
+    item_cache : models.ItemCache
+        The bot's item cache. This is to get item's information.
+    next_reset : dt.datetime
+        When these barters will reset.
+    amount : int, optional
+        How many barter to generate, by default 6
+
+    Returns
+    -------
+    list[psql.ActiveTrade]
+        A list of barters to be added.
+    '''
+
     barters = []
     # Avoid duplicate barters.
     bartered_items = ["gold"]
