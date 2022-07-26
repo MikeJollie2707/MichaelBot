@@ -136,6 +136,50 @@ __ACTIVITY_LOOT = {
             "spider_eye": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
             "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
             "pearl": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
+        },
+
+        # Axe
+        "stone_axe": {
+            # - wood: 11.31%
+            # - leaf: 70.62%
+            # - hibiscus: 5.66%
+            # - tulip: 5.64%
+            # - rose: 5.64%
+            # - lucky_clover: 1.13%
+            "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
+            "leaf": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "hibiscus": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
+            "tulip": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
+            "rose": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
+            "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
+        },
+        "iron_axe": {
+            # - wood: 7.78%
+            # - leaf: 68.09%
+            # - hibiscus: 7.79%
+            # - tulip: 7.78%
+            # - rose: 7.78%
+            # - lucky_clover: 0.78%
+            "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
+            "leaf": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "hibiscus": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
+            "tulip": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
+            "rose": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
+            "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
+        },
+        "diamond_axe": {
+            # - wood: 5.55%
+            # - leaf: 62.4%
+            # - hibiscus: 10.41%
+            # - tulip: 10.4%
+            # - rose: 10.4%
+            # - lucky_clover: 0.83%
+            "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
+            "leaf": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
+            "hibiscus": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
+            "tulip": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
+            "rose": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
+            "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
         }
     },
     "nether": {
@@ -176,6 +220,11 @@ __CRAFT_RECIPE = {
         "stick": 1,
         "result": 1
     },
+    "stone_axe": {
+        "stone": 3,
+        "stick": 2,
+        "result": 1
+    },
     "iron_pickaxe": {
         "iron": 3,
         "stick": 2,
@@ -183,6 +232,11 @@ __CRAFT_RECIPE = {
     },
     "iron_sword": {
         "iron": 2,
+        "stick": 1,
+        "result": 1
+    },
+    "iron_axe": {
+        "iron": 3,
         "stick": 1,
         "result": 1
     },
@@ -194,6 +248,11 @@ __CRAFT_RECIPE = {
     "diamond_sword": {
         "diamond": 2,
         "stick": 1,
+        "result": 1
+    },
+    "diamond_axe": {
+        "diamond": 3,
+        "stick": 2,
         "result": 1
     },
     "nether_ticket": {
@@ -312,7 +371,7 @@ def __driver_code():
     rate_tracker: dict[str, int] = {}
 
     for _ in range(0, SIMULATION_TIME):
-        loot_rate = get_activity_loot("diamond_pickaxe", "overworld")
+        loot_rate = get_activity_loot("diamond_axe", "overworld")
 
         for reward in loot_rate:
             if reward not in rate_tracker:

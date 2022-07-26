@@ -40,6 +40,52 @@
         "durability": 25
     },
     {
+        "id": "leaf",
+        "name": "Leaf",
+        "emoji": "🍃",
+        "description": "The green-looking thing on pretty much most of the trees.",
+        "rarity": "common",
+        "buy_price": 1,
+        "sell_price": 1
+    },
+    {
+        "id": "hibiscus",
+        "name": "Hibiscus",
+        "emoji": "🌺",
+        "description": "A cool-looking flower. Can be used to make potions.",
+        "rarity": "common",
+        "buy_price": 3,
+        "sell_price": 1
+    },
+    {
+        "id": "tulip",
+        "name": "Tulip",
+        "emoji": "🌷",
+        "description": "A pink flower. Can be used to make potions.",
+        "rarity": "common",
+        "buy_price": 3,
+        "sell_price": 1
+    },
+    {
+        "id": "rose",
+        "name": "Rose",
+        "emoji": "🌹",
+        "description": "A red flower. Can be used to make potions.",
+        "rarity": "common",
+        "buy_price": 3,
+        "sell_price": 1
+    },
+    {
+        "id": "lucky_clover",
+        "name": "Lucky Clover",
+        "aliases": ["Lucky Plant"],
+        "emoji": "🍀",
+        "description": "A 4-leaf clover. It's quite rare for you to encounter this. Consider yourself lucky for today.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10
+    },
+    {
         "id": "rotten_flesh",
         "name": "Rotten Flesh",
         "aliases": ["Zombie Meat"],
@@ -106,6 +152,16 @@
         "durability": 35
     },
     {
+        "id": "stone_axe",
+        "name": "Stone Axe",
+        "emoji": "<:stone_axe:820009331000606760>",
+        "description": "A somewhat reliable axe. It can be used to chop some trees.",
+        "rarity": "common",
+        "buy_price": null,
+        "sell_price": 2,
+        "durability": 35
+    },
+    {
         "id": "iron",
         "name": "Iron",
         "emoji": "<:iron:820009715286671410>",
@@ -135,6 +191,16 @@
         "durability": 50
     },
     {
+        "id": "iron_axe",
+        "name": "Iron Axe",
+        "emoji": "<:iron_axe:820758123714838559>",
+        "description": "A pretty good axe. It can chop more trees.",
+        "rarity": "common+",
+        "buy_price": null,
+        "sell_price": 5,
+        "durability": 50
+    },
+    {
         "id": "diamond",
         "name": "Diamond",
         "emoji": "<:diamond:999554762779406376>",
@@ -158,6 +224,16 @@
         "name": "Diamond Sword",
         "emoji": "<:diamond_sword:822530447715598396>",
         "description": "A good sword that can slay even more enemies and last even longer.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 12,
+        "durability": 100
+    },
+    {
+        "id": "diamond_axe",
+        "name": "Diamond Axe",
+        "emoji": "<:diamond_axe:822530447719268382>",
+        "description": "A good axe that can chop a lot more trees and last even longer.",
         "rarity": "rare",
         "buy_price": null,
         "sell_price": 12,

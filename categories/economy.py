@@ -586,7 +586,7 @@ async def mine(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("explore", "Explore the world and get resources by killing monsters. You'll need a sword equipped.")
+@lightbulb.command("explore", "Explore the caves and get resources by killing monsters. You'll need a sword equipped.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def explore(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -614,6 +614,37 @@ async def explore(ctx: lightbulb.Context):
     await ctx.respond(f"You explored and collected {display_reward(bot, loot_table, emote = True)}", reply = True)
     if sword_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[sword_existed.item_id].emoji} *{bot.item_cache[sword_existed.item_id].name}* broke after the last exploring session!", reply = True)
+
+@plugin.command()
+@lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.command("chop", "Chop trees from various forest to gain plant-related resources. You'll need an axe equipped.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def chop(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        axe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_axe")
+        if not axe_existed:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You don't have an axe!", reply = True, mentions_reply = True)
+            return
+        
+        user = await psql.User.get_one(conn, ctx.author.id)
+        assert user is not None
+        
+        loot_table = loot.get_activity_loot(axe_existed.item_id, user.world)
+        if not loot_table:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        async with conn.transaction():
+            await add_reward(conn, ctx.author.id, loot_table)
+            await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
+    
+    await ctx.respond(f"You chopped and collected {display_reward(bot, loot_table, emote = True)}", reply = True)
+    if axe_existed.remain_durability - 1 == 0:
+        await ctx.respond(f"Your {bot.item_cache[axe_existed.item_id].emoji} *{bot.item_cache[axe_existed.item_id].name}* broke after the last chopping session!", reply = True)
 
 async def do_refresh_trade(bot: models.MichaelBot, when: dt.datetime = None):
     '''Renew trades and barters.
