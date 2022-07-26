@@ -567,9 +567,7 @@ async def mine(ctx: lightbulb.Context):
             await ctx.respond("You don't have a pickaxe!", reply = True, mentions_reply = True)
             return
         
-        user = await psql.User.get_one(conn, ctx.author.id)
-        assert user is not None
-        
+        user = bot.user_cache[ctx.author.id]
         loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world)
         if not loot_table:
             await bot.reset_cooldown(ctx)
@@ -598,9 +596,7 @@ async def explore(ctx: lightbulb.Context):
             await ctx.respond("You don't have a sword!", reply = True, mentions_reply = True)
             return
         
-        user = await psql.User.get_one(conn, ctx.author.id)
-        assert user is not None
-        
+        user = bot.user_cache[ctx.author.id]
         loot_table = loot.get_activity_loot(sword_existed.item_id, user.world)
         if not loot_table:
             await bot.reset_cooldown(ctx)
@@ -629,9 +625,7 @@ async def chop(ctx: lightbulb.Context):
             await ctx.respond("You don't have an axe!", reply = True, mentions_reply = True)
             return
         
-        user = await psql.User.get_one(conn, ctx.author.id)
-        assert user is not None
-        
+        user = bot.user_cache[ctx.author.id]
         loot_table = loot.get_activity_loot(axe_existed.item_id, user.world)
         if not loot_table:
             await bot.reset_cooldown(ctx)
