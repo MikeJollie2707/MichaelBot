@@ -1032,6 +1032,11 @@ class Equipment(ClassToDict):
 
         return await run_and_return_count(conn, query, user_id, item_id)
     @staticmethod
+    async def delete_entries(conn: asyncpg.Connection, equipments: list[Equipment]):
+        async with conn.transaction():
+            for equipment in equipments:
+                await Equipment.delete(conn, equipment.user_id, equipment.item_id)
+    @staticmethod
     async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
         '''Update a specific column with a new value.
 
