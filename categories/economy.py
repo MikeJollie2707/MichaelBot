@@ -732,7 +732,8 @@ async def _trade(ctx: lightbulb.Context):
         )
 
         options.append(miru.SelectOption(
-            label = str(i + 1)
+            label = f"Trade {i + 1}",
+            value = str(i + 1)
         ))
     view.add_item(miru.Select(
         options = options,
@@ -855,7 +856,7 @@ async def _barter(ctx: lightbulb.Context):
         user_barters = await psql.UserTrade.get_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "barter")
 
     embed = helpers.get_default_embed(
-        description = f"*Trades will refresh in {humanize.precisedelta(barters[0].next_reset - dt.datetime.now().astimezone(), format = '%0.0f')}*",
+        description = f"*Barters will refresh in {humanize.precisedelta(barters[0].next_reset - dt.datetime.now().astimezone(), format = '%0.0f')}*",
         author = ctx.author,
         timestamp = dt.datetime.now().astimezone()
     ).set_author(
@@ -891,7 +892,8 @@ async def _barter(ctx: lightbulb.Context):
 
         if user_barter_count < barter_count:
             options.append(miru.SelectOption(
-                label = str(i + 1)
+                label = f"Barter {i + 1}",
+                value = str(i + 1)
             ))
     view.add_item(miru.Select(
         options = options,
