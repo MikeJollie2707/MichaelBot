@@ -15,6 +15,25 @@ from utils import checks, converters, helpers, models, nav, psql
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 TRADE_REFRESH = 3600 * 4
 
+def get_death_rate(money: int, equipment: psql.Equipment) -> float:
+    '''Return the dying chance based on the money.
+    
+    It's a simple `money / (10 ** 4)` and cap at `0.15`.
+    '''
+    
+    rate = min(0.15, money / (10 ** 4))
+    
+    if "wood" in equipment.item_id:
+        rate -= 0.0005
+    elif "stone" in equipment.item_id:
+        rate -= 0.001
+    elif "iron" in equipment.item_id:
+        rate -= 0.005
+    elif "diamond" in equipment.item_id:
+        rate -= 0.01
+    
+    return max(rate, 0)
+
 def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote: bool = False) -> str:
     rewards: list[str] = []
     money: int = 0
@@ -63,6 +82,35 @@ async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
             else:
                 money += amount
         await psql.User.add_money(conn, user_id, money)
+
+async def process_death(conn, bot: models.MichaelBot, user: psql.User):
+    '''A shortcut to process a user's death.
+
+    This includes wiping all their equipped tools, 5% of their inventories, 20% of their money,
+    and move them to the Overworld.
+
+    Parameters
+    ----------
+    conn : asyncpg.Connection
+        The connection to use.
+    bot : models.MichaelBot
+        The bot instance.
+    user : psql.User
+        The user to process.
+    '''
+
+    equipments = await psql.Equipment.get_user_equipments(conn, user.id)
+    inventories = await psql.Inventory.get_user_inventory(conn, user.id)
+    
+    async with conn.transaction():
+        await psql.Equipment.delete_entries(conn, equipments)
+        for inv in inventories:
+            inv.amount -= inv.amount * 5 // 100
+            await psql.Inventory.update(conn, inv)
+        
+        user.balance -= user.balance * 20 // 100
+        user.world = "overworld"
+        await bot.user_cache.update(conn, user)
 
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
@@ -574,6 +622,14 @@ async def mine(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
+        death_rate = get_death_rate(user.balance, pickaxe_existed)
+        r = random.random()
+        # Dies
+        if r <= death_rate:
+            await process_death(conn, bot, user)
+            await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
+            return
+        
         async with conn.transaction():
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
@@ -603,6 +659,14 @@ async def explore(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
+        death_rate = get_death_rate(user.balance, sword_existed)
+        r = random.random()
+        # Dies
+        if r <= death_rate:
+            await process_death(conn, bot, user)
+            await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
+            return
+        
         async with conn.transaction():
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
@@ -630,6 +694,14 @@ async def chop(ctx: lightbulb.Context):
         if not loot_table:
             await bot.reset_cooldown(ctx)
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        death_rate = get_death_rate(user.balance, axe_existed)
+        r = random.random()
+        # Dies
+        if r <= death_rate:
+            await process_death(conn, bot, user)
+            await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
             return
         
         async with conn.transaction():
