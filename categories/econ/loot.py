@@ -311,7 +311,7 @@ def __driver_code():
     total: int = 0
     rate_tracker: dict[str, int] = {}
 
-    for i in range(0, SIMULATION_TIME):
+    for _ in range(0, SIMULATION_TIME):
         loot_rate = get_activity_loot("diamond_pickaxe", "overworld")
 
         for reward in loot_rate:
