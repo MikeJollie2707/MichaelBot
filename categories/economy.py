@@ -655,7 +655,7 @@ async def refresh_trade(bot: models.MichaelBot):
             # Since all trades has virtually the same refresh time, check one is enough.
             # If trade is not yet reset, create a task to reset.
             if trades[0].next_reset > current:
-                await bot.create_task(do_refresh_trade(bot, trades[0].next_reset))
+                bot.create_task(do_refresh_trade(bot, trades[0].next_reset))
             else:
                 await do_refresh_trade(bot)
         else:
