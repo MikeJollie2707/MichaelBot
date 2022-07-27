@@ -75,6 +75,19 @@ def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option
     return ', '.join(rewards)
 
 def multiply_reward(loot_table: dict[str, int], multiplier: int):
+    '''A shortcut to multiply the rewards in-place.
+
+    Parameters
+    ----------
+    loot_table : dict[str, int]
+        The loot table.
+    multiplier : int
+        The multiplier. Cannot be 0.
+    '''
+
+    if multiplier == 0:
+        raise ValueError("'multiplier' cannot be 0.")
+
     for key in loot_table:
         loot_table[key] *= multiplier
 
@@ -266,8 +279,7 @@ async def brew(ctx: lightbulb.Context):
         return
     
     if times > 1:
-        for item_id in recipe:
-            recipe[item_id] *= times
+        multiply_reward(recipe, times)
     
     user = bot.user_cache[ctx.author.id]
     if recipe.get("cost") is not None and recipe["cost"] > user.balance:
@@ -351,8 +363,7 @@ async def craft(ctx: lightbulb.Context):
     
     # Emulate executing the command multiple times.
     if times > 1:
-        for item_id in recipe:
-            recipe[item_id] *= times
+        multiply_reward(recipe, times)
 
     async with bot.pool.acquire() as conn:
         # Try removing the items; if any falls below 0, it fails to craft.
