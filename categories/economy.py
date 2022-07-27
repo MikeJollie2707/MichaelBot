@@ -34,7 +34,27 @@ def get_death_rate(money: int, equipment: psql.Equipment) -> float:
     
     return max(rate, 0)
 
-def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote: bool = False) -> str:
+def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, option: str = "text") -> str:
+    '''Return a reward string for a given item dictionary.
+
+    Parameters
+    ----------
+    bot : models.MichaelBot
+        The bot instance.
+    loot_table : dict[str, int]
+        A `dict` with `{'item_id': amount}`.
+    option : str, optional
+        The option to display. Available options are `text`, `emote`, or `full`.
+
+    Returns
+    -------
+    str
+        A reward string.
+    '''
+
+    if option not in ("text", "emote", "full"):
+        raise ValueError("'option' must be either 'text', 'emote', or 'full'.")
+
     rewards: list[str] = []
     money: int = 0
     for item_id, amount in loot_table.items():
@@ -44,10 +64,12 @@ def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, emote:
             else:
                 item = bot.item_cache.get(item_id)
                 if item is not None:
-                    if emote:
+                    if option == "emote":
                         rewards.append(f"{item.emoji} x {amount}")
-                    else:
+                    elif option == "text":
                         rewards.append(f"{amount}x *{item.name}*")
+                    else:
+                        rewards.append(f"{amount}x {item.emoji} *{item.name}*")
     if money > 0:
         rewards.insert(0, f"{CURRENCY_ICON}{money}")
     return ', '.join(rewards)
@@ -305,7 +327,7 @@ async def daily(ctx: lightbulb.Context):
 
             daily_loot = loot.get_daily_loot(existed.daily_streak)
             await add_reward(conn, ctx.author.id, daily_loot)
-            response += f"You received: {display_reward(bot, daily_loot, emote = True)}\n"
+            response += f"You received: {display_reward(bot, daily_loot, option = 'emote')}\n"
 
         await ctx.respond(response, reply = True)
 
@@ -425,7 +447,7 @@ async def inventory(ctx: lightbulb.Context):
             inv_dict: dict[str, int] = {}
             for inv in inventories:
                 inv_dict[inv.item_id] = inv.amount
-            await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{display_reward(bot, inv_dict, emote = True)}", reply = True)
+            await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{display_reward(bot, inv_dict, option = 'emote')}", reply = True)
         elif view_option == "full":
             page = nav.ItemListBuilder(inventories, 5)
             @page.set_page_start_formatter
@@ -533,7 +555,7 @@ async def market_buy(ctx: lightbulb.Context):
             await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
             await bot.user_cache.update(conn, user)
     
-    await ctx.respond(f"Successfully purchased {display_reward(bot, {item.id : amount}, emote = True)}.", reply = True)
+    await ctx.respond(f"Successfully purchased {display_reward(bot, {item.id : amount}, option = 'emote')}.", reply = True)
 
 @market.child
 @lightbulb.option("amount", "The amount to sell, or 0 to sell all. Default to 1.", type = int, min_value = 0, default = 1)
@@ -577,7 +599,7 @@ async def market_sell(ctx: lightbulb.Context):
             await psql.Inventory.remove(conn, ctx.author.id, item.id, amount)
             await bot.user_cache.update(conn, user)
     
-    await ctx.respond(f"Successfully sold {display_reward(bot, {item.id : amount}, emote = True)} for {CURRENCY_ICON}{profit}.", reply = True)
+    await ctx.respond(f"Successfully sold {display_reward(bot, {item.id : amount}, option = 'emote')} for {CURRENCY_ICON}{profit}.", reply = True)
 
 @market_buy.autocomplete("item")
 @market_sell.autocomplete("item")
@@ -634,7 +656,7 @@ async def mine(ctx: lightbulb.Context):
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
     
-    await ctx.respond(f"You mined and received {display_reward(bot, loot_table, emote = True)}", reply = True)
+    await ctx.respond(f"You mined and received {display_reward(bot, loot_table, option = 'emote')}", reply = True)
     if pickaxe_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].emoji} *{bot.item_cache[pickaxe_existed.item_id].name}* broke after the last mining session!", reply = True)
 
@@ -671,7 +693,7 @@ async def explore(ctx: lightbulb.Context):
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
     
-    await ctx.respond(f"You explored and collected {display_reward(bot, loot_table, emote = True)}", reply = True)
+    await ctx.respond(f"You explored and collected {display_reward(bot, loot_table, option = 'emote')}", reply = True)
     if sword_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[sword_existed.item_id].emoji} *{bot.item_cache[sword_existed.item_id].name}* broke after the last exploring session!", reply = True)
 
@@ -708,7 +730,7 @@ async def chop(ctx: lightbulb.Context):
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
     
-    await ctx.respond(f"You chopped and collected {display_reward(bot, loot_table, emote = True)}", reply = True)
+    await ctx.respond(f"You chopped and collected {display_reward(bot, loot_table, option = 'emote')}", reply = True)
     if axe_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[axe_existed.item_id].emoji} *{bot.item_cache[axe_existed.item_id].name}* broke after the last chopping session!", reply = True)
 
