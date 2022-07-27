@@ -1,7 +1,11 @@
 # The code uses a lot of `id`, which turns out to be shadowing the builtin `id()`.
 #pylint: disable=redefined-builtin
 
-'''Contains many functions that hide all "naked" SQL to use.'''
+'''Contains many functions that hide all "naked" SQL to use.
+
+Generally, all these functions are self-contained, meaning if something screw up, they'll rollback on their own.
+However, using multiple functions at a time can be dangerous without wrapping them around a transaction.
+'''
 
 from __future__ import annotations
 
@@ -966,6 +970,9 @@ class Equipment(ClassToDict):
     @staticmethod
     async def get_user_equipments(conn: asyncpg.Connection, user_id: int, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
         return await Equipment.get_all_where(conn, where = lambda r: r.user_id == user_id, as_dict = as_dict)
+    @staticmethod
+    async def get_user_potions(conn: asyncpg.Connection, user_id: int, *, as_dict: bool = False) -> list[t.Union[Equipment, dict]]:
+        return await Equipment.get_all_where(conn, where = lambda r: Equipment.is_potion(r.item_id) and r.user_id == user_id, as_dict = as_dict)
     @staticmethod
     async def insert_one(conn: asyncpg.Connection, equipment: Equipment) -> int:
         '''Insert an entry into the table.'''
