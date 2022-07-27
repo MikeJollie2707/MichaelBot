@@ -234,7 +234,7 @@ async def info_host(ctx: lightbulb.Context):
 async def info_item(ctx: lightbulb.Context):
     #pylint: disable=import-outside-toplevel
     from categories.econ import loot
-    from categories.economy import display_reward
+    from categories.economy import get_reward_str
     #pylint: enable=import-outside-toplevel
 
     item = ctx.options.item
@@ -280,14 +280,14 @@ async def info_item(ctx: lightbulb.Context):
         result = craft_recipe.pop("result")
         embed.add_field(
             name = "Craft Recipe",
-            value = display_reward(ctx.bot, craft_recipe, option = 'full') + f" ---> {item.emoji} x {result}",
+            value = get_reward_str(ctx.bot, craft_recipe, option = 'full') + f" ---> {item.emoji} x {result}",
             inline = True
         )
     if brew_recipe is not None:
         result = brew_recipe.pop("result")
         cost = brew_recipe.pop("cost", None)
         
-        brew_str = display_reward(ctx.bot, brew_recipe, option = 'full') + f" ---> {item.emoji} x {result}"
+        brew_str = get_reward_str(ctx.bot, brew_recipe, option = 'full') + f" ---> {item.emoji} x {result}"
         if cost is not None:
             brew_str = f"{CURRENCY_ICON}{cost}, " + brew_str
 

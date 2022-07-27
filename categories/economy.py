@@ -34,7 +34,7 @@ def get_death_rate(money: int, equipment: psql.Equipment) -> float:
     
     return max(rate, 0)
 
-def display_reward(bot: models.MichaelBot, loot_table: dict[str, int], *, option: str = "text") -> str:
+def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option: str = "text") -> str:
     '''Return a reward string for a given item dictionary.
 
     Parameters
@@ -287,7 +287,7 @@ async def brew(ctx: lightbulb.Context):
         
         if not success:
             await bot.reset_cooldown(ctx)
-            await ctx.respond(f"You're missing the following items: {display_reward(bot, missing)}")
+            await ctx.respond(f"You're missing the following items: {get_reward_str(bot, missing)}")
             return
         
         async with conn.transaction():
@@ -296,7 +296,7 @@ async def brew(ctx: lightbulb.Context):
             # Update balance.
             await bot.user_cache.update(conn, user)
             await psql.Inventory.add(conn, ctx.author.id, potion.id, recipe["result"])
-    await ctx.respond(f"Successfully brewed {display_reward(bot, {potion.id: recipe['result']})}.", reply = True)
+    await ctx.respond(f"Successfully brewed {get_reward_str(bot, {potion.id: recipe['result']})}.", reply = True)
 
 @brew.autocomplete("potion")
 async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
@@ -363,14 +363,14 @@ async def craft(ctx: lightbulb.Context):
         
         if not success:
             await bot.reset_cooldown(ctx)
-            await ctx.respond(f"You're missing the following items: {display_reward(bot, missing)}")
+            await ctx.respond(f"You're missing the following items: {get_reward_str(bot, missing)}")
             return
         
         async with conn.transaction():
             for inv in inventories:
                 await psql.Inventory.update(conn, inv)
             await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"])
-    await ctx.respond(f"Successfully crafted {display_reward(bot, {item.id: recipe['result']})}.", reply = True)
+    await ctx.respond(f"Successfully crafted {get_reward_str(bot, {item.id: recipe['result']})}.", reply = True)
 @craft.autocomplete("item")
 async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
@@ -431,7 +431,7 @@ async def daily(ctx: lightbulb.Context):
 
             daily_loot = loot.get_daily_loot(existed.daily_streak)
             await add_reward(conn, ctx.author.id, daily_loot)
-            response += f"You received: {display_reward(bot, daily_loot, option = 'emote')}\n"
+            response += f"You received: {get_reward_str(bot, daily_loot, option = 'emote')}\n"
 
         await ctx.respond(response, reply = True)
 
@@ -551,7 +551,7 @@ async def inventory(ctx: lightbulb.Context):
             inv_dict: dict[str, int] = {}
             for inv in inventories:
                 inv_dict[inv.item_id] = inv.amount
-            await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{display_reward(bot, inv_dict, option = 'emote')}", reply = True)
+            await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{get_reward_str(bot, inv_dict, option = 'emote')}", reply = True)
         elif view_option == "full":
             page = nav.ItemListBuilder(inventories, 5)
             @page.set_page_start_formatter
@@ -659,7 +659,7 @@ async def market_buy(ctx: lightbulb.Context):
             await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
             await bot.user_cache.update(conn, user)
     
-    await ctx.respond(f"Successfully purchased {display_reward(bot, {item.id : amount}, option = 'emote')}.", reply = True)
+    await ctx.respond(f"Successfully purchased {get_reward_str(bot, {item.id : amount}, option = 'emote')}.", reply = True)
 
 @market.child
 @lightbulb.option("amount", "The amount to sell, or 0 to sell all. Default to 1.", type = int, min_value = 0, default = 1)
@@ -703,7 +703,7 @@ async def market_sell(ctx: lightbulb.Context):
             await psql.Inventory.remove(conn, ctx.author.id, item.id, amount)
             await bot.user_cache.update(conn, user)
     
-    await ctx.respond(f"Successfully sold {display_reward(bot, {item.id : amount}, option = 'emote')} for {CURRENCY_ICON}{profit}.", reply = True)
+    await ctx.respond(f"Successfully sold {get_reward_str(bot, {item.id : amount}, option = 'emote')} for {CURRENCY_ICON}{profit}.", reply = True)
 
 @market_buy.autocomplete("item")
 @market_sell.autocomplete("item")
@@ -760,7 +760,7 @@ async def mine(ctx: lightbulb.Context):
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
     
-    await ctx.respond(f"You mined and received {display_reward(bot, loot_table, option = 'emote')}", reply = True)
+    await ctx.respond(f"You mined and received {get_reward_str(bot, loot_table, option = 'emote')}", reply = True)
     if pickaxe_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].emoji} *{bot.item_cache[pickaxe_existed.item_id].name}* broke after the last mining session!", reply = True)
 
@@ -797,7 +797,7 @@ async def explore(ctx: lightbulb.Context):
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
     
-    await ctx.respond(f"You explored and collected {display_reward(bot, loot_table, option = 'emote')}", reply = True)
+    await ctx.respond(f"You explored and collected {get_reward_str(bot, loot_table, option = 'emote')}", reply = True)
     if sword_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[sword_existed.item_id].emoji} *{bot.item_cache[sword_existed.item_id].name}* broke after the last exploring session!", reply = True)
 
@@ -834,7 +834,7 @@ async def chop(ctx: lightbulb.Context):
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
     
-    await ctx.respond(f"You chopped and collected {display_reward(bot, loot_table, option = 'emote')}", reply = True)
+    await ctx.respond(f"You chopped and collected {get_reward_str(bot, loot_table, option = 'emote')}", reply = True)
     if axe_existed.remain_durability - 1 == 0:
         await ctx.respond(f"Your {bot.item_cache[axe_existed.item_id].emoji} *{bot.item_cache[axe_existed.item_id].name}* broke after the last chopping session!", reply = True)
 
