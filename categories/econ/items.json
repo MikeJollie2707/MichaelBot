@@ -307,10 +307,11 @@
         "id": "luck_potion",
         "name": "Luck Potion",
         "emoji": "<a:luck_potion:826871436769493062>",
-        "description": "A potion that increases your drops. Can stack up to 5 times.",
+        "description": "A potion that increases your drops.",
         "rarity": "epic",
         "buy_price": null,
-        "sell_price": 20
+        "sell_price": 20,
+        "durability": 20
     },
     {
         "id": "fire_potion",
@@ -319,6 +320,7 @@
         "description": "A potion that can save you in the Nether.",
         "rarity": "rare",
         "buy_price": 500,
-        "sell_price": 10
+        "sell_price": 10,
+        "durability": 10
     }
 ]
