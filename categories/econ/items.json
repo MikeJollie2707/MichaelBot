@@ -271,7 +271,7 @@
         "id": "redstone",
         "name": "Redstone",
         "emoji": "<:redstone:822527280777396264>",
-        "description": "A common red rock that can be used as a way to amplify a potion's power.",
+        "description": "A common red rock that can be used as a basic brewing ingredient.",
         "rarity": "common",
         "buy_price": 5,
         "sell_price": 3
@@ -284,5 +284,41 @@
         "rarity": "common+",
         "buy_price": null,
         "sell_price": 7
+    },
+    {
+        "id": "magma_cream",
+        "name": "Magma Cream",
+        "emoji": "<:magma_cream:823593239683924038>",
+        "description": "A slimy ball dropped from creepy cubes.",
+        "rarity": "common+",
+        "buy_price": null,
+        "sell_price": 7
+    },
+    {
+        "id": "blaze_rod",
+        "name": "Blaze Rod",
+        "emoji": "<:blaze_rod:826150261906472960>",
+        "description": "A fire stick so hot it is used as a fuel to brew potions.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 10
+    },
+    {
+        "id": "luck_potion",
+        "name": "Luck Potion",
+        "emoji": "<a:luck_potion:826871436769493062>",
+        "description": "A potion that increases your drops. Can stack up to 5 times.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 20
+    },
+    {
+        "id": "fire_potion",
+        "name": "Fire Potion",
+        "emoji": "<a:fire_potion:828135033466126366>",
+        "description": "A potion that can save you in the Nether.",
+        "rarity": "rare",
+        "buy_price": 500,
+        "sell_price": 10
     }
 ]
