@@ -437,4 +437,5 @@ class MichaelBot(lightbulb.BotApp):
             The context the command is invoked.
         '''
         
-        await ctx.invoked.cooldown_manager.reset_cooldown(ctx)
+        if ctx.invoked.cooldown_manager is not None:
+            await ctx.invoked.cooldown_manager.reset_cooldown(ctx)
