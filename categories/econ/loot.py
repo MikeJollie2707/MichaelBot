@@ -306,7 +306,7 @@ __BREW_RECIPE = {
         "result": 3
     },
     "nature_potion": {
-        "leaf": 450,
+        "leaf": 900,
         "hibiscus": 120,
         "tulip": 120,
         "rose": 120,
