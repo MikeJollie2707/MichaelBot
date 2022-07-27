@@ -232,6 +232,11 @@ async def info_host(ctx: lightbulb.Context):
 @lightbulb.command("item", "Show information for an item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_item(ctx: lightbulb.Context):
+    #pylint: disable=import-outside-toplevel
+    from categories.econ import loot
+    from categories.economy import display_reward
+    #pylint: enable=import-outside-toplevel
+
     item = ctx.options.item
 
     if isinstance(ctx, lightbulb.SlashContext):
@@ -240,6 +245,9 @@ async def info_item(ctx: lightbulb.Context):
     if item is None:
         await ctx.respond("This item doesn't exist!", reply = True, mentions_reply = True)
         return
+    
+    craft_recipe = loot.get_craft_recipe(item.id)
+    brew_recipe = loot.get_brew_recipe(item.id)
     
     embed = helpers.get_default_embed(
         title = item.name,
@@ -267,6 +275,26 @@ async def info_item(ctx: lightbulb.Context):
         '''),
         inline = True
     )
+
+    if craft_recipe is not None:
+        result = craft_recipe.pop("result")
+        embed.add_field(
+            name = "Craft Recipe",
+            value = display_reward(ctx.bot, craft_recipe, option = 'full') + f" ---> {item.emoji} x {result}",
+            inline = True
+        )
+    if brew_recipe is not None:
+        result = brew_recipe.pop("result")
+        cost = brew_recipe.pop("cost", None)
+        
+        brew_str = display_reward(ctx.bot, brew_recipe, option = 'full') + f" ---> {item.emoji} x {result}"
+        if cost is not None:
+            brew_str = f"{CURRENCY_ICON}{cost}, " + brew_str
+
+        embed.add_field(
+            name = "Brew Recipe",
+            value = brew_str
+        )
     
     await ctx.respond(embed = embed, reply = True)
 
