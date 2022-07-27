@@ -15,13 +15,13 @@ from utils import checks, converters, helpers, models, nav, psql
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 TRADE_REFRESH = 3600 * 4
 
-def get_death_rate(money: int, equipment: psql.Equipment) -> float:
+def get_death_rate(user: psql.User, equipment: psql.Equipment) -> float:
     '''Return the dying chance based on the money.
     
     It's a simple `money / (10 ** 4)` and cap at `0.15`.
     '''
     
-    rate = min(0.15, money / (10 ** 4))
+    rate = min(0.15, user.balance / (10 ** 4))
     
     if "wood" in equipment.item_id:
         rate -= 0.0005
@@ -590,7 +590,7 @@ async def _equipments(ctx: lightbulb.Context):
                 )
             embed.set_thumbnail(ctx.author.avatar_url)
     
-    await ctx.respond(embed = embed, reply = True, mentions_reply = True)
+    await ctx.respond(embed = embed, reply = True)
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
@@ -808,7 +808,7 @@ async def mine(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
-        death_rate = get_death_rate(user.balance, pickaxe_existed)
+        death_rate = get_death_rate(user, pickaxe_existed)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -845,7 +845,7 @@ async def explore(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
-        death_rate = get_death_rate(user.balance, sword_existed)
+        death_rate = get_death_rate(user, sword_existed)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -882,7 +882,7 @@ async def chop(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
-        death_rate = get_death_rate(user.balance, axe_existed)
+        death_rate = get_death_rate(user, axe_existed)
         r = random.random()
         # Dies
         if r <= death_rate:
