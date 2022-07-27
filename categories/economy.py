@@ -232,6 +232,92 @@ async def addmoney(ctx: lightbulb.Context):
     await ctx.respond(f"Added {CURRENCY_ICON}{ctx.options.amount}.")
 
 @plugin.command()
+@lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
+@lightbulb.option("potion", "the name or alias of the potion to brew.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("brew", "Brew various potions.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def brew(ctx: lightbulb.Context):
+    potion: psql.Item = ctx.options.potion
+    times: int = max(1, min(100, ctx.options.times))
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        potion = await converters.ItemConverter(ctx).convert(potion)
+    
+    if potion is None:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This potion doesn't exist!", reply = True, mentions_reply = True)
+        return
+    
+    if not psql.Equipment.is_potion(potion.id):
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This ain't a potion.", reply = True, mentions_reply = True)
+        return
+    
+    recipe = loot.get_brew_recipe(potion.id)
+    if not recipe:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond(f"Potion *{potion.name}* cannot be brewed.", reply = True, mentions_reply = True)
+        return
+    
+    if times > 1:
+        for item_id in recipe:
+            recipe[item_id] *= times
+    
+    user = bot.user_cache[ctx.author.id]
+    if recipe.get("cost") is not None and recipe["cost"] > user.balance:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("You don't have enough money to brew this potion.", reply = True, mentions_reply = True)
+        return
+    
+    if recipe.get("cost") is not None:
+        user.balance -= recipe["cost"]
+    
+    async with bot.pool.acquire() as conn:
+        # Try removing the items; if any falls below 0, it fails to brew.
+        success: bool = True
+        missing: dict[str, int] = {}
+        inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
+        for inv in inventories:
+            inv.amount -= recipe[inv.item_id]
+            if inv.amount < 0:
+                missing[inv.item_id] = -inv.amount
+                success = False
+        
+        if not success:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond(f"You're missing the following items: {display_reward(bot, missing)}")
+            return
+        
+        async with conn.transaction():
+            for inv in inventories:
+                await psql.Inventory.update(conn, inv)
+            # Update balance.
+            await bot.user_cache.update(conn, user)
+            await psql.Inventory.add(conn, ctx.author.id, potion.id, recipe["result"])
+    await ctx.respond(f"Successfully brewed {display_reward(bot, {potion.id: recipe['result']})}.", reply = True)
+
+@brew.autocomplete("potion")
+async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    valid_match = []
+    for item in bot.item_cache.values():
+        if loot.get_brew_recipe(item.id) and psql.Equipment.is_potion(item.id):
+            valid_match.append(item.name)
+            if item.aliases:
+                for alias in item.aliases:
+                    valid_match.append(alias)
+    
+    if option.value == '':
+        return valid_match[:25]
+    return [valid_item for valid_item in valid_match if match_algorithm(valid_item, option.value)][:25]
+
+@plugin.command()
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
@@ -280,9 +366,10 @@ async def craft(ctx: lightbulb.Context):
             await ctx.respond(f"You're missing the following items: {display_reward(bot, missing)}")
             return
         
-        for inv in inventories:
-            await psql.Inventory.update(conn, inv)
-        await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"])
+        async with conn.transaction():
+            for inv in inventories:
+                await psql.Inventory.update(conn, inv)
+            await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"])
     await ctx.respond(f"Successfully crafted {display_reward(bot, {item.id: recipe['result']})}.", reply = True)
 @craft.autocomplete("item")
 async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):

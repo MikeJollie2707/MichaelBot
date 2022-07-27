@@ -6,6 +6,7 @@
 # - "bonus": Same as "money", just different message.
 # - "cost": The money lost.
 
+import copy
 import random
 import typing as t
 
@@ -261,6 +262,32 @@ __CRAFT_RECIPE = {
     },
 }
 
+__BREW_RECIPE = {
+    "luck_potion": {
+        "lucky_clover": 3,
+        "hibiscus": 450,
+        "tulip": 450,
+        "rose": 450,
+        "redstone": 300,
+        "gunpowder": 300,
+        "blaze_rod": 3,
+        "cost": 600,
+        "result": 3
+    },
+    "fire_potion": {
+        "magma_cream": 60,
+        "hibiscus": 99,
+        "tulip": 99,
+        "rose": 99,
+        "redstone": 15,
+        "gunpowder": 15,
+        "spider_eye": 150,
+        "blaze_rod": 3,
+        "cost": 100,
+        "result": 3
+    }
+}
+
 def get_daily_loot(streak: int) -> dict[str, int]:
     '''Return the daily loot based on the current streak.
 
@@ -358,7 +385,27 @@ def get_craft_recipe(item_id: str) -> t.Optional[dict[str, int]]:
         A `dict` denoting the crafting recipe, or `None` if no crafting recipe is found.
     '''
 
-    return __CRAFT_RECIPE.get(item_id)
+    return copy.deepcopy(__CRAFT_RECIPE.get(item_id))
+
+def get_brew_recipe(potion_id: str) -> t.Optional[dict[str, int]]:
+    '''Return the brewing recipe for a potion if existed.
+
+    Notes
+    -----
+    The returning `dict` has a special key `result`, which denote how many potions will be brewed out of the recipe.
+
+    Parameters
+    ----------
+    potion_id : str
+        The potion's id.
+
+    Returns
+    -------
+    t.Optional[dict[str, int]]
+        A `dict` denoting the brewing recipe, or `None` if no brewing recipe is found.
+    '''
+
+    return copy.deepcopy(__BREW_RECIPE.get(potion_id))
 
 def __driver_code():
     '''DO NOT CALL THIS FUNCTION.
