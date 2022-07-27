@@ -288,6 +288,14 @@ __BREW_RECIPE = {
     }
 }
 
+__POTION_CHANCE = {
+    "luck_potion": 1,
+    "fire_potion": 1,
+    "looting_potion": 0.50,
+    "fortune_potion": 0.50,
+    "nature_potion": 0.50,
+}
+
 def get_daily_loot(streak: int) -> dict[str, int]:
     '''Return the daily loot based on the current streak.
 
@@ -406,6 +414,13 @@ def get_brew_recipe(potion_id: str) -> t.Optional[dict[str, int]]:
     '''
 
     return copy.deepcopy(__BREW_RECIPE.get(potion_id))
+
+def roll_potion_activate(potion_id: str):
+    chance = __POTION_CHANCE.get(potion_id, 0)
+    if chance == 1:
+        return True
+    
+    return random.random() <= chance
 
 def __driver_code():
     '''DO NOT CALL THIS FUNCTION.

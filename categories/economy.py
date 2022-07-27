@@ -74,6 +74,10 @@ def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option
         rewards.insert(0, f"{CURRENCY_ICON}{money}")
     return ', '.join(rewards)
 
+def multiply_reward(loot_table: dict[str, int], multiplier: int):
+    for key in loot_table:
+        loot_table[key] *= multiplier
+
 async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
     '''A shortcut to add rewards to the user.
 
@@ -802,6 +806,11 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
 async def mine(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
+    luck_activated = False
+    fire_activated = False
+    fortune_activated = False
+    response_str = ""
+
     async with bot.pool.acquire() as conn:
         pickaxe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_pickaxe")
         if not pickaxe_existed:
@@ -817,20 +826,51 @@ async def mine(ctx: lightbulb.Context):
             return
         
         death_rate = get_death_rate(user, pickaxe_existed)
+        has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
+        has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
+        has_fortune_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fortune_potion")
+        if has_luck_potion:
+            death_rate = max(0, death_rate - 0.005)
+        if has_fire_potion:
+            death_rate = max(0, death_rate - 0.001)
+        
         r = random.random()
         # Dies
         if r <= death_rate:
-            await process_death(conn, bot, user)
-            await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
-            return
+            if not (user.world == "nether" and has_fire_potion and loot.roll_potion_activate("fire_potion")):
+                await process_death(conn, bot, user)
+                await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
+                return
+            else:
+                fire_activated = True
+        
+        if has_luck_potion and loot.roll_potion_activate("luck_potion"):
+            multiply_reward(loot_table, 5)
+            luck_activated = True
+        if has_fortune_potion and loot.roll_potion_activate("fortune_potion"):
+            multiply_reward(loot_table, 5)
+            fortune_activated = True
         
         async with conn.transaction():
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
+            
+            if fire_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
+                response_str += "*Fire Potion* activated, saving you from death!\n"
+            if luck_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
+                response_str += "*Luck Potion* activated, giving you a reward boost!\n"
+            if fortune_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "fortune_potion", has_fortune_potion.remain_durability - 1)
+                response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
     
-    await ctx.respond(f"You mined and received {get_reward_str(bot, loot_table, option = 'emote')}", reply = True)
+    response_str += f"You mined and received {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if pickaxe_existed.remain_durability - 1 == 0:
-        await ctx.respond(f"Your {bot.item_cache[pickaxe_existed.item_id].emoji} *{bot.item_cache[pickaxe_existed.item_id].name}* broke after the last mining session!", reply = True)
+        pickaxe_item = bot.item_cache[pickaxe_existed.item_id]
+        response_str += f"Your {pickaxe_item.emoji} *{pickaxe_item.name}* broke after the last mining session!"
+    
+    await ctx.respond(response_str, reply = True)
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
@@ -838,6 +878,11 @@ async def mine(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def explore(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
+
+    luck_activated = False
+    fire_activated = False
+    looting_activated = False
+    response_str = ""
 
     async with bot.pool.acquire() as conn:
         sword_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_sword")
@@ -854,20 +899,51 @@ async def explore(ctx: lightbulb.Context):
             return
         
         death_rate = get_death_rate(user, sword_existed)
+        has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
+        has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
+        has_looting_potion = await psql.Equipment.get_one(conn, ctx.author.id, "looting_potion")
+        if has_luck_potion:
+            death_rate = max(0, death_rate - 0.005)
+        if has_fire_potion:
+            death_rate = max(0, death_rate - 0.001)
+        
         r = random.random()
         # Dies
         if r <= death_rate:
-            await process_death(conn, bot, user)
-            await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
-            return
+            if not (user.world == "nether" and has_fire_potion and loot.roll_potion_activate("fire_potion")):
+                await process_death(conn, bot, user)
+                await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
+                return
+            else:
+                fire_activated = True
+        
+        if has_luck_potion and loot.roll_potion_activate("luck_potion"):
+            multiply_reward(loot_table, 5)
+            luck_activated = True
+        if has_looting_potion and loot.roll_potion_activate("looting_potion"):
+            multiply_reward(loot_table, 5)
+            looting_activated = True
         
         async with conn.transaction():
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
+            
+            if fire_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
+                response_str += "*Fire Potion* activated, saving you from death!\n"
+            if luck_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
+                response_str += "*Luck Potion* activated, giving you a reward boost!\n"
+            if looting_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "looting_potion", has_looting_potion.remain_durability - 1)
+                response_str += "*Looting Potion* activated, giving you a reward boost!\n"
     
-    await ctx.respond(f"You explored and collected {get_reward_str(bot, loot_table, option = 'emote')}", reply = True)
+    response_str += f"You explored and obtained {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if sword_existed.remain_durability - 1 == 0:
-        await ctx.respond(f"Your {bot.item_cache[sword_existed.item_id].emoji} *{bot.item_cache[sword_existed.item_id].name}* broke after the last exploring session!", reply = True)
+        sword_item = bot.item_cache[sword_existed.item_id]
+        response_str += f"Your {sword_item.emoji} *{sword_item.name}* broke after the last exploring session!"
+    
+    await ctx.respond(response_str, reply = True)
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
@@ -875,6 +951,11 @@ async def explore(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def chop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
+
+    luck_activated = False
+    fire_activated = False
+    nature_activated = False
+    response_str = ""
 
     async with bot.pool.acquire() as conn:
         axe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_axe")
@@ -891,20 +972,53 @@ async def chop(ctx: lightbulb.Context):
             return
         
         death_rate = get_death_rate(user, axe_existed)
+        has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
+        has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
+        has_nature_potion = await psql.Equipment.get_one(conn, ctx.author.id, "nature_potion")
+        if has_luck_potion:
+            death_rate = max(0, death_rate - 0.005)
+        if has_fire_potion:
+            death_rate = max(0, death_rate - 0.001)
+        if has_nature_potion:
+            death_rate = max(0, death_rate - 0.001)
+        
         r = random.random()
         # Dies
         if r <= death_rate:
-            await process_death(conn, bot, user)
-            await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
-            return
+            if not (user.world == "nether" and has_fire_potion and loot.roll_potion_activate("fire_potion")):
+                await process_death(conn, bot, user)
+                await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
+                return
+            else:
+                fire_activated = True
+        
+        if has_luck_potion and loot.roll_potion_activate("luck_potion"):
+            multiply_reward(loot_table, 5)
+            luck_activated = True
+        if has_nature_potion and loot.roll_potion_activate("nature_potion"):
+            multiply_reward(loot_table, 5)
+            nature_activated = True
         
         async with conn.transaction():
             await add_reward(conn, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
+            
+            if fire_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
+                response_str += "*Fire Potion* activated, saving you from death!\n"
+            if luck_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
+                response_str += "*Luck Potion* activated, giving you a reward boost!\n"
+            if nature_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "nature_potion", has_nature_potion.remain_durability - 1)
+                response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
     
-    await ctx.respond(f"You chopped and collected {get_reward_str(bot, loot_table, option = 'emote')}", reply = True)
+    response_str += f"You chopped and collected {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if axe_existed.remain_durability - 1 == 0:
-        await ctx.respond(f"Your {bot.item_cache[axe_existed.item_id].emoji} *{bot.item_cache[axe_existed.item_id].name}* broke after the last chopping session!", reply = True)
+        axe_item = bot.item_cache[axe_existed.item_id]
+        response_str += f"Your {axe_item.emoji} *{axe_item.name}* broke after the last chopping session!"
+    
+    await ctx.respond(response_str, reply = True)
 
 async def do_refresh_trade(bot: models.MichaelBot, when: dt.datetime = None):
     '''Renew trades and barters.
