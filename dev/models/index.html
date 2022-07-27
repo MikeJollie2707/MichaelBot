@@ -2572,7 +2572,8 @@ These methods will return a deep copy of the desired object, so you can freely e
 <span class="normal">437</span>
 <span class="normal">438</span>
 <span class="normal">439</span>
-<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
+<span class="normal">440</span>
+<span class="normal">441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.&#39;&#39;&#39;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
@@ -2699,7 +2700,8 @@ These methods will return a deep copy of the desired object, so you can freely e
 <span class="sd">            The context the command is invoked.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -3090,7 +3092,8 @@ These methods will return a deep copy of the desired object, so you can freely e
 <span class="normal">437</span>
 <span class="normal">438</span>
 <span class="normal">439</span>
-<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">reset_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">Context</span><span class="p">):</span>
+<span class="normal">440</span>
+<span class="normal">441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">reset_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">Context</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A shortcut to reset a command&#39;s cooldown.</span>
 
 <span class="sd">    Parameters</span>
@@ -3099,7 +3102,8 @@ These methods will return a deep copy of the desired object, so you can freely e
 <span class="sd">        The context the command is invoked.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
