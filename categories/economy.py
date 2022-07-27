@@ -249,6 +249,9 @@ async def addmoney(ctx: lightbulb.Context):
     await ctx.respond(f"Added {CURRENCY_ICON}{ctx.options.amount}.")
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    - It is recommended to use the `Slash Command` version of this command.
+'''))
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
 @lightbulb.option("potion", "the name or alias of the potion to brew.", type = converters.ItemConverter, autocomplete = True)
@@ -313,7 +316,6 @@ async def brew(ctx: lightbulb.Context):
             await bot.user_cache.update(conn, user)
             await psql.Inventory.add(conn, ctx.author.id, potion.id, recipe["result"])
     await ctx.respond(f"Successfully brewed {get_reward_str(bot, {potion.id: recipe['result']})}.", reply = True)
-
 @brew.autocomplete("potion")
 async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
@@ -497,7 +499,6 @@ async def equip(ctx: lightbulb.Context):
         response_str += f"Equipped *{item.name}*."
         
         await ctx.respond(response_str, reply = True)
-
 @equip.autocomplete("equipment")
 async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
@@ -518,6 +519,10 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
     return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
+@lightbulb.set_help(dedent('''
+    - It is recommended to use the `Slash Command` version of this command.
+'''))
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("usepotion", "Use a potion.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
