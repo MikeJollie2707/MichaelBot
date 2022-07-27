@@ -503,6 +503,66 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
     return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
+@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("usepotion", "Use a potion.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def usepotion(ctx: lightbulb.Context):
+    potion: psql.Item = ctx.options.potion
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        potion = await converters.ItemConverter(ctx).convert(potion)
+
+    if not potion:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This potion doesn't exist!", reply = True, mentions_reply = True)
+        return
+    if not psql.Equipment.is_potion(potion.id):
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("This is not a potion!", reply = True, mentions_reply = True)
+        return
+    
+    async with bot.pool.acquire() as conn:
+        inv = await psql.Inventory.get_one(conn, ctx.author.id, potion.id)
+        if not inv:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You don't have this potion in your inventory!", reply = True, mentions_reply = True)
+            return
+
+        potions = await psql.Equipment.get_user_potions(conn, ctx.author.id)
+        if len(potions) > 3:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You currently have 3 potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
+            return
+        existed = await psql.Equipment.get_one(conn, ctx.author.id, potion.id)
+        if existed:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You're already using this potion.", reply = True, mentions_reply = True)
+            return
+        
+        await psql.Equipment.transfer_from_inventory(conn, inv)
+        
+    await ctx.respond(f"Equipped *{potion.name}*", reply = True)
+@usepotion.autocomplete("potion")
+async def usepotion_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    potions = []
+    for item in bot.item_cache.values():
+        if psql.Equipment.is_potion(item.id):
+            potions.append(item.name)
+            if item.aliases:
+                for alias in item.aliases:
+                    potions.append(alias)
+    
+    if option.value == '':
+        return potions[:25]
+    return [match_potion for match_potion in potions if match_algorithm(match_potion, option.value)][:25]
+
+@plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("equipments", "View your current equipments.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
