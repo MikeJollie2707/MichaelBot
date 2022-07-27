@@ -583,11 +583,19 @@ async def _equipments(ctx: lightbulb.Context):
             embed.description = "*Cricket noises*"
         else:
             for equipment in equipments:
-                item_form = bot.item_cache[equipment.item_id]
-                embed.add_field(
-                    name = f"{item_form.emoji} {item_form.name} [{equipment.remain_durability}/{item_form.durability}]",
-                    value = f"*{item_form.description}*"
-                )
+                if not psql.Equipment.is_potion(equipment.item_id):
+                    item_form = bot.item_cache[equipment.item_id]
+                    embed.add_field(
+                        name = f"{item_form.emoji} {item_form.name} [{equipment.remain_durability}/{item_form.durability}]",
+                        value = f"*{item_form.description}*"
+                    )
+            for potion in equipments:
+                if psql.Equipment.is_potion(potion.item_id):
+                    item_form = bot.item_cache[potion.item_id]
+                    embed.add_field(
+                        name = f"{item_form.emoji} {item_form.name} [{potion.remain_durability}/{item_form.durability}]",
+                        value = f"*{item_form.description}*"
+                    )
             embed.set_thumbnail(ctx.author.avatar_url)
     
     await ctx.respond(embed = embed, reply = True)
