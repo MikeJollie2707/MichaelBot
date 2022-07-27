@@ -202,6 +202,23 @@ async def bet(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_checks(checks.is_dev)
+@lightbulb.option("amount", "Amount to add.", type = int, min_value = 1, default = 1)
+@lightbulb.option("item", "The item to add.", type = converters.ItemConverter)
+@lightbulb.command("additem", "Add item.")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def additem(ctx: lightbulb.Context):
+    item = ctx.options.item
+    bot: models.MichaelBot = ctx.bot
+    
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+
+    async with bot.pool.acquire() as conn:
+        await psql.Inventory.add(conn, ctx.author.id, item.id, ctx.options.amount)
+    await ctx.respond("Added.")
+
+@plugin.command()
+@lightbulb.add_checks(checks.is_dev)
 @lightbulb.option("amount", "Amount to add.", type = int, min_value = 1, max_value = 500)
 @lightbulb.command("addmoney", "Add money.")
 @lightbulb.implements(lightbulb.PrefixCommand)
