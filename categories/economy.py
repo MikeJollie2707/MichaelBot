@@ -550,7 +550,7 @@ async def usepotion(ctx: lightbulb.Context):
             return
 
         potions = await psql.Equipment.get_user_potions(conn, ctx.author.id)
-        if len(potions) > 3:
+        if len(potions) >= 3:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You currently have 3 potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
             return
