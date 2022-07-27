@@ -308,19 +308,49 @@
         "name": "Luck Potion",
         "emoji": "<a:luck_potion:826871436769493062>",
         "description": "A potion that increases your drops.",
-        "rarity": "epic",
+        "rarity": "Legendary",
         "buy_price": null,
-        "sell_price": 20,
+        "sell_price": 500,
         "durability": 20
     },
     {
         "id": "fire_potion",
         "name": "Fire Potion",
         "emoji": "<a:fire_potion:828135033466126366>",
-        "description": "A potion that can save you in the Nether.",
+        "description": "A potion that can save you in the Nether in case you're not careful with the environment there.",
         "rarity": "rare",
-        "buy_price": 500,
-        "sell_price": 10,
+        "buy_price": 1500,
+        "sell_price": 100,
         "durability": 10
+    },
+    {
+        "id": "fortune_potion",
+        "name": "Fortune Potion",
+        "emoji": "<a:fortune_potion:828135803812577330>",
+        "description": "A potion that increases your mining drops.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200,
+        "durability": 20
+    },
+    {
+        "id": "looting_potion",
+        "name": "Looting Potion",
+        "emoji": "<a:looting_potion:841783868860399719>",
+        "description": "A potion that increases your exploring drops.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200,
+        "durability": 20
+    },
+    {
+        "id": "nature_potion",
+        "name": "Nature Potion",
+        "emoji": "<a:nature_potion:1001774101372870736>",
+        "description": "A potion that increases your chopping drops.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200,
+        "durability": 20
     }
 ]
