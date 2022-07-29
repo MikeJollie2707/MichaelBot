@@ -15,13 +15,14 @@ from utils import checks, converters, helpers, models, nav, psql
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 TRADE_REFRESH = 3600 * 4
 
-def get_death_rate(user: psql.User, equipment: psql.Equipment) -> float:
-    '''Return the dying chance based on the money.
+def get_death_rate(reward_value: int, equipment: psql.Equipment, reductions: float = 0) -> float:
+    '''Return the dying chance based on the arguments provided.
     
-    It's a simple `money / (10 ** 4)` and cap at `0.15`.
+    Death rate is capped at `0.15` (or 15%) before taking `equipment` and `reductions` into consideration, so
+    in most cases, this value is `[0, 0.15)`
     '''
     
-    rate = min(0.15, user.balance / (10 ** 4))
+    rate = min(0.15, reward_value / (5 ** 4))
     
     if "wood" in equipment.item_id:
         rate -= 0.0005
@@ -32,7 +33,7 @@ def get_death_rate(user: psql.User, equipment: psql.Equipment) -> float:
     elif "diamond" in equipment.item_id:
         rate -= 0.01
     
-    return max(rate, 0)
+    return max(rate - reductions, 0)
 
 def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option: str = "text") -> str:
     '''Return a reward string for a given item dictionary.
@@ -90,6 +91,36 @@ def multiply_reward(loot_table: dict[str, int], multiplier: int):
 
     for key in loot_table:
         loot_table[key] *= multiplier
+
+def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -> int:
+    '''Get the value of a loot table.
+
+    Parameters
+    ----------
+    loot_table : dict[str, int]
+        The loot table.
+    item_cache : models.ItemCache
+        The item cache.
+
+    Returns
+    -------
+    int
+        The value of the loot table.
+    '''
+
+    value: int = 0
+    for item_id, amount in loot_table.items():
+        if item_id in loot.RESERVED_KEYS:
+            if item_id in ("money", "bonus"):
+                value += amount
+            elif item_id == "cost":
+                value -= amount
+            continue
+        
+        item = item_cache[item_id]
+        value += item.sell_price * amount
+    
+    return value
 
 async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
     '''A shortcut to add rewards to the user.
@@ -836,8 +867,7 @@ async def mine(ctx: lightbulb.Context):
         
         user = bot.user_cache[ctx.author.id]
         
-        # Get simple death rate.
-        death_rate = get_death_rate(user, pickaxe_existed)
+        death_reductions = 0
         
         # Check external buffs for lowering death rate.
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
@@ -846,14 +876,21 @@ async def mine(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_rate = max(0, death_rate - 0.005)
+            death_reductions += 0.005
             luck_activated = loot.roll_potion_activate("luck_potion")
         if has_fire_potion:
-            death_rate = max(0, death_rate - 0.01)
+            death_reductions += 0.01
             fire_activated = loot.roll_potion_activate("fire_potion")
         if has_fortune_potion:
             fortune_activated = loot.roll_potion_activate("fortune_potion")
         
+        loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, luck_activated)
+        if not loot_table:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), pickaxe_existed, death_reductions)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -861,12 +898,6 @@ async def mine(ctx: lightbulb.Context):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
-        
-        loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, luck_activated)
-        if not loot_table:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
-            return
         
         if luck_activated:
             multiply_reward(loot_table, 5)
@@ -914,9 +945,8 @@ async def explore(ctx: lightbulb.Context):
             return
         
         user = bot.user_cache[ctx.author.id]
-        
-        # Get simple death rate.
-        death_rate = get_death_rate(user, sword_existed)
+
+        death_reductions = 0
         
         # Check external buffs for lowering death rate.
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
@@ -925,14 +955,21 @@ async def explore(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_rate = max(0, death_rate - 0.005)
+            death_reductions += 0.005
             luck_activated = loot.roll_potion_activate("luck_potion")
         if has_fire_potion:
-            death_rate = max(0, death_rate - 0.01)
+            death_reductions += 0.01
             fire_activated = loot.roll_potion_activate("fire_potion")
         if has_looting_potion:
             looting_activated = loot.roll_potion_activate("looting_potion")
         
+        loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, luck_activated)
+        if not loot_table:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), sword_existed, death_reductions)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -940,12 +977,6 @@ async def explore(ctx: lightbulb.Context):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
-        
-        loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, luck_activated)
-        if not loot_table:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
-            return
         
         if luck_activated:
             multiply_reward(loot_table, 5)
@@ -994,8 +1025,7 @@ async def chop(ctx: lightbulb.Context):
         
         user = bot.user_cache[ctx.author.id]
         
-        # Get simple death rate.
-        death_rate = get_death_rate(user, axe_existed)
+        death_reductions = 0
         
         # Check external buffs for lowering death rate.
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
@@ -1004,15 +1034,22 @@ async def chop(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_rate = max(0, death_rate - 0.005)
+            death_reductions += 0.005
             luck_activated = loot.roll_potion_activate("loot_potion")
         if has_fire_potion:
-            death_rate = max(0, death_rate - 0.01)
+            death_reductions += 0.01
             fire_activated = loot.roll_potion_activate("fire_potion")
         if has_nature_potion:
-            death_rate = max(0, death_rate - 0.02)
+            death_reductions += 0.02
             nature_activated = loot.roll_potion_activate("nature_potion")
         
+        loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, luck_activated)
+        if not loot_table:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            return
+        
+        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), axe_existed, death_reductions)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -1020,12 +1057,6 @@ async def chop(ctx: lightbulb.Context):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
-        
-        loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, luck_activated)
-        if not loot_table:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
-            return
         
         if luck_activated:
             multiply_reward(loot_table, 5)
