@@ -325,14 +325,30 @@ async def brew(ctx: lightbulb.Context):
         user.balance -= recipe["cost"]
     
     async with bot.pool.acquire() as conn:
-        # Try removing the items; if any falls below 0, it fails to brew.
+        # Try removing the items; if any falls below 0, it fails to craft.
         success: bool = True
         missing: dict[str, int] = {}
+        # Only retrieve relevant items.
         inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
+
+        # Loop through inventories and reduce amount and track how many items missing.
+        # In case inv is missing a few items or all items, then missing won't have that key, and will be checked in a separate loop.
+
         for inv in inventories:
             inv.amount -= recipe[inv.item_id]
             if inv.amount < 0:
                 missing[inv.item_id] = -inv.amount
+                success = False
+            else:
+                # Make sure this key is available; not available means the user don't have this item at all.
+                missing[inv.item_id] = 0
+
+        # Check if missing has all the keys in the recipe (except result).
+        for item_id in recipe:
+            if item_id == "result": continue
+
+            if item_id not in missing:
+                missing[item_id] = recipe[item_id]
                 success = False
         
         if not success:
@@ -402,13 +418,29 @@ async def craft(ctx: lightbulb.Context):
         # Try removing the items; if any falls below 0, it fails to craft.
         success: bool = True
         missing: dict[str, int] = {}
+        # Only retrieve relevant items.
         inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
+
+        # Loop through inventories and reduce amount and track how many items missing.
+        # In case inv is missing a few items or all items, then missing won't have that key, and will be checked in a separate loop.
+
         for inv in inventories:
             inv.amount -= recipe[inv.item_id]
             if inv.amount < 0:
                 missing[inv.item_id] = -inv.amount
                 success = False
-        
+            else:
+                # Make sure this key is available; not available means the user don't have this item at all.
+                missing[inv.item_id] = 0
+
+        # Check if missing has all the keys in the recipe (except result).
+        for item_id in recipe:
+            if item_id == "result": continue
+
+            if item_id not in missing:
+                missing[item_id] = recipe[item_id]
+                success = False
+
         if not success:
             await bot.reset_cooldown(ctx)
             await ctx.respond(f"You're missing the following items: {get_reward_str(bot, missing)}")
