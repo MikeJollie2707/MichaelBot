@@ -352,26 +352,44 @@ def get_daily_loot(streak: int) -> dict[str, int]:
         }
     if streak <= 13:
         return {
-            "money": 10,
+            "money": 100,
             "bonus": streak,
-            "wood": random.randint(10, 15)
+            "wood": random.randint(10, 15),
+            "leaf": random.randint(50, 60),
+            "hibiscus": random.randint(10, 12),
+            "tulip": random.randint(10, 12),
+            "rose": random.randint(10, 12),
         }
     if streak <= 27:
         return {
-            "money": 20,
-            "bonus": 5 * (streak - 12),
-            "wood": random.randint(11, 16)
+            "money": 200,
+            "bonus": 5 * streak,
+            "wood": random.randint(20, 25),
+            "leaf": random.randint(100, 110),
+            "hibiscus": random.randint(20, 22),
+            "tulip": random.randint(20, 22),
+            "rose": random.randint(20, 22),
         }
     if streak <= 60:
         return {
-            "money": 100,
-            "bonus": 2 * (streak - 20),
-            "wood": random.randint(95, 105)
+            "money": 1000,
+            "bonus": 2 * streak,
+            "wood": random.randint(50, 55),
+            "leaf": random.randint(210, 220),
+            "hibiscus": random.randint(50, 52),
+            "tulip": random.randint(50, 52),
+            "rose": random.randint(50, 52),
+            "lucky_clover": random.randint(1, 5),
         }
     return {
-        "money": 200,
-        "bonus": 5 * (streak - 60),
-        "wood": random.randint(190, 210)
+        "money": 2000,
+        "bonus": 5 * streak,
+        "wood": random.randint(190, 210),
+        "leaf": random.randint(190, 210),
+        "hibiscus": random.randint(190, 210),
+        "tulip": random.randint(190, 210),
+        "rose": random.randint(190, 210),
+        "lucky_clover": random.randint(1, 10),
     }
 
 def get_activity_loot(equipment_id: str, world: str, has_luck: bool = False) -> t.Optional[dict[str, int]]:
