@@ -112,6 +112,16 @@ __ACTIVITY_LOOT = {
             "diamond": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (50, 40, 5, 5)),
             "obsidian": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
+        "nether_pickaxe": {
+            # - stone: 77.41%
+            # - iron: 17.48%
+            # - diamond: 1.40%
+            # - obsidian: 3.71%
+            "stone": RewardRNG(rate = 1, min_amount = 9, max_amount = 12),
+            "iron": RewardRNG(rate = 0.6, min_amount = 3, max_amount = 5, amount_layout = (35, 35, 30)),
+            "diamond": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (40, 40, 10, 10)),
+            "obsidian": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 4),
+        },
 
         # Sword
         "stone_sword": {
@@ -138,64 +148,168 @@ __ACTIVITY_LOOT = {
             "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
             "pearl": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
         },
+        "nether_sword": {
+            # - rotten_flesh: 80.89%
+            # - spider_eye: 12.14%
+            # - gunpowder: 5.36%
+            # - pearl: 1.62%
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 9, max_amount = 11),
+            "spider_eye": RewardRNG(rate = 0.3, min_amount = 4, max_amount = 6),
+            "gunpowder": RewardRNG(rate = 0.25, min_amount = 2, max_amount = 4, amount_layout = (45, 45, 10)),
+            "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
+        },
 
         # Axe
         "stone_axe": {
-            # - wood: 11.31%
-            # - leaf: 70.62%
-            # - hibiscus: 5.66%
-            # - tulip: 5.64%
-            # - rose: 5.64%
-            # - lucky_clover: 1.13%
+            # - wood: 11.12%
+            # - leaf: 69.46%
+            # - hibiscus: 5.55%
+            # - tulip: 5.56%
+            # - rose: 5.55%
+            # - bed_pickaxe: 1.65%
+            # - lucky_clover: 1.11%
             "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
             "tulip": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
             "rose": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
+            "bed_pickaxe": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
             "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
         },
         "iron_axe": {
-            # - wood: 7.78%
-            # - leaf: 68.09%
-            # - hibiscus: 7.79%
-            # - tulip: 7.78%
-            # - rose: 7.78%
-            # - lucky_clover: 0.78%
+            # - wood: 7.69%
+            # - leaf: 67.29%
+            # - hibiscus: 7.70%
+            # - tulip: 7.70%
+            # - rose: 7.69%
+            # - bed_pickaxe: 1.16%
+            # - lucky_clover: 0.77%
             "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
             "tulip": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
             "rose": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
+            "bed_pickaxe": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
             "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
         },
         "diamond_axe": {
-            # - wood: 5.55%
-            # - leaf: 62.4%
-            # - hibiscus: 10.41%
-            # - tulip: 10.4%
-            # - rose: 10.4%
-            # - lucky_clover: 0.83%
+            # - wood: 5.50%
+            # - leaf: 61.91%
+            # - hibiscus: 10.32%
+            # - tulip: 10.30%
+            # - rose: 10.32%
+            # - bed_pickaxe: 0.83%
+            # - lucky_clover: 0.82%
             "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
             "tulip": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
             "rose": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
+            "bed_pickaxe": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
             "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
+        },
+        "nether_axe": {
+            # - wood: 5.66%
+            # - leaf: 62.29%
+            # - hibiscus: 10.19%
+            # - tulip: 10.20%
+            # - rose: 10.19%
+            # - bed_pickaxe: 0.67%
+            # - lucky_clover: 0.79%
+            "wood": RewardRNG(rate = 1, min_amount = 2, max_amount = 3),
+            "leaf": RewardRNG(rate = 1, min_amount = 25, max_amount = 30),
+            "hibiscus": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
+            "tulip": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
+            "rose": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
+            "bed_pickaxe": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
+            "lucky_clover": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 6),
         }
     },
     "nether": {
+        # Pickaxe
         "wood_pickaxe": {
-            "redstone": RewardRNG(rate = 1, min_amount = 1, max_amount = 1),
+            "redstone": RewardRNG(rate = 1, min_amount = 1, max_amount = 5),
+            "gold": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1)
         },
         "stone_pickaxe": {
-            "redstone": RewardRNG(rate = 1, min_amount = 1, max_amount = 1),
+            "redstone": RewardRNG(rate = 1, min_amount = 4, max_amount = 7),
+            "gold": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
         },
         "iron_pickaxe": {
-            "redstone": RewardRNG(rate = 1, min_amount = 4, max_amount = 7),
+            "redstone": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "gold": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 9),
         },
         "diamond_pickaxe": {
-            "redstone": RewardRNG(rate = 1, min_amount = 8, max_amount = 11),
+            "redstone": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "gold": RewardRNG(rate = 0.6, min_amount = 10, max_amount = 15),
+            "obsidian": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "debris": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
         },
+        "nether_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 30, max_amount = 50),
+            "gold": RewardRNG(rate = 0.6, min_amount = 15, max_amount = 20),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
+            "debris": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 4, amount_layout = (50, 30, 10, 10)),
+        },
+        "bed_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 60, max_amount = 100),
+            "gold": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "obsidian": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
+            "debris": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 4, amount_layout = (50, 20, 20, 10)),
+        },
+
+        # Sword
+        "stone_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
+            "gold": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
+            "magma_cream": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
+            "blaze_rod": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
+        },
+        "iron_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
+            "gold": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "magma_cream": RewardRNG(rate = 0.25, min_amount = 5, max_amount = 8),
+            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            "blaze_rod": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
+            #"nether_star": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
+        },
+        "diamond_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
+            "gold": RewardRNG(rate = 0.3, min_amount = 2, max_amount = 2),
+            "magma_cream": RewardRNG(rate = 0.25, min_amount = 10, max_amount = 15),
+            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
+            "blaze_rod": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 2),
+            #"nether_star": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
+        },
+        "nether_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "gold": RewardRNG(rate = 0.4, min_amount = 2, max_amount = 3),
+            "magma_cream": RewardRNG(rate = 0.25, min_amount = 15, max_amount = 20),
+            "gunpowder": RewardRNG(rate = 0.2, min_amount = 2, max_amount = 4, amount_layout = (45, 35, 20)),
+            "blaze_rod": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            #"nether_star": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
+        },
+
+        # Axe
+        "stone_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+        },
+        "iron_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 5, max_amount = 7),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "mushroom": RewardRNG(rate = 0.3, min_amount = 3, max_amount = 5),
+        },
+        "diamond_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
+            "mushroom": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 7),
+        },
+        "nether_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 25, max_amount = 30),
+            "mushroom": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 7),
+        }
     },
 }
 
@@ -260,6 +374,26 @@ __CRAFT_RECIPE = {
         "obsidian": 10,
         "result": 5
     },
+    "netherite": {
+        "debris": 4,
+        "gold": 4,
+        "result": 1
+    },
+    "nether_pickaxe": {
+        "netherite": 1,
+        "diamond_pickaxe": 1,
+        "result": 1
+    },
+    "nether_sword": {
+        "netherite": 1,
+        "diamond_sword": 1,
+        "result": 1
+    },
+    "nether_axe": {
+        "netherite": 1,
+        "diamond_axe": 1,
+        "result": 1
+    }
 }
 
 __BREW_RECIPE = {
@@ -496,7 +630,7 @@ def __driver_code():
     rate_tracker: dict[str, int] = {}
 
     for _ in range(0, SIMULATION_TIME):
-        loot_rate = get_activity_loot("diamond_axe", "overworld")
+        loot_rate = get_activity_loot("nether_axe", "overworld")
 
         for reward in loot_rate:
             if reward not in rate_tracker:

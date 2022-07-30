@@ -102,7 +102,7 @@
         "description": "A drop from killing spiders. This can be used to brew potions.",
         "rarity": "common",
         "buy_price": 20,
-        "sell_price": 1
+        "sell_price": 5
     },
     {
         "id": "gunpowder",
@@ -110,8 +110,8 @@
         "emoji": "<:gunpowder:821528688646160395>",
         "description": "A drop from killing creepers. This can be used to brew potions.",
         "rarity": "common+",
-        "buy_price": 25,
-        "sell_price": 5
+        "buy_price": 30,
+        "sell_price": 10
     },
     {
         "id": "pearl",
@@ -120,7 +120,7 @@
         "description": "A rare drop from a rare monster. It emit a strange power towards the sky.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 10
+        "sell_price": 20
     },
     {
         "id": "stone",
@@ -168,7 +168,7 @@
         "description": "A fairly modern material. It can be used to craft pretty good tools.",
         "rarity": "common+",
         "buy_price": null,
-        "sell_price": 7
+        "sell_price": 12
     },
     {
         "id": "iron_pickaxe",
@@ -177,7 +177,7 @@
         "description": "A pretty good pickaxe. It can mine some of the rarer materials in the Overworld.",
         "rarity": "common+",
         "buy_price": null,
-        "sell_price": 5,
+        "sell_price": 10,
         "durability": 50
     },
     {
@@ -187,7 +187,7 @@
         "description": "A pretty good sword. It can slay more enemies.",
         "rarity": "common+",
         "buy_price": null,
-        "sell_price": 5,
+        "sell_price": 10,
         "durability": 50
     },
     {
@@ -197,7 +197,7 @@
         "description": "A pretty good axe. It can chop more trees.",
         "rarity": "common+",
         "buy_price": null,
-        "sell_price": 5,
+        "sell_price": 10,
         "durability": 50
     },
     {
@@ -207,7 +207,7 @@
         "description": "A rare material that shines brightly under the sun. It can be used to craft very good tools that last even longer.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 15
+        "sell_price": 25
     },
     {
         "id": "diamond_pickaxe",
@@ -216,7 +216,7 @@
         "description": "A good pickaxe that can mine some hard objects and last quite a while.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 12,
+        "sell_price": 25,
         "durability": 100
     },
     {
@@ -226,7 +226,7 @@
         "description": "A good sword that can slay even more enemies and last even longer.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 12,
+        "sell_price": 25,
         "durability": 100
     },
     {
@@ -236,7 +236,7 @@
         "description": "A good axe that can chop a lot more trees and last even longer.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 12,
+        "sell_price": 25,
         "durability": 100
     },
     {
@@ -246,7 +246,17 @@
         "description": "A volcanic glass that's hard to mine. They seems to give a mysterious energy linked to the underground.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 10
+        "sell_price": 20
+    },
+    {
+        "id": "bed_pickaxe",
+        "name": "Bed",
+        "emoji": "🛏️",
+        "description": "Despite its look, a bed can be used to mine things in certain locations.",
+        "rarity": "common",
+        "buy_price": null,
+        "sell_price": 5,
+        "durability": 1
     },
     {
         "id": "overworld_ticket",
@@ -255,7 +265,7 @@
         "description": "A one-way ticket to the surface of the World.",
         "rarity": "common",
         "buy_price": 15,
-        "sell_price": 10
+        "sell_price": 5
     },
     {
         "id": "nether_ticket",
@@ -265,7 +275,7 @@
         "description": "A one-way ticket to the underworld.",
         "rarity": "rare",
         "buy_price": null,
-        "sell_price": 10
+        "sell_price": 50
     },
     {
         "id": "redstone",
@@ -275,6 +285,24 @@
         "rarity": "common",
         "buy_price": 5,
         "sell_price": 3
+    },
+    {
+        "id": "dry_leaf",
+        "name": "Dry Leaf",
+        "emoji": "🍂",
+        "description": "Leaf that are in the Nether. They hold no water so they're barely alive and hanging on.",
+        "rarity": "common",
+        "buy_price": 1,
+        "sell_price": 1
+    },
+    {
+        "id": "mushroom",
+        "name": "Mushroom",
+        "emoji": "🍄",
+        "description": "A body of fungus that grows randomly in the Nether. It's safe to eat.",
+        "rarity": "common+",
+        "buy_price": 7,
+        "sell_price": 5
     },
     {
         "id": "gold",
@@ -302,6 +330,58 @@
         "rarity": "rare",
         "buy_price": null,
         "sell_price": 10
+    },
+    {
+        "id": "debris",
+        "name": "Ancient Debris",
+        "aliases": ["Debris"],
+        "emoji": "<:debris:823622624118702081>",
+        "description": "A fragment of what was once the toughest metal in the world.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 100
+    },
+    {
+        "id": "netherite",
+        "name": "Netherite",
+        "emoji": "<:netherite:828129193275293706>",
+        "description": "The toughest metal in the world after being restored to its prime quality. It is said that this material is fire-proof.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200
+    },
+    {
+        "id": "nether_pickaxe",
+        "name": "Netherite Pickaxe",
+        "aliases": ["Nether Pickaxe"],
+        "emoji": "<:nether_pickaxe:828129193254191144>",
+        "description": "A very good pickaxe that can mine anything in this world.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 150,
+        "durability": 200
+    },
+    {
+        "id": "nether_sword",
+        "name": "Netherite Sword",
+        "aliases": ["Nether Sword"],
+        "emoji": "<:nether_sword:828129193434939442>",
+        "description": "A very good sword. It can slays many more enemies in existance, including some larger and more dangerous ones.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 150,
+        "durability": 200
+    },
+    {
+        "id": "nether_axe",
+        "name": "Netherite Axe",
+        "aliases": ["Nether Axe"],
+        "emoji": "<:nether_axe:828129193367175178>",
+        "description": "A very good axe. It can chop a lot more trees.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 150,
+        "durability": 200
     },
     {
         "id": "luck_potion",
