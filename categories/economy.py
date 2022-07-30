@@ -15,14 +15,18 @@ from utils import checks, converters, helpers, models, nav, psql
 CURRENCY_ICON = "<:emerald:993835688137072670>"
 TRADE_REFRESH = 3600 * 4
 
-def get_death_rate(reward_value: int, equipment: psql.Equipment, reductions: float = 0) -> float:
+def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, reductions: float = 0) -> float:
     '''Return the dying chance based on the arguments provided.
     
     Death rate is capped at `0.15` (or 15%) before taking `equipment` and `reductions` into consideration, so
     in most cases, this value is `[0, 0.15)`
     '''
+
+    cap_death = 0.15
+    if world == "nether":
+        cap_death = 0.45
     
-    rate = min(0.15, reward_value / (5 ** 4))
+    rate = min(cap_death, reward_value / (5 ** 4))
     
     if "wood" in equipment.item_id:
         rate -= 0.0005
@@ -32,6 +36,8 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, reductions: flo
         rate -= 0.005
     elif "diamond" in equipment.item_id:
         rate -= 0.01
+    elif "nether" in equipment.item_id:
+        rate -= 0.05
     
     return max(rate - reductions, 0)
 
@@ -173,7 +179,10 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     inventories = await psql.Inventory.get_user_inventory(conn, user.id)
     
     async with conn.transaction():
-        await psql.Equipment.delete_entries(conn, equipments)
+        for equipment in equipments:
+            if "nether_" not in equipment.item_id:
+                await psql.Equipment.delete(conn, user.id, equipment.item_id)
+        
         for inv in inventories:
             inv.amount -= inv.amount * 5 // 100
             await psql.Inventory.update(conn, inv)
@@ -898,6 +907,10 @@ async def mine(ctx: lightbulb.Context):
             return
         
         user = bot.user_cache[ctx.author.id]
+        if pickaxe_existed.item_id == "bed_pickaxe" and user.world == "overworld":
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("This pickaxe doesn't work in the Overworld!", reply = True, mentions_reply = True)
+            return
         
         death_reductions = 0
         
@@ -922,7 +935,7 @@ async def mine(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
-        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), pickaxe_existed, death_reductions)
+        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), pickaxe_existed, user.world, death_reductions)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -1001,7 +1014,7 @@ async def explore(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
-        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), sword_existed, death_reductions)
+        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), sword_existed, user.world, death_reductions)
         r = random.random()
         # Dies
         if r <= death_rate:
@@ -1081,7 +1094,7 @@ async def chop(ctx: lightbulb.Context):
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
         
-        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), axe_existed, death_reductions)
+        death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), axe_existed, user.world, death_reductions)
         r = random.random()
         # Dies
         if r <= death_rate:
