@@ -618,31 +618,3 @@ def roll_potion_activate(potion_id: str) -> bool:
         return True
     
     return random.random() <= chance
-
-def __driver_code():
-    '''DO NOT CALL THIS FUNCTION.
-
-    This is a function only because all variables used will be public when exporting (thank you Python for its scoping "rule").
-    '''
-    
-    SIMULATION_TIME = 10 ** 6
-    total: int = 0
-    rate_tracker: dict[str, int] = {}
-
-    for _ in range(0, SIMULATION_TIME):
-        loot_rate = get_activity_loot("nether_axe", "overworld")
-
-        for reward in loot_rate:
-            if reward not in rate_tracker:
-                rate_tracker[reward] = loot_rate[reward]
-            else:
-                rate_tracker[reward] += loot_rate[reward]
-            
-            total += loot_rate[reward]
-
-    print(f"Sim {SIMULATION_TIME:,} times, total amount: {total:,}")
-    for item, amount in rate_tracker.items():
-        print(f"- {item}: {amount:,} / {total:,} ({float(amount) / total * 100 :.5f}%)")
-
-if __name__ == "__main__":
-    __driver_code()
