@@ -383,9 +383,6 @@ async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption,
     for item in bot.item_cache.values():
         if loot.get_brew_recipe(item.id) and psql.Equipment.is_potion(item.id):
             valid_match.append(item.name)
-            if item.aliases:
-                for alias in item.aliases:
-                    valid_match.append(alias)
     
     if option.value == '':
         return valid_match[:25]
@@ -471,9 +468,6 @@ async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, 
     for item in bot.item_cache.values():
         if loot.get_craft_recipe(item.id):
             valid_match.append(item.name)
-            if item.aliases:
-                for alias in item.aliases:
-                    valid_match.append(alias)
     
     if option.value == '':
         return valid_match[:25]
@@ -582,9 +576,6 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
     for item in bot.item_cache.values():
         if psql.Equipment.is_true_equipment(item.id):
             equipments.append(item.name)
-            if item.aliases:
-                for alias in item.aliases:
-                    equipments.append(alias)
     
     if option.value == '':
         return equipments[:25]
@@ -646,9 +637,6 @@ async def usepotion_potion_autocomplete(option: hikari.AutocompleteInteractionOp
     for item in bot.item_cache.values():
         if psql.Equipment.is_potion(item.id):
             potions.append(item.name)
-            if item.aliases:
-                for alias in item.aliases:
-                    potions.append(alias)
     
     if option.value == '':
         return potions[:25]
@@ -879,9 +867,6 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
     items = []
     for item in bot.item_cache.values():
         items.append(item.name)
-        if item.aliases:
-            for alias in item.aliases:
-                items.append(alias)
     
     if option.value == '':
         return items[:25]

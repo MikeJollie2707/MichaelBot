@@ -309,9 +309,6 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
     items = []
     for item in bot.item_cache.values():
         items.append(item.name)
-        if item.aliases:
-            for alias in item.aliases:
-                items.append(alias)
     
     if option.value == '':
         return items[:25]
