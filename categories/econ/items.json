@@ -391,7 +391,7 @@
         "rarity": "Legendary",
         "buy_price": null,
         "sell_price": 500,
-        "durability": 20
+        "durability": 50
     },
     {
         "id": "fire_potion",
