@@ -10,6 +10,7 @@ utils/__pycache__/
 events/__pycache__/
 
 categories/test.py
+categories/econ/econ_sim.py
 
 docs/site
 
