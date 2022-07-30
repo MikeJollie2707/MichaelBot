@@ -398,14 +398,14 @@ __CRAFT_RECIPE = {
 
 __BREW_RECIPE = {
     "luck_potion": {
-        "lucky_clover": 120,
-        "hibiscus": 450,
-        "tulip": 450,
-        "rose": 450,
-        "redstone": 300,
-        "gunpowder": 300,
-        "blaze_rod": 3,
-        "cost": 600,
+        "lucky_clover": 420,
+        "hibiscus": 999,
+        "tulip": 999,
+        "rose": 999,
+        "redstone": 999,
+        "gunpowder": 999,
+        "blaze_rod": 99,
+        "cost": 6969,
         "result": 3
     },
     "fire_potion": {
