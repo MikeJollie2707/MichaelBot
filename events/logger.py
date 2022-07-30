@@ -1303,7 +1303,7 @@ async def on_command_invoke(event: lightbulb.CommandCompletionEvent):
 async def on_command_error(event: lightbulb.CommandErrorEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.log_cache[event.guild_id].log_channel
+        log_channel = bot.log_cache[event.context.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 
