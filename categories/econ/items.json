@@ -35,7 +35,7 @@
         "emoji": "<:wood_pickaxe:819617302164930570>",
         "description": "A fragile pickaxe. It can only mine a small amount of things before breaking apart.",
         "rarity": "common",
-        "buy_price": null,
+        "buy_price": 5,
         "sell_price": 1,
         "durability": 25
     },
@@ -245,7 +245,7 @@
         "emoji": "<:obsidian:822532045673725964>",
         "description": "A volcanic glass that's hard to mine. They seems to give a mysterious energy linked to the underground.",
         "rarity": "rare",
-        "buy_price": null,
+        "buy_price": 50,
         "sell_price": 20
     },
     {
