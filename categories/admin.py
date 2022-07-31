@@ -222,7 +222,6 @@ async def cache_view_user(ctx: lightbulb.Context):
     else:
         await ctx.respond("Cache for this user doesn't exist.", reply = True, mentions_reply = True)
 
-
 @cache_view.child
 @lightbulb.option("item_id", "The item's id to view.")
 @lightbulb.command("item", "View the cache of an item.", hidden = True)
@@ -286,6 +285,27 @@ async def reload_error(event: lightbulb.CommandErrorEvent):
     elif isinstance(exception, lightbulb.ExtensionNotLoaded):
         await event.context.respond("This extension is not found or is not loaded.", reply = True, mentions_reply = True)
     return True
+
+@plugin.command()
+@lightbulb.option("command", "The command to reset.")
+@lightbulb.command("reset-cooldown", "Reset a command's cooldown. This only resets soft cooldown.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def reset_cooldown(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    commands: list[lightbulb.Command] = []
+    commands.append(bot.get_prefix_command(ctx.options.command))
+    commands.append(bot.get_slash_command(ctx.options.command))
+    commands.append(bot.get_message_command(ctx.options.command))
+    commands.append(bot.get_user_command(ctx.options.command))
+
+    for command in commands:
+        if command is not None:
+            if command.cooldown_manager is not None:
+                # Cooldown is shared among all types of command, so erase once is enough.
+                await command.cooldown_manager.reset_cooldown(ctx)
+                break
+    await ctx.respond(f"Reset `{ctx.options.command}` cooldown.", reply = True)
 
 @plugin.command()
 @lightbulb.command("shutdown", "Shut the bot down.", hidden = True)
