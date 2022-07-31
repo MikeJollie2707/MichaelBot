@@ -18,8 +18,8 @@ TRADE_REFRESH = 3600 * 4
 def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, reductions: float = 0) -> float:
     '''Return the dying chance based on the arguments provided.
     
-    Death rate is capped at `0.15` (or 15%) before taking `equipment` and `reductions` into consideration, so
-    in most cases, this value is `[0, 0.15)`
+    Death rate is capped at `0.15` (`0.45` if in nether) before taking `equipment` and `reductions` into consideration, so
+    in most cases, this value is `[0, 0.15)` (or `[0, 0.45)`)
     '''
 
     cap_death = 0.15
