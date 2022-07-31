@@ -29,9 +29,9 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, red
     rate = min(cap_death, reward_value / (5 ** 4))
     
     if "wood" in equipment.item_id:
-        rate -= 0.0005
+        rate -= 0.15
     elif "stone" in equipment.item_id:
-        rate -= 0.001
+        rate -= 0.15
     elif "iron" in equipment.item_id:
         rate -= 0.005
     elif "diamond" in equipment.item_id:
