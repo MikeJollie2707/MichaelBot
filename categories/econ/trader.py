@@ -131,8 +131,8 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             dest_max_amount = max_value_limit // dest_price
             
             trade.amount_dest = random.randint(1, dest_max_amount)
-            # Devalue the item.
-            trade.amount_src = math.ceil(trade.amount_dest * dest_price * (1 + random.random()))
+            # Devalue the item, but also have a chance to overvalue the item.
+            trade.amount_src = math.ceil(trade.amount_dest * dest_price * (0.75 + random.random()))
         
         trades.append(trade)
     return trades
