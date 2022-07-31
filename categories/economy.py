@@ -180,7 +180,7 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     
     async with conn.transaction():
         for equipment in equipments:
-            if "nether_" not in equipment.item_id:
+            if not ("nether_" in equipment.item_id and user.world == "nether"):
                 await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
         for inv in inventories:
