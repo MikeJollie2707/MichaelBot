@@ -6,6 +6,7 @@ from utils import models, psql
 
 __TRADE_WHITELIST = ("money",
     "wood", "stick", "wood_pickaxe", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
+    "leaf", "hibiscus", "tulip", "rose", "lucky_clover",
     "stone", "stone_pickaxe", "stone_sword", "iron", "iron_pickaxe", "iron_sword", "obsidian",
     "overworld_ticket", "nether_ticket",
 )
@@ -13,7 +14,7 @@ __BARTER_WHITELIST = ("gold",
     "wood", "stick", "wood_pickaxe", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
     "stone", "stone_pickaxe", "stone_sword", "iron", "iron_pickaxe", "iron_sword", "diamond",
     "diamond_pickaxe", "diamond_sword", "obsidian",
-    "overworld_ticket", "nether_ticket", "redstone",
+    "overworld_ticket", "nether_ticket", "redstone", "dry_leaf", "mushroom", "magma_cream",
 )
 
 def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amount: int = 6) -> list[psql.ActiveTrade]:
