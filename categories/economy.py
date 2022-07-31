@@ -873,7 +873,7 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
     return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("mine", "Mine for resources. You'll need a pickaxe equipped.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def mine(ctx: lightbulb.Context):
@@ -956,7 +956,7 @@ async def mine(ctx: lightbulb.Context):
     await ctx.respond(response_str, reply = True)
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("explore", "Explore the caves and get resources by killing monsters. You'll need a sword equipped.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def explore(ctx: lightbulb.Context):
@@ -1035,7 +1035,7 @@ async def explore(ctx: lightbulb.Context):
     await ctx.respond(response_str, reply = True)
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 300, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("chop", "Chop trees from various forest to gain plant-related resources. You'll need an axe equipped.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def chop(ctx: lightbulb.Context):
