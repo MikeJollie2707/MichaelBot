@@ -662,20 +662,19 @@ async def _equipments(ctx: lightbulb.Context):
         if not equipments:
             embed.description = "*Cricket noises*"
         else:
+            def _equipment_order(e: psql.Equipment):
+                if e.eq_type == "_sword": return 0
+                if e.eq_type == "_pickaxe": return 1
+                if e.eq_type == "_axe": return 2
+                return bot.item_cache[e.item_id].sort_id
+            
+            equipments.sort(key = _equipment_order)
             for equipment in equipments:
-                if not psql.Equipment.is_potion(equipment.item_id):
-                    item_form = bot.item_cache[equipment.item_id]
-                    embed.add_field(
-                        name = f"{item_form.emoji} {item_form.name} [{equipment.remain_durability}/{item_form.durability}]",
-                        value = f"*{item_form.description}*"
-                    )
-            for potion in equipments:
-                if psql.Equipment.is_potion(potion.item_id):
-                    item_form = bot.item_cache[potion.item_id]
-                    embed.add_field(
-                        name = f"{item_form.emoji} {item_form.name} [{potion.remain_durability}/{item_form.durability}]",
-                        value = f"*{item_form.description}*"
-                    )
+                item_form = bot.item_cache[equipment.item_id]
+                embed.add_field(
+                    name = f"{item_form.emoji} {item_form.name} [{equipment.remain_durability}/{item_form.durability}]",
+                    value = f"*{item_form.description}*"
+                )
             embed.set_thumbnail(ctx.author.avatar_url)
     
     await ctx.respond(embed = embed, reply = True)
