@@ -75,7 +75,7 @@ async def changelog(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone(),
             author = ctx.author
         ))
-    page_nav = ButtonNavigator(pages = embeds)
+    page_nav = ButtonNavigator(pages = embeds, authors = (ctx.author.id, ))
     await run_view(page_nav, ctx)
 
 @plugin.command()

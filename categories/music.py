@@ -399,7 +399,7 @@ async def queue(ctx: lightbulb.Context):
                 )
                 page_list.append(embed)
             
-            page_nav = ButtonNavigator(pages = page_list)
+            page_nav = ButtonNavigator(pages = page_list, authors = (ctx.author.id, ))
             await run_view(page_nav, ctx)
     else:
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)

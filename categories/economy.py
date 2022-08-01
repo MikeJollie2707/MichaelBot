@@ -230,7 +230,7 @@ async def bet(ctx: lightbulb.Context):
         await ctx.respond(f"You don't have enough money to bet {CURRENCY_ICON}{money}!", reply = True, mentions_reply = True)
         return
     if user.balance == money:
-        confirm_menu = nav.ConfirmView(timeout = 10)
+        confirm_menu = nav.ConfirmView(timeout = 10, authors = (ctx.author.id, ))
         resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
         confirm_menu.start(await resp.message())
         res = await confirm_menu.wait()
@@ -721,7 +721,7 @@ async def inventory(ctx: lightbulb.Context):
                     value = f"*{item.description}*\nTotal value: {CURRENCY_ICON}{item.sell_price * inv.amount}"
                 )
             
-            await nav.run_view(page.build(), ctx)
+            await nav.run_view(page.build(authors = (ctx.author.id,)), ctx)
         elif view_option == "value":
             value = 0
             for inv in inventories:
@@ -766,7 +766,7 @@ async def market_view(ctx: lightbulb.Context):
             ''')
         )
     
-    await nav.run_view(builder.build(), ctx)
+    await nav.run_view(builder.build(authors = (ctx.author.id, )), ctx)
 
 @market.child
 @lightbulb.option("amount", "The amount to purchase. Default to 1.", type = int, min_value = 1, default = 1)

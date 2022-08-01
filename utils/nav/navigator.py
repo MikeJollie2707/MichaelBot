@@ -91,6 +91,23 @@ class ButtonNavigator(nav.NavigatorView):
     The default navigator.
     '''
     def __init__(self, *args, **kwargs) -> None:
+        '''Construct a default navigator.
+
+        Parameters
+        ----------
+        pages : list[str | hikari.Embed]
+            A list of content to be displayed.
+        buttons : list[nav.NavButton], optional
+            A list of buttons to display. It is safe to ignore this parameter for most use cases.
+        timeout : float, optional
+            The amount of seconds before the view time out. Default to `120.0`.
+        autodefer : bool, optional
+            Whether the view will handle deferred response. It is safe to ignore this parameter for most use cases. Default to `True`.
+        authors : t.Sequence[int], optional
+            A list of ids that are allowed to interact with this view. Default to `None`.
+        '''
+
+        self._author_ids: t.Optional[t.Sequence[int]] = kwargs.pop("authors", None)
         super().__init__(*args, **kwargs)
 
         for index, item in enumerate(self.pages):
@@ -109,6 +126,15 @@ class ButtonNavigator(nav.NavigatorView):
         '''
 
         return [nav.FirstButton(), nav.PrevButton(), nav.NextButton(), nav.LastButton(), StopButtonDelete()]
+    
+    async def view_check(self, context: miru.Context) -> bool:
+        if not self._author_ids:
+            return True
+        
+        if context.user.id not in self._author_ids:
+            await context.respond("You're not allowed to interact with this menu!", flags = hikari.MessageFlag.EPHEMERAL)
+        
+        return context.user.id in self._author_ids
     
     async def on_timeout(self) -> None:
         '''Called when the view times out.
@@ -181,7 +207,7 @@ class ItemListBuilder:
         '''
         self.page_end_formatter = callback
     
-    def build(self, *, page_type = ButtonNavigator):
+    def build(self, *, page_type = ButtonNavigator, authors: t.Sequence[int] = None):
         '''Start the formatting process and return an object of `page_type`.
 
         Warnings
@@ -191,7 +217,9 @@ class ItemListBuilder:
         Parameters
         ----------
         page_type : t.Type, optional
-            The type of navigator to use, by default ButtonNavigator. This must have a `pages` argument accepting a list of `hikari.Embed`.
+            The type of navigator to use, by default ButtonNavigator. This must have a `pages` argument accepting a list of `hikari.Embed` and a `authors` argument accepting a list of ids.
+        authors : t.Sequence[int], optional
+            The ids of people that are allowed to interact with the navigator. Default to `None`.
 
         Returns
         -------
@@ -226,4 +254,4 @@ class ItemListBuilder:
             self.page_end_formatter(embed, index, item)
             embeds.append(embed)
 
-        return page_type(pages = embeds)
+        return page_type(pages = embeds, authors = authors)

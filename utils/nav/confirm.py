@@ -12,10 +12,21 @@ class ConfirmView(miru.View):
     '''
     A confirmation menu.
     '''
-    def __init__(self, *, timeout: t.Optional[float] = 120, autodefer: bool = True) -> None:
+    def __init__(self, *, timeout: t.Optional[float] = 120, autodefer: bool = True, authors: t.Sequence[int] = None) -> None:
+        self._author_ids = authors
         super().__init__(timeout = timeout, autodefer = autodefer)
 
         self.result: t.Optional[bool] = None
+    
+    async def view_check(self, context: miru.Context) -> bool:
+        if not self._author_ids:
+            return True
+        
+        if context.user.id not in self._author_ids:
+            await context.respond("You're not allowed to interact with this menu!", flags = hikari.MessageFlag.EPHEMERAL)
+        
+        return context.user.id in self._author_ids
+
     @miru.button(label = "Yes", emoji = helpers.get_emote(":white_check_mark:"), style = hikari.ButtonStyle.SUCCESS, custom_id = "yes_button")
     async def yes_button(self, _: miru.Button, __: miru.Context):
         self.result = True

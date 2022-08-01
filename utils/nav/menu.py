@@ -350,7 +350,7 @@ class LastMenuButton(MenuButton):
         
 class ComplexView(miru.View):
     '''A complex menu.'''
-    def __init__(self, menu: MenuComponent, *, timeout: t.Optional[float] = 120, autodefer: bool = True) -> None:
+    def __init__(self, menu: MenuComponent, *, timeout: t.Optional[float] = 120, autodefer: bool = True, authors: t.Sequence[int] = None) -> None:
         '''Construct a complex menu.
 
         Parameters
@@ -361,14 +361,26 @@ class ComplexView(miru.View):
             How long (in seconds) the menu should accept interactions. Default to `120`.
         autodefer : bool, optional
             Whether or not the menu should defer when possible. Default to `True`.
+        authors : t.Sequence[int], optional
+            A list of ids that are allowed to interact with this view. Default to `None`.
         '''
 
         super().__init__(timeout=timeout, autodefer=autodefer)
 
         self.menu = menu
+        self._author_ids = authors
 
         # For list menu
         self.current_page: int = 0
+    
+    async def view_check(self, context: miru.Context) -> bool:
+        if not self._author_ids:
+            return True
+        
+        if context.user.id not in self._author_ids:
+            await context.respond("You're not allowed to interact with this menu!", flags = hikari.MessageFlag.EPHEMERAL)
+        
+        return context.user.id in self._author_ids
     
     def _update_button(self) -> None:
         '''

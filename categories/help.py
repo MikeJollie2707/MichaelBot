@@ -292,7 +292,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
                 plugin_help_format(ctx, plugins[name])
             )
         
-        await nav.ComplexView(menu_root).run(ctx)
+        await nav.ComplexView(menu_root, authors = (ctx.author.id,)).run(ctx)
     
     async def send_plugin_help(self, ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> None:
         '''
@@ -310,7 +310,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
             if page is not None:
                 embeds.append(page)
         
-        page_nav = nav.ButtonNavigator(pages = embeds)
+        page_nav = nav.ButtonNavigator(pages = embeds, authors = (ctx.author.id,))
         await nav.run_view(page_nav, ctx)
         
     
