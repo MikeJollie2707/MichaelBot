@@ -7,7 +7,7 @@ from utils import models, psql
 __TRADE_WHITELIST = ("money",
     "wood", "stick", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
     "leaf", "hibiscus", "tulip", "rose", "lucky_clover",
-    "stone", "iron", "iron_pickaxe", "iron_sword", "iron_axe", "obsidian",
+    "stone", "iron", "iron_pickaxe", "iron_sword", "iron_axe", "diamond", "obsidian",
     "overworld_ticket", "nether_ticket",
 )
 __BARTER_WHITELIST = ("gold",
@@ -66,7 +66,7 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             
             trade.amount_src = random.randint(1, src_max_amount)
             # Overvalue the item.
-            trade.amount_dest = math.ceil(trade.amount_src * src_price * (1 + random.random()))
+            trade.amount_dest = math.ceil(trade.amount_src * src_price * (0.5 + random.random()))
         # item -> item
         elif i == amount:
             # Select items so they don't go against each other.
