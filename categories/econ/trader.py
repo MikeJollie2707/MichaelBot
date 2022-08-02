@@ -5,15 +5,15 @@ import random
 from utils import models, psql
 
 __TRADE_WHITELIST = ("money",
-    "wood", "stick", "wood_pickaxe", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
+    "wood", "stick", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
     "leaf", "hibiscus", "tulip", "rose", "lucky_clover",
-    "stone", "stone_pickaxe", "stone_sword", "iron", "iron_pickaxe", "iron_sword", "obsidian",
+    "stone", "iron", "iron_pickaxe", "iron_sword", "iron_axe", "obsidian",
     "overworld_ticket", "nether_ticket",
 )
 __BARTER_WHITELIST = ("gold",
     "wood", "stick", "wood_pickaxe", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
-    "stone", "stone_pickaxe", "stone_sword", "iron", "iron_pickaxe", "iron_sword", "diamond",
-    "diamond_pickaxe", "diamond_sword", "obsidian",
+    "stone", "stone_pickaxe", "stone_sword", "stone_axe", "iron", "iron_pickaxe", "iron_sword", "iron_axe", 
+    "diamond", "diamond_pickaxe", "diamond_sword", "diamond_axe", "obsidian",
     "overworld_ticket", "nether_ticket", "redstone", "dry_leaf", "mushroom", "magma_cream",
 )
 
