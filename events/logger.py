@@ -138,7 +138,7 @@ async def log_set_all(ctx: lightbulb.Context):
             
             log_cache = existed
         
-        log_cache.log_channel = True
+        log_cache.log_channel = channel
         await bot.log_cache.update(conn, log_cache)
             
     
