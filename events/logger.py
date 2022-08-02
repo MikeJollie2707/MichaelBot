@@ -1315,10 +1315,30 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
             return
         if isinstance(exception, lightbulb.CommandIsOnCooldown):
             return
+        
+        ctx = event.context
+        invoke_content: str = ""
+        if isinstance(ctx, lightbulb.PrefixContext):
+            invoke_content = ctx.event.message.content
+        elif isinstance(ctx, lightbulb.SlashContext):
+            content_l = [ctx.interaction.command_name]
+            options = ctx.interaction.options
+            if options:
+                # Handle subcommands.
+                while options[0].options:
+                    content_l.append(f"{options[0].name}")
+                    options = options[0].options
+                
+                for option in options:
+                    content_l.append(f"[{option.name}: {option.value}]")
+            invoke_content = ' '.join(content_l)
+        else:
+            invoke_content = "None"
 
         embed.title = "Command Raised an Error"
         embed.description = dedent(f'''
             **Command:** `{event.context.invoked.signature}`
+            **Invoked as:** `{invoke_content}`
             **Error:** ```{type(exception).__name__}: {exception}```
         ''')
         embed.add_field(
