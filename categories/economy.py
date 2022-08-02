@@ -26,7 +26,7 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, red
     if world == "nether":
         cap_death = 0.45
     
-    rate = min(cap_death, reward_value / (5 ** 4))
+    rate = min(cap_death, 2 ** ((reward_value - 10) / 25) / 100) 
     
     if "wood" in equipment.item_id:
         rate -= 0.15
