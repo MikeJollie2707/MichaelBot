@@ -66,7 +66,7 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             
             trade.amount_src = random.randint(1, src_max_amount)
             # Overvalue the item.
-            trade.amount_dest = math.ceil(trade.amount_src * src_price * (0.5 + random.random()))
+            trade.amount_dest = math.ceil(trade.amount_src * src_price * (0.85 + random.random()))
         # item -> item
         elif i == amount:
             # Select items so they don't go against each other.
@@ -132,7 +132,7 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             
             trade.amount_dest = random.randint(1, dest_max_amount)
             # Devalue the item, but also have a chance to overvalue the item.
-            trade.amount_src = math.ceil(trade.amount_dest * dest_price * (0.75 + random.random()))
+            trade.amount_src = math.ceil(trade.amount_dest * dest_price * (0.65 + random.random()))
         
         trades.append(trade)
     return trades
