@@ -554,12 +554,34 @@ async def equip(ctx: lightbulb.Context):
         response_str = ""
 
         if existed:
-            # Destroy old equipment, then move new one.
+            # Refund if possible.
             existed_item = bot.item_cache.get(existed.item_id)
+            response_str += f"You unequipped *{existed_item.name}* "
             async with conn.transaction():
+                craftable = loot.get_craft_recipe(existed.item_id)
+                if not craftable:
+                    response_str += "and it disappeared like magic.\n"
+                else:
+                    # Refund x%
+                    refund_rate = existed.remain_durability / existed_item.durability
+                    for item_id in craftable:
+                        if item_id == "result": continue
+
+                        # craftable["result"] should be 1, but just in case it's not 1, we divide it to get the value of each individual tool's value.
+                        craftable[item_id] = int(craftable[item_id] / craftable["result"] * refund_rate)
+                    
+                    # Clean the dict to prevent any dumb side-effect.
+                    del craftable["result"]
+                    await add_reward(conn, ctx.author.id, craftable)
+
+                    reward_str = get_reward_str(bot, craftable, option = "emote")
+                    if not reward_str:
+                        response_str += "and got back nothing.\n"
+                    else:
+                        response_str += f"and got back the following items: {reward_str}\n"
+                
                 await psql.Equipment.delete(conn, ctx.author.id, existed.item_id)
                 await psql.Equipment.transfer_from_inventory(conn, inv)
-                response_str += f"Unequipped *{existed_item.name}* into the void.\n"
         else:
             await psql.Equipment.transfer_from_inventory(conn, inv)
         response_str += f"Equipped *{item.name}*."
