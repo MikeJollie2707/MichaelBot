@@ -1,6 +1,6 @@
 # Economy System
 
-MichaelBot has its own economy system that's heavily inspired by Minecraft. This document is written to serve a brief intro to this sytem, as it can be confusing where to start.
+MichaelBot has its own economy system that's heavily inspired by Minecraft. This document is written to serve a brief intro to this system, as it can be confusing where to start.
 
 ## Guide
 
