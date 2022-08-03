@@ -1376,9 +1376,18 @@ async def _trade(ctx: lightbulb.Context):
                     options = options,
                     placeholder = "Select a trade to perform"
                 ))
-            await msg.edit(embed = embed, components = view.build())
+            
+            try:
+                await msg.edit(embed = embed, components = view.build())
+            except hikari.NotFoundError:
+                # Message is deleted most likely.
+                return
         except asyncio.TimeoutError:
-            await msg.edit(components = None)
+            try:
+                await msg.edit(components = None)
+            except hikari.NotFoundError:
+                # Message is deleted most likely.
+                return
             break
 
 @plugin.command()
@@ -1524,9 +1533,17 @@ async def _barter(ctx: lightbulb.Context):
                     options = options,
                     placeholder = "Select a barter to perform"
                 ))
-            await msg.edit(embed = embed, components = view.build())
+            try:
+                await msg.edit(embed = embed, components = view.build())
+            except hikari.NotFoundError:
+                # Message is deleted most likely.
+                return
         except asyncio.TimeoutError:
-            await msg.edit(components = None)
+            try:
+                await msg.edit(components = None)
+            except hikari.NotFoundError:
+                # Message is deleted most likely.
+                return
             break
 
 @plugin.command()
