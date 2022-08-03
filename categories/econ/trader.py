@@ -79,6 +79,10 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             while trade.item_dest in traded_item:
                 trade.item_dest = random.choice(__TRADE_WHITELIST)
             traded_item.append(trade.item_dest)
+
+            # Limit diamond trade.
+            if trade.item_dest == "diamond":
+                trade.hard_limit = 5
             
             # Get the items' values.
             item_src = item_cache[trade.item_src]
@@ -114,6 +118,10 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             while trade.item_dest in traded_item:
                 trade.item_dest = random.choice(__TRADE_WHITELIST)
             traded_item.append(trade.item_dest)
+
+            # Limit diamond trade.
+            if trade.item_dest == "diamond":
+                trade.hard_limit = 5
             
             # Get the item's value.
             item = item_cache[trade.item_dest]
