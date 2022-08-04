@@ -323,6 +323,15 @@
         "sell_price": 7
     },
     {
+        "id": "nether_respawner",
+        "name": "Nether Respawner",
+        "emoji": "<a:nether_respawner:1004571071560822904>",
+        "description": "An item that allows you to stay in the Nether after your death.",
+        "rarity": "common+",
+        "buy_price": 500,
+        "sell_price": 100
+    },
+    {
         "id": "blaze_rod",
         "name": "Blaze Rod",
         "emoji": "<:blaze_rod:826150261906472960>",

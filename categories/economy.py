@@ -177,6 +177,7 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
 
     equipments = await psql.Equipment.get_user_equipments(conn, user.id)
     inventories = await psql.Inventory.get_user_inventory(conn, user.id)
+    back_to_overworld = True
     
     async with conn.transaction():
         for equipment in equipments:
@@ -184,11 +185,17 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
                 await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
         for inv in inventories:
-            inv.amount -= inv.amount * 5 // 100
+            if user.world == "nether" and inv.item_id == "nether_respawner":
+                inv.amount -= 1
+                back_to_overworld = False
+            else:
+                inv.amount -= inv.amount * 5 // 100
             await psql.Inventory.update(conn, inv)
         
         user.balance -= user.balance * 20 // 100
-        user.world = "overworld"
+        if back_to_overworld:
+            user.world = "overworld"
+        
         await bot.user_cache.update(conn, user)
 
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
