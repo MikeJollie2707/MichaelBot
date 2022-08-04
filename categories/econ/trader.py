@@ -8,13 +8,13 @@ __TRADE_WHITELIST = ("money",
     "wood", "stick", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
     "leaf", "hibiscus", "tulip", "rose", "lucky_clover",
     "stone", "iron", "iron_pickaxe", "iron_sword", "iron_axe", "diamond", "obsidian",
-    "overworld_ticket", "nether_ticket",
+    "overworld_ticket", "nether_ticket", "nether_respawner",
 )
 __BARTER_WHITELIST = ("gold",
     "wood", "stick", "wood_pickaxe", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
     "stone", "stone_pickaxe", "stone_sword", "stone_axe", "iron", "iron_pickaxe", "iron_sword", "iron_axe", 
     "diamond", "diamond_pickaxe", "diamond_sword", "diamond_axe", "obsidian",
-    "overworld_ticket", "nether_ticket", "redstone", "dry_leaf", "mushroom", "magma_cream",
+    "overworld_ticket", "nether_ticket", "nether_respawner", "redstone", "dry_leaf", "mushroom", "magma_cream",
 )
 
 def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amount: int = 6) -> list[psql.ActiveTrade]:
