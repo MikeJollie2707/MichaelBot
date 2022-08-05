@@ -128,19 +128,21 @@ def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -
     
     return value
 
-async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
+async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dict[str, int]):
     '''A shortcut to add rewards to the user.
 
     For some special keys (as defined in `loot.RESERVED_KEYS`), this will attempt to add money also.
 
     Notes
     -----
-    This function has its own transaction.
+    This function internally calls `UserCache.update()`.
 
     Parameters
     ----------
     conn : asyncpg.Connection
         The connection to use.
+    bot : models.MichaelBot
+        The bot instance.
     user_id : int
         The user's id.
     loot_table : dict[str, int]
@@ -153,11 +155,14 @@ async def add_reward(conn, user_id: int, loot_table: dict[str, int]):
             if item_id not in loot.RESERVED_KEYS:
                 if amount > 0:
                     await psql.Inventory.add(conn, user_id, item_id, amount)
-            if item_id == "cost":
+            elif item_id == "cost":
                 money -= amount
             else:
                 money += amount
-        await psql.User.add_money(conn, user_id, money)
+        
+        user = bot.user_cache[user_id]
+        user.balance += money
+        await bot.user_cache.update(conn, user)
 
 async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     '''A shortcut to process a user's death.
@@ -493,34 +498,33 @@ async def daily(ctx: lightbulb.Context):
 
     response: str = ""
     async with bot.pool.acquire() as conn:
-        existed = bot.user_cache.get(ctx.author.id)
+        user = bot.user_cache.get(ctx.author.id)
         
         # User should be guaranteed to be created via checks.is_command_enabled() check.
-        assert existed is not None
+        assert user is not None
 
         now = dt.datetime.now().astimezone()
         async with conn.transaction():
-            if existed.last_daily is None:
+            if user.last_daily is None:
                 response += "Yooo first time collecting daily, welcome!\n"
-                existed.daily_streak = 1
-            elif now - existed.last_daily < dt.timedelta(days = 1):
-                remaining_time = dt.timedelta(days = 1) + existed.last_daily - now
+                user.daily_streak = 1
+            elif now - user.last_daily < dt.timedelta(days = 1):
+                remaining_time = dt.timedelta(days = 1) + user.last_daily - now
                 await ctx.respond(f"You're a bit too early. You have `{humanize.precisedelta(remaining_time, format = '%0.0f')}` left.")
                 return
             # A user need to collect the daily before the second day.
-            elif now - existed.last_daily >= dt.timedelta(days = 2):
+            elif now - user.last_daily >= dt.timedelta(days = 2):
                 # They're collecting daily now, so it's 1.
-                response += f"Oops, your old streak of `{existed.daily_streak}x` got obliterated. Wake up early next time :)\n"
-                existed.daily_streak = 1
+                response += f"Oops, your old streak of `{user.daily_streak}x` got obliterated. Wake up early next time :)\n"
+                user.daily_streak = 1
             else:
-                existed.daily_streak += 1
-                response += f"You gained a new streak! Your streak now: `{existed.daily_streak}x`\n"
+                user.daily_streak += 1
+                response += f"You gained a new streak! Your streak now: `{user.daily_streak}x`\n"
             
-            existed.last_daily = now
-            await bot.user_cache.update(conn, existed)
+            user.last_daily = now
 
-            daily_loot = loot.get_daily_loot(existed.daily_streak)
-            await add_reward(conn, ctx.author.id, daily_loot)
+            daily_loot = loot.get_daily_loot(user.daily_streak)
+            await add_reward(conn, bot, ctx.author.id, daily_loot)
             response += f"You received: {get_reward_str(bot, daily_loot, option = 'emote')}\n"
 
         await ctx.respond(response, reply = True)
@@ -579,7 +583,7 @@ async def equip(ctx: lightbulb.Context):
                     
                     # Clean the dict to prevent any dumb side-effect.
                     del craftable["result"]
-                    await add_reward(conn, ctx.author.id, craftable)
+                    await add_reward(conn, bot, ctx.author.id, craftable)
 
                     reward_str = get_reward_str(bot, craftable, option = "emote")
                     if not reward_str:
@@ -966,7 +970,7 @@ async def mine(ctx: lightbulb.Context):
             multiply_reward(loot_table, 5)
         
         async with conn.transaction():
-            await add_reward(conn, ctx.author.id, loot_table)
+            await add_reward(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
             
             if fire_activated:
@@ -1048,7 +1052,7 @@ async def explore(ctx: lightbulb.Context):
             multiply_reward(loot_table, 5)
         
         async with conn.transaction():
-            await add_reward(conn, ctx.author.id, loot_table)
+            await add_reward(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
             
             if fire_activated:
@@ -1131,7 +1135,7 @@ async def chop(ctx: lightbulb.Context):
             multiply_reward(loot_table, 5)
         
         async with conn.transaction():
-            await add_reward(conn, ctx.author.id, loot_table)
+            await add_reward(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
             
             if fire_activated:
