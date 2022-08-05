@@ -18,6 +18,11 @@ class GuildCache:
 
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     These methods will return a deep copy of the desired object, so you can freely edit them.
+
+    Warnings
+    --------
+    A cache should be used immediately upon fetching. You must periodically refresh the data if you use it in a session-like setting,
+    otherwise, two or more cache might exist at the same time, causing some sort of "data race" when updating.
     '''
 
     def __init__(self) -> None:
@@ -80,6 +85,11 @@ class LogCache:
 
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     These methods will return a deep copy of the desired object, so you can freely edit them.
+
+    Warnings
+    --------
+    A cache should be used immediately upon fetching. You must periodically refresh the data if you use it in a session-like setting,
+    otherwise, two or more cache might exist at the same time, causing some sort of "data race" when updating.
     '''
 
     def __init__(self) -> None:
@@ -125,6 +135,11 @@ class UserCache:
 
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     These methods will return a deep copy of the desired object, so you can freely edit them.
+
+    Warnings
+    --------
+    A cache should be used immediately upon fetching. You must periodically refresh the data if you use it in a session-like setting,
+    otherwise, two or more cache might exist at the same time, causing some sort of "data race" when updating.
     '''
 
     def __init__(self) -> None:
@@ -195,6 +210,11 @@ class ItemCache:
 
     This includes many ways to obtain info, such as `get()`, `keys()`, `items()`, `values()`, and `__getitem__()`.
     These methods will return a deep copy of the desired object, so you can freely edit them.
+
+    Warnings
+    --------
+    A cache should be used immediately upon fetching. You must periodically refresh the data if you use it in a session-like setting,
+    otherwise, two or more cache might exist at the same time, causing some sort of "data race" when updating.
     '''
 
     def __init__(self):
