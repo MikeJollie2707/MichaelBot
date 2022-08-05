@@ -170,6 +170,10 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     This includes wiping all their equipped tools, 5% of their inventories, 20% of their money,
     and move them to the Overworld.
 
+    Notes
+    -----
+    This function internally calls `UserCache.update()`.
+
     Parameters
     ----------
     conn : asyncpg.Connection
@@ -256,6 +260,8 @@ async def bet(ctx: lightbulb.Context):
     # No this is not a register.
     rsp: str = f"You placed your bet of {CURRENCY_ICON}{money} and guessed `{number}`...\n"
     actual_num = random.randint(0, 50)
+    # Refetch user info for up-to-date info.
+    user = bot.user_cache[ctx.author.id]
     if actual_num == number:
         rsp += f"And it is correct! You receive your money back and another {CURRENCY_ICON}{money}!\n"
         user.balance += money
@@ -1310,6 +1316,12 @@ async def _trade(ctx: lightbulb.Context):
                     selected_trade = trade
                     break
             
+            # Refetch for latest info.
+            user = bot.user_cache[ctx.author.id]
+            if user.world != "overworld":
+                await ctx.respond("You need to be in the Overworld to use this command!", reply = True, mentions_reply = True)
+                return
+            
             if selected_trade is None:
                 print(trades)
                 print(selected)
@@ -1494,6 +1506,12 @@ async def _barter(ctx: lightbulb.Context):
                 if barter.id == selected:
                     selected_barter = barter
                     break
+            
+            # Refetch for latest info.
+            user = bot.user_cache[ctx.author.id]
+            if user.world != "nether":
+                await ctx.respond("You need to be in the Nether to use this command!", reply = True, mentions_reply = True)
+                return
             
             if selected_barter is None:
                 print(barters)
