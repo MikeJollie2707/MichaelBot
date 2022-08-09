@@ -527,7 +527,9 @@ async def daily(ctx: lightbulb.Context):
                 user.daily_streak += 1
                 response += f"You gained a new streak! Your streak now: `{user.daily_streak}x`\n"
             
+            # We're risking race data for slight performance here.
             user.last_daily = now
+            bot.user_cache.update_local(user)
 
             daily_loot = loot.get_daily_loot(user.daily_streak)
             await add_reward(conn, bot, ctx.author.id, daily_loot)
