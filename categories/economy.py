@@ -18,13 +18,13 @@ TRADE_REFRESH = 3600 * 4
 def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, reductions: float = 0) -> float:
     '''Return the dying chance based on the arguments provided.
     
-    Death rate is capped at `0.15` (`0.45` if in nether) before taking `equipment` and `reductions` into consideration, so
-    in most cases, this value is `[0, 0.15)` (or `[0, 0.45)`)
+    Death rate is capped at `0.15` (`0.30` if in nether) before taking `equipment` and `reductions` into consideration, so
+    in most cases, this value is `[0, 0.15)` (or `[0, 0.30)`)
     '''
 
     cap_death = 0.15
     if world == "nether":
-        cap_death = 0.45
+        cap_death = 0.30
     
     rate = min(cap_death, 2 ** ((reward_value - 10) / 25) / 100) 
     
@@ -33,11 +33,11 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, red
     elif "stone" in equipment.item_id:
         rate -= 0.15
     elif "iron" in equipment.item_id:
-        rate -= 0.005
-    elif "diamond" in equipment.item_id:
         rate -= 0.01
-    elif "nether" in equipment.item_id:
+    elif "diamond" in equipment.item_id:
         rate -= 0.05
+    elif "nether" in equipment.item_id:
+        rate -= 0.07
     
     return max(rate - reductions, 0)
 
@@ -944,12 +944,13 @@ async def mine(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_reductions += 0.005
+            death_reductions += 0.1
             luck_activated = loot.roll_potion_activate("luck_potion")
         if has_fire_potion:
-            death_reductions += 0.01
+            death_reductions += 0.02
             fire_activated = loot.roll_potion_activate("fire_potion")
         if has_fortune_potion:
+            death_reductions += 0.02
             fortune_activated = loot.roll_potion_activate("fortune_potion")
         
         loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, luck_activated)
@@ -1026,12 +1027,13 @@ async def explore(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_reductions += 0.005
+            death_reductions += 0.1
             luck_activated = loot.roll_potion_activate("luck_potion")
         if has_fire_potion:
-            death_reductions += 0.01
+            death_reductions += 0.02
             fire_activated = loot.roll_potion_activate("fire_potion")
         if has_looting_potion:
+            death_reductions += 0.02
             looting_activated = loot.roll_potion_activate("looting_potion")
         
         loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, luck_activated)
@@ -1108,10 +1110,10 @@ async def chop(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_reductions += 0.005
+            death_reductions += 0.1
             luck_activated = loot.roll_potion_activate("loot_potion")
         if has_fire_potion:
-            death_reductions += 0.01
+            death_reductions += 0.02
             fire_activated = loot.roll_potion_activate("fire_potion")
         if has_nature_potion:
             death_reductions += 0.02
