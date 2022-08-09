@@ -1126,9 +1126,6 @@ async def chop(ctx: lightbulb.Context):
             await bot.reset_cooldown(ctx)
             await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
             return
-        # Disable fire potion if the user is not dead in the first place.
-        elif fire_activated:
-            fire_activated = False
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), axe_existed, user.world, death_reductions)
         r = random.random()
@@ -1138,6 +1135,9 @@ async def chop(ctx: lightbulb.Context):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
+        # Disable fire potion if the user is not dead in the first place.
+        elif fire_activated:
+            fire_activated = False
         
         if luck_activated:
             multiply_reward(loot_table, 5)
