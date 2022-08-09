@@ -393,16 +393,6 @@
         "durability": 200
     },
     {
-        "id": "luck_potion",
-        "name": "Luck Potion",
-        "emoji": "<a:luck_potion:826871436769493062>",
-        "description": "A potion that increases your drops.",
-        "rarity": "Legendary",
-        "buy_price": null,
-        "sell_price": 500,
-        "durability": 50
-    },
-    {
         "id": "fire_potion",
         "name": "Fire Potion",
         "emoji": "<a:fire_potion:828135033466126366>",
@@ -441,5 +431,25 @@
         "buy_price": null,
         "sell_price": 200,
         "durability": 20
+    },
+    {
+        "id": "luck_potion",
+        "name": "Luck Potion",
+        "emoji": "<a:luck_potion:826871436769493062>",
+        "description": "Combined the power from some other potions, this potion significantly boost your luck, meaning you'll get more drops and less death.",
+        "rarity": "Legendary",
+        "buy_price": null,
+        "sell_price": 500,
+        "durability": 50
+    },
+    {
+        "id": "undying_potion",
+        "name": "Undying Potion",
+        "emoji": "<:undying_potion:828136854657826836>",
+        "description": "After further researches were made for fire potion, this potion is discovered to potentially cheat death.",
+        "rarity": "Legendary",
+        "buy_price": null,
+        "sell_price": 500,
+        "durability": 10
     }
 ]

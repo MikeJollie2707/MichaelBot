@@ -131,31 +131,31 @@ __ACTIVITY_LOOT = {
             "spider_eye": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
         },
         "iron_sword": {
-            # - rotten_flesh: 83.3%
-            # - spider_eye: 10.4%
-            # - gunpowder: 6.2%
+            # - rotten_flesh: 65.99%
+            # - spider_eye: 23.64%
+            # - gunpowder: 10.37%
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
-            "spider_eye": RewardRNG(rate = 0.2, min_amount = 2, max_amount = 3),
-            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            "spider_eye": RewardRNG(rate = 0.5, min_amount = 2, max_amount = 3),
+            "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
         },
         "diamond_sword": {
-            # - rotten_flesh: 84.47%
-            # - spider_eye: 11.25%
-            # - gunpowder: 3.72%
-            # - pearl: 0.56%
+            # - rotten_flesh: 69.46%
+            # - spider_eye: 22.17%
+            # - gunpowder: 7.27%
+            # - pearl: 1.10%
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
-            "spider_eye": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
-            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
-            "pearl": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
+            "spider_eye": RewardRNG(rate = 0.6, min_amount = 3, max_amount = 5),
+            "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
+            "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
         },
         "nether_sword": {
-            # - rotten_flesh: 80.89%
-            # - spider_eye: 12.14%
-            # - gunpowder: 5.36%
-            # - pearl: 1.62%
+            # - rotten_flesh: 65.12%
+            # - spider_eye: 25.93%
+            # - gunpowder: 7.85%
+            # - pearl: 1.09%
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 9, max_amount = 11),
-            "spider_eye": RewardRNG(rate = 0.3, min_amount = 4, max_amount = 6),
-            "gunpowder": RewardRNG(rate = 0.25, min_amount = 2, max_amount = 4, amount_layout = (45, 45, 10)),
+            "spider_eye": RewardRNG(rate = 0.75, min_amount = 4, max_amount = 6),
+            "gunpowder": RewardRNG(rate = 0.55, min_amount = 2, max_amount = 4, amount_layout = (45, 45, 10)),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
         },
 
@@ -458,6 +458,7 @@ __POTION_CHANCE = {
     "looting_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
+    "undying_potion": 1,
 }
 
 def get_daily_loot(streak: int) -> dict[str, int]:
