@@ -101,7 +101,7 @@
         "emoji": "<:spider_eye:820758868468301864>",
         "description": "A drop from killing spiders. This can be used to brew potions.",
         "rarity": "common",
-        "buy_price": 20,
+        "buy_price": 10,
         "sell_price": 5
     },
     {
@@ -110,7 +110,7 @@
         "emoji": "<:gunpowder:821528688646160395>",
         "description": "A drop from killing creepers. This can be used to brew potions.",
         "rarity": "common+",
-        "buy_price": 30,
+        "buy_price": 15,
         "sell_price": 10
     },
     {
