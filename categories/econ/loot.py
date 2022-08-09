@@ -125,37 +125,37 @@ __ACTIVITY_LOOT = {
 
         # Sword
         "stone_sword": {
-            # - rotten_flesh: 90.91%
-            # - spider_eye: 9.09%
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
-            "spider_eye": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            # - rotten_flesh: 81.83%
+            # - spider_eye: 18.17%
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 6),
+            "spider_eye": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
         },
         "iron_sword": {
-            # - rotten_flesh: 65.99%
-            # - spider_eye: 23.64%
-            # - gunpowder: 10.37%
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
-            "spider_eye": RewardRNG(rate = 0.5, min_amount = 2, max_amount = 3),
+            # - rotten_flesh: 61.23%
+            # - spider_eye: 32.65%
+            # - gunpowder: 6.12%
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
+            "spider_eye": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
             "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
         },
         "diamond_sword": {
-            # - rotten_flesh: 69.46%
-            # - spider_eye: 22.17%
-            # - gunpowder: 7.27%
-            # - pearl: 1.10%
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
-            "spider_eye": RewardRNG(rate = 0.6, min_amount = 3, max_amount = 5),
-            "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
+            # - rotten_flesh: 51.18%
+            # - spider_eye: 36.95%
+            # - gunpowder: 11.30%
+            # - pearl: 0.57%
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 12),
+            "spider_eye": RewardRNG(rate = 1, min_amount = 5, max_amount = 8),
+            "gunpowder": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 4, amount_layout = (50, 35, 15)),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
         },
         "nether_sword": {
-            # - rotten_flesh: 65.12%
-            # - spider_eye: 25.93%
-            # - gunpowder: 7.85%
-            # - pearl: 1.09%
+            # - rotten_flesh: 48.49%
+            # - spider_eye: 36.36%
+            # - gunpowder: 14.18%
+            # - pearl: 0.97%
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 9, max_amount = 11),
-            "spider_eye": RewardRNG(rate = 0.75, min_amount = 4, max_amount = 6),
-            "gunpowder": RewardRNG(rate = 0.55, min_amount = 2, max_amount = 4, amount_layout = (45, 45, 10)),
+            "spider_eye": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
+            "gunpowder": RewardRNG(rate = 0.75, min_amount = 3, max_amount = 6, amount_layout = (40, 40, 10, 10)),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
         },
 
@@ -260,54 +260,54 @@ __ACTIVITY_LOOT = {
 
         # Sword
         "stone_sword": {
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
-            "gold": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 6),
+            "gold": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "magma_cream": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
             "blaze_rod": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
         },
         "iron_sword": {
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
-            "gold": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
-            "magma_cream": RewardRNG(rate = 0.25, min_amount = 5, max_amount = 8),
-            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
+            "gold": RewardRNG(rate = 1, min_amount = 1, max_amount = 2, amount_layout = (90, 10)),
+            "magma_cream": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 8),
+            "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             "blaze_rod": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
             #"nether_star": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
         },
         "diamond_sword": {
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
-            "gold": RewardRNG(rate = 0.3, min_amount = 2, max_amount = 2),
-            "magma_cream": RewardRNG(rate = 0.25, min_amount = 10, max_amount = 15),
-            "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3, amount_layout = (50, 35, 15)),
-            "blaze_rod": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 2),
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 12),
+            "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 2),
+            "magma_cream": RewardRNG(rate = 0.75, min_amount = 7, max_amount = 10),
+            "gunpowder": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 4, amount_layout = (50, 35, 15)),
+            "blaze_rod": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
             #"nether_star": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
         },
         "nether_sword": {
-            "rotten_flesh": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
-            "gold": RewardRNG(rate = 0.4, min_amount = 2, max_amount = 3),
-            "magma_cream": RewardRNG(rate = 0.25, min_amount = 15, max_amount = 20),
-            "gunpowder": RewardRNG(rate = 0.2, min_amount = 2, max_amount = 4, amount_layout = (45, 35, 20)),
-            "blaze_rod": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 9, max_amount = 11),
+            "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 3),
+            "magma_cream": RewardRNG(rate = 0.75, min_amount = 8, max_amount = 10),
+            "gunpowder": RewardRNG(rate = 0.75, min_amount = 3, max_amount = 6, amount_layout = (40, 40, 10, 10)),
+            "blaze_rod": RewardRNG(rate = 0.25, min_amount = 1, max_amount = 2),
             #"nether_star": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
         },
 
         # Axe
         "stone_axe": {
-            "wood": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
-            "dry_leaf": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "wood": RewardRNG(rate = 1, min_amount = 5, max_amount = 7),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
         },
         "iron_axe": {
-            "wood": RewardRNG(rate = 1, min_amount = 5, max_amount = 7),
-            "dry_leaf": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "wood": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 150, max_amount = 200),
             "mushroom": RewardRNG(rate = 0.3, min_amount = 3, max_amount = 5),
         },
         "diamond_axe": {
-            "wood": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
-            "dry_leaf": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
+            "wood": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 200, max_amount = 250),
             "mushroom": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 7),
         },
         "nether_axe": {
-            "wood": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
-            "dry_leaf": RewardRNG(rate = 1, min_amount = 25, max_amount = 30),
+            "wood": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 250, max_amount = 300),
             "mushroom": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 7),
         }
     },
