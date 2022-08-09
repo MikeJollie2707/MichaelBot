@@ -957,8 +957,7 @@ async def mine(ctx: lightbulb.Context):
         
         loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, luck_activated)
         if not loot_table:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), pickaxe_existed, user.world, death_reductions)
@@ -1040,8 +1039,7 @@ async def explore(ctx: lightbulb.Context):
         
         loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, luck_activated)
         if not loot_table:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            await ctx.respond("After a long exploring session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), sword_existed, user.world, death_reductions)
@@ -1123,8 +1121,7 @@ async def chop(ctx: lightbulb.Context):
         
         loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, luck_activated)
         if not loot_table:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("Oof, I can't seem to generate a working loot table. Might want to report this to dev so they can fix it.", reply = True, mentions_reply = True)
+            await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), axe_existed, user.world, death_reductions)
