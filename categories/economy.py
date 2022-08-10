@@ -349,7 +349,7 @@ async def brew(ctx: lightbulb.Context):
         return
     
     if recipe.get("cost") is not None:
-        user.balance -= recipe["cost"]
+        user.balance -= recipe.pop("cost")
     
     async with bot.pool.acquire() as conn:
         # Try removing the items; if any falls below 0, it fails to craft.
