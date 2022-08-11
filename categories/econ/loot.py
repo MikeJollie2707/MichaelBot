@@ -255,7 +255,7 @@ __ACTIVITY_LOOT = {
             "redstone": RewardRNG(rate = 1, min_amount = 60, max_amount = 100),
             "gold": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
             "obsidian": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
-            "debris": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 4, amount_layout = (50, 20, 20, 10)),
+            "debris": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (30, 20, 30, 20)),
         },
 
         # Sword
@@ -413,8 +413,8 @@ __BREW_RECIPE = {
         "hibiscus": 99,
         "tulip": 99,
         "rose": 99,
-        "redstone": 300,
-        "gunpowder": 45,
+        "redstone": 150,
+        "gunpowder": 15,
         "spider_eye": 150,
         "blaze_rod": 3,
         "cost": 300,
@@ -454,7 +454,7 @@ __BREW_RECIPE = {
 
 __POTION_CHANCE = {
     "luck_potion": 0.50,
-    "fire_potion": 0.90,
+    "fire_potion": 0.75,
     "looting_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
