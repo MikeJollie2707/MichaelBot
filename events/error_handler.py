@@ -42,7 +42,7 @@ async def send_error_message(error_type: str, event: lightbulb.CommandErrorEvent
         timestamp = dt.datetime.now().astimezone()
     )
     
-    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True)
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 
 async def on_command_error(event: lightbulb.CommandErrorEvent):
     exception = event.exception
