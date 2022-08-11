@@ -270,24 +270,27 @@ __ACTIVITY_LOOT = {
             "gold": RewardRNG(rate = 1, min_amount = 1, max_amount = 2, amount_layout = (90, 10)),
             "magma_cream": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 8),
             "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
+            "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4),
             "blaze_rod": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
-            #"nether_star": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
+            "nether_star": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
         },
         "diamond_sword": {
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 12),
             "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 2),
             "magma_cream": RewardRNG(rate = 0.75, min_amount = 7, max_amount = 10),
             "gunpowder": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 4, amount_layout = (50, 35, 15)),
+            "pearl": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
             "blaze_rod": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
-            #"nether_star": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
+            "nether_star": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
         },
         "nether_sword": {
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 9, max_amount = 11),
             "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 3),
             "magma_cream": RewardRNG(rate = 0.75, min_amount = 8, max_amount = 10),
             "gunpowder": RewardRNG(rate = 0.75, min_amount = 3, max_amount = 6, amount_layout = (40, 40, 10, 10)),
+            "pearl": RewardRNG(rate = 0.5, min_amount = 4, max_amount = 6),
             "blaze_rod": RewardRNG(rate = 0.25, min_amount = 1, max_amount = 2),
-            #"nether_star": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
+            "nether_star": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
         },
 
         # Axe
@@ -397,6 +400,7 @@ __CRAFT_RECIPE = {
 }
 
 __BREW_RECIPE = {
+    # 28143
     "luck_potion": {
         "lucky_clover": 420,
         "hibiscus": 999,
@@ -408,6 +412,7 @@ __BREW_RECIPE = {
         "cost": 6969,
         "result": 3
     },
+    # 2397
     "fire_potion": {
         "magma_cream": 60,
         "hibiscus": 99,
@@ -420,6 +425,7 @@ __BREW_RECIPE = {
         "cost": 300,
         "result": 3
     },
+    # 3345
     "fortune_potion": {
         "lucky_clover": 60,
         "redstone": 150,
@@ -429,6 +435,7 @@ __BREW_RECIPE = {
         "cost": 450,
         "result": 3
     },
+    # 3990
     "looting_potion": {
         "rotten_flesh": 360,
         "spider_eye": 120,
@@ -439,11 +446,13 @@ __BREW_RECIPE = {
         "cost": 450,
         "result": 3
     },
+    # 3540
     "nature_potion": {
         "leaf": 900,
         "hibiscus": 120,
         "tulip": 120,
         "rose": 120,
+        "mushroom": 150,
         "redstone": 300,
         "gunpowder": 15,
         "blaze_rod": 3,

@@ -393,6 +393,15 @@
         "durability": 200
     },
     {
+        "id": "nether_star",
+        "name": "Nether Star",
+        "emoji": "<:nether_star:828135277351534592>",
+        "description": "A strange item that only drops from the dangerous mob in the Nether.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200
+    },
+    {
         "id": "fire_potion",
         "name": "Fire Potion",
         "emoji": "<a:fire_potion:828135033466126366>",
