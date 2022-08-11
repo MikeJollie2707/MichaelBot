@@ -413,11 +413,11 @@ __BREW_RECIPE = {
         "hibiscus": 99,
         "tulip": 99,
         "rose": 99,
-        "redstone": 15,
-        "gunpowder": 15,
+        "redstone": 300,
+        "gunpowder": 45,
         "spider_eye": 150,
         "blaze_rod": 3,
-        "cost": 100,
+        "cost": 300,
         "result": 3
     },
     "fortune_potion": {
@@ -454,7 +454,7 @@ __BREW_RECIPE = {
 
 __POTION_CHANCE = {
     "luck_potion": 0.50,
-    "fire_potion": 0.75,
+    "fire_potion": 0.90,
     "looting_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,

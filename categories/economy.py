@@ -37,7 +37,7 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, red
     elif "diamond" in equipment.item_id:
         rate -= 0.05
     elif "nether" in equipment.item_id:
-        rate -= 0.07
+        rate -= 0.10
     
     return max(rate - reductions, 0)
 
@@ -975,7 +975,7 @@ async def mine(ctx: lightbulb.Context):
         if luck_activated:
             multiply_reward(loot_table, 5)
         if fortune_activated:
-            multiply_reward(loot_table, 5)
+            multiply_reward(loot_table, 10)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1057,7 +1057,7 @@ async def explore(ctx: lightbulb.Context):
         if luck_activated:
             multiply_reward(loot_table, 5)
         if looting_activated:
-            multiply_reward(loot_table, 5)
+            multiply_reward(loot_table, 10)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1139,7 +1139,7 @@ async def chop(ctx: lightbulb.Context):
         if luck_activated:
             multiply_reward(loot_table, 5)
         if nature_activated:
-            multiply_reward(loot_table, 5)
+            multiply_reward(loot_table, 10)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
