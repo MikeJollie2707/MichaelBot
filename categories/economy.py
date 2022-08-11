@@ -922,6 +922,7 @@ async def mine(ctx: lightbulb.Context):
     luck_activated = False
     fire_activated = False
     fortune_activated = False
+    strength_activated = False
     response_str = ""
 
     async with bot.pool.acquire() as conn:
@@ -943,6 +944,7 @@ async def mine(ctx: lightbulb.Context):
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
         has_fortune_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fortune_potion")
+        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
@@ -954,6 +956,10 @@ async def mine(ctx: lightbulb.Context):
         if has_fortune_potion:
             death_reductions += 0.02
             fortune_activated = loot.roll_potion_activate("fortune_potion")
+        if has_strength_potion:
+            strength_activated = loot.roll_potion_activate("strength_potion")
+            if strength_activated:
+                death_reductions += 0.08
         
         loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, luck_activated)
         if not loot_table:
@@ -990,6 +996,8 @@ async def mine(ctx: lightbulb.Context):
             if fortune_activated:
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fortune_potion", has_fortune_potion.remain_durability - 1)
                 response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
+            if strength_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
     
     response_str += f"You mined and received {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if pickaxe_existed.remain_durability - 1 == 0:
@@ -1008,6 +1016,7 @@ async def explore(ctx: lightbulb.Context):
     luck_activated = False
     fire_activated = False
     looting_activated = False
+    strength_activated = False
     response_str = ""
 
     async with bot.pool.acquire() as conn:
@@ -1025,6 +1034,7 @@ async def explore(ctx: lightbulb.Context):
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
         has_looting_potion = await psql.Equipment.get_one(conn, ctx.author.id, "looting_potion")
+        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1036,6 +1046,10 @@ async def explore(ctx: lightbulb.Context):
         if has_looting_potion:
             death_reductions += 0.02
             looting_activated = loot.roll_potion_activate("looting_potion")
+        if has_strength_potion:
+            strength_activated = loot.roll_potion_activate("strength_potion")
+            if strength_activated:
+                death_reductions += 0.08
         
         loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, luck_activated)
         if not loot_table:
@@ -1058,6 +1072,8 @@ async def explore(ctx: lightbulb.Context):
             multiply_reward(loot_table, 5)
         if looting_activated:
             multiply_reward(loot_table, 10)
+        if strength_activated:
+            multiply_reward(loot_table, 2)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1072,6 +1088,8 @@ async def explore(ctx: lightbulb.Context):
             if looting_activated:
                 await psql.Equipment.update_durability(conn, ctx.author.id, "looting_potion", has_looting_potion.remain_durability - 1)
                 response_str += "*Looting Potion* activated, giving you a reward boost!\n"
+            if strength_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
     
     response_str += f"You explored and obtained {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if sword_existed.remain_durability - 1 == 0:
@@ -1090,6 +1108,7 @@ async def chop(ctx: lightbulb.Context):
     luck_activated = False
     fire_activated = False
     nature_activated = False
+    strength_activated = False
     response_str = ""
 
     async with bot.pool.acquire() as conn:
@@ -1107,6 +1126,7 @@ async def chop(ctx: lightbulb.Context):
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
         has_nature_potion = await psql.Equipment.get_one(conn, ctx.author.id, "nature_potion")
+        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1118,6 +1138,10 @@ async def chop(ctx: lightbulb.Context):
         if has_nature_potion:
             death_reductions += 0.02
             nature_activated = loot.roll_potion_activate("nature_potion")
+        if has_strength_potion:
+            strength_activated = loot.roll_potion_activate("strength_potion")
+            if strength_activated:
+                death_reductions += 0.08
         
         loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, luck_activated)
         if not loot_table:
@@ -1154,6 +1178,8 @@ async def chop(ctx: lightbulb.Context):
             if nature_activated:
                 await psql.Equipment.update_durability(conn, ctx.author.id, "nature_potion", has_nature_potion.remain_durability - 1)
                 response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
+            if strength_activated:
+                await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
     
     response_str += f"You chopped and collected {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if axe_existed.remain_durability - 1 == 0:

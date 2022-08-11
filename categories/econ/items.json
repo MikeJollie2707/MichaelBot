@@ -433,6 +433,16 @@
         "durability": 20
     },
     {
+        "id": "strength_potion",
+        "name": "Strength Potion",
+        "emoji": "<a:strength_potion:1007185747197046814>",
+        "description": "A potion that reduces the chance of you dying by making you much stronger!",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200,
+        "durability": 20
+    },
+    {
         "id": "luck_potion",
         "name": "Luck Potion",
         "emoji": "<a:luck_potion:826871436769493062>",

@@ -450,14 +450,30 @@ __BREW_RECIPE = {
         "cost": 450,
         "result": 3
     },
+    # 3915
+    "strength_potion": {
+        "rotten_flesh": 360,
+        "spider_eye": 120,
+        "leaf": 900,
+        "mushroom": 30,
+        "redstone": 300,
+        "gunpowder": 45,
+        "diamond_sword": 1,
+        "diamond_pickaxe": 1,
+        "diamond_axe": 1,
+        "blaze_rod": 3,
+        "cost": 450,
+        "result": 3
+    }
 }
 
 __POTION_CHANCE = {
-    "luck_potion": 0.50,
     "fire_potion": 0.75,
     "looting_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
+    "strength_potion": 1,
+    "luck_potion": 0.50,
     "undying_potion": 1,
 }
 
