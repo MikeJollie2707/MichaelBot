@@ -1604,7 +1604,7 @@ async def _barter(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    - There is a hard cooldown of 24 hours between each travel, so plan ahead before moving.
+    - There is a hard cooldown of 4 hours between each travel, so plan ahead before moving.
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether"))
@@ -1623,8 +1623,8 @@ async def travel(ctx: lightbulb.Context):
         await ctx.respond("You're currently in this world already!", reply = True, mentions_reply = True)
         return
     if user.last_travel is not None:
-        if current - user.last_travel < dt.timedelta(days = 1):
-            await ctx.respond(f"You'll need to wait for `{humanize.precisedelta(user.last_travel + dt.timedelta(days = 1) - current, format = '%0.0f')}` before you can travel again.",
+        if current - user.last_travel < dt.timedelta(hours = 4):
+            await ctx.respond(f"You'll need to wait for `{humanize.precisedelta(user.last_travel + dt.timedelta(hours = 4) - current, format = '%0.0f')}` before you can travel again.",
                 reply = True, mentions_reply = True
             )
             return
