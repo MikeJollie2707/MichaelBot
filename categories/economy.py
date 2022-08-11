@@ -552,13 +552,19 @@ async def daily(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    - It is recommended to use the `Slash Command` version of this command.
+    - This command only works with subcommands.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("equipment", "The equipment's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("equip", "Equip a tool. Get to work!")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.command("equip", "Equip a tool or a potion.")
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def equip(ctx: lightbulb.Context):
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+
+@equip.child
+@lightbulb.option("equipment", "The equipment's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("tool", "Equip a tool. Get to work!")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def equip_tool(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.equipment
     bot: models.MichaelBot = ctx.bot
 
@@ -619,8 +625,8 @@ async def equip(ctx: lightbulb.Context):
         response_str += f"Equipped *{item.name}*."
         
         await ctx.respond(response_str, reply = True)
-@equip.autocomplete("equipment")
-async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+@equip_tool.autocomplete("equipment")
+async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
 
     def match_algorithm(name: str, input_value: str):
@@ -635,15 +641,15 @@ async def equip_equipment_autocomplete(option: hikari.AutocompleteInteractionOpt
         return equipments[:25]
     return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
-@plugin.command()
+@equip.child
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("usepotion", "Use a potion.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def usepotion(ctx: lightbulb.Context):
+@lightbulb.option("potion", "The potion's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("potion", "Use a potion.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def equip_potion(ctx: lightbulb.Context):
     potion: psql.Item = ctx.options.potion
     bot: models.MichaelBot = ctx.bot
 
@@ -680,8 +686,8 @@ async def usepotion(ctx: lightbulb.Context):
         await psql.Equipment.transfer_from_inventory(conn, inv)
         
     await ctx.respond(f"Equipped *{potion.name}*", reply = True)
-@usepotion.autocomplete("potion")
-async def usepotion_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+@equip_potion.autocomplete("potion")
+async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
 
     def match_algorithm(name: str, input_value: str):
