@@ -52,7 +52,7 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, red
     elif "nether" in equipment.item_id:
         rate -= 0.10
     
-    return max(rate - reductions, 0)
+    return max(rate - reductions, 0.005)
 
 def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option: str = "text") -> str:
     '''Return a reward string for a given item dictionary.
