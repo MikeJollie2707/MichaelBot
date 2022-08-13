@@ -260,37 +260,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../econ/" class="md-nav__link">
-        Economy Guide
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4">
+        <label class="md-nav__link" for="__nav_3">
           Commands
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Commands" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           Commands
         </label>
@@ -399,18 +384,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_5">
+        <label class="md-nav__link" for="__nav_4">
           Developer Corner
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Developer Corner" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
+        <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
           Developer Corner
         </label>
@@ -535,13 +520,6 @@
         <li class="md-nav__item">
   <a href="#categories.econ.loot.roll_potion_activate" class="md-nav__link">
     roll_potion_activate()
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#categories.econ.loot.__driver_code" class="md-nav__link">
-    __driver_code()
   </a>
   
 </li>
@@ -680,6 +658,96 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Economy
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Economy" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Economy
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../econ/start/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../econ/trade/" class="md-nav__link">
+        Trading System
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../econ/death/" class="md-nav__link">
+        Death Mechanism
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../econ/potions/" class="md-nav__link">
+        Potions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -788,13 +856,6 @@
         <li class="md-nav__item">
   <a href="#categories.econ.loot.roll_potion_activate" class="md-nav__link">
     roll_potion_activate()
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#categories.econ.loot.__driver_code" class="md-nav__link">
-    __driver_code()
   </a>
   
 </li>
@@ -1224,53 +1285,71 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\loot.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_daily_loot</span><span class="p">(</span><span class="n">streak</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_daily_loot</span><span class="p">(</span><span class="n">streak</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&#39;&#39;&#39;Return the daily loot based on the current streak.</span>
 
 <span class="sd">    Parameters</span>
@@ -1296,26 +1375,44 @@
         <span class="p">}</span>
     <span class="k">if</span> <span class="n">streak</span> <span class="o">&lt;=</span> <span class="mi">13</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
             <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="n">streak</span><span class="p">,</span>
-            <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+            <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
+            <span class="s2">&quot;leaf&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+            <span class="s2">&quot;hibiscus&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+            <span class="s2">&quot;tulip&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+            <span class="s2">&quot;rose&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="k">if</span> <span class="n">streak</span> <span class="o">&lt;=</span> <span class="mi">27</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-            <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">streak</span> <span class="o">-</span> <span class="mi">12</span><span class="p">),</span>
-            <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+            <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">streak</span><span class="p">,</span>
+            <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+            <span class="s2">&quot;leaf&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">110</span><span class="p">),</span>
+            <span class="s2">&quot;hibiscus&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span>
+            <span class="s2">&quot;tulip&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span>
+            <span class="s2">&quot;rose&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="k">if</span> <span class="n">streak</span> <span class="o">&lt;=</span> <span class="mi">60</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
-            <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">streak</span> <span class="o">-</span> <span class="mi">20</span><span class="p">),</span>
-            <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="mi">105</span><span class="p">)</span>
+            <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+            <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">streak</span><span class="p">,</span>
+            <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">55</span><span class="p">),</span>
+            <span class="s2">&quot;leaf&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span> <span class="mi">220</span><span class="p">),</span>
+            <span class="s2">&quot;hibiscus&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+            <span class="s2">&quot;tulip&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+            <span class="s2">&quot;rose&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+            <span class="s2">&quot;lucky_clover&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
-        <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">streak</span> <span class="o">-</span> <span class="mi">60</span><span class="p">),</span>
-        <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">210</span><span class="p">)</span>
+        <span class="s2">&quot;money&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="s2">&quot;bonus&quot;</span><span class="p">:</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">streak</span><span class="p">,</span>
+        <span class="s2">&quot;wood&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">210</span><span class="p">),</span>
+        <span class="s2">&quot;leaf&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">210</span><span class="p">),</span>
+        <span class="s2">&quot;hibiscus&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">210</span><span class="p">),</span>
+        <span class="s2">&quot;tulip&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">210</span><span class="p">),</span>
+        <span class="s2">&quot;rose&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">210</span><span class="p">),</span>
+        <span class="s2">&quot;lucky_clover&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1393,39 +1490,39 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\loot.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_activity_loot</span><span class="p">(</span><span class="n">equipment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">world</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_luck</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_activity_loot</span><span class="p">(</span><span class="n">equipment_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">world</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_luck</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&#39;&#39;&#39;Return the loot generated by an equipment in a world.</span>
 
 <span class="sd">    Parameters</span>
@@ -1526,25 +1623,25 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\loot.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_craft_recipe</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_craft_recipe</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&#39;&#39;&#39;Return the crafting recipe for an item if existed.</span>
 
 <span class="sd">    Notes</span>
@@ -1631,25 +1728,25 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\loot.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_brew_recipe</span><span class="p">(</span><span class="n">potion_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_brew_recipe</span><span class="p">(</span><span class="n">potion_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
     <span class="sd">&#39;&#39;&#39;Return the brewing recipe for a potion if existed.</span>
 
 <span class="sd">    Notes</span>
@@ -1734,24 +1831,24 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\loot.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
-<span class="normal">468</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">roll_potion_activate</span><span class="p">(</span><span class="n">potion_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">roll_potion_activate</span><span class="p">(</span><span class="n">potion_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Try to roll and see if the potion activated.</span>
 
 <span class="sd">    Parameters</span>
@@ -1769,78 +1866,6 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">chance</span>
-</code></pre></div></td></tr></table></div>
-      </details>
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h2 id="categories.econ.loot.__driver_code" class="doc doc-heading">
-        <span class="doc doc-object-name doc-function-name">__driver_code</span>
-
-
-</h2>
-<div class="highlight"><pre><span></span><code><span class="n">__driver_code</span><span class="p">()</span>
-</code></pre></div>
-
-  <div class="doc doc-contents ">
-  
-      <p>DO NOT CALL THIS FUNCTION.</p>
-<p>This is a function only because all variables used will be public when exporting (thank you Python for its scoping "rule").</p>
-
-      <details class="quote">
-        <summary>Source code in <code>categories\econ\loot.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span>
-<span class="normal">490</span>
-<span class="normal">491</span>
-<span class="normal">492</span>
-<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">__driver_code</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;DO NOT CALL THIS FUNCTION.</span>
-
-<span class="sd">    This is a function only because all variables used will be public when exporting (thank you Python for its scoping &quot;rule&quot;).</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="n">SIMULATION_TIME</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">6</span>
-    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">rate_tracker</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">SIMULATION_TIME</span><span class="p">):</span>
-        <span class="n">loot_rate</span> <span class="o">=</span> <span class="n">get_activity_loot</span><span class="p">(</span><span class="s2">&quot;diamond_axe&quot;</span><span class="p">,</span> <span class="s2">&quot;overworld&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">reward</span> <span class="ow">in</span> <span class="n">loot_rate</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">reward</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rate_tracker</span><span class="p">:</span>
-                <span class="n">rate_tracker</span><span class="p">[</span><span class="n">reward</span><span class="p">]</span> <span class="o">=</span> <span class="n">loot_rate</span><span class="p">[</span><span class="n">reward</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">rate_tracker</span><span class="p">[</span><span class="n">reward</span><span class="p">]</span> <span class="o">+=</span> <span class="n">loot_rate</span><span class="p">[</span><span class="n">reward</span><span class="p">]</span>
-
-            <span class="n">total</span> <span class="o">+=</span> <span class="n">loot_rate</span><span class="p">[</span><span class="n">reward</span><span class="p">]</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sim </span><span class="si">{</span><span class="n">SIMULATION_TIME</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> times, total amount: </span><span class="si">{</span><span class="n">total</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">amount</span> <span class="ow">in</span> <span class="n">rate_tracker</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">amount</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">total</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span> <span class="o">/</span> <span class="n">total</span> <span class="o">*</span> <span class="mi">100</span> <span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -1954,8 +1979,7 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\trader.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
-<span class="normal"> 20</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
 <span class="normal"> 23</span>
@@ -2072,7 +2096,16 @@
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate_trades</span><span class="p">(</span><span class="n">item_cache</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ItemCache</span><span class="p">,</span> <span class="n">next_reset</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">psql</span><span class="o">.</span><span class="n">ActiveTrade</span><span class="p">]:</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate_trades</span><span class="p">(</span><span class="n">item_cache</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ItemCache</span><span class="p">,</span> <span class="n">next_reset</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">psql</span><span class="o">.</span><span class="n">ActiveTrade</span><span class="p">]:</span>
     <span class="sd">&#39;&#39;&#39;Generate trades based on pre-determined rules.</span>
 
 <span class="sd">    Parameters</span>
@@ -2121,7 +2154,7 @@
 
             <span class="n">trade</span><span class="o">.</span><span class="n">amount_src</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">src_max_amount</span><span class="p">)</span>
             <span class="c1"># Overvalue the item.</span>
-            <span class="n">trade</span><span class="o">.</span><span class="n">amount_dest</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">amount_src</span> <span class="o">*</span> <span class="n">src_price</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
+            <span class="n">trade</span><span class="o">.</span><span class="n">amount_dest</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">amount_src</span> <span class="o">*</span> <span class="n">src_price</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.85</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
         <span class="c1"># item -&gt; item</span>
         <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">amount</span><span class="p">:</span>
             <span class="c1"># Select items so they don&#39;t go against each other.</span>
@@ -2134,6 +2167,10 @@
             <span class="k">while</span> <span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span> <span class="ow">in</span> <span class="n">traded_item</span><span class="p">:</span>
                 <span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">__TRADE_WHITELIST</span><span class="p">)</span>
             <span class="n">traded_item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span><span class="p">)</span>
+
+            <span class="c1"># Limit diamond trade.</span>
+            <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span> <span class="o">==</span> <span class="s2">&quot;diamond&quot;</span><span class="p">:</span>
+                <span class="n">trade</span><span class="o">.</span><span class="n">hard_limit</span> <span class="o">=</span> <span class="mi">5</span>
 
             <span class="c1"># Get the items&#39; values.</span>
             <span class="n">item_src</span> <span class="o">=</span> <span class="n">item_cache</span><span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">item_src</span><span class="p">]</span>
@@ -2170,6 +2207,10 @@
                 <span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">__TRADE_WHITELIST</span><span class="p">)</span>
             <span class="n">traded_item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span><span class="p">)</span>
 
+            <span class="c1"># Limit diamond trade.</span>
+            <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span> <span class="o">==</span> <span class="s2">&quot;diamond&quot;</span><span class="p">:</span>
+                <span class="n">trade</span><span class="o">.</span><span class="n">hard_limit</span> <span class="o">=</span> <span class="mi">5</span>
+
             <span class="c1"># Get the item&#39;s value.</span>
             <span class="n">item</span> <span class="o">=</span> <span class="n">item_cache</span><span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">item_dest</span><span class="p">]</span>
             <span class="n">dest_price</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">buy_price</span>
@@ -2186,8 +2227,8 @@
             <span class="n">dest_max_amount</span> <span class="o">=</span> <span class="n">max_value_limit</span> <span class="o">//</span> <span class="n">dest_price</span>
 
             <span class="n">trade</span><span class="o">.</span><span class="n">amount_dest</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dest_max_amount</span><span class="p">)</span>
-            <span class="c1"># Devalue the item.</span>
-            <span class="n">trade</span><span class="o">.</span><span class="n">amount_src</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">amount_dest</span> <span class="o">*</span> <span class="n">dest_price</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
+            <span class="c1"># Devalue the item, but also have a chance to overvalue the item.</span>
+            <span class="n">trade</span><span class="o">.</span><span class="n">amount_src</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">amount_dest</span> <span class="o">*</span> <span class="n">dest_price</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.65</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()))</span>
 
         <span class="n">trades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trade</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">trades</span>
@@ -2277,16 +2318,7 @@
 
       <details class="quote">
         <summary>Source code in <code>categories\econ\trader.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
@@ -2343,7 +2375,16 @@
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
-<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate_barters</span><span class="p">(</span><span class="n">item_cache</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ItemCache</span><span class="p">,</span> <span class="n">next_reset</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">psql</span><span class="o">.</span><span class="n">ActiveTrade</span><span class="p">]:</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate_barters</span><span class="p">(</span><span class="n">item_cache</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">ItemCache</span><span class="p">,</span> <span class="n">next_reset</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">psql</span><span class="o">.</span><span class="n">ActiveTrade</span><span class="p">]:</span>
     <span class="sd">&#39;&#39;&#39;Generate barters based on pre-determined rules.</span>
 
 <span class="sd">    Parameters</span>
