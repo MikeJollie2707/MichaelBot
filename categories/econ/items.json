@@ -31,7 +31,7 @@
     {
         "id": "wood_pickaxe",
         "name": "Wood Pickaxe",
-        "aliases": ["Wooden Pickaxe"],
+        "aliases": ["Wooden Pickaxe", "wp"],
         "emoji": "<:wood_pickaxe:819617302164930570>",
         "description": "A fragile pickaxe. It can only mine a small amount of things before breaking apart.",
         "rarity": "common",
@@ -123,15 +123,6 @@
         "sell_price": 20
     },
     {
-        "id": "streak_freezer",
-        "name": "Streak Freezer",
-        "emoji": "⌛",
-        "description": "When inside your inventory, this will negate one missed day of your daily streak.",
-        "rarity": "Legendary",
-        "buy_price": null,
-        "sell_price": 1
-    },
-    {
         "id": "stone",
         "name": "Stone",
         "emoji": "<:stone:819728758160097290>",
@@ -143,6 +134,7 @@
     {
         "id": "stone_pickaxe",
         "name": "Stone Pickaxe",
+        "aliases": ["sp"],
         "emoji": "<:stone_pickaxe:820044330613866497>",
         "description": "A somewhat reliable pickaxe. It can mine slightly more stuff.",
         "rarity": "common",
@@ -153,8 +145,9 @@
     {
         "id": "stone_sword",
         "name": "Stone Sword",
+        "aliases": ["ss"],
         "emoji": "<:stone_sword:820757729790394389>",
-        "description": "A somewhat reliable sword. Don't expect it to kill many stuff.",
+        "description": "A somewhat reliable sword. Don't expect it to kill many mobs.",
         "rarity": "common",
         "buy_price": null,
         "sell_price": 2,
@@ -163,6 +156,7 @@
     {
         "id": "stone_axe",
         "name": "Stone Axe",
+        "aliases": ["sa"],
         "emoji": "<:stone_axe:820009331000606760>",
         "description": "A somewhat reliable axe. It can be used to chop some trees.",
         "rarity": "common",
@@ -182,8 +176,9 @@
     {
         "id": "iron_pickaxe",
         "name": "Iron Pickaxe",
+        "aliases": ["ip"],
         "emoji": "<:iron_pickaxe:820757966432632854>",
-        "description": "A pretty good pickaxe. It can mine some of the rarer materials in the Overworld.",
+        "description": "A pretty good pickaxe. It can mine some rare materials in the Overworld.",
         "rarity": "common+",
         "buy_price": null,
         "sell_price": 10,
@@ -192,6 +187,7 @@
     {
         "id": "iron_sword",
         "name": "Iron Sword",
+        "aliases": ["is"],
         "emoji": "<:iron_sword:821448555989696593>",
         "description": "A pretty good sword. It can slay more enemies.",
         "rarity": "common+",
@@ -202,6 +198,7 @@
     {
         "id": "iron_axe",
         "name": "Iron Axe",
+        "aliases": ["ia"],
         "emoji": "<:iron_axe:820758123714838559>",
         "description": "A pretty good axe. It can chop more trees.",
         "rarity": "common+",
@@ -221,8 +218,9 @@
     {
         "id": "diamond_pickaxe",
         "name": "Diamond Pickaxe",
+        "aliases": ["dp"],
         "emoji": "<:diamond_pickaxe:822530447481372703>",
-        "description": "A good pickaxe that can mine some hard objects and last quite a while.",
+        "description": "A good pickaxe that can mine more things and last even longer.",
         "rarity": "rare",
         "buy_price": null,
         "sell_price": 25,
@@ -231,6 +229,7 @@
     {
         "id": "diamond_sword",
         "name": "Diamond Sword",
+        "aliases": ["ds"],
         "emoji": "<:diamond_sword:822530447715598396>",
         "description": "A good sword that can slay even more enemies and last even longer.",
         "rarity": "rare",
@@ -241,6 +240,7 @@
     {
         "id": "diamond_axe",
         "name": "Diamond Axe",
+        "aliases": ["da"],
         "emoji": "<:diamond_axe:822530447719268382>",
         "description": "A good axe that can chop a lot more trees and last even longer.",
         "rarity": "rare",
@@ -261,7 +261,7 @@
         "id": "bed_pickaxe",
         "name": "Bed",
         "emoji": "🛏️",
-        "description": "Despite its look, a bed can be used to mine things in certain locations.",
+        "description": "Despite its look, a bed can be used to effectively mine things in certain locations.",
         "rarity": "common",
         "buy_price": null,
         "sell_price": 5,
@@ -317,7 +317,7 @@
         "id": "gold",
         "name": "Gold",
         "emoji": "<:gold:823592599314104331>",
-        "description": "A shiny material in the underworld. It can be used to negotiate with the people living there.",
+        "description": "A shiny material in the underworld. It can be used to barter many rare resources.",
         "rarity": "common+",
         "buy_price": null,
         "sell_price": 7
@@ -335,7 +335,7 @@
         "id": "nether_respawner",
         "name": "Nether Respawner",
         "emoji": "<a:nether_respawner:1004571071560822904>",
-        "description": "An item that allows you to stay in the Nether after your death.",
+        "description": "When in your inventory, this allows you to stay in the Nether after your death. After each death in the Nether, this will be reduced by 1, skipping the usual penalty.",
         "rarity": "common+",
         "buy_price": 500,
         "sell_price": 100
@@ -371,7 +371,7 @@
     {
         "id": "nether_pickaxe",
         "name": "Netherite Pickaxe",
-        "aliases": ["Nether Pickaxe"],
+        "aliases": ["Nether Pickaxe", "np"],
         "emoji": "<:nether_pickaxe:828129193254191144>",
         "description": "A very good pickaxe that can mine anything in this world.",
         "rarity": "epic",
@@ -382,9 +382,9 @@
     {
         "id": "nether_sword",
         "name": "Netherite Sword",
-        "aliases": ["Nether Sword"],
+        "aliases": ["Nether Sword", "ns"],
         "emoji": "<:nether_sword:828129193434939442>",
-        "description": "A very good sword. It can slays many more enemies in existence, including some larger and more dangerous ones.",
+        "description": "A very good sword that can slays many more enemies in existence, including some larger and more dangerous ones.",
         "rarity": "epic",
         "buy_price": null,
         "sell_price": 150,
@@ -393,9 +393,9 @@
     {
         "id": "nether_axe",
         "name": "Netherite Axe",
-        "aliases": ["Nether Axe"],
+        "aliases": ["Nether Axe", "na"],
         "emoji": "<:nether_axe:828129193367175178>",
-        "description": "A very good axe. It can chop a lot more trees.",
+        "description": "A very good axe that can chop a lot more trees. Sounds kinda boring right?",
         "rarity": "epic",
         "buy_price": null,
         "sell_price": 150,
@@ -405,14 +405,24 @@
         "id": "nether_star",
         "name": "Nether Star",
         "emoji": "<:nether_star:828135277351534592>",
-        "description": "A strange item that only drops from the dangerous mob in the Nether.",
+        "description": "A strange item that only drops from a dangerous mob in the Nether.",
         "rarity": "epic",
         "buy_price": null,
         "sell_price": 200
     },
     {
+        "id": "streak_freezer",
+        "name": "Streak Freezer",
+        "emoji": "⌛",
+        "description": "When in your inventory, this will negate one missed day of your daily streak. This will be consumed even if you can't negate the streak loss fully.",
+        "rarity": "legendary",
+        "buy_price": null,
+        "sell_price": 1
+    },
+    {
         "id": "fire_potion",
         "name": "Fire Potion",
+        "aliases": ["fire_pot", "Fire Pot"],
         "emoji": "<a:fire_potion:828135033466126366>",
         "description": "A potion that can save you in the Nether in case you're not careful with the environment there.",
         "rarity": "rare",
@@ -423,6 +433,7 @@
     {
         "id": "fortune_potion",
         "name": "Fortune Potion",
+        "aliases": ["fortune_pot", "Fortune Pot"],
         "emoji": "<a:fortune_potion:828135803812577330>",
         "description": "A potion that increases your mining drops.",
         "rarity": "epic",
@@ -433,6 +444,7 @@
     {
         "id": "looting_potion",
         "name": "Looting Potion",
+        "aliases": ["looting_pot", "Looting Pot"],
         "emoji": "<a:looting_potion:841783868860399719>",
         "description": "A potion that increases your exploring drops.",
         "rarity": "epic",
@@ -443,6 +455,7 @@
     {
         "id": "nature_potion",
         "name": "Nature Potion",
+        "aliases": ["nature_pot", "Nature Pot"],
         "emoji": "<a:nature_potion:1001774101372870736>",
         "description": "A potion that increases your chopping drops.",
         "rarity": "epic",
@@ -453,6 +466,7 @@
     {
         "id": "strength_potion",
         "name": "Strength Potion",
+        "aliases": ["str_pot", "Str Pot"],
         "emoji": "<a:strength_potion:1007185747197046814>",
         "description": "A potion that reduces the chance of you dying by making you much stronger!",
         "rarity": "epic",
@@ -464,8 +478,8 @@
         "id": "luck_potion",
         "name": "Luck Potion",
         "emoji": "<a:luck_potion:826871436769493062>",
-        "description": "Combined the power from some other potions, this potion significantly boost your luck, meaning you'll get more drops and less death.",
-        "rarity": "Legendary",
+        "description": "From combining the power from some other potions, this potion significantly boost your luck, meaning you'll get more drops and less death.",
+        "rarity": "legendary",
         "buy_price": null,
         "sell_price": 500,
         "durability": 50
@@ -473,9 +487,10 @@
     {
         "id": "undying_potion",
         "name": "Undying Potion",
+        "aliases": ["totem_pot", "Totem Pot"],
         "emoji": "<:undying_potion:828136854657826836>",
-        "description": "After further researches were made for fire potion, this potion is discovered to potentially cheat death.",
-        "rarity": "Legendary",
+        "description": "The result of a secret research to achieve immortality. This potion is deemed to potentially cheat death.",
+        "rarity": "legendary",
         "buy_price": null,
         "sell_price": 500,
         "durability": 10
