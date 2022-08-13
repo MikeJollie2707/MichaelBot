@@ -523,28 +523,49 @@ async def daily(ctx: lightbulb.Context):
         assert user is not None
 
         now = dt.datetime.now().astimezone()
+        has_streak_freeze = await psql.Inventory.get_one(conn, ctx.author.id, "streak_freezer")
         async with conn.transaction():
             if user.last_daily is None:
                 response += "Yooo first time collecting daily, welcome!\n"
-                user.daily_streak = 1
+                user.daily_streak = 0
             elif now - user.last_daily < dt.timedelta(days = 1):
                 remaining_time = dt.timedelta(days = 1) + user.last_daily - now
                 await ctx.respond(f"You're a bit too early. You have `{humanize.precisedelta(remaining_time, format = '%0.0f')}` left.")
                 return
             # A user need to collect the daily before the second day.
             elif now - user.last_daily >= dt.timedelta(days = 2):
-                # They're collecting daily now, so it's 1.
-                response += f"Oops, your old streak of `{user.daily_streak}x` got obliterated. Wake up early next time :)\n"
-                user.daily_streak = 1
-            else:
-                user.daily_streak += 1
-                response += f"You gained a new streak! Your streak now: `{user.daily_streak}x`\n"
+                # No watch.
+                if not has_streak_freeze:
+                    response += f"Oops, your old streak of `{user.daily_streak}x` got obliterated. Wake up early next time :)\n"
+                    user.daily_streak = 0
+                else:
+                    streak_freeze_item = bot.item_cache["streak_freezer"]
+                    # Store previous freeze amount.
+                    streak_freeze_amount = has_streak_freeze.amount
+                    
+                    days_differences = now - user.last_daily - dt.timedelta(days = 2)
+                    has_streak_freeze.amount -= days_differences.days + 1
+                    
+                    if has_streak_freeze.amount < 0:
+                        response += f"Oops, despite popping {streak_freeze_amount}x *{streak_freeze_item.name}*, " +\
+                                    f"your old streak of `{user.daily_streak}` can't be saved. Wake up early next time :)\n"
+                        user.daily_streak = 0
+                    else:
+                        timer_used = streak_freeze_amount - has_streak_freeze.amount
+                        response += f"You popped {timer_used}x *{streak_freeze_item.name}* to save your streak. Watch out next time.\n"
+                    
+                    await psql.Inventory.remove(conn, ctx.author.id, "streak_freezer", streak_freeze_amount - has_streak_freeze.amount)
+            
+            user.daily_streak += 1
+            response += f"You gained a new streak! Your streak now: `{user.daily_streak}x`\n"
             
             # We're risking race data for slight performance here.
             user.last_daily = now
             bot.user_cache.update_local(user)
 
             daily_loot = loot.get_daily_loot(user.daily_streak)
+            if user.daily_streak % 10 == 0:
+                daily_loot["streak_freezer"] = 1
             await add_reward(conn, bot, ctx.author.id, daily_loot)
             response += f"You received: {get_reward_str(bot, daily_loot, option = 'emote')}\n"
 

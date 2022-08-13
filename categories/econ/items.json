@@ -123,6 +123,15 @@
         "sell_price": 20
     },
     {
+        "id": "streak_freezer",
+        "name": "Streak Freezer",
+        "emoji": "⌛",
+        "description": "When inside your inventory, this will negate one missed day of your daily streak.",
+        "rarity": "Legendary",
+        "buy_price": null,
+        "sell_price": 1
+    },
+    {
         "id": "stone",
         "name": "Stone",
         "emoji": "<:stone:819728758160097290>",
