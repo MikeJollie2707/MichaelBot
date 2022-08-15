@@ -50,6 +50,8 @@ nav:
   - Economy:
     - Getting Started: econ/start.md
     - Trading System: econ/trade.md
+    - Death Mechanism: econ/death.md
+    - Potions: econ/potions.md
 
 dev_addr: '127.0.0.1:8001'
 

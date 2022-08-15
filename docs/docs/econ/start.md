@@ -15,10 +15,10 @@ Next, you'll need to *craft* some items to move on. Like Minecraft, you usually 
 
 Note that for prefix commands, some items' name need to be enclosed inside `""` like `"Wood Pickaxe"`. This is not a problem for slash commands.
 
-A pickaxe (in this case, the `Wood Pickaxe`) is considered to be an equipment, a subset of items that can be equipped and used. Other equipment can include a sword, axe, and potion (some of these are mere concept and not yet added). To use certain equipments, you'll need to equip them using `equip`.
+A pickaxe (in this case, the `Wood Pickaxe`) is considered to be an equipment, a subset of items that can be equipped and used. Other equipment can include a sword, axe, and potion (some of these are mere concept and not yet added). To use certain equipments, you'll need to equip them using `equip`. Sword, pickaxe, and axe are considered as *tools*, while potions are on their own.
 
 ```
-/equip Wood Pickaxe
+/equip tool Wood Pickaxe
 ```
 
 Now that you have your wooden pickaxe equipped, time to go mining.
