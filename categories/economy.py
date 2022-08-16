@@ -960,6 +960,7 @@ async def mine(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     potion_activated = PotionActivation(0)
+    external_buffs = []
     response_str = ""
 
     async with bot.pool.acquire() as conn:
@@ -988,6 +989,7 @@ async def mine(ctx: lightbulb.Context):
             death_reductions += 0.1
             if loot.roll_potion_activate("luck_potion"):
                 potion_activated |= PotionActivation.LUCK_POTION
+                external_buffs.append("luck_potion")
         if has_fire_potion:
             death_reductions += 0.02
             if loot.roll_potion_activate("fire_potion"):
@@ -1001,7 +1003,7 @@ async def mine(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.STRENGTH_POTION
                 death_reductions += 0.08
         
-        loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, has_flag(potion_activated, PotionActivation.LUCK_POTION))
+        loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, external_buffs)
         if not loot_table:
             await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
@@ -1021,7 +1023,7 @@ async def mine(ctx: lightbulb.Context):
         if has_flag(potion_activated, PotionActivation.FORTUNE_POTION):
             # Roll 3 more times, which is 4 times in total.
             for _ in range(0, 3):
-                _loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, has_flag(potion_activated, PotionActivation.LUCK_POTION))
+                _loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, external_buffs)
                 for item_id in _loot_table:
                     if item_id in loot_table:
                         loot_table[item_id] += _loot_table[item_id]
@@ -1061,6 +1063,7 @@ async def explore(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     potion_activated = PotionActivation(0)
+    external_buffs = []
     response_str = ""
 
     async with bot.pool.acquire() as conn:
@@ -1085,6 +1088,7 @@ async def explore(ctx: lightbulb.Context):
             death_reductions += 0.1
             if loot.roll_potion_activate("luck_potion"):
                 potion_activated |= PotionActivation.LUCK_POTION
+                external_buffs.append("luck_potion")
         if has_fire_potion:
             death_reductions += 0.02
             if loot.roll_potion_activate("fire_potion"):
@@ -1098,7 +1102,7 @@ async def explore(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.STRENGTH_POTION
                 death_reductions += 0.08
         
-        loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, has_flag(potion_activated, PotionActivation.LUCK_POTION))
+        loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, external_buffs)
         if not loot_table:
             await ctx.respond("After a long exploring session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
@@ -1118,7 +1122,7 @@ async def explore(ctx: lightbulb.Context):
         if has_flag(potion_activated, PotionActivation.LOOTING_POTION):
             # Roll 3 more times, which is 4 times in total.
             for _ in range(0, 3):
-                _loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, has_flag(potion_activated, PotionActivation.LUCK_POTION))
+                _loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, external_buffs)
                 for item_id in _loot_table:
                     if item_id in loot_table:
                         loot_table[item_id] += _loot_table[item_id]
@@ -1158,6 +1162,7 @@ async def chop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     potion_activated = PotionActivation(0)
+    external_buffs = []
     response_str = ""
 
     async with bot.pool.acquire() as conn:
@@ -1180,8 +1185,9 @@ async def chop(ctx: lightbulb.Context):
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
             death_reductions += 0.1
-            if loot.roll_potion_activate("loot_potion"):
+            if loot.roll_potion_activate("luck_potion"):
                 potion_activated |= PotionActivation.LUCK_POTION
+                external_buffs.append("luck_potion")
         if has_fire_potion:
             death_reductions += 0.02
             if loot.roll_potion_activate("fire_potion"):
@@ -1195,7 +1201,7 @@ async def chop(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.STRENGTH_POTION
                 death_reductions += 0.08
         
-        loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, has_flag(potion_activated, PotionActivation.LUCK_POTION))
+        loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, external_buffs)
         if not loot_table:
             await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
@@ -1215,7 +1221,7 @@ async def chop(ctx: lightbulb.Context):
         if has_flag(potion_activated, PotionActivation.NATURE_POTION):
             # Roll 3 more times, which is 4 times in total.
             for _ in range(0, 3):
-                _loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, has_flag(potion_activated, PotionActivation.LUCK_POTION))
+                _loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, external_buffs)
                 for item_id in _loot_table:
                     if item_id in loot_table:
                         loot_table[item_id] += _loot_table[item_id]
