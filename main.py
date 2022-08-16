@@ -20,7 +20,7 @@ EXTENSIONS = (
     "categories.fun",
     "categories.help",
     "categories.moderation",
-    #"categories.music",
+    "categories.music",
     "categories.test",
     "categories.utilities",
     "events.error_handler",
