@@ -168,7 +168,7 @@ async def np(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         )
 
-        if current_track.sourceName == "youtube":
+        if current_track.source_name == "youtube":
             embed.set_thumbnail(
                 get_yt_thumbnail_endpoint(current_track.identifier)
             )
