@@ -24,7 +24,7 @@ async def on_command_not_found(event: lightbulb.CommandErrorEvent, _: lightbulb.
     await event.bot.rest.trigger_typing(event.context.channel_id)
 async def on_command_cooldown(event: lightbulb.CommandErrorEvent, exception: lightbulb.CommandIsOnCooldown):
     embed = __get_generic_error_embed()
-    embed.description = f":warning: **Chill out! You need to wait for {humanize.precisedelta(exception.retry_after, format = '%0.0f')} before using this command again!**"
+    embed.description = f":warning: **Chill out! You need to wait for `{humanize.precisedelta(exception.retry_after, format = '%0.0f')}` before using this command again!**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_bot_missing_permission(event: lightbulb.CommandErrorEvent, exception: lightbulb.BotMissingRequiredPermission):
@@ -84,7 +84,7 @@ async def on_converter_failed(event: lightbulb.CommandErrorEvent, exception: lig
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_missing_arguments(event: lightbulb.CommandErrorEvent, exception: lightbulb.NotEnoughArguments):
-    missing_arguments = ', '.join([f"{option.name}" for option in exception.missing_options])
+    missing_arguments = ', '.join([f"`{option.name}`" for option in exception.missing_options])
     embed = __get_generic_error_embed()
     embed.description = f":warning: **You're missing the following arguments: {missing_arguments}.**"
 
@@ -99,6 +99,7 @@ async def on_generic_error(event: lightbulb.CommandErrorEvent, exception: Except
     embed.description = f":warning: **There's an unhandled error.\nError message: `{type(exception).__name__}: {exception}`.\nThis is a developer-side issue.**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
+    logger.error(f"An error occurred in '{event.context.command.qualname}', but is not handled!", exc_info = exception)
 
 __handler_mapping = {
     lightbulb.CommandNotFound: on_command_not_found,
