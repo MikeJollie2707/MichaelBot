@@ -21,7 +21,7 @@
         "name": "Nature Killer",
         "emoji": "🪵",
         "description": "You chopped so many trees, it's actually quite surprising the Earth hasn't collapsed from the lack of photosynthesis.",
-        "requirement": 1000
+        "requirement": 2000
     },
     {
         "id": "iron0",
@@ -35,14 +35,14 @@
         "name": "Iron Age",
         "emoji": "<:iron:820009715286671410>",
         "description": "Everyone wants iron. With that in mind, you now sell it for even a higher price.",
-        "requirement": 100
+        "requirement": 200
     },
     {
         "id": "iron2",
         "name": "Iron Man",
         "emoji": "<:iron:820009715286671410>",
         "description": "Do you ever wonder where these iron ingots come from?",
-        "requirement": 1000
+        "requirement": 2000
     },
     {
         "id": "diamond0",
@@ -98,7 +98,7 @@
         "name": "Firefighter",
         "emoji": "<:blaze_rod:826150261906472960>",
         "description": "Did you know snowball is effective against blazes? Yea no one cares anyway, Power V Bow go brr.",
-        "requirement": 50
+        "requirement": 100
     },
     {
         "id": "death0",
@@ -125,7 +125,7 @@
         "id": "brew0",
         "name": "Local Brewery",
         "emoji": "<a:fire_potion:828135033466126366>",
-        "description": "A decorative badge. Earned from obtaining your first potion.",
+        "description": "A decorative badge. Earned from brewing your first potion.",
         "requirement": 1
     },
     {
