@@ -52,6 +52,7 @@ nav:
     - Trading System: econ/trade.md
     - Death Mechanism: econ/death.md
     - Potions: econ/potions.md
+    - Badges: econ/badges.md
 
 dev_addr: '127.0.0.1:8001'
 
