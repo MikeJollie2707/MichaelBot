@@ -286,7 +286,7 @@ async def badges(ctx: lightbulb.Context):
                 ctx.author.avatar_url
             )
         @page.set_entry_formatter
-        def entry_format(embed: hikari.Embed, index: int, badge: psql.Badge):
+        def entry_format(embed: hikari.Embed, _: int, badge: psql.Badge):
             _ubadge = None
             for ubadge in ubadges:
                 if ubadge.badge_id == badge.id:
@@ -294,7 +294,7 @@ async def badges(ctx: lightbulb.Context):
                     break
             
             embed_name = f"{badge.emoji} {badge.name}"
-            if not ubadge.completed():
+            if not _ubadge.completed():
                 embed_name += f" [{_ubadge.badge_progress}/{badge.requirement}]"
             
             embed.add_field(
@@ -1449,7 +1449,7 @@ async def refresh_trade(bot: models.MichaelBot):
             await do_refresh_trade(bot)
 
 @plugin.listener(hikari.ShardReadyEvent)
-async def on_shard_ready(event: hikari.ShardReadyEvent):
+async def on_shard_ready(_: hikari.ShardReadyEvent):
     refresh_trade.start()
 
 @plugin.command()
