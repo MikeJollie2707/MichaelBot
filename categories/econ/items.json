@@ -417,7 +417,7 @@
         "description": "When in your inventory, this will negate one missed day of your daily streak. This will be consumed even if you can't negate the streak loss fully.",
         "rarity": "legendary",
         "buy_price": null,
-        "sell_price": 1
+        "sell_price": 0
     },
     {
         "id": "fire_potion",
