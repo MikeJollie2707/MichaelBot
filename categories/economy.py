@@ -42,15 +42,15 @@ def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, red
     rate = min(cap_death, 2 ** ((reward_value - 10) / 25) / 100) 
     
     if "wood" in equipment.item_id:
-        rate -= 0.15
+        rate -= loot.DEATH_REDUCTIONS["wood_tool"]
     elif "stone" in equipment.item_id:
-        rate -= 0.15
+        rate -= loot.DEATH_REDUCTIONS["stone_tool"]
     elif "iron" in equipment.item_id:
-        rate -= 0.01
+        rate -= loot.DEATH_REDUCTIONS["iron_tool"]
     elif "diamond" in equipment.item_id:
-        rate -= 0.05
+        rate -= loot.DEATH_REDUCTIONS["diamond_tool"]
     elif "nether" in equipment.item_id:
-        rate -= 0.10
+        rate -= loot.DEATH_REDUCTIONS["nether_tool"]
     
     return max(rate - reductions, 0.005)
 
@@ -1082,27 +1082,27 @@ async def mine(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_reductions += 0.1
+            death_reductions += loot.DEATH_REDUCTIONS["luck_potion"]
             if loot.roll_potion_activate("luck_potion"):
                 potion_activated |= PotionActivation.LUCK_POTION
                 external_buffs.append("luck_potion")
         if has_fire_potion:
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["fire_potion"]
             if loot.roll_potion_activate("fire_potion"):
                 potion_activated |= PotionActivation.FIRE_POTION
         if has_fortune_potion:
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["fortune_potion"]
             if loot.roll_potion_activate("fortune_potion"):
                 potion_activated |= PotionActivation.FORTUNE_POTION
         if has_strength_potion:
             if loot.roll_potion_activate("strength_potion"):
                 potion_activated |= PotionActivation.STRENGTH_POTION
-                death_reductions += 0.08
+                death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
         
         # Check for badges.
         death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
         if death1_badge and death1_badge.completed():
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["death1"]
         iron2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "iron2")
         if iron2_badge and iron2_badge.completed():
             external_buffs.append("iron2")
@@ -1207,27 +1207,27 @@ async def explore(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_reductions += 0.1
+            death_reductions += loot.DEATH_REDUCTIONS["luck_potion"]
             if loot.roll_potion_activate("luck_potion"):
                 potion_activated |= PotionActivation.LUCK_POTION
                 external_buffs.append("luck_potion")
         if has_fire_potion:
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["fire_potion"]
             if loot.roll_potion_activate("fire_potion"):
                 potion_activated |= PotionActivation.FIRE_POTION
         if has_looting_potion:
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["looting_potion"]
             if loot.roll_potion_activate("looting_potion"):
                 potion_activated |= PotionActivation.LOOTING_POTION
         if has_strength_potion:
             if loot.roll_potion_activate("strength_potion"):
                 potion_activated |= PotionActivation.STRENGTH_POTION
-                death_reductions += 0.08
+                death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
         
         # Check for badges.
         death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
         if death1_badge and death1_badge.completed():
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["death1"]
         blaze1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "blaze1")
         if blaze1_badge and blaze1_badge.completed():
             external_buffs.append("blaze1")
@@ -1319,27 +1319,27 @@ async def chop(ctx: lightbulb.Context):
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
-            death_reductions += 0.1
+            death_reductions += loot.DEATH_REDUCTIONS["luck_potion"]
             if loot.roll_potion_activate("luck_potion"):
                 potion_activated |= PotionActivation.LUCK_POTION
                 external_buffs.append("luck_potion")
         if has_fire_potion:
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["fire_potion"]
             if loot.roll_potion_activate("fire_potion"):
                 potion_activated |= PotionActivation.FIRE_POTION
         if has_nature_potion:
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["nature_potion"]
             if loot.roll_potion_activate("nature_potion"):
                 potion_activated |= PotionActivation.NATURE_POTION
         if has_strength_potion:
             if loot.roll_potion_activate("strength_potion"):
                 potion_activated |= PotionActivation.STRENGTH_POTION
-                death_reductions += 0.08
+                death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
         
         # Check for badges.
         death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
         if death1_badge and death1_badge.completed():
-            death_reductions += 0.02
+            death_reductions += loot.DEATH_REDUCTIONS["death1"]
         wood2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "wood2")
         if wood2_badge and wood2_badge.completed():
             external_buffs.append("wood2")

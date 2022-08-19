@@ -1,4 +1,4 @@
-'''Define the loot tables for the economy system.'''
+'''Define the loot tables for the economy system and a bunch of constants.'''
 
 # A few special keywords that are reserved in the loot tables:
 # - "result": Usually in crafting-related stuff, it defines how many items will end up as the result of the craft.
@@ -16,6 +16,26 @@ RESERVED_KEYS = (
     "bonus",
     "cost",
 )
+
+DEATH_REDUCTIONS = {
+    # Tools
+    "wood_tool": 0.15,
+    "stone_tool": 0.15,
+    "iron_tool": 0.01,
+    "diamond_tool": 0.05,
+    "nether_tool": 0.10,
+
+    # Badges
+    "death1": 0.02,
+
+    # Potions
+    "luck_potion": 0.10,
+    "fire_potion": 0.02,
+    "fortune_potion": 0.02,
+    "looting_potion": 0.02,
+    "nature_potion": 0.02,
+    "strength_potion": 0.08,
+}
 
 class RewardRNG:
     '''Define the RNG to randomize.
