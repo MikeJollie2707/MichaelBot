@@ -26,7 +26,7 @@ DEATH_REDUCTIONS = {
     "nether_tool": 0.10,
 
     # Badges
-    "death1": 0.02,
+    "death1": 0.05,
 
     # Potions
     "luck_potion": 0.10,
@@ -34,7 +34,8 @@ DEATH_REDUCTIONS = {
     "fortune_potion": 0.02,
     "looting_potion": 0.02,
     "nature_potion": 0.02,
-    "strength_potion": 0.08,
+    "health_potion_passive": 0.02,
+    "health_potion_active": 0.06,
 }
 
 class RewardRNG:
@@ -483,8 +484,9 @@ __BREW_RECIPE = {
         "cost": 450,
         "result": 3
     },
-    # 3915
-    "strength_potion": {
+    # 4015
+    "health_potion": {
+        "fire_potion": 1,
         "rotten_flesh": 360,
         "spider_eye": 120,
         "leaf": 900,
@@ -505,7 +507,7 @@ __POTION_CHANCE = {
     "looting_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
-    "strength_potion": 1,
+    "health_potion": 0.75,
     "luck_potion": 0.50,
     "undying_potion": 1,
 }

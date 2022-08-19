@@ -21,7 +21,7 @@ class PotionActivation(IntFlag):
     FORTUNE_POTION = auto()
     LOOTING_POTION = auto()
     NATURE_POTION = auto()
-    STRENGTH_POTION = auto()
+    HEALTH_POTION = auto()
     LUCK_POTION = auto()
     UNDYING_POTION = auto()
 
@@ -1078,7 +1078,7 @@ async def mine(ctx: lightbulb.Context):
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
         has_fortune_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fortune_potion")
-        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
+        has_health_potion = await psql.Equipment.get_one(conn, ctx.author.id, "health_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1094,10 +1094,11 @@ async def mine(ctx: lightbulb.Context):
             death_reductions += loot.DEATH_REDUCTIONS["fortune_potion"]
             if loot.roll_potion_activate("fortune_potion"):
                 potion_activated |= PotionActivation.FORTUNE_POTION
-        if has_strength_potion:
-            if loot.roll_potion_activate("strength_potion"):
-                potion_activated |= PotionActivation.STRENGTH_POTION
-                death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
+        if has_health_potion:
+            death_reductions += loot.DEATH_REDUCTIONS["health_potion_passive"]
+            if loot.roll_potion_activate("health_potion"):
+                potion_activated |= PotionActivation.HEALTH_POTION
+                death_reductions += loot.DEATH_REDUCTIONS["health_potion_active"]
         
         # Check for badges.
         death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
@@ -1156,8 +1157,9 @@ async def mine(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FORTUNE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fortune_potion", has_fortune_potion.remain_durability - 1)
                 response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
-            if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
-                await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
+            if has_flag(potion_activated, PotionActivation.HEALTH_POTION):
+                await psql.Equipment.update_durability(conn, ctx.author.id, "health_potion", has_health_potion.remain_durability - 1)
+                response_str += "*Health Potion* activated, lowering the death chance!\n"
             
             # Process badges.
             if loot_table.get("iron"):
@@ -1203,7 +1205,7 @@ async def explore(ctx: lightbulb.Context):
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
         has_looting_potion = await psql.Equipment.get_one(conn, ctx.author.id, "looting_potion")
-        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
+        has_health_potion = await psql.Equipment.get_one(conn, ctx.author.id, "health_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1219,10 +1221,11 @@ async def explore(ctx: lightbulb.Context):
             death_reductions += loot.DEATH_REDUCTIONS["looting_potion"]
             if loot.roll_potion_activate("looting_potion"):
                 potion_activated |= PotionActivation.LOOTING_POTION
-        if has_strength_potion:
-            if loot.roll_potion_activate("strength_potion"):
-                potion_activated |= PotionActivation.STRENGTH_POTION
-                death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
+        if has_health_potion:
+            death_reductions += loot.DEATH_REDUCTIONS["health_potion_passive"]
+            if loot.roll_potion_activate("health_potion"):
+                potion_activated |= PotionActivation.HEALTH_POTION
+                death_reductions += loot.DEATH_REDUCTIONS["health_potion_active"]
         
         # Check for badges.
         death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
@@ -1275,8 +1278,9 @@ async def explore(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.LOOTING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "looting_potion", has_looting_potion.remain_durability - 1)
                 response_str += "*Looting Potion* activated, giving you a reward boost!\n"
-            if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
-                await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
+            if has_flag(potion_activated, PotionActivation.HEALTH_POTION):
+                await psql.Equipment.update_durability(conn, ctx.author.id, "health_potion", has_health_potion.remain_durability - 1)
+                response_str += "*Health Potion* activated, lowering the death chance!\n"
             
             # Process badges.
             if loot_table.get("blaze_rod"):
@@ -1315,7 +1319,7 @@ async def chop(ctx: lightbulb.Context):
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
         has_nature_potion = await psql.Equipment.get_one(conn, ctx.author.id, "nature_potion")
-        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
+        has_health_potion = await psql.Equipment.get_one(conn, ctx.author.id, "health_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1331,10 +1335,11 @@ async def chop(ctx: lightbulb.Context):
             death_reductions += loot.DEATH_REDUCTIONS["nature_potion"]
             if loot.roll_potion_activate("nature_potion"):
                 potion_activated |= PotionActivation.NATURE_POTION
-        if has_strength_potion:
-            if loot.roll_potion_activate("strength_potion"):
-                potion_activated |= PotionActivation.STRENGTH_POTION
-                death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
+        if has_health_potion:
+            death_reductions += loot.DEATH_REDUCTIONS["health_potion_passive"]
+            if loot.roll_potion_activate("health_potion"):
+                potion_activated |= PotionActivation.HEALTH_POTION
+                death_reductions += loot.DEATH_REDUCTIONS["health_potion_active"]
         
         # Check for badges.
         death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
@@ -1387,8 +1392,9 @@ async def chop(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.NATURE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "nature_potion", has_nature_potion.remain_durability - 1)
                 response_str += "*Nature Potion* activated, giving you a reward boost!\n"
-            if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
-                await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
+            if has_flag(potion_activated, PotionActivation.HEALTH_POTION):
+                await psql.Equipment.update_durability(conn, ctx.author.id, "health_potion", has_health_potion.remain_durability - 1)
+                response_str += "*Health Potion* activated, lowering the death chance!\n"
             
             # Process badges.
             if loot_table.get("wood"):

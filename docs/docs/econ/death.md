@@ -52,9 +52,10 @@ These are the current reductions:
 - Fortune Potion: 2% when mining
 - Looting Potion: 2% when exploring
 - Nature Potion: 2% when chopping
-- Strength Potion: 8%
+- Health Potion: 2% passively, 4% more if activates.
 - Luck Potion: 10%
 - Undying Potion: ?% (not decided)
+- `Staph Dying!` badge: 5%
 
 Note that for `x tools`, this means that the percent only applies to the corresponding action. For example, if you have a diamond pickaxe and an iron sword, then when mining, you'll have the 5% reductions, while when you're exploring, you'll have the 1% reductions.
 
@@ -67,7 +68,7 @@ When the RNG is bad enough to hit the death chance, the user will dies. The pena
 - Losing all equipments with few exceptions.
 - Losing all potions.
 - Losing 20% of current balance (rounded up).
-- Losing 5% of all items in inventory (rounded up).
+- Losing 5% (2% if `How are you still sane?` badge is acquired) of all items in inventory (rounded up).
 - If the user is in a different world, they'll be forced to be in the Overworld, with a few exceptions. *This won't update the cooldown in `travel`*.
 
 Out of all of these, losing all potions and 5% of all items in inventory are arguably the worst, so don't die :)

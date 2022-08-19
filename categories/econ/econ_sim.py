@@ -91,5 +91,5 @@ def tool_simulator(tool_id: str, world: str, simulation_time: int = 10 ** 6):
 
 if __name__ == "__main__":
     #average_loot_value("diamond_sword", "nether")
-    tool_simulator("nether_axe", "overworld", 10 ** 5)
-    #loot_value(loot.__BREW_RECIPE["strength_potion"])
+    #tool_simulator("nether_axe", "overworld", 10 ** 5)
+    loot_value(loot.__BREW_RECIPE["health_potion"])

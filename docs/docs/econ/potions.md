@@ -19,10 +19,10 @@ This document will briefly describe all current potions in more details. It won'
 The easiest potion to obtain. You can grab it in `market` with a price of 1500 as an alternate way besides the standard brewing system.
 
 - **Main Effect:** When the user "dies" the Nether, there is a 75% chance this potion will activate, negating the death of the user. 
-- **Passive Effect:** Lower the death chance by 2% on all dimensions.
+- **Passive Effect:** Lower the death chance by 1% on all dimensions.
 - **Durability:** 10
 
-Basically, after applying the passive 2% reduction, this lower your death rate by 75%. This is very good when you just enter Nether for the first few times.
+Basically, after applying the passive 1% reduction, this lower your death rate by 75%. This is very good when you just enter Nether for the first few times.
 
 ## Fortune Potion
 
@@ -48,9 +48,10 @@ Note that because it says "roll", you don't necessarily get x4 rewards, but your
 
 Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.
 
-## Strength Potion
+## Health Potion
 
-- **Main Effect:** A 100% chance to lower the death chance of all (action) commands by 8%.
+- **Main Effect:** A 50% chance to lower the death chance of all (action) commands by 4%.
+- **Passive Effect:** Lower the death chance by 2%.
 - **Durability:** 20
 
 Since this is somewhat brewable within the first few trips into the Nether, this should be prioritized along with Fire Potion.
