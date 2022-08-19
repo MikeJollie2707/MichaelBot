@@ -618,8 +618,7 @@ async def daily(ctx: lightbulb.Context):
                 user.daily_streak = 0
             elif now - user.last_daily < dt.timedelta(days = 1):
                 remaining_time = dt.timedelta(days = 1) + user.last_daily - now
-                await ctx.respond(f"You're a bit too early. You have `{humanize.precisedelta(remaining_time, format = '%0.0f')}` left.")
-                return
+                raise lightbulb.CommandIsOnCooldown(retry_after = remaining_time.seconds)
             # A user need to collect the daily before the second day.
             elif now - user.last_daily >= dt.timedelta(days = 2):
                 # No watch.
