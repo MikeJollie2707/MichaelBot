@@ -50,6 +50,10 @@ class RewardRNG:
         self.max_amount = max_amount
         self.amount_layout = amount_layout
 
+    def shift_min_amount(self, amount: int):
+        self.min_amount += amount
+        self.max_amount += amount
+
     def roll(self) -> int:
         '''Roll the RNG based on the provided information.
 
@@ -576,11 +580,38 @@ def get_activity_loot(equipment_id: str, world: str, external_buffs: t.Sequence[
     if not world_loot:
         return None
     
-    equipment_loot = world_loot.get(equipment_id)
+    # Copy here cuz
+    # - Can edit the rng.
+    # - Copy world_loot is more expensive.
+    equipment_loot = copy.deepcopy(world_loot.get(equipment_id))
     if not equipment_loot:
         return None
     
     for item_id, rng in equipment_loot.items():
+        if item_id == "iron":
+            if "iron2" in external_buffs:
+                rng.rate += 0.10
+        elif item_id == "diamond":
+            if "diamond1" in external_buffs:
+                rng.rate += 0.05
+            if "diamond2" in external_buffs:
+                rng.rate += 0.10
+                rng.shift_min_amount(2)
+        elif item_id == "debris":
+            if "debris1" in external_buffs:
+                rng.rate += 0.025
+            if "debris2" in external_buffs:
+                rng.rate += 0.05
+                rng.shift_min_amount(1)
+        
+        elif item_id == "blaze_rod":
+            if "blaze1" in external_buffs:
+                rng.rate += 0.05
+        
+        elif item_id == "wood":
+            if "wood2" in external_buffs:
+                rng.shift_min_amount(2)
+        
         reward[item_id] = rng.roll()
         
         if "luck_potion" in external_buffs and reward[item_id] == 0:

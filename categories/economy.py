@@ -146,6 +146,8 @@ async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dic
 
     For some special keys (as defined in `loot.RESERVED_KEYS`), this will attempt to add money also.
 
+    This also attempt to add some badges.
+
     Notes
     -----
     This function internally calls `UserCache.update()`.
@@ -168,6 +170,18 @@ async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dic
             if item_id not in loot.RESERVED_KEYS:
                 if amount > 0:
                     await psql.Inventory.add(conn, user_id, item_id, amount)
+
+                    # Process badge.
+                    if item_id == "wood":
+                        await psql.UserBadge.add_progress(conn, user_id, "wood0", amount)
+                    elif item_id == "iron":
+                        await psql.UserBadge.add_progress(conn, user_id, "iron0", amount)
+                    elif item_id == "diamond":
+                        await psql.UserBadge.add_progress(conn, user_id, "diamond0", amount)
+                    elif item_id == "debris":
+                        await psql.UserBadge.add_progress(conn, user_id, "debris0", amount)
+                    elif item_id == "blaze_rod":
+                        await psql.UserBadge.add_progress(conn, user_id, "blaze0", amount)
             elif item_id == "cost":
                 money -= amount
             else:
@@ -202,6 +216,12 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     back_to_overworld = True
     
     async with conn.transaction():
+        await psql.UserBadge.add_progress(conn, user.id, "death0")
+        await psql.UserBadge.add_progress(conn, user.id, "death1")
+        await psql.UserBadge.add_progress(conn, user.id, "death2")
+
+        death2_badge = await psql.UserBadge.get_one(conn, user.id, "death2")
+
         for equipment in equipments:
             if not ("nether_" in equipment.item_id and user.world == "nether"):
                 await psql.Equipment.delete(conn, user.id, equipment.item_id)
@@ -211,7 +231,10 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
                 inv.amount -= 1
                 back_to_overworld = False
             else:
-                inv.amount -= inv.amount * 5 // 100
+                if not death2_badge.completed():
+                    inv.amount -= inv.amount * 5 // 100
+                else:
+                    inv.amount -= inv.amount * 2 // 100
             await psql.Inventory.update(conn, inv)
         
         user.balance -= user.balance * 20 // 100
@@ -227,6 +250,56 @@ plugin.add_checks(
     checks.is_command_enabled, 
     lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS)
 )
+
+@plugin.command()
+@lightbulb.command("badges", "View your badges.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def badges(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        ubadges = await psql.UserBadge.get_user_badges(conn, ctx.author.id)
+        if not ubadges:
+            await ctx.respond("*Cricket noises*", reply = True)
+            return
+        
+        badges = await psql.Badge.get_all(conn)
+        available_badges: list[psql.Badge] = []
+        for badge in badges:
+            for ubadge in ubadges:
+                if ubadge.badge_id == badge.id and (ubadge.completed() or ubadge.badge_progress / badge.requirement >= 0.90):
+                    available_badges.append(badge)
+                    break
+        page = nav.ItemListBuilder(available_badges, 6)
+        @page.set_page_start_formatter
+        def start_format(_: int, __: psql.UserBadge) -> hikari.Embed:
+            return helpers.get_default_embed(
+                datetime = dt.datetime.now().astimezone(),
+                author = ctx.author
+            ).set_author(
+                name = f"{ctx.author.username}'s Badges",
+                icon = ctx.author.avatar_url
+            ).set_thumbnail(
+                ctx.author.avatar_url
+            )
+        @page.set_entry_formatter
+        def entry_format(embed: hikari.Embed, index: int, badge: psql.Badge):
+            _ubadge = None
+            for ubadge in ubadges:
+                if ubadge.badge_id == badge.id:
+                    _ubadge = ubadge
+                    break
+            
+            embed_name = f"{badge.emoji} {badge.name}"
+            if not ubadge.completed():
+                embed_name += f" [{_ubadge.badge_progress}/{badge.requirement}]"
+            
+            embed.add_field(
+                name = embed_name,
+                value = f"*{badge.description}*"
+            )
+        
+        await nav.run_view(page.build(authors = (ctx.author.id,)), ctx)
 
 @plugin.command()
 @lightbulb.command("balance", "View your balance.", aliases = ["bal"])
@@ -396,12 +469,24 @@ async def brew(ctx: lightbulb.Context):
             await ctx.respond(f"You're missing the following items: {get_reward_str(bot, missing)}")
             return
         
+        # Check for badges.
+        brew1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew1")
+        if brew1_badge and brew1_badge.completed():
+            recipe["result"] += 1
+        brew2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew2")
+        if brew2_badge and brew2_badge.completed():
+            recipe["result"] += 2
+        
         async with conn.transaction():
             for inv in inventories:
                 await psql.Inventory.update(conn, inv)
             # Update balance.
             await bot.user_cache.update(conn, user)
-            await psql.Inventory.add(conn, ctx.author.id, potion.id, recipe["result"])
+            await add_reward(conn, bot, ctx.author.id, {potion.id: recipe["result"]})
+
+            await psql.UserBadge.add_progress(conn, ctx.author.id, "brew0", recipe["result"])
+            await psql.UserBadge.add_progress(conn, ctx.author.id, "brew1", recipe["result"])
+            await psql.UserBadge.add_progress(conn, ctx.author.id, "brew2", recipe["result"])
     await ctx.respond(f"Successfully brewed {get_reward_str(bot, {potion.id: recipe['result']})}.", reply = True)
 @brew.autocomplete("potion")
 async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
@@ -486,7 +571,7 @@ async def craft(ctx: lightbulb.Context):
         async with conn.transaction():
             for inv in inventories:
                 await psql.Inventory.update(conn, inv)
-            await psql.Inventory.add(conn, ctx.author.id, item.id, recipe["result"])
+            await add_reward(conn, bot, ctx.author.id, {item.id: recipe["result"]})
     await ctx.respond(f"Successfully crafted {get_reward_str(bot, {item.id: recipe['result']})}.", reply = True)
 @craft.autocomplete("item")
 async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
@@ -884,7 +969,7 @@ async def market_buy(ctx: lightbulb.Context):
 
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
+            await add_reward(conn, bot, ctx.author.id, {item.id: amount})
             await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"Successfully purchased {get_reward_str(bot, {item.id : amount}, option = 'emote')}.", reply = True)
@@ -922,6 +1007,15 @@ async def market_sell(ctx: lightbulb.Context):
         
         if amount == 0:
             amount = inv.amount
+        
+        if item.id == "wood":
+            wood1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "wood1")
+            if wood1_badge and wood1_badge.completed():
+                item.sell_price += 1
+        elif item.id == "iron":
+            iron1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "iron1")
+            if iron1_badge and iron1_badge.completed():
+                item.sell_price += 2
         
         profit = item.sell_price * amount
         user = bot.user_cache[ctx.author.id]
@@ -1003,6 +1097,20 @@ async def mine(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.STRENGTH_POTION
                 death_reductions += 0.08
         
+        # Check for badges.
+        death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
+        if death1_badge and death1_badge.completed():
+            death_reductions += 0.02
+        iron2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "iron2")
+        if iron2_badge and iron2_badge.completed():
+            external_buffs.append("iron2")
+        diamond1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "diamond1")
+        if diamond1_badge and diamond1_badge.completed():
+            external_buffs.append("diamond1")
+        debris1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "debris1")
+        if debris1_badge and debris1_badge.completed():
+            external_buffs.append("debris1")
+        
         loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, external_buffs)
         if not loot_table:
             await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
@@ -1036,6 +1144,7 @@ async def mine(ctx: lightbulb.Context):
             await add_reward(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
             
+            # Process potions.
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
@@ -1047,6 +1156,17 @@ async def mine(ctx: lightbulb.Context):
                 response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
             if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
+            
+            # Process badges.
+            if loot_table.get("iron"):
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "iron1", loot_table["iron"])
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "iron2", loot_table["iron"])
+            if loot_table.get("diamond"):
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "diamond1", loot_table["diamond"])
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "diamond2", loot_table["diamond"])
+            if loot_table.get("debris"):
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "debris1", loot_table["debris"])
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "debris2", loot_table["debris"])
     
     response_str += f"You mined and received {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if pickaxe_existed.remain_durability - 1 == 0:
@@ -1102,6 +1222,14 @@ async def explore(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.STRENGTH_POTION
                 death_reductions += 0.08
         
+        # Check for badges.
+        death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
+        if death1_badge and death1_badge.completed():
+            death_reductions += 0.02
+        blaze1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "blaze1")
+        if blaze1_badge and blaze1_badge.completed():
+            external_buffs.append("blaze1")
+        
         loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, external_buffs)
         if not loot_table:
             await ctx.respond("After a long exploring session, you came back with only dust and regret.", reply = True, mentions_reply = True)
@@ -1135,6 +1263,7 @@ async def explore(ctx: lightbulb.Context):
             await add_reward(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
             
+            # Process potions.
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
@@ -1146,6 +1275,10 @@ async def explore(ctx: lightbulb.Context):
                 response_str += "*Looting Potion* activated, giving you a reward boost!\n"
             if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
+            
+            # Process badges.
+            if loot_table.get("blaze_rod"):
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "blaze1", loot_table["blaze_rod"])
     
     response_str += f"You explored and obtained {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if sword_existed.remain_durability - 1 == 0:
@@ -1201,6 +1334,14 @@ async def chop(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.STRENGTH_POTION
                 death_reductions += 0.08
         
+        # Check for badges.
+        death1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "death1")
+        if death1_badge and death1_badge.completed():
+            death_reductions += 0.02
+        wood2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "wood2")
+        if wood2_badge and wood2_badge.completed():
+            external_buffs.append("wood2")
+        
         loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, external_buffs)
         if not loot_table:
             await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
@@ -1234,6 +1375,7 @@ async def chop(ctx: lightbulb.Context):
             await add_reward(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
             
+            # Process potions.
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
@@ -1245,6 +1387,11 @@ async def chop(ctx: lightbulb.Context):
                 response_str += "*Nature Potion* activated, giving you a reward boost!\n"
             if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
+            
+            # Process badges.
+            if loot_table.get("wood"):
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "wood1", loot_table["wood"])
+                await psql.UserBadge.add_progress(conn, ctx.author.id, "wood2", loot_table["wood"])
     
     response_str += f"You chopped and collected {get_reward_str(bot, loot_table, option = 'emote')}\n"
     if axe_existed.remain_durability - 1 == 0:
@@ -1444,7 +1591,7 @@ async def _trade(ctx: lightbulb.Context):
                         )
                     else:
                         async with conn.transaction():
-                            await psql.Inventory.add(conn, ctx.author.id, selected_trade.item_dest, selected_trade.amount_dest)
+                            await add_reward(conn, bot, ctx.author.id, {selected_trade.item_dest: selected_trade.amount_dest})
                             user.balance -= selected_trade.amount_src
                             await bot.user_cache.update(conn, user)
                             user_trade.count += 1
@@ -1473,7 +1620,7 @@ async def _trade(ctx: lightbulb.Context):
                     else:
                         async with conn.transaction():
                             await psql.Inventory.remove(conn, ctx.author.id, selected_trade.item_src, selected_trade.amount_src)
-                            await psql.Inventory.add(conn, ctx.author.id, selected_trade.item_dest, selected_trade.amount_dest)
+                            await add_reward(conn, bot, ctx.author.id, {selected_trade.item_dest: selected_trade.amount_dest})
                             user_trade.count += 1
                             await psql.UserTrade.update(conn, user_trade)
 
@@ -1636,7 +1783,7 @@ async def _barter(ctx: lightbulb.Context):
                     else:
                         async with conn.transaction():
                             await psql.Inventory.remove(conn, ctx.author.id, selected_barter.item_src, selected_barter.amount_src)
-                            await psql.Inventory.add(conn, ctx.author.id, selected_barter.item_dest, selected_barter.amount_dest)
+                            await add_reward(conn, bot, ctx.author.id, {selected_barter.item_dest: selected_barter.amount_dest})
                             user_trade.count += 1
                             await psql.UserTrade.update(conn, user_trade)
 

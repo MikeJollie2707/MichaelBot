@@ -1230,3 +1230,180 @@ class UserTrade:
         async with conn.transaction():
             for change in diff_col:
                 await UserTrade.update_column(conn, user_trade.user_id, user_trade.trade_id, user_trade.trade_type, change, getattr(user_trade, change))
+
+@dataclasses.dataclass(slots = True)
+class Badge(ClassToDict):
+    id: str
+    sort_id: int
+    name: str
+    emoji: str
+    description: str
+    requirement: int = 0
+
+    @staticmethod
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False):
+        return await Badge.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[Badge], bool] = lambda r: True, as_dict: bool = False):
+        query = """
+            SELECT * FROM Badges
+            ORDER BY sort_id;
+        """
+
+        return await __get_all__(conn, query, where = where, result_type = Badge if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, id: str, *, as_dict: bool = False):
+        query = """
+            SELECT * FROM Badges
+            WHERE id = ($1);
+        """
+
+        return await __get_one__(conn, query, id, result_type = Badge if not as_dict else dict)
+    @staticmethod
+    async def get_by_name(conn: asyncpg.Connection, name: str, *, as_dict: bool = False):
+        query = """
+            SELECT * FROM Badges
+            WHERE name LIKE ($1);
+        """
+
+        return await __get_one__(conn, query, name, result_type = Badge if not as_dict else dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, badge: Badge):
+        query = insert_into_query("Badges", len(Badge.__slots__))
+
+        return await run_and_return_count(conn, query, badge.id, badge.sort_id, badge.name, badge.emoji, badge.description, badge.requirement)
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, id: str, column: str, new_value):
+        query = f"""
+            UPDATE Badges
+            SET {column} = ($2)
+            WHERE id = ($1);
+        """
+        return await run_and_return_count(conn, query, id, new_value)
+    @staticmethod
+    async def update(conn: asyncpg.Connection, badge: Badge):
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+
+        existing_badge = await Badge.get_one(conn, badge.id)
+        if existing_badge is None:
+            await Badge.insert_one(conn, badge)
+            logger.info("Loaded new badge '%s' into the database.", badge.id)
+        else:
+            diff_col = []
+            for col in existing_badge.__slots__:
+                if getattr(existing_badge, col) != getattr(badge, col):
+                    diff_col.append(col)
+
+            async with conn.transaction():
+                for change in diff_col:
+                    await Badge.update_column(conn, badge.id, change, getattr(badge, change))
+
+            if diff_col:
+                logger.info("Updated item '%s' in the following columns: %s.", badge.id, diff_col)
+
+@dataclasses.dataclass(slots = True)
+class UserBadge(ClassToDict):
+    '''Represent an entry in the `UserEquipment` table along with possible operations related to the table.
+    
+    Note that `badge_requirement` is a read-only attribute; it doesn't matter if you try to update it, it'll be ignored because it doesn't belong to this table.
+    '''
+
+    user_id: int
+    badge_id: str
+    badge_progress: int = 0
+
+    badge_requirement: int = 0
+
+    __PREVENT_UPDATE = ("user_id", "badge_id", "badge_requirement")
+
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[UserBadge], bool] = lambda r: True, as_dict: bool = False):
+        query = """
+            SELECT Users_Badges.*, Badges.requirement AS badge_requirement FROM Users_Badges
+                INNER JOIN Badges
+                ON Users_Badges.badge_id = Badges.id;
+        """
+        return await __get_all__(conn, query, where = where, result_type = UserBadge if not as_dict else dict)
+    @staticmethod
+    async def get_user_badges(conn: asyncpg.Connection, user_id: int, *, as_dict: bool = False):
+        query = f"""
+            SELECT Users_Badges.*, Badges.requirement AS badge_requirement FROM Users_Badges
+                INNER JOIN Badges
+                ON Users_Badges.badge_id = Badges.id
+            WHERE user_id = {user_id};
+        """
+
+        return await __get_all__(conn, query, result_type = UserBadge if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, user_id: int, badge_id: str, *, as_dict: bool = False):
+        query = """
+            SELECT Users_Badges.*, Badges.requirement AS badge_requirement FROM Users_Badges
+                INNER JOIN Badges
+                ON Users_Badges.badge_id = Badges.id
+            WHERE user_id = ($1) AND badge_id = ($2);
+        """
+
+        return await __get_one__(conn, query, user_id, badge_id, result_type = UserBadge if not as_dict else dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, ubadge: UserBadge):
+        query = insert_into_query("Users_Badges", len(UserBadge.__slots__) - 1)
+
+        return await run_and_return_count(conn, query, ubadge.user_id, ubadge.badge_id, ubadge.badge_progress)
+    @staticmethod
+    async def add(conn: asyncpg.Connection, ubadge: UserBadge):
+        query = """
+            INSERT INTO Users_Badges
+            VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;
+        """
+        return await run_and_return_count(conn, query, ubadge.user_id, ubadge.badge_id, ubadge.badge_progress)
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, user_id: int, badge_id: str, column: str, new_value):
+        if column in UserBadge.__PREVENT_UPDATE:
+            return 0
+        
+        query = f"""
+            UPDATE Users_Badges
+            SET {column} = ($3)
+            WHERE user_id = ($1) AND badge_id = ($2);
+        """
+        return await run_and_return_count(conn, query, user_id, badge_id, new_value)
+    @staticmethod
+    async def update(conn: asyncpg.Connection, ubadge: UserBadge):
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+
+        existing_badge = await UserBadge.get_one(conn, ubadge.user_id, ubadge.badge_id)
+        if existing_badge is None:
+            await UserBadge.insert_one(conn, ubadge)
+        else:
+            diff_col = []
+            for col in existing_badge.__slots__:
+                if getattr(existing_badge, col) != getattr(ubadge, col):
+                    diff_col.append(col)
+
+            async with conn.transaction():
+                for change in diff_col:
+                    await UserBadge.update_column(conn, ubadge.user_id, ubadge.badge_id, change, getattr(ubadge, change))
+    @staticmethod
+    async def add_progress(conn: asyncpg.Connection, user_id: int, badge_id: str, progress: int = 1):
+        existing_badge = await UserBadge.get_one(conn, user_id, badge_id)
+        if not existing_badge:
+            return await UserBadge.insert_one(conn, UserBadge(user_id, badge_id, progress))
+        
+        existing_badge.badge_progress += progress
+        return await UserBadge.update_column(conn, user_id, badge_id, "badge_progress", existing_badge.badge_progress)
+    def completed(self):
+        return self.badge_progress >= self.badge_requirement

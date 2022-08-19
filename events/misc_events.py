@@ -21,14 +21,30 @@ async def update_item(conn: asyncpg.Connection, bot: models.MichaelBot):
             item_data = json.load(fin)
     except FileNotFoundError:
         logger.warning("Bot is trying to load './categories/econ/items.json', but it is not found.")
-    else:    
-        for index, item in enumerate(item_data):
-            # Ignore the sample item.
-            if index == 0: continue
+    else:
+        async with conn.transaction():
+            for index, item in enumerate(item_data):
+                # Ignore the sample item.
+                if index == 0: continue
 
-            item["sort_id"] = index
-            await bot.item_cache.update(conn, psql.Item(**item))
+                item["sort_id"] = index
+                await bot.item_cache.update(conn, psql.Item(**item))
 
+async def update_badge(conn: asyncpg.Connection, _: models.MichaelBot):
+    badge_data: list[dict]
+    try:
+        with open("./categories/econ/badges.json", encoding = 'utf-8') as fin:
+            badge_data = json.load(fin)
+    except FileNotFoundError:
+        logger.warning("Bot is trying to load './categories/econ/items.json', but it is not found.")
+    else:
+        async with conn.transaction():
+            for index, badge in enumerate(badge_data):
+                if index == 0: continue
+
+                badge["sort_id"] = index
+                await psql.Badge.update(conn, psql.Badge(**badge))
+                
 @plugin.listener(hikari.StartingEvent)
 async def on_starting(event: hikari.StartingEvent):
     bot: models.MichaelBot = event.app
@@ -54,8 +70,8 @@ async def on_starting(event: hikari.StartingEvent):
             logger.info("Bot successfully connected to the database.")
 
             async with bot.pool.acquire() as conn:
-                async with conn.transaction():
-                    await update_item(conn, bot)
+                await update_item(conn, bot)
+                await update_badge(conn, bot)
     
     if bot.pool is None:
         logger.warning("Unable to connect to a database. Bot will be missing features.")

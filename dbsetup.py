@@ -148,6 +148,26 @@ async def setup_database(user, password, database, host, port):
             );
         """)
 
+        await create_table(conn, "Badges", """
+            CREATE TABLE Badges (
+                id TEXT PRIMARY KEY,
+                sort_id INT NOT NULL,
+                name TEXT UNIQUE NOT NULL,
+                emoji TEXT NOT NULL,
+                description TEXT NOT NULL,
+                requirement INT NOT NULL DEFAULT 0
+            );
+        """)
+
+        await create_table(conn, "Users_Badges", """
+            CREATE TABLE Users_Badges (
+                user_id INT8 NOT NULL REFERENCES Users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                badge_id TEXT NOT NULL REFERENCES Badges(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                badge_progress INT NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, badge_id)
+            );
+        """)
+
     except Exception as e:
         raise e
     finally:
