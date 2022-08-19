@@ -227,6 +227,9 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
                 await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
         for inv in inventories:
+            if inv.item_id == "streak_freezer":
+                continue
+            
             if user.world == "nether" and inv.item_id == "nether_respawner":
                 inv.amount -= 1
                 back_to_overworld = False
