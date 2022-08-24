@@ -636,15 +636,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#fortune-potion" class="md-nav__link">
-    Fortune Potion
+  <a href="#haste-potion" class="md-nav__link">
+    Haste Potion
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#looting-potion" class="md-nav__link">
-    Looting Potion
+  <a href="#fortune-potion" class="md-nav__link">
+    Fortune Potion
   </a>
   
 </li>
@@ -659,6 +659,13 @@
         <li class="md-nav__item">
   <a href="#strength-potion" class="md-nav__link">
     Strength Potion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#looting-potion" class="md-nav__link">
+    Looting Potion
   </a>
   
 </li>
@@ -740,15 +747,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#fortune-potion" class="md-nav__link">
-    Fortune Potion
+  <a href="#haste-potion" class="md-nav__link">
+    Haste Potion
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#looting-potion" class="md-nav__link">
-    Looting Potion
+  <a href="#fortune-potion" class="md-nav__link">
+    Fortune Potion
   </a>
   
 </li>
@@ -763,6 +770,13 @@
         <li class="md-nav__item">
   <a href="#strength-potion" class="md-nav__link">
     Strength Potion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#looting-potion" class="md-nav__link">
+    Looting Potion
   </a>
   
 </li>
@@ -811,37 +825,42 @@
 <p>The easiest potion to obtain. You can grab it in <code>market</code> with a price of 1500 as an alternate way besides the standard brewing system.</p>
 <ul>
 <li><strong>Main Effect:</strong> When the user "dies" the Nether, there is a 75% chance this potion will activate, negating the death of the user. </li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 2% on all dimensions.</li>
+<li><strong>Passive Effect:</strong> Lower the death chance by 1% on all dimensions.</li>
 <li><strong>Durability:</strong> 10</li>
 </ul>
-<p>Basically, after applying the passive 2% reduction, this lower your death rate by 75%. This is very good when you just enter Nether for the first few times.</p>
-<h2 id="fortune-potion">Fortune Potion</h2>
+<p>Basically, after applying the passive 1% reduction, this lower your death rate by 75%. This is very good when you just enter Nether for the first few times.</p>
+<h2 id="haste-potion">Haste Potion</h2>
 <ul>
-<li><strong>Main Effect:</strong> A 50% chance to roll the drop 4 times and get all of them while mining.</li>
+<li><strong>Main Effect:</strong> A 50% chance to roll the drop 5 times and get all of them while mining and chopping.</li>
 <li><strong>Passive Effect:</strong> Lower the death chance by 2% while mining.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
-<p>Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.</p>
-<h2 id="looting-potion">Looting Potion</h2>
+<p>Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.</p>
+<h2 id="fortune-potion">Fortune Potion</h2>
 <ul>
-<li><strong>Main Effect:</strong> A 50% chance to roll the drop 4 times and get all of them while exploring.</li>
+<li><strong>Main Effect:</strong> A 50% chance to multiply the drop by 2 times while mining.</li>
+<li><strong>Passive Effect:</strong> Lower the death chance by 5% while mining.</li>
+<li><strong>Durability:</strong> 20</li>
+</ul>
+<h2 id="nature-potion">Nature Potion</h2>
+<ul>
+<li><strong>Main Effect:</strong> A 50% chance to multiply the drop by 2 times while chopping.</li>
+<li><strong>Passive Effect:</strong> Lower the death chance by 5% while chopping.</li>
+<li><strong>Durability:</strong> 20</li>
+</ul>
+<h2 id="strength-potion">Strength Potion</h2>
+<ul>
+<li><strong>Main Effect:</strong> A 50% chance to roll the drop 5 times and get all of them while exploring.</li>
 <li><strong>Passive Effect:</strong> Lower the death chance by 2% while exploring.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
-<p>Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.</p>
-<h2 id="nature-potion">Nature Potion</h2>
+<p>Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.</p>
+<h2 id="looting-potion">Looting Potion</h2>
 <ul>
-<li><strong>Main Effect:</strong> A 50% chance to roll the drop 4 times and get all of them while chopping.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 2% while chopping.</li>
+<li><strong>Main Effect:</strong> A 50% chance to multiply the drop by 3 times while exploring.</li>
+<li><strong>Passive Effect:</strong> Lower the death chance by 5% while exploring.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
-<p>Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.</p>
-<h2 id="strength-potion">Strength Potion</h2>
-<ul>
-<li><strong>Main Effect:</strong> A 100% chance to lower the death chance of all (action) commands by 8%.</li>
-<li><strong>Durability:</strong> 20</li>
-</ul>
-<p>Since this is somewhat brewable within the first few trips into the Nether, this should be prioritized along with Fire Potion.</p>
 <h2 id="luck-potion">Luck Potion</h2>
 <ul>
 <li><strong>Main Effect:</strong> A 50% chance to multiplies the drop by 5 times and ensure that all possible drops will drop at least <code>min_amount</code> or 1, whichever is higher.</li>
