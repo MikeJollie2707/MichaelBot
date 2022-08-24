@@ -224,8 +224,13 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
         death2_badge = await psql.UserBadge.get_one(conn, user.id, "death2")
 
         for equipment in equipments:
-            if not ("nether_" in equipment.item_id and user.world == "nether"):
-                await psql.Equipment.delete(conn, user.id, equipment.item_id)
+            item = bot.item_cache[equipment.item_id]
+            if item.rarity.lower() == "legendary":
+                continue
+            if "nether_" in equipment.item_id and user.world == "nether":
+                continue
+
+            await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
         for inv in inventories:
             if inv.item_id == "streak_freezer":
