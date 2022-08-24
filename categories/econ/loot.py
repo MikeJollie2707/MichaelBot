@@ -234,20 +234,20 @@ __ACTIVITY_LOOT = {
             "lucky_clover": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 5),
         },
         "nether_axe": {
-            # - wood: 5.48%
-            # - leaf: 61.69%
-            # - hibiscus: 10.26%
-            # - tulip: 10.25%
-            # - rose: 10.27%
-            # - bed_pickaxe: 0.82%
-            # - lucky_clover: 1.24%
+            # - wood: 5.63%
+            # - leaf: 61.93%
+            # - hibiscus: 10.12%
+            # - tulip: 10.13%
+            # - rose: 10.15%
+            # - bed_pickaxe: 0.67%
+            # - lucky_clover: 1.35%
             "wood": RewardRNG(rate = 1, min_amount = 2, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 25, max_amount = 30),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
             "tulip": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
             "rose": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
             "bed_pickaxe": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
-            "lucky_clover": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 6),
+            "lucky_clover": RewardRNG(rate = 0.15, min_amount = 2, max_amount = 6),
         }
     },
     "nether": {
@@ -274,10 +274,10 @@ __ACTIVITY_LOOT = {
             "redstone": RewardRNG(rate = 1, min_amount = 30, max_amount = 50),
             "gold": RewardRNG(rate = 0.6, min_amount = 15, max_amount = 20),
             "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
-            "debris": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (50, 30, 10, 10)),
+            "debris": RewardRNG(rate = 0.07, min_amount = 1, max_amount = 4, amount_layout = (50, 30, 10, 10)),
         },
         "bed_pickaxe": {
-            "redstone": RewardRNG(rate = 1, min_amount = 45, max_amount = 75),
+            "redstone": RewardRNG(rate = 1, min_amount = 60, max_amount = 100),
             "gold": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
             "obsidian": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
             "debris": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4, amount_layout = (30, 20, 30, 20)),
@@ -409,16 +409,19 @@ __CRAFT_RECIPE = {
     },
     "nether_pickaxe": {
         "netherite": 1,
+        "iron": 20,
         "diamond_pickaxe": 1,
         "result": 1
     },
     "nether_sword": {
         "netherite": 1,
+        "iron": 20,
         "diamond_sword": 1,
         "result": 1
     },
     "nether_axe": {
         "netherite": 1,
+        "iron": 20,
         "diamond_axe": 1,
         "result": 1
     }
