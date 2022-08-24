@@ -32,7 +32,7 @@ EVENT_OPTION_MAPPING = {
     lightbulb.SlashCommandErrorEvent: "command_error"
 }
 
-command_event_choices = [EVENT_OPTION_MAPPING[event_type] for event_type in EVENT_OPTION_MAPPING]
+command_event_choices = list(EVENT_OPTION_MAPPING.values())
 # Hard-code this shit lmao
 command_event_choices.remove("command_complete")
 command_event_choices.remove("command_error")
@@ -43,6 +43,7 @@ COLOR_DELETE = models.DefaultColor.orange
 COLOR_UPDATE = models.DefaultColor.yellow
 COLOR_OTHER = models.DefaultColor.teal
 
+# mystbin now has an API, but it has a 5 post/min ratelimit, make it not practical. This part also doesn't work anymore.
 async def send_to_mystbin(content: str) -> str:
     mystbin_client = mystbin.Client()
     paste = await mystbin_client.post(content, syntax = "md")
@@ -93,25 +94,16 @@ plugin.add_checks(
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    This command doesn't do anything. Please use the subcommands.
-'''))
-@lightbulb.command("log-set", "Set a channel as a log channel.")
-@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
-async def log_set(ctx: lightbulb.Context):
-    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
-
-@log_set.child
-@lightbulb.set_help(dedent('''
-    Author needs to have `Manage Server`.
+    - Author needs to have `Manage Server`.
 '''))
 @lightbulb.option("channel", "The Discord channel to dump all the logs. Default to current channel.", 
     type = hikari.TextableGuildChannel, 
     channel_types = (hikari.ChannelType.GUILD_TEXT,), 
     default = None
 )
-@lightbulb.command("all", "Set a channel to dump all the logs. This automatically enables logging system.")
-@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def log_set_all(ctx: lightbulb.Context):
+@lightbulb.command("log-enable", "Set a channel to dump all the logs. This automatically enables logging system.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def log_enable(ctx: lightbulb.Context):
     channel = ctx.options.channel
     bot: models.MichaelBot = ctx.bot
 
@@ -145,89 +137,58 @@ async def log_set_all(ctx: lightbulb.Context):
     await ctx.respond(f"Set channel {channel.mention} as a logging channel.", reply = True)
     await bot.rest.create_message(channel, "This channel is now mine to log, muahahahaha!")
 
-@log_set.child
-@lightbulb.set_help(dedent('''
-    Author needs to have `Manage Server`.
-    It is recommended to use the `Slash Command` version of the command.
-'''))
-@lightbulb.option("logging_option", "Log type to turn on. Check `log-view` to see all options.", choices = command_event_choices)
-@lightbulb.command("option", "Enable a logging option.")
-@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def log_enable_option(ctx: lightbulb.Context):
-    logging_option = ctx.options.logging_option
-    bot: models.MichaelBot = ctx.bot
-
-    if logging_option not in EVENT_OPTION_MAPPING.values():
-        raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
-    
-    async with bot.pool.acquire() as conn:
-        log_cache = bot.log_cache.get(ctx.guild_id)
-        if log_cache is not None:
-            setattr(log_cache, logging_option, True)
-            await bot.log_cache.update(conn, log_cache)
-        else:
-            await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
-            return
-    await ctx.respond(f"Log option `{logging_option}` is enabled.", reply = True)
-
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    This command doesn't do anything. Please use the subcommands.
+    - Author needs to have `Manage Server`.
 '''))
 @lightbulb.command("log-disable", "Disable logging or part of the logging system.")
-@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_disable(ctx: lightbulb.Context):
-    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
-
-@log_disable.child
-@lightbulb.set_help(dedent('''
-    Author needs to have `Manage Server`.
-'''))
-@lightbulb.command("all", "Disable logging system.")
-@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def log_disable_all(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
-
-    async with bot.pool.acquire() as conn:
-        log_cache = bot.log_cache.get(ctx.guild_id)
-        if log_cache is not None:
-            log_cache.log_channel = None
+    
+    log_cache = bot.log_cache.get(ctx.guild_id)
+    if log_cache is not None:
+        log_cache.log_channel = None
+        async with bot.pool.acquire() as conn:
             await bot.log_cache.update(conn, log_cache)
-        else:
-            await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
-            return
+    else:
+        await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
+        return
 
     await ctx.respond("Logging disabled successfully.", reply = True)
 
-@log_disable.child
+@plugin.command()
 @lightbulb.set_help(dedent('''
-    Author needs to have `Manage Server`.
-    It is recommended to use the `Slash Command` version of the command.
+    - Author needs to have `Manage Server`.
+    - It is recommended to use the `Slash Command` version of the command.
 '''))
-@lightbulb.option("logging_option", "Log type to turn off. Check `log-view` to see all options.", choices = command_event_choices)
-@lightbulb.command("option", "Disable a logging option.")
-@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def log_disable_option(ctx: lightbulb.Context):
+@lightbulb.option("logging_option", "Log type to toggle. Check `log-view` to see all options.", choices = command_event_choices)
+@lightbulb.command("log-option-toggle", "Toggle individual logging option.")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def log_option_toggle(ctx: lightbulb.Context):
     logging_option = ctx.options.logging_option
     bot: models.MichaelBot = ctx.bot
 
     if logging_option not in EVENT_OPTION_MAPPING.values():
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
     
-    async with bot.pool.acquire() as conn:
-        log_cache = bot.log_cache.get(ctx.guild_id)
-        if log_cache is not None:
-            setattr(log_cache, logging_option, False)
+    log_cache = bot.log_cache.get(ctx.guild_id)
+    if log_cache is not None:
+        setattr(log_cache, logging_option, not getattr(log_cache, logging_option))
+        
+        async with bot.pool.acquire() as conn:
             await bot.log_cache.update(conn, log_cache)
+        
+        if getattr(log_cache, logging_option):
+            await ctx.respond(f"Enabled `{logging_option}`.", reply = True)
         else:
-            await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
-            return
-    
-    await ctx.respond(f"Log option `{logging_option}` is disabled.", reply = True)
+            await ctx.respond(f"Disabled `{logging_option}`.", reply = True)
+    else:
+        await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
-    Author needs to have `Manage Server`.
+    - Author needs to have `Manage Server`.
 '''))
 @lightbulb.command("log-view", "View all log settings.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
