@@ -581,15 +581,28 @@ def get_daily_loot(streak: int) -> dict[str, int]:
             "rose": random.randint(50, 52),
             "lucky_clover": random.randint(1, 5),
         }
+    if streak <= 90:    
+        return {
+            "money": 2000,
+            "bonus": 5 * streak,
+            "wood": random.randint(190, 210),
+            "leaf": random.randint(190, 210),
+            "hibiscus": random.randint(190, 210),
+            "tulip": random.randint(190, 210),
+            "rose": random.randint(190, 210),
+            "lucky_clover": random.randint(1, 10),
+        }
     return {
-        "money": 2000,
-        "bonus": 5 * streak,
-        "wood": random.randint(190, 210),
-        "leaf": random.randint(190, 210),
-        "hibiscus": random.randint(190, 210),
-        "tulip": random.randint(190, 210),
-        "rose": random.randint(190, 210),
-        "lucky_clover": random.randint(1, 10),
+        "money": 5000,
+        "bonus": 10 * streak,
+        "wood": random.randint(500, 1000),
+        "leaf": random.randint(1000, 2000),
+        "hibiscus": random.randint(500, 1000),
+        "tulip": random.randint(500, 1000),
+        "rose": random.randint(500, 1000),
+        "lucky_clover": random.randint(5, 20),
+        "diamond": random.randint(10, 20),
+        "debris": random.randint(0, 4),
     }
 
 def get_activity_loot(equipment_id: str, world: str, external_buffs: t.Sequence[str] = None) -> t.Optional[dict[str, int]]:
