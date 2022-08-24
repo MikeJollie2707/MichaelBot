@@ -675,6 +675,7 @@ async def equip(ctx: lightbulb.Context):
     raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @equip.child
+@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("equipment", "The equipment's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("tool", "Equip a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -1480,6 +1481,7 @@ async def on_shard_ready(_: hikari.ShardReadyEvent):
     - This can only be used when you're in the Overworld.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("trade", "View and/or perform a trade. Get your money ready.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _trade(ctx: lightbulb.Context):
@@ -1682,6 +1684,7 @@ async def _trade(ctx: lightbulb.Context):
     - This can only be used when you're in the Nether.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.command("barter", "View and/or perform a barter. Get your gold ready.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _barter(ctx: lightbulb.Context):

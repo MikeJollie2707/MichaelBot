@@ -48,6 +48,27 @@ async def on_nsfw_channel(event: lightbulb.CommandErrorEvent, _: lightbulb.NSFWC
     embed.description = ":warning: **This is a NSFW command. Therefore, you must use this command in a NSFW channel.**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
+async def on_check_failed(event: lightbulb.CommandErrorEvent, exception: lightbulb.CheckFailure):
+    embed = __get_generic_error_embed()
+    embed.description = f":warning: **Command `{event.context.command.qualname}` does not satisfy the following requirement: {exception.args[0]}.**"
+
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
+async def on_converter_failed(event: lightbulb.CommandErrorEvent, exception: lightbulb.ConverterFailure):
+    embed = __get_generic_error_embed()
+    embed.description = f":warning: **The following option cannot be converted properly: `{exception.option.name}`.**"
+
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
+async def on_missing_arguments(event: lightbulb.CommandErrorEvent, exception: lightbulb.NotEnoughArguments):
+    missing_arguments = ', '.join([f"`{option.name}`" for option in exception.missing_options])
+    embed = __get_generic_error_embed()
+    embed.description = f":warning: **You're missing the following arguments: {missing_arguments}.**"
+
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
+async def on_max_concurrency_reached(event: lightbulb.CommandErrorEvent, exception: lightbulb.MaxConcurrencyLimitReached):
+    embed = __get_generic_error_embed()
+    embed.description = ":warning: **This command cannot be run multiple times while the previous one is still active.**"
+
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_no_database(event: lightbulb.CommandErrorEvent, _: errors.NoDatabase):
     embed = __get_generic_error_embed()
     embed.description = ":warning: **This command needs to connect to a database, but none detected. This is a developer-side issue.**"
@@ -73,22 +94,6 @@ async def on_custom_check_failed(event: lightbulb.CommandErrorEvent, exception: 
     embed.description = f":warning: **Command `{event.context.command.qualname}` does not satisfy the following requirement: {exception.args[0]}.**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
-async def on_check_failed(event: lightbulb.CommandErrorEvent, exception: lightbulb.CheckFailure):
-    embed = __get_generic_error_embed()
-    embed.description = f":warning: **Command `{event.context.command.qualname}` does not satisfy the following requirement: {exception.args[0]}.**"
-
-    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
-async def on_converter_failed(event: lightbulb.CommandErrorEvent, exception: lightbulb.ConverterFailure):
-    embed = __get_generic_error_embed()
-    embed.description = f":warning: **The following option cannot be converted properly: `{exception.option.name}`.**"
-
-    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
-async def on_missing_arguments(event: lightbulb.CommandErrorEvent, exception: lightbulb.NotEnoughArguments):
-    missing_arguments = ', '.join([f"`{option.name}`" for option in exception.missing_options])
-    embed = __get_generic_error_embed()
-    embed.description = f":warning: **You're missing the following arguments: {missing_arguments}.**"
-
-    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_custom_api_failed(event: lightbulb.CommandErrorEvent, exception: errors.CustomAPIFailed):
     embed = __get_generic_error_embed()
     embed.description = f":warning: **The web request failed! {exception.message}.**"
@@ -110,6 +115,7 @@ __handler_mapping = {
     lightbulb.CheckFailure: on_check_failed,
     lightbulb.ConverterFailure: on_converter_failed,
     lightbulb.NotEnoughArguments: on_missing_arguments,
+    lightbulb.MaxConcurrencyLimitReached: on_max_concurrency_reached,
     errors.NoDatabase: on_no_database,
     errors.NoHTTPClient: on_no_http_client,
     errors.GuildBlacklisted: on_guild_blacklisted,
