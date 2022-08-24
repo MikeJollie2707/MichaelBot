@@ -58,7 +58,7 @@ Type: `Prefix Command`, `Slash Command`
 
 Additional Note:
 
-- Refer to [this](../econ.md) to have context on this command.
+- Refer to [this](../econ/start.md) to have context on this command.
 
 ### `info member [member]`
 
