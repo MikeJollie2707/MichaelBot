@@ -141,5 +141,12 @@
         "emoji": "<a:luck_potion:826871436769493062>",
         "description": "You brew potions for so long, you can produce 2 more bottles out of the existing recipe. Crazy.",
         "requirement": 500
+    },
+    {
+        "id": "brew3",
+        "name": "Potion Master",
+        "emoji": "<a:luck_potion:826871436769493062>",
+        "description": "You know potions in the back of your hand. This allows you to use 1 more potion.",
+        "requirement": 1000
     }
 ]

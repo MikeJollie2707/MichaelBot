@@ -782,10 +782,16 @@ async def equip_potion(ctx: lightbulb.Context):
             return
 
         potions = await psql.Equipment.get_user_potions(conn, ctx.author.id)
-        if len(potions) >= 3:
+        brew3_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew3")
+        if not brew3_badge and len(potions) >= 3:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You currently have 3 potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
             return
+        elif brew3_badge and len(potions) >= 4:
+            await bot.reset_cooldown(ctx)
+            await ctx.respond("You currently have 4 potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
+            return
+        
         existed = await psql.Equipment.get_one(conn, ctx.author.id, potion.id)
         if existed:
             await bot.reset_cooldown(ctx)
