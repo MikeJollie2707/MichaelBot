@@ -437,7 +437,7 @@ __BREW_RECIPE = {
         "cost": 6969,
         "result": 3
     },
-    # 2397
+    # 1947
     "fire_potion": {
         "magma_cream": 60,
         "hibiscus": 99,
@@ -445,15 +445,15 @@ __BREW_RECIPE = {
         "rose": 99,
         "redstone": 150,
         "gunpowder": 15,
-        "spider_eye": 150,
+        "spider_eye": 60,
         "blaze_rod": 3,
         "cost": 300,
         "result": 3
     },
-    # 3425
+    # 3875
     "haste_potion": {
         "nether_star": 1,
-        "lucky_clover": 15,
+        "lucky_clover": 60,
         "redstone": 150,
         "gunpowder": 150,
         "gold": 60,
@@ -462,49 +462,50 @@ __BREW_RECIPE = {
         "cost": 450,
         "result": 3
     },
-    # 3345
+    # 2775
     "fortune_potion": {
-        "lucky_clover": 60,
-        "redstone": 150,
-        "gunpowder": 150,
-        "gold": 45,
+        "lucky_clover": 15,
+        "redstone": 300,
+        "gunpowder": 75,
+        "gold": 60,
+        "diamond": 3,
         "blaze_rod": 3,
         "cost": 450,
         "result": 3
     },
-    # 3540
+    # 2640
     "nature_potion": {
-        "leaf": 900,
+        "leaf": 450,
         "hibiscus": 120,
         "tulip": 120,
         "rose": 120,
         "mushroom": 150,
-        "redstone": 300,
+        "redstone": 150,
         "gunpowder": 15,
         "blaze_rod": 3,
         "cost": 450,
         "result": 3
     },
-    # 3990
+    # 3620
     "strength_potion": {
-        "rotten_flesh": 360,
-        "spider_eye": 120,
-        "gunpowder": 120,
+        "nether_star": 1,
+        "rotten_flesh": 240,
+        "spider_eye": 90,
+        "gunpowder": 90,
         "pearl": 45,
         "redstone": 150,
         "blaze_rod": 3,
         "cost": 450,
         "result": 3
     },
-    # 3800
+    # 2760
     "looting_potion": {
-        "nether_star": 1,
-        "rotten_flesh": 360,
-        "spider_eye": 120,
+        "rotten_flesh": 210,
+        "spider_eye": 90,
         "magma_cream": 30,
-        "redstone": 300,
         "gunpowder": 45,
         "pearl": 30,
+        "redstone": 120,
         "blaze_rod": 3,
         "cost": 450,
         "result": 3
