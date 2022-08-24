@@ -12,9 +12,10 @@ __TRADE_WHITELIST = ("money",
 )
 __BARTER_WHITELIST = ("gold",
     "wood", "stick", "wood_pickaxe", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
-    "stone", "stone_pickaxe", "stone_sword", "stone_axe", "iron", "iron_pickaxe", "iron_sword", "iron_axe", 
+    "stone", "iron", "iron_pickaxe", "iron_sword", "iron_axe", 
     "diamond", "diamond_pickaxe", "diamond_sword", "diamond_axe", "obsidian",
     "overworld_ticket", "nether_ticket", "nether_respawner", "redstone", "dry_leaf", "mushroom", "magma_cream",
+    "fire_potion",
 )
 
 def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amount: int = 6) -> list[psql.ActiveTrade]:
@@ -39,8 +40,8 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
     # Avoid duplicate trades.
     traded_item = ["money"]
     for i in range(1, amount + 1):
-        trade = psql.ActiveTrade(i, "trade", "", 0, "", 0, next_reset)
-        max_value_limit = random.randint(1, 200)
+        trade = psql.ActiveTrade(i, "trade", "", 0, "", 0, next_reset, 15)
+        max_value_limit = random.randint(1, 300)
 
         # item -> money
         if i == 1:
@@ -155,7 +156,7 @@ def generate_barters(item_cache: models.ItemCache, next_reset: dt.datetime, amou
     next_reset : dt.datetime
         When these barters will reset.
     amount : int, optional
-        How many barter to generate, by default 6
+        How many barter to generate, by default 9
 
     Returns
     -------
@@ -168,7 +169,7 @@ def generate_barters(item_cache: models.ItemCache, next_reset: dt.datetime, amou
     bartered_items = ["gold"]
     for i in range(1, amount + 1):
         barter = psql.ActiveTrade(i, "barter", "", 0, "", 0, next_reset, 20)
-        max_value_limit = random.randint(1, 500)
+        max_value_limit = random.randint(1, 600)
 
         if i == 1:
             max_value_limit = random.randint(1, 25)
@@ -196,6 +197,10 @@ def generate_barters(item_cache: models.ItemCache, next_reset: dt.datetime, amou
         if not item_dest.buy_price:
             dest_price = item_dest.sell_price
         
+        # Avoid overpower barter.
+        if psql.Equipment.is_potion(barter.item_src) or psql.Equipment.is_potion(barter.item_dest):
+            max_value_limit = 100
+            barter.hard_limit = 5
         # Force the current max to be at least the item's price so we can avoid amount = 0.
         max_value_limit = max(src_price, dest_price, max_value_limit)
         
