@@ -24,37 +24,39 @@ The easiest potion to obtain. You can grab it in `market` with a price of 1500 a
 
 Basically, after applying the passive 1% reduction, this lower your death rate by 75%. This is very good when you just enter Nether for the first few times.
 
-## Fortune Potion
+## Haste Potion
 
-- **Main Effect:** A 50% chance to roll the drop 4 times and get all of them while mining.
+- **Main Effect:** A 50% chance to roll the drop 5 times and get all of them while mining and chopping.
 - **Passive Effect:** Lower the death chance by 2% while mining.
 - **Durability:** 20
 
-Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.
+Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.
 
-## Looting Potion
+## Fortune Potion
 
-- **Main Effect:** A 50% chance to roll the drop 4 times and get all of them while exploring.
-- **Passive Effect:** Lower the death chance by 2% while exploring.
+- **Main Effect:** A 50% chance to multiply the drop by 2 times while mining.
+- **Passive Effect:** Lower the death chance by 5% while mining.
 - **Durability:** 20
-
-Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.
 
 ## Nature Potion
 
-- **Main Effect:** A 50% chance to roll the drop 4 times and get all of them while chopping.
-- **Passive Effect:** Lower the death chance by 2% while chopping.
+- **Main Effect:** A 50% chance to multiply the drop by 2 times while chopping.
+- **Passive Effect:** Lower the death chance by 5% while chopping.
 - **Durability:** 20
 
-Note that because it says "roll", you don't necessarily get x4 rewards, but your probability of getting an item is theoretically x4.
+## Strength Potion
 
-## Health Potion
-
-- **Main Effect:** A 50% chance to lower the death chance of all (action) commands by 4%.
-- **Passive Effect:** Lower the death chance by 2%.
+- **Main Effect:** A 50% chance to roll the drop 5 times and get all of them while exploring.
+- **Passive Effect:** Lower the death chance by 2% while exploring.
 - **Durability:** 20
 
-Since this is somewhat brewable within the first few trips into the Nether, this should be prioritized along with Fire Potion.
+Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.
+
+## Looting Potion
+
+- **Main Effect:** A 50% chance to multiply the drop by 3 times while exploring.
+- **Passive Effect:** Lower the death chance by 5% while exploring.
+- **Durability:** 20
 
 ## Luck Potion
 

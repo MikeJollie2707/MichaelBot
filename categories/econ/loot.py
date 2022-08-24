@@ -31,11 +31,11 @@ DEATH_REDUCTIONS = {
     # Potions
     "luck_potion": 0.10,
     "fire_potion": 0.01,
-    "fortune_potion": 0.02,
-    "looting_potion": 0.02,
-    "nature_potion": 0.02,
-    "health_potion_passive": 0.02,
-    "health_potion_active": 0.06,
+    "haste_potion": 0.02,
+    "fortune_potion": 0.05,
+    "nature_potion": 0.05,
+    "strength_potion": 0.02,
+    "looting_potion": 0.05,
 }
 
 class RewardRNG:
@@ -450,23 +450,24 @@ __BREW_RECIPE = {
         "cost": 300,
         "result": 3
     },
+    # 3425
+    "haste_potion": {
+        "nether_star": 1,
+        "lucky_clover": 15,
+        "redstone": 150,
+        "gunpowder": 150,
+        "gold": 60,
+        "diamond": 9,
+        "blaze_rod": 3,
+        "cost": 450,
+        "result": 3
+    },
     # 3345
     "fortune_potion": {
         "lucky_clover": 60,
         "redstone": 150,
         "gunpowder": 150,
         "gold": 45,
-        "blaze_rod": 3,
-        "cost": 450,
-        "result": 3
-    },
-    # 3990
-    "looting_potion": {
-        "rotten_flesh": 360,
-        "spider_eye": 120,
-        "gunpowder": 120,
-        "pearl": 45,
-        "redstone": 150,
         "blaze_rod": 3,
         "cost": 450,
         "result": 3
@@ -484,18 +485,26 @@ __BREW_RECIPE = {
         "cost": 450,
         "result": 3
     },
-    # 4015
-    "health_potion": {
-        "fire_potion": 1,
+    # 3990
+    "strength_potion": {
         "rotten_flesh": 360,
         "spider_eye": 120,
-        "leaf": 900,
-        "mushroom": 30,
+        "gunpowder": 120,
+        "pearl": 45,
+        "redstone": 150,
+        "blaze_rod": 3,
+        "cost": 450,
+        "result": 3
+    },
+    # 3800
+    "looting_potion": {
+        "nether_star": 1,
+        "rotten_flesh": 360,
+        "spider_eye": 120,
+        "magma_cream": 30,
         "redstone": 300,
         "gunpowder": 45,
-        "diamond_sword": 1,
-        "diamond_pickaxe": 1,
-        "diamond_axe": 1,
+        "pearl": 30,
         "blaze_rod": 3,
         "cost": 450,
         "result": 3
@@ -504,10 +513,11 @@ __BREW_RECIPE = {
 
 __POTION_CHANCE = {
     "fire_potion": 0.75,
-    "looting_potion": 0.50,
+    "haste_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
-    "health_potion": 0.75,
+    "strength_potion": 0.50,
+    "looting_potion": 0.50,
     "luck_potion": 0.50,
     "undying_potion": 1,
 }
