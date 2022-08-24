@@ -481,12 +481,14 @@ async def scan_reminders(bot: models.MichaelBot):
     
     for missed_reminder in passed:
         user = bot.cache.get_user(missed_reminder.user_id)
-        assert user is not None
+        if user is None:
+            print(missed_reminder.user_id)
         bot.create_task(do_remind(bot, user, missed_reminder.message, current, missed_reminder.remind_id))
     
     for upcoming_reminder in upcoming:
         user = bot.cache.get_user(upcoming_reminder.user_id)
-        assert user is not None
+        if user is None:
+            print(upcoming_reminder.user_id)
         bot.create_task(do_remind(bot, user, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
 
 @plugin.command()
