@@ -103,13 +103,22 @@ async def join(ctx: lightbulb.Context):
         channel_id = voice_state[0].channel_id
     else:
         channel_id = voice_channel.id
-    
+
     await bot.update_voice_state(ctx.guild_id, channel_id, self_deaf = True)
+    
     if bot.node_extra.get(ctx.guild_id) is None:
         bot.node_extra[ctx.guild_id] = NodeExtra()
     # Update working channel.
     bot.node_extra[ctx.guild_id].working_channel = ctx.channel_id
-    await ctx.respond(f"Joining <#{channel_id}>...", reply = True)
+
+    import asyncio
+    # This delay is needed.
+    await asyncio.sleep(1)
+    connected = bot.cache.get_voice_state(ctx.guild_id, bot.get_me())
+    if not connected:
+        await ctx.respond(f"Failed to connect to <#{channel_id}>. Maybe check permission?", reply = True, mentions_reply = True)
+    else:
+        await ctx.respond(f"Joined <#{channel_id}>", reply = True)
 
 @plugin.command()
 @lightbulb.command("leave", "Leave the voice channel.", aliases = ["disconnect", 'dc'])
