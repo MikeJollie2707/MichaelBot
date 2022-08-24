@@ -1147,7 +1147,7 @@ async def mine(ctx: lightbulb.Context):
                     else:
                         loot_table[item_id] = _loot_table[item_id]
         if has_flag(potion_activated, PotionActivation.FORTUNE_POTION):
-            multiply_reward(loot_table, 2)
+            multiply_reward(loot_table, 4)
         if has_flag(potion_activated, PotionActivation.LUCK_POTION):
             multiply_reward(loot_table, 5)
         
@@ -1269,7 +1269,7 @@ async def explore(ctx: lightbulb.Context):
                     else:
                         loot_table[item_id] = _loot_table[item_id]
         if has_flag(potion_activated, PotionActivation.LOOTING_POTION):
-            multiply_reward(loot_table, 3)
+            multiply_reward(loot_table, 5)
         if has_flag(potion_activated, PotionActivation.LUCK_POTION):
             multiply_reward(loot_table, 5)
         
@@ -1384,7 +1384,7 @@ async def chop(ctx: lightbulb.Context):
                     else:
                         loot_table[item_id] = _loot_table[item_id]
         if has_flag(potion_activated, PotionActivation.NATURE_POTION):
-            multiply_reward(loot_table, 2)
+            multiply_reward(loot_table, 4)
         if has_flag(potion_activated, PotionActivation.LUCK_POTION):
             multiply_reward(loot_table, 5)
         
