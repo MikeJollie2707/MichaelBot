@@ -496,6 +496,7 @@ async def brew(ctx: lightbulb.Context):
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew0", recipe["result"])
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew1", recipe["result"])
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew2", recipe["result"])
+            await psql.UserBadge.add_progress(conn, ctx.author.id, "brew3", recipe["result"])
     await ctx.respond(f"Successfully brewed {get_reward_str(bot, {potion.id: recipe['result']})}.", reply = True)
 @brew.autocomplete("potion")
 async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
@@ -1155,7 +1156,7 @@ async def mine(ctx: lightbulb.Context):
         if has_flag(potion_activated, PotionActivation.FORTUNE_POTION):
             multiply_reward(loot_table, 4)
         if has_flag(potion_activated, PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 5)
+            multiply_reward(loot_table, 2)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1277,7 +1278,7 @@ async def explore(ctx: lightbulb.Context):
         if has_flag(potion_activated, PotionActivation.LOOTING_POTION):
             multiply_reward(loot_table, 5)
         if has_flag(potion_activated, PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 5)
+            multiply_reward(loot_table, 2)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1392,7 +1393,7 @@ async def chop(ctx: lightbulb.Context):
         if has_flag(potion_activated, PotionActivation.NATURE_POTION):
             multiply_reward(loot_table, 4)
         if has_flag(potion_activated, PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 5)
+            multiply_reward(loot_table, 2)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
