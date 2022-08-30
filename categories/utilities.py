@@ -562,17 +562,17 @@ async def remind_view(ctx: lightbulb.Context):
                 author = ctx.author,
                 timestamp = dt.datetime.now().astimezone()
             )
-            embed.description = "**Format:** 0. `remind_id` Reminder message - 0h0m\n\n"
+            embed.description = "**Format:** `remind_id`. Reminder message - 0h0m\n\n"
             return embed
         
         @builder.set_entry_formatter
-        def entry_format(embed: hikari.Embed, index: int, item: psql.Reminders):
+        def entry_format(embed: hikari.Embed, _: int, item: psql.Reminders):
             message = item.message
             if len(item.message) > 30:
                 message = item.message[:27] + "..."
             
             time_till_awake: dt.timedelta = item.awake_time - dt.datetime.now().astimezone()
-            embed.description += f"{index + 1}. `{item.remind_id}` {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
+            embed.description += f"`{item.remind_id}`. {message} - {humanize.precisedelta(time_till_awake, 'minutes', format = '%0.0f')}\n"
         
         await run_view(builder.build(), ctx)
 
