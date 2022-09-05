@@ -269,7 +269,10 @@ async def seek(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     if isinstance(ctx, lightbulb.SlashContext):
-        position = await IntervalConverter(ctx).convert(position)
+        try:
+            position = await IntervalConverter(ctx).convert(position)
+        except Exception as exc:
+            raise lightbulb.ConverterFailure("Conversion failed for option position.", opt = ctx.invoked.options["position"], raw = ctx.options.position) from exc
     
     node = await bot.lavalink.get_guild_node(ctx.guild_id)
     if node is not None:

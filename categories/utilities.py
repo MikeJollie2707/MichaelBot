@@ -514,7 +514,10 @@ async def remind_create(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     if isinstance(ctx, lightbulb.SlashContext):
-        interval = await converters.IntervalConverter(ctx).convert(ctx.options.interval)
+        try:
+            interval = await converters.IntervalConverter(ctx).convert(ctx.options.interval)
+        except Exception as exc:
+            raise lightbulb.ConverterFailure("Conversion failed for option interval.", opt = ctx.invoked.options["interval"], raw = ctx.options.interval) from exc
 
     when: dt.datetime = dt.datetime.now().astimezone() + interval
     if interval.total_seconds() < 60:

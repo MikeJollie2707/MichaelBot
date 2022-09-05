@@ -55,7 +55,7 @@ async def on_check_failed(event: lightbulb.CommandErrorEvent, exception: lightbu
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_converter_failed(event: lightbulb.CommandErrorEvent, exception: lightbulb.ConverterFailure):
     embed = __get_generic_error_embed()
-    embed.description = f":warning: **The following option cannot be converted properly: `{exception.option.name}`.**"
+    embed.description = f":warning: **The following option cannot be converted properly: `{exception.option.name}`.\nDetails: ```{exception.__cause__}```**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_missing_arguments(event: lightbulb.CommandErrorEvent, exception: lightbulb.NotEnoughArguments):
