@@ -80,7 +80,7 @@ async def do_purge(
 )
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, default = 0)
-@lightbulb.command("purge", "Purge the most recent messages.")
+@lightbulb.command("purge", f"[{plugin.name}] Purge the most recent messages.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def purge(ctx: lightbulb.Context):
     await purge_messages(ctx)
@@ -95,7 +95,7 @@ async def purge(ctx: lightbulb.Context):
 )
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 0, max_value = 500, default = 0)
-@lightbulb.command("messages", "Purge the most recent messages.", inherit_checks = True)
+@lightbulb.command("messages", f"[{plugin.name}] Purge the most recent messages.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_messages(ctx: lightbulb.Context):
     amount = ctx.options.amount
@@ -123,7 +123,7 @@ async def purge_messages(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("member", "The member to delete.", type = hikari.Member)
-@lightbulb.command("member", "Purge the most recent messages from a user.", inherit_checks = True)
+@lightbulb.command("member", f"[{plugin.name}] Purge the most recent messages from a user.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_member(ctx: lightbulb.Context):
     member: hikari.Member = ctx.options.member
@@ -152,7 +152,7 @@ async def purge_member(ctx: lightbulb.Context):
 )
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
-@lightbulb.command("embed", "Purge the most recent messages with embeds.", inherit_checks = True)
+@lightbulb.command("embed", f"[{plugin.name}] Purge the most recent messages with embeds.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_embed(ctx: lightbulb.Context):
     amount: int = ctx.options.amount
@@ -179,7 +179,7 @@ async def purge_embed(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("to_message", "The link to the ending message. Default to the latest message.", type = hikari.Message, default = None)
 @lightbulb.option("from_message", "The link to the starting message.", type = hikari.Message)
-@lightbulb.command("range", "Purge the messages within between two messages.", inherit_checks = True)
+@lightbulb.command("range", f"[{plugin.name}] Purge the messages within between two messages.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_range(ctx: lightbulb.Context):
     from_message: hikari.Message = ctx.options.from_message
@@ -219,7 +219,7 @@ async def purge_range(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("string", "The words to delete. Any messages with this string occurrence will be deleted.")
-@lightbulb.command("string", "Purge the most recent messages contain the string specified.", inherit_checks = True)
+@lightbulb.command("string", f"[{plugin.name}] Purge the most recent messages contain the string specified.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_string(ctx: lightbulb.Context):
     string: str = ctx.options.string
@@ -253,7 +253,7 @@ async def purge_string(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.option("words", "The words to filter, separated by white space.")
-@lightbulb.command("words", "Purge the most recent messages contain any of the words specified.", inherit_checks = True, auto_defer = True)
+@lightbulb.command("words", f"[{plugin.name}] Purge the most recent messages contain any of the words specified.", inherit_checks = True, auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_words(ctx: lightbulb.Context):
     words: str = ctx.options.words

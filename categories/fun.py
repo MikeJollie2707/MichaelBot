@@ -17,7 +17,7 @@ plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions
 @plugin.command()
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("type", "Which copypasta to show. Dig into the bot's code to see available options ;)", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("copypasta", "My favorite copypasta.", hidden = True)
+@lightbulb.command("copypasta", f"[{plugin.name}] My favorite copypasta.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def copypasta(ctx: lightbulb.Context):
     option = ctx.options.type
@@ -73,7 +73,7 @@ async def copypasta(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("dadjoke", "Give you a dad joke.", aliases = ["ina-of-the-mountain-what-is-your-wisdom"])
+@lightbulb.command("dadjoke", f"[{plugin.name}] Give you a dad joke.", aliases = ["ina-of-the-mountain-what-is-your-wisdom"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def dadjoke(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -92,7 +92,7 @@ async def dadjoke(ctx: lightbulb.Context):
             raise errors.CustomAPIFailed(f"Endpoint {BASE_URL} returned with status {resp.status}. Raw response: {await resp.text()}")
 
 @plugin.command()
-@lightbulb.command("dice", "Roll a 6-face dice for you.")
+@lightbulb.command("dice", f"[{plugin.name}] Roll a 6-face dice for you.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def dice(ctx: lightbulb.Context):
     await ctx.respond("It's %d :game_die:" % (random.randint(1, 6)), reply = True)
@@ -103,7 +103,7 @@ async def dice(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to repeat.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("echo", "Echo echo echo echo.")
+@lightbulb.command("echo", f"[{plugin.name}] Echo echo echo echo.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def echo(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
@@ -116,7 +116,7 @@ async def echo(ctx: lightbulb.Context):
 '''))
 @lightbulb.option("target", "The target to measure", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("measure_unit", "The unit to measure")
-@lightbulb.command("how", "An ultimate measurement to measure everything.")
+@lightbulb.command("how", f"[{plugin.name}] An ultimate measurement to measure everything.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def how(ctx: lightbulb.Context):
     measure_unit = ctx.options.measure_unit
@@ -132,7 +132,7 @@ async def how(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1.0, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to mock.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("mock", "tuRn A teXT INtO MOCk teXt.")
+@lightbulb.command("mock", f"[{plugin.name}] tuRn A teXT INtO MOCk teXt.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def mock(ctx: lightbulb.Context):
     text = ""
@@ -158,7 +158,7 @@ async def mock(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 5.0, uses = 1.0, bucket = lightbulb.UserBucket)
-@lightbulb.command("pekofy", "Pekofy a message peko.")
+@lightbulb.command("pekofy", f"[{plugin.name}] Pekofy a message peko.")
 @lightbulb.implements(lightbulb.MessageCommand)
 async def peko(ctx: lightbulb.Context):
     message: hikari.Message = ctx.options.target
@@ -174,7 +174,7 @@ async def peko(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to speak.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("speak", "Speak the message.")
+@lightbulb.command("speak", f"[{plugin.name}] Speak the message.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def speak(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
@@ -187,7 +187,7 @@ async def speak(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("text", "Text to uwuify.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("uwu", "Turn a text into uwu text.")
+@lightbulb.command("uwu", f"[{plugin.name}] Turn a text into uwu text.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand, lightbulb.MessageCommand)
 async def uwu(ctx: lightbulb.Context):
     text = ""

@@ -283,7 +283,7 @@ plugin.add_checks(
 )
 
 @plugin.command()
-@lightbulb.command("badges", "View your badges.")
+@lightbulb.command("badges", f"[{plugin.name}] View your badges.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def badges(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -333,7 +333,7 @@ async def badges(ctx: lightbulb.Context):
         await nav.run_view(page.build(authors = (ctx.author.id,)), ctx)
 
 @plugin.command()
-@lightbulb.command("balance", "View your balance.", aliases = ["bal"])
+@lightbulb.command("balance", f"[{plugin.name}] View your balance.", aliases = ["bal"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def balance(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -345,7 +345,7 @@ async def balance(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.option("money", "The amount to bet. You'll either lose this or get 2x back. At least 1.", type = int, default = 1, min_value = 1)
 @lightbulb.option("number", "Your guessing number. Stay within 0-50!", type = int, min_value = 0, max_value = 50)
-@lightbulb.command("bet", "Bet your money to guess a number in the range 0-50. Don't worry, I won't cheat :)")
+@lightbulb.command("bet", f"[{plugin.name}] Bet your money to guess a number in the range 0-50.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def bet(ctx: lightbulb.Context):
     number: int = ctx.options.number
@@ -396,7 +396,7 @@ async def bet(ctx: lightbulb.Context):
 @lightbulb.add_checks(checks.is_dev)
 @lightbulb.option("amount", "Amount to add.", type = int, min_value = 1, default = 1)
 @lightbulb.option("item", "The item to add.", type = converters.ItemConverter)
-@lightbulb.command("additem", "Add item.")
+@lightbulb.command("additem", f"[{plugin.name}] Add item.")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def additem(ctx: lightbulb.Context):
     item = ctx.options.item
@@ -412,7 +412,7 @@ async def additem(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_checks(checks.is_dev)
 @lightbulb.option("amount", "Amount to add.", type = int, min_value = 1, max_value = 500)
-@lightbulb.command("addmoney", "Add money.")
+@lightbulb.command("addmoney", f"[{plugin.name}] Add money.")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def addmoney(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -430,7 +430,7 @@ async def addmoney(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
 @lightbulb.option("potion", "the name or alias of the potion to brew.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("brew", "Brew various potions.")
+@lightbulb.command("brew", f"[{plugin.name}] Brew various potions.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def brew(ctx: lightbulb.Context):
     potion: psql.Item = ctx.options.potion
@@ -543,7 +543,7 @@ async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption,
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
 @lightbulb.option("item", "The name or alias of the item to craft.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("craft", "Craft various items.")
+@lightbulb.command("craft", f"[{plugin.name}] Craft various items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def craft(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.item
@@ -627,7 +627,7 @@ async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, 
     - The higher the daily streak, the better your reward will be.
     - If you don't collect your daily within 48 hours since the last time you collect, your streak will be reset to 1.
 '''))
-@lightbulb.command("daily", "Receive rewards everyday. Don't miss it though!")
+@lightbulb.command("daily", f"[{plugin.name}] Receive rewards everyday. Don't miss it though!")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def daily(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -692,7 +692,7 @@ async def daily(ctx: lightbulb.Context):
     - This command only works with subcommands.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("use", "Use a tool or a potion.")
+@lightbulb.command("use", f"[{plugin.name}] Use a tool or a potion.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def use(ctx: lightbulb.Context):
     raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
@@ -700,7 +700,7 @@ async def use(ctx: lightbulb.Context):
 @use.child
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("equipment", "The equipment's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("tool", "Use a tool. Get to work!")
+@lightbulb.command("tool", f"[{plugin.name}] Use a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_tool(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.equipment
@@ -785,7 +785,7 @@ async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, i
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("potion", "Use a potion.")
+@lightbulb.command("potion", f"[{plugin.name}] Use a potion.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_potion(ctx: lightbulb.Context):
     potion: psql.Item = ctx.options.potion
@@ -852,7 +852,7 @@ async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, inte
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("equipments", "View your current equipments.")
+@lightbulb.command("equipments", f"[{plugin.name}] View your current equipments.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _equipments(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -890,7 +890,7 @@ async def _equipments(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("view_option", "Options to view inventory.", choices = ("compact", "full", "value"), default = "compact")
-@lightbulb.command("inventory", "View your inventory.", aliases = ["inv"])
+@lightbulb.command("inventory", f"[{plugin.name}] View your inventory.", aliases = ["inv"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def inventory(ctx: lightbulb.Context):
     view_option = ctx.options.view_option
@@ -938,13 +938,13 @@ async def inventory(ctx: lightbulb.Context):
             await ctx.respond(f"If you sell all your items in your inventory, you'll get: {CURRENCY_ICON}{value}.", reply = True)
 
 @plugin.command()
-@lightbulb.command("market", "View public purchases.")
+@lightbulb.command("market", f"[{plugin.name}] View public purchases.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def market(ctx: lightbulb.Context):
     await market_view(ctx)
 
 @market.child
-@lightbulb.command("view", "View public purchases.")
+@lightbulb.command("view", f"[{plugin.name}] View public purchases.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -979,7 +979,7 @@ async def market_view(ctx: lightbulb.Context):
 @market.child
 @lightbulb.option("amount", "The amount to purchase. Default to 1.", type = int, min_value = 1, default = 1)
 @lightbulb.option("item", "The item to purchase.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("buy", "Buy an item from the market.")
+@lightbulb.command("buy", f"[{plugin.name}] Buy an item from the market.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_buy(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.item
@@ -1019,7 +1019,7 @@ async def market_buy(ctx: lightbulb.Context):
 @market.child
 @lightbulb.option("amount", "The amount to sell, or 0 to sell all. Default to 1.", type = int, min_value = 0, default = 1)
 @lightbulb.option("item", "The item to sell.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("sell", "Sell items from your inventory.")
+@lightbulb.command("sell", f"[{plugin.name}] Sell items from your inventory.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_sell(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.item
@@ -1090,7 +1090,7 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("mine", "Mine for resources. You'll need a pickaxe equipped.")
+@lightbulb.command("mine", f"[{plugin.name}] Use your pickaxe to mine for resources.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def mine(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -1230,7 +1230,7 @@ async def mine(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("explore", "Explore the caves and get resources by killing monsters. You'll need a sword equipped.")
+@lightbulb.command("explore", f"[{plugin.name}] Use your sword to explore the caverns.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def explore(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -1357,7 +1357,7 @@ async def explore(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("chop", "Chop trees from various forest to gain plant-related resources. You'll need an axe equipped.")
+@lightbulb.command("chop", f"[{plugin.name}] Use your axe to explore the surface.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def chop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -1541,7 +1541,7 @@ async def on_shard_ready(_: hikari.ShardReadyEvent):
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("trade", "View and/or perform a trade. Get your money ready.")
+@lightbulb.command("trade", f"[{plugin.name}] View and/or perform a trade. Get your money ready.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _trade(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -1744,7 +1744,7 @@ async def _trade(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("barter", "View and/or perform a barter. Get your gold ready.")
+@lightbulb.command("barter", f"[{plugin.name}] View and/or perform a barter. Get your gold ready.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _barter(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -1905,7 +1905,7 @@ async def _barter(ctx: lightbulb.Context):
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether"))
-@lightbulb.command("travel", "Travel to another world.")
+@lightbulb.command("travel", f"[{plugin.name}] Travel to another world.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def travel(ctx: lightbulb.Context):
     world: str = ctx.options.world

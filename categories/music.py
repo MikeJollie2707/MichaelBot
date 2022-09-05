@@ -88,7 +88,7 @@ async def start_lavalink(event: hikari.ShardReadyEvent):
     channel_types = (hikari.ChannelType.GUILD_VOICE,), 
     default = None
 )
-@lightbulb.command("join","Join a voice channel.", aliases = ["connect"])
+@lightbulb.command("join", f"[{plugin.name}] Join a voice channel.", aliases = ["connect"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def join(ctx: lightbulb.Context):
     voice_channel = ctx.options.voice_channel
@@ -121,7 +121,7 @@ async def join(ctx: lightbulb.Context):
         await ctx.respond(f"Joined <#{channel_id}>", reply = True)
 
 @plugin.command()
-@lightbulb.command("leave", "Leave the voice channel.", aliases = ["disconnect", 'dc'])
+@lightbulb.command("leave", f"[{plugin.name}] Leave the voice channel.", aliases = ["disconnect", 'dc'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def leave(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -136,7 +136,7 @@ async def leave(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.command("np", "Get info about the current track.", aliases = ["now_playing"])
+@lightbulb.command("np", f"[{plugin.name}] Get info about the current track.", aliases = ["now_playing"])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def np(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -188,7 +188,7 @@ async def np(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_cooldown(length = 5.0, uses = 5, bucket = lightbulb.GuildBucket)
 @lightbulb.option("query", "The query to play (url, name, etc.)", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("play", "Play the query or add it to the queue.", aliases = ['p'])
+@lightbulb.command("play", f"[{plugin.name}] Play the query or add it to the queue.", aliases = ['p'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def play(ctx: lightbulb.Context):
     query = ctx.options.query
@@ -217,7 +217,7 @@ async def play(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.command("pause", "Toggle pausing the player.")
+@lightbulb.command("pause", f"[{plugin.name}] Toggle pausing the player.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def pause(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -236,7 +236,7 @@ async def pause(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("track", "Keywords to search. Example: `blend w.`", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("search", "Search and return 10 relevant results. You can then copy the desired link into `play`.")
+@lightbulb.command("search", f"[{plugin.name}] Search and return 10 relevant results.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def search(ctx: lightbulb.Context):
     track = ctx.options.track
@@ -262,7 +262,7 @@ async def search(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("position", "Timestamp to jump to.", type = IntervalConverter)
-@lightbulb.command("seek", "Jump to the provided timestamp.")
+@lightbulb.command("seek", f"[{plugin.name}] Jump to the provided timestamp.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def seek(ctx: lightbulb.Context):
     position = ctx.options.position
@@ -283,7 +283,7 @@ async def seek(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 1.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.command("repeat", "Toggle repeating the track.")
+@lightbulb.command("repeat", f"[{plugin.name}] Toggle repeating the track.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def repeat(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -305,7 +305,7 @@ async def repeat(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("vol","Volume to set (0-200)", type = int, min_value = 0, max_value = 200)
-@lightbulb.command("volume", "Set the volume of the player.")
+@lightbulb.command("volume", f"[{plugin.name}] Set the volume of the player.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def volume(ctx: lightbulb.Context):
     vol = ctx.options.vol
@@ -327,7 +327,7 @@ async def volume(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.command("queue", "Display the song queue.", aliases = ['q'])
+@lightbulb.command("queue", f"[{plugin.name}] Display the song queue.", aliases = ['q'])
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def queue(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -418,13 +418,13 @@ async def queue(ctx: lightbulb.Context):
 
 @queue.child
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.command("view", "Display the song queue.")
+@lightbulb.command("view", f"[{plugin.name}] Display the song queue.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_view(ctx: lightbulb.Context):
     await queue(ctx)
 
 @queue.child
-@lightbulb.command("clear", "Clear the entire queue but the current track.")
+@lightbulb.command("clear", f"[{plugin.name}] Clear the entire queue but the current track.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_clear(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -438,7 +438,7 @@ async def queue_clear(ctx: lightbulb.Context):
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @queue.child
-@lightbulb.command("shuffle", "Shuffle the queue.")
+@lightbulb.command("shuffle", f"[{plugin.name}] Shuffle the queue.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_shuffle(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -451,7 +451,7 @@ async def queue_shuffle(ctx: lightbulb.Context):
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @queue.child
-@lightbulb.command("loop", "Toggle queue loop.")
+@lightbulb.command("loop", f"[{plugin.name}] Toggle queue loop.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_loop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -475,7 +475,7 @@ async def queue_loop(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("to_index", "The index in the queue where you want the track to be.", type = int)
 @lightbulb.option("from_index", "The index in the queue to move.", type = int)
-@lightbulb.command("move", "Move a track in queue to a new order index.")
+@lightbulb.command("move", f"[{plugin.name}] Move a track in queue to a new order index.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_move(ctx: lightbulb.Context):
     from_index = ctx.options.from_index - 1
@@ -505,7 +505,7 @@ async def queue_move(ctx: lightbulb.Context):
 @queue.child
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("index", "The index in the queue to remove.", type = int)
-@lightbulb.command("remove", "Remove a track in the queue.")
+@lightbulb.command("remove", f"[{plugin.name}] Remove a track in the queue.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def queue_remove(ctx: lightbulb.Context):
     index = ctx.options.index - 1
@@ -529,7 +529,7 @@ async def queue_remove(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.command("skip", "Skip the current track.", aliases = ['s'])
+@lightbulb.command("skip", f"[{plugin.name}] Skip the current track.", aliases = ['s'])
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def skip(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -542,7 +542,7 @@ async def skip(ctx: lightbulb.Context):
         await ctx.respond("Bot is not in a voice channel.", reply = True, mentions_reply = True)
 
 @plugin.command()
-@lightbulb.command("stop", "Stop the player.")
+@lightbulb.command("stop", f"[{plugin.name}] Stop the player.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def stop(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot

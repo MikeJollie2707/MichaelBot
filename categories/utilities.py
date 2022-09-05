@@ -29,7 +29,7 @@ plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions
 @lightbulb.option("number", "The number you're converting.", type = str)
 @lightbulb.option("to_base", "The base you want to convert to.", type = int, choices = [2, 8, 10, 16])
 @lightbulb.option("from_base", "The base the number you're converting.", type = int, choices = [2, 8, 10, 16])
-@lightbulb.command("base-convert", "Convert a number to the desired base.")
+@lightbulb.command("base-convert", f"[{plugin.name}] Convert a number to the desired base.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def base_convert(ctx: lightbulb.Context):
     from_base: int = ctx.options.from_base
@@ -67,7 +67,7 @@ async def base_convert(ctx: lightbulb.Context):
     - Rounding errors, along with other debatable values such as `0^0` is incorrect due to language limitation.
 '''))
 @lightbulb.option("expression", "The math expression.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("calc", "Calculate a math expression.")
+@lightbulb.command("calc", f"[{plugin.name}] Calculate a math expression.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def calc(ctx: lightbulb.Context):
     parser = py_expression_eval.Parser()
@@ -84,15 +84,18 @@ async def calc(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - This command only works with subcommands.
 '''))
-@lightbulb.command("embed", "Send an embed.")
+@lightbulb.command("embed", f"[{plugin.name}] Send an embed.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def _embed(ctx: lightbulb.Context):
     raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
 @_embed.child
+@lightbulb.set_help(dedent('''
+    - Consider using https://embedbuilder.nadekobot.me/ to make it easier to visualize.
+'''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("raw_embed", "The embed in JSON format.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("from-json", "Send an embed from a JSON object. Check out https://embedbuilder.nadekobot.me/ for easier time.")
+@lightbulb.command("from-json", f"[{plugin.name}] Send an embed from a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_from_json(ctx: lightbulb.Context):
     raw_embed: str = ctx.options.raw_embed
@@ -131,7 +134,7 @@ async def embed_from_json(ctx: lightbulb.Context):
     modifier = helpers.CONSUME_REST_OPTION
 )
 @lightbulb.option("message_id", "The message ID. The bot can't get a message that's too old.")
-@lightbulb.command("to-json", "Take the embed from a message and convert it to a JSON object.")
+@lightbulb.command("to-json", f"[{plugin.name}] Take the embed from a message and convert it to a JSON object.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_to_json(ctx: lightbulb.Context):
     message_id = ctx.options.message_id
@@ -175,7 +178,7 @@ async def embed_to_json(ctx: lightbulb.Context):
 @lightbulb.option("color", "Your choice of color. Default to green.", autocomplete = True, default = "green")
 @lightbulb.option("description", "The description of the embed.", default = None)
 @lightbulb.option("title", "The title of the embed.", default = None)
-@lightbulb.command("simple", "Create and send a simple embed. Useful for quick embeds.")
+@lightbulb.command("simple", f"[{plugin.name}] Create and send a simple embed. Useful for quick embeds.")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def embed_simple(ctx: lightbulb.Context):
     title = ctx.options.title
@@ -215,7 +218,7 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("interactive", "Create a simple embed with prompts.")
+@lightbulb.command("interactive", f"[{plugin.name}] Create a simple embed with prompts.")
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def embed_interactive(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -293,7 +296,7 @@ async def embed_interactive(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("interactive2", "Create a simple embed with visual prompts.")
+@lightbulb.command("interactive2", f"[{plugin.name}] Create a simple embed with visual prompts.")
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def embed_interactive2(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -495,7 +498,7 @@ async def scan_reminders(bot: models.MichaelBot):
 @lightbulb.set_help(dedent('''
     - This command only works with subcommands.
 '''))
-@lightbulb.command("remindme", "Create a reminder. Make sure your DM is open to the bot.", hidden = True, aliases = ["rmd", "notify", "timer"])
+@lightbulb.command("remindme", f"[{plugin.name}] Create a reminder. Make sure your DM is open to the bot.", hidden = True, aliases = ["rmd", "notify", "timer"])
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def remind(ctx: lightbulb.Context):
     raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
@@ -507,7 +510,7 @@ async def remind(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("message", "The message the bot will send after the interval.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("interval", "How long until the bot reminds you. Must be between 1 minute and 30 days. Example: 3d2m1s", type = converters.IntervalConverter)
-@lightbulb.command("create", "Create a reminder. Make sure your DM is open to the bot.")
+@lightbulb.command("create", f"[{plugin.name}] Create a reminder. Make sure your DM is open to the bot.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def remind_create(ctx: lightbulb.Context):
     interval: dt.timedelta = ctx.options.interval
@@ -537,7 +540,7 @@ async def remind_create(ctx: lightbulb.Context):
     - Due to optimization, this command won't display short reminders.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("view", "View all your long reminders.")
+@lightbulb.command("view", f"[{plugin.name}] View all your long reminders.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def remind_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -585,7 +588,7 @@ async def remind_view(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("remind_id", "The reminder's id. You can find it in `remindme view`.", type = int)
-@lightbulb.command("remove", "Remove a long reminder.")
+@lightbulb.command("remove", f"[{plugin.name}] Remove a long reminder.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def remind_remove(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -599,7 +602,7 @@ async def remind_remove(ctx: lightbulb.Context):
 @lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("term", "The term to search. Example: `rickroll`.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("urban", "Search a term on urbandictionary.")
+@lightbulb.command("urban", f"[{plugin.name}] Search a term on urbandictionary.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def urban(ctx: lightbulb.Context):
     term = ctx.options.term
@@ -655,7 +658,7 @@ async def urban(ctx: lightbulb.Context):
 @lightbulb.add_checks(checks.is_aiohttp_existed)
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("city_name", "The city to check. Example: `Paris`.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("weather", "Display weather information for a location.")
+@lightbulb.command("weather", f"[{plugin.name}] Display weather information for a location.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def weather(ctx: lightbulb.Context):
     city_name = ctx.options.city_name

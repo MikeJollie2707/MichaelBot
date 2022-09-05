@@ -86,7 +86,8 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
         command_title = command.signature.replace('=', ' = ')
         
         display += f"**{command_title}:**\n"
-        description = command.description
+        # Strip the first word of the description, which is the category's name.
+        description = ' '.join(command.description.split()[1:])
         if not description:
             description = "*No help provided*"    
         display += f"- {description}\n\n"
@@ -133,7 +134,8 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
     embed_title = command.signature.replace('=', ' = ')
     embed_description = "*No help provided*"
     if command.description != "":
-        embed_description = command.description + '\n'
+        # Strip the first word of the description, which is the category's name.
+        embed_description = ' '.join(command.description.split()[1:]) + '\n'
 
     embed = helpers.get_default_embed(
         title = embed_title,
@@ -192,7 +194,7 @@ def command_help_format(ctx: lightbulb.Context, command: lightbulb.Command) -> h
             types = __SLASH_COMMAND_TYPES__
         
         for subcommand in sorted(filter_command_type(subcommands, types, True), key = lambda cmd: cmd.name):
-            field_value += f"- `{subcommand.name}`: {subcommand.description}\n"
+            field_value += f"- `{subcommand.name}`: {' '.join(subcommand.description.split()[1:])}\n"
         
         if len(command.subcommands) > 0:
             embed.add_field(

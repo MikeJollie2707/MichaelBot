@@ -95,7 +95,7 @@ plugin.add_checks(
     channel_types = (hikari.ChannelType.GUILD_TEXT,), 
     default = None
 )
-@lightbulb.command("log-enable", "Set a channel to dump all the logs. This automatically enables logging system.")
+@lightbulb.command("log-enable", f"[{plugin.name}] Set a channel to dump all the logs. This automatically enables logging system.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_enable(ctx: lightbulb.Context):
     channel = ctx.options.channel
@@ -135,7 +135,7 @@ async def log_enable(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - Author needs to have `Manage Server`.
 '''))
-@lightbulb.command("log-disable", "Disable logging or part of the logging system.")
+@lightbulb.command("log-disable", f"[{plugin.name}] Disable logging or part of the logging system.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_disable(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -157,7 +157,7 @@ async def log_disable(ctx: lightbulb.Context):
     - It is recommended to use the `Slash Command` version of the command.
 '''))
 @lightbulb.option("logging_option", "Log type to toggle. Check `log-view` to see all options.", choices = command_event_choices)
-@lightbulb.command("log-option-toggle", "Toggle individual logging option.")
+@lightbulb.command("log-option-toggle", f"[{plugin.name}] Toggle individual logging option.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_option_toggle(ctx: lightbulb.Context):
     logging_option = ctx.options.logging_option
@@ -184,7 +184,7 @@ async def log_option_toggle(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - Author needs to have `Manage Server`.
 '''))
-@lightbulb.command("log-view", "View all log settings.")
+@lightbulb.command("log-view", f"[{plugin.name}] View all log settings.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot

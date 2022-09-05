@@ -45,7 +45,7 @@ def get_memory_size(byte: int, /, suffix: str = "B") -> str:
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", choices = ("dev", "development", "stable"), default = "stable")
-@lightbulb.command("changelog", "Show 10 latest changes to the bot.", auto_defer = True)
+@lightbulb.command("changelog", f"[{plugin.name}] Show 10 latest changes to the bot.", auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def changelog(ctx: lightbulb.Context):
     '''
@@ -80,7 +80,7 @@ async def changelog(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.command("help", "Get help information for the bot.", aliases = ['h'], auto_defer = True)
+@lightbulb.command("help", f"[{plugin.name}] Get help information for the bot.", aliases = ['h'], auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _help(ctx: lightbulb.Context):
     obj = ctx.options.name
@@ -90,7 +90,6 @@ async def _help(ctx: lightbulb.Context):
         raise NotImplementedError("`help` command class doesn't exist.")
     
     await bot.help_command.send_help(ctx, obj)
-
 @_help.autocomplete("name")
 async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     # Use dictionary to ensure unique values.
@@ -130,13 +129,13 @@ async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, i
     return []
 
 @plugin.command()
-@lightbulb.command("info", "Show information about the bot.", aliases = ["about"])
+@lightbulb.command("info", f"[{plugin.name}] Show information about the bot.", aliases = ["about"])
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def info(ctx: lightbulb.Context):
     await info_bot(ctx)
 
 @info.child
-@lightbulb.command("bot", "Show information about the bot.")
+@lightbulb.command("bot", f"[{plugin.name}] Show information about the bot.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_bot(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -172,7 +171,7 @@ async def info_bot(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @info.child
-@lightbulb.command("host", "Show information about the machine hosting the bot.")
+@lightbulb.command("host", f"[{plugin.name}] Show information about the machine hosting the bot.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_host(ctx: lightbulb.Context):
     # Reference: https://www.thepythoncode.com/article/get-hardware-system-information-python
@@ -229,7 +228,7 @@ async def info_host(ctx: lightbulb.Context):
 
 @info.child
 @lightbulb.option("item", "The item to show.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("item", "Show information for an item.")
+@lightbulb.command("item", f"[{plugin.name}] Show information for an item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_item(ctx: lightbulb.Context):
     #pylint: disable=import-outside-toplevel
@@ -297,7 +296,6 @@ async def info_item(ctx: lightbulb.Context):
         )
     
     await ctx.respond(embed = embed, reply = True)
-
 @info_item.autocomplete("item")
 async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     # Exactly the same as in economy.py
@@ -316,7 +314,7 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
 
 @info.child
 @lightbulb.option("member", "A Discord member. Default to yourself.", type = hikari.Member, default = None)
-@lightbulb.command("member", "Show information about yourself or another member.")
+@lightbulb.command("member", f"[{plugin.name}] Show information about yourself or another member.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_member(ctx: lightbulb.Context):
     member: hikari.Member = ctx.options.member
@@ -361,7 +359,7 @@ async def info_member(ctx: lightbulb.Context):
 
 @info.child
 @lightbulb.option("role", "A Discord role.", type = hikari.Role)
-@lightbulb.command("role", "Show information about a role.")
+@lightbulb.command("role", f"[{plugin.name}] Show information about a role.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_role(ctx: lightbulb.Context):
     role: hikari.Role = ctx.options.role
@@ -419,7 +417,7 @@ async def info_role(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @info.child
-@lightbulb.command("server", "Show information about this server.")
+@lightbulb.command("server", f"[{plugin.name}] Show information about this server.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_server(ctx: lightbulb.Context):
     guild = ctx.get_guild()
@@ -498,7 +496,7 @@ async def info_server(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @plugin.command()
-@lightbulb.command("ping", "Check the bot if it's alive")
+@lightbulb.command("ping", f"[{plugin.name}] Check the bot if it's alive")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def ping(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -529,11 +527,12 @@ async def ping(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.set_help(dedent('''
     - Author needs to have `Manage Server`.
+    - This only affects Prefix Commands.
 '''))
 @lightbulb.add_checks(checks.is_db_connected, lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("new_prefix", "The new prefix. Should not be longer than 5 characters or contain spaces.", default = None)
-@lightbulb.command("prefix", "View or edit the bot prefix for the guild. This only affects Prefix Commands.")
+@lightbulb.command("prefix", f"[{plugin.name}] View or edit the bot prefix for the guild.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def prefix(ctx: lightbulb.Context):
     new_prefix = ctx.options.new_prefix
@@ -560,7 +559,7 @@ async def prefix(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.", choices = ["bug", "suggest"])
-@lightbulb.command("report", "Report a bug or suggest a feature for the bot. Please be constructive.")
+@lightbulb.command("report", f"[{plugin.name}] Report a bug or suggest a feature for the bot. Please be constructive.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def report(ctx: lightbulb.Context):
     report_type = ctx.options.type
