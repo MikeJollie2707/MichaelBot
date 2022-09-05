@@ -18,11 +18,11 @@ This document will briefly describe all current potions in more details. It won'
 
 The easiest potion to obtain. You can grab it in `market` with a price of 1500 as an alternate way besides the standard brewing system.
 
-- **Main Effect:** When the user "dies" the Nether, there is a 75% chance this potion will activate, negating the death of the user. 
-- **Passive Effect:** Lower the death chance by 1% on all dimensions.
+- **Main Effect:** When the user "dies" the Nether, there is a 70% chance this potion will activate, negating the death of the user. 
+- **Passive Effect:** Lower the death chance by 2% on all dimensions.
 - **Durability:** 10
 
-Basically, after applying the passive 1% reduction, this lower your death rate by 75%. This is very good when you just enter Nether for the first few times.
+Basically, after applying the passive 2% reduction, this lower your death rate by 70%. This is very good when you just enter Nether for the first few times.
 
 ## Haste Potion
 
@@ -34,13 +34,13 @@ Note that because it says "roll", you don't necessarily get x5 rewards, but your
 
 ## Fortune Potion
 
-- **Main Effect:** A 50% chance to multiply the drop by 2 times while mining.
+- **Main Effect:** A 50% chance to multiply the drop by 4 times while mining.
 - **Passive Effect:** Lower the death chance by 5% while mining.
 - **Durability:** 20
 
 ## Nature Potion
 
-- **Main Effect:** A 50% chance to multiply the drop by 2 times while chopping.
+- **Main Effect:** A 50% chance to multiply the drop by 4 times while chopping.
 - **Passive Effect:** Lower the death chance by 5% while chopping.
 - **Durability:** 20
 
@@ -54,23 +54,22 @@ Note that because it says "roll", you don't necessarily get x5 rewards, but your
 
 ## Looting Potion
 
-- **Main Effect:** A 50% chance to multiply the drop by 3 times while exploring.
+- **Main Effect:** A 50% chance to multiply the drop by 4 times while exploring.
 - **Passive Effect:** Lower the death chance by 5% while exploring.
 - **Durability:** 20
 
 ## Luck Potion
 
-- **Main Effect:** A 50% chance to multiplies the drop by 5 times and ensure that all possible drops will drop at least `min_amount` or 1, whichever is higher.
-- **Passive Effect:** Lower the death chance by 10% on all dimensions.
+- **Main Effect:** A 50% chance to multiplies the drop by 2 times. Also ensure that 1. If a possible drop is already dropped, it'll then drop `max_amount` and 2. If a possible drop is not dropped, it'll then drop `min_amount` or 1, whichever is higher.
+- **Passive Effect:** Lower the death chance by 10% on all dimensions. As a `Legendary` equipment, this cannot be lost upon death while equipped.
 - **Durability:** 50
 
 This is a powerful potion that basically removes the rate in which an item drops. It'd be basically 50%, completely based on whether the potion activates or not. However, this does contribute to the death chance calculation. The 10% death reductions should absolutely offset this.
 
 ## Undying Potion
 
-*Note that this potion is not yet implemented anywhere. This is only a concept.*
+- **Main Effect:** When the user "dies", there is a 100% chance this potion will activate, negating the death of the user. If `Fire Potion` is activated, `Fire Potion` will be prioritized over this potion.
+- **Passive Effect:** While equipped, this potion will allow the user to equip 1 more potion.
+- **Durability:** 20
 
-- **Main Effect:** A 100% chance to prevent dying on all (action) commands and dimensions.
-- **Durability:** 50
-
-This is a powerful potion that removes death for the next 50 sessions of actions. This overwrites even the minimum death chance of 0.5%, so definitely get this if possible.
+This is a useful potion that guarantees you to not die, while essentially costing you no potion slot. Definitely useful to get.

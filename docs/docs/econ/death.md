@@ -49,12 +49,12 @@ These are the current reductions:
 - Diamond tools: 5%
 - Netherite tools: 10%
 - Fire Potion: 2%
-- Fortune Potion: 2% when mining
-- Looting Potion: 2% when exploring
-- Nature Potion: 2% when chopping
-- Health Potion: 2% passively, 4% more if activates.
+- Haste Potion: 2% when mining and chopping
+- Strength Potion: 2% when exploring
+- Fortune Potion: 5% when mining
+- Looting Potion: 5% when exploring
+- Nature Potion: 5% when chopping
 - Luck Potion: 10%
-- Undying Potion: ?% (not decided)
 - `Staph Dying!` badge: 5%
 
 Note that for `x tools`, this means that the percent only applies to the corresponding action. For example, if you have a diamond pickaxe and an iron sword, then when mining, you'll have the 5% reductions, while when you're exploring, you'll have the 1% reductions.
