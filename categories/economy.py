@@ -670,17 +670,17 @@ async def daily(ctx: lightbulb.Context):
     - This command only works with subcommands.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.command("equip", "Equip a tool or a potion.")
+@lightbulb.command("use", "Use a tool or a potion.")
 @lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
-async def equip(ctx: lightbulb.Context):
+async def use(ctx: lightbulb.Context):
     raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
 
-@equip.child
+@use.child
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("equipment", "The equipment's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
-@lightbulb.command("tool", "Equip a tool. Get to work!")
+@lightbulb.option("equipment", "The equipment's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.command("tool", "Use a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def equip_tool(ctx: lightbulb.Context):
+async def use_tool(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.equipment
     bot: models.MichaelBot = ctx.bot
 
@@ -738,10 +738,10 @@ async def equip_tool(ctx: lightbulb.Context):
                 await psql.Equipment.transfer_from_inventory(conn, inv)
         else:
             await psql.Equipment.transfer_from_inventory(conn, inv)
-        response_str += f"Equipped *{item.name}*."
+        response_str += f"Equipped {item.emoji} *{item.name}*."
         
         await ctx.respond(response_str, reply = True)
-@equip_tool.autocomplete("equipment")
+@use_tool.autocomplete("equipment")
 async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
 
@@ -757,15 +757,15 @@ async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, i
         return equipments[:25]
     return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
-@equip.child
+@use.child
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("potion", "The potion's name or alias to equip.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("potion", "Use a potion.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
-async def equip_potion(ctx: lightbulb.Context):
+async def use_potion(ctx: lightbulb.Context):
     potion: psql.Item = ctx.options.potion
     bot: models.MichaelBot = ctx.bot
 
@@ -811,8 +811,8 @@ async def equip_potion(ctx: lightbulb.Context):
         
         await psql.Equipment.transfer_from_inventory(conn, inv)
         
-    await ctx.respond(f"Equipped *{potion.name}*", reply = True)
-@equip_potion.autocomplete("potion")
+    await ctx.respond(f"Equipped {potion.emoji} *{potion.name}*", reply = True)
+@use_potion.autocomplete("potion")
 async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
     bot: models.MichaelBot = interaction.app
 
