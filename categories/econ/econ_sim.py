@@ -9,7 +9,7 @@ def _cache_load() -> dict[str, dict]:
             item_cache[item_d["id"]] = item_d
     return item_cache
 
-def loot_value(loot_table: dict[str, int]):
+def loot_value(loot_table: dict[str, int], buy_mode: bool = True):
     item_cache = _cache_load()
 
     values = {}
@@ -17,8 +17,10 @@ def loot_value(loot_table: dict[str, int]):
         if item_id in ("money", "bonus", "cost"):
             values[item_id] = loot_table[item_id]
         elif item_id in item_cache:
-            values[item_id] = item_cache[item_id]["sell_price"] * loot_table[item_id]
-    
+            if buy_mode and item_cache[item_id].get("buy_price"):
+                values[item_id] = item_cache[item_id]["buy_price"] * loot_table[item_id]
+            else:
+                values[item_id] = item_cache[item_id]["sell_price"] * loot_table[item_id]
     total: int = 0
     for amount in values.values():
         total += amount
@@ -92,4 +94,4 @@ def tool_simulator(tool_id: str, world: str, simulation_time: int = 10 ** 6):
 if __name__ == "__main__":
     #average_loot_value("diamond_sword", "nether")
     #tool_simulator("nether_axe", "overworld", 10 ** 6)
-    loot_value(loot.__BREW_RECIPE["haste_potion"])
+    loot_value(loot.__BREW_RECIPE["undying_potion"], False)
