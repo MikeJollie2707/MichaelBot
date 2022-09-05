@@ -197,8 +197,8 @@ def generate_barters(item_cache: models.ItemCache, next_reset: dt.datetime, amou
         if not item_dest.buy_price:
             dest_price = item_dest.sell_price
         
-        # Avoid overpower barter.
-        if psql.Equipment.is_potion(barter.item_src) or psql.Equipment.is_potion(barter.item_dest):
+        # Avoid too overpower barter.
+        if psql.Equipment.is_equipment(barter.item_src) or psql.Equipment.is_equipment(barter.item_dest):
             max_value_limit = 100
             barter.hard_limit = 5
         # Force the current max to be at least the item's price so we can avoid amount = 0.

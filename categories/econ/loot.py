@@ -30,7 +30,7 @@ DEATH_REDUCTIONS = {
 
     # Potions
     "luck_potion": 0.10,
-    "fire_potion": 0.01,
+    "fire_potion": 0.02,
     "haste_potion": 0.02,
     "fortune_potion": 0.05,
     "nature_potion": 0.05,
@@ -255,24 +255,29 @@ __ACTIVITY_LOOT = {
         # Pickaxe
         "wood_pickaxe": {
             "redstone": RewardRNG(rate = 1, min_amount = 1, max_amount = 5),
+            "stone": RewardRNG(rate = 0.25, min_amount = 1, max_amount = 2),
             "gold": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1)
         },
         "stone_pickaxe": {
             "redstone": RewardRNG(rate = 1, min_amount = 4, max_amount = 7),
+            "stone": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
             "gold": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
         },
         "iron_pickaxe": {
             "redstone": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "stone": RewardRNG(rate = 0.25, min_amount = 5, max_amount = 7),
             "gold": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 9),
         },
         "diamond_pickaxe": {
             "redstone": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "stone": RewardRNG(rate = 0.25, min_amount = 5, max_amount = 7),
             "gold": RewardRNG(rate = 0.6, min_amount = 10, max_amount = 15),
             "obsidian": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "debris": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
         },
         "nether_pickaxe": {
             "redstone": RewardRNG(rate = 1, min_amount = 30, max_amount = 50),
+            "stone": RewardRNG(rate = 0.25, min_amount = 5, max_amount = 7),
             "gold": RewardRNG(rate = 0.6, min_amount = 15, max_amount = 20),
             "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
             "debris": RewardRNG(rate = 0.07, min_amount = 1, max_amount = 4, amount_layout = (50, 30, 10, 10)),
@@ -431,6 +436,7 @@ __CRAFT_RECIPE = {
 __BREW_RECIPE = {
     # 28143
     "luck_potion": {
+        "nether_star": 66,
         "lucky_clover": 420,
         "hibiscus": 999,
         "tulip": 999,
@@ -529,7 +535,7 @@ __BREW_RECIPE = {
 }
 
 __POTION_CHANCE = {
-    "fire_potion": 0.75,
+    "fire_potion": 0.70,
     "haste_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
@@ -679,9 +685,11 @@ def get_activity_loot(equipment_id: str, world: str, external_buffs: t.Sequence[
         
         reward[item_id] = rng.roll()
         
-        if "luck_potion" in external_buffs and reward[item_id] == 0:
-            # Just in case rng.min_amount is also 0.
-            reward[item_id] = min(rng.min_amount, 1)
+        if "luck_potion" in external_buffs:
+            if reward[item_id] == 0:
+                reward[item_id] = min(rng.min_amount, 1)
+            else:
+                reward[item_id] = rng.max_amount
 
     return reward
 
