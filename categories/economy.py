@@ -26,8 +26,30 @@ class PotionActivation(IntFlag):
     LUCK_POTION = auto()
     UNDYING_POTION = auto()
 
-def has_flag(potion_flags: PotionActivation, flags) -> bool:
-    return potion_flags & flags == flags
+def has_flag(potion_flags: PotionActivation, flags, *, any_flag: bool = False) -> bool:
+    '''Check if a flag is set in a flag bit object.
+
+    This makes it more readable than bare bitwise operations, especially when combining multiple flags.
+
+    Parameters
+    ----------
+    potion_flags : PotionActivation
+        The flag object.
+    flags : t.Any
+        The flag(s) to check. To check for multiple flags, use the `|` operator. Ex: `PotionActivation.LUCK_POTION | PotionActivation.FIRE_POTION`.
+    any_flag : bool
+        If `True`, this will check if at least one of the provided flag is set. Otherwise, it'll check for all flags. Default to `False`.
+
+    Returns
+    -------
+    bool
+        _description_
+    '''
+    
+    if any_flag:
+        return bool(potion_flags & flags)
+    else:
+        return potion_flags & flags == flags
 
 def get_death_rate(reward_value: int, equipment: psql.Equipment, world: str, reductions: float = 0) -> float:
     '''Return the dying chance based on the arguments provided.
@@ -1147,10 +1169,10 @@ async def mine(ctx: lightbulb.Context):
                 return
             
             # Fire potion takes priority over undying potion.
-            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) and has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         # Disable death-preventing potions if the user is not dead in the first place.
-        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
+        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION, any_flag = True):
             potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
         
         if has_flag(potion_activated, PotionActivation.HASTE_POTION):
@@ -1281,10 +1303,10 @@ async def explore(ctx: lightbulb.Context):
                 return
             
             # Fire potion takes priority over undying potion.
-            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) and has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         # Disable death-preventing potions if the user is not dead in the first place.
-        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
+        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION, any_flag = True):
             potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
         
         if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
@@ -1408,10 +1430,10 @@ async def chop(ctx: lightbulb.Context):
                 return
             
             # Fire potion takes priority over undying potion.
-            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) and has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         # Disable death-preventing potions if the user is not dead in the first place.
-        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
+        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION, any_flag = True):
             potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
         
         if has_flag(potion_activated, PotionActivation.HASTE_POTION):
