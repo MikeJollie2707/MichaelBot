@@ -1276,6 +1276,8 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
             return
         if isinstance(exception, lightbulb.CommandIsOnCooldown):
             return
+        if isinstance(exception, lightbulb.MaxConcurrencyLimitReached):
+            return
         
         ctx = event.context
         invoke_content: str = ""
