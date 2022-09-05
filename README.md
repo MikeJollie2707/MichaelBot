@@ -24,18 +24,19 @@ More features will be added as I work on to restore the bot to its glory.
 
 ## Libraries
 
-These are the libraries I used. All of these can be installed with `requirement.txt`.
+These are the libraries I used. All of these can be installed with `requirement.txt` (or `win_requirement.txt` if you're on Windows).
 
 - [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb) & [hikari-miru](https://github.com/HyperGH/hikari-miru)
 - [Lavalink](https://github.com/freyacodes/Lavalink) & [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
 - [asyncpg](https://github.com/MagicStack/asyncpg)
 - [emoji](https://github.com/carpedm20/emoji/)
 - [humanize](https://github.com/jmoiron/humanize)
+- [psutil](https://github.com/giampaolo/psutil)
 - [pytimeparse](https://github.com/wroberts/pytimeparse)
 - [py_expression_eval](https://github.com/axiacore/py-expression-eval)
 - [uvloop](https://github.com/MagicStack/uvloop)
-- [mystbin.py](https://github.com/AbstractUmbra/mystbin.py)
 - [pylint](https://github.com/PyCQA/pylint)
+- [mkdocs](https://github.com/mkdocs/mkdocs) & [mkdocs-material](https://github.com/squidfunk/mkdocs-material) & [mkdocstrings](https://github.com/mkdocstrings/mkdocstrings)
 
 Build instructions available [here](./docs/docs/INSTALLATION.md).
 
