@@ -789,14 +789,18 @@ async def equip_potion(ctx: lightbulb.Context):
             return
 
         potions = await psql.Equipment.get_user_potions(conn, ctx.author.id)
+        undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
         brew3_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew3")
-        if not brew3_badge and len(potions) >= 3:
+        
+        potions_cap = 3
+        if brew3_badge and brew3_badge.completed():
+            potions_cap += 1
+        if undead_potion:
+            potions_cap += 1
+        
+        if len(potions) >= potions_cap:
             await bot.reset_cooldown(ctx)
-            await ctx.respond("You currently have 3 potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
-            return
-        elif brew3_badge and len(potions) >= 4:
-            await bot.reset_cooldown(ctx)
-            await ctx.respond("You currently have 4 potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
+            await ctx.respond(f"You currently have {len(potions)} potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
             return
         
         existed = await psql.Equipment.get_one(conn, ctx.author.id, potion.id)
@@ -1091,10 +1095,11 @@ async def mine(ctx: lightbulb.Context):
         # Check external buffs for lowering death rate.
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
+        has_undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
         has_haste_potion = await psql.Equipment.get_one(conn, ctx.author.id, "haste_potion")
         has_fortune_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fortune_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
-        # After this, x_activated == True guarantees x_potion exists.
+        # After this, has_flag(potion_activated, PotionActivatetion.X_POTION) == True guarantees x_potion exists.
         if has_luck_potion:
             death_reductions += loot.DEATH_REDUCTIONS["luck_potion"]
             if loot.roll_potion_activate("luck_potion"):
@@ -1133,16 +1138,20 @@ async def mine(ctx: lightbulb.Context):
             return
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), pickaxe_existed, user.world, death_reductions)
-        r = random.random()
         # Dies
-        if r <= death_rate:
-            if not (user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION)):
+        if random.random() <= death_rate:
+            if not (user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) or 
+                    has_flag(potion_activated, PotionActivation.UNDYING_POTION)):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
-        # Disable fire potion if the user is not dead in the first place.
-        elif has_flag(potion_activated, PotionActivation.FIRE_POTION):
-            potion_activated ^= PotionActivation.FIRE_POTION
+            
+            # Fire potion takes priority over undying potion.
+            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) and has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+                potion_activated ^= PotionActivation.UNDYING_POTION
+        # Disable death-preventing potions if the user is not dead in the first place.
+        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
+            potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
         
         if has_flag(potion_activated, PotionActivation.HASTE_POTION):
             # Roll 4 more times, which is 5 times in total.
@@ -1166,9 +1175,12 @@ async def mine(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
+            if has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+                await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
+                response_str += "*Undying Potion* activated, saving you from death!\n"
             if has_flag(potion_activated, PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
-                response_str += "*Luck Potion* activated, giving you a reward boost!\n"
+                response_str += "*Luck Potion* activated, giving you more rare drops!\n"
             if has_flag(potion_activated, PotionActivation.HASTE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "haste_potion", has_haste_potion.remain_durability - 1)
                 response_str += "*Haste Potion* activated, giving you a reward boost!\n"
@@ -1219,10 +1231,11 @@ async def explore(ctx: lightbulb.Context):
         # Check external buffs for lowering death rate.
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
+        has_undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
         has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
         has_looting_potion = await psql.Equipment.get_one(conn, ctx.author.id, "looting_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
-        # After this, x_activated == True guarantees x_potion exists.
+        # After this, has_flag(potion_activated, PotionActivatetion.X_POTION) == True guarantees x_potion exists.
         if has_luck_potion:
             death_reductions += loot.DEATH_REDUCTIONS["luck_potion"]
             if loot.roll_potion_activate("luck_potion"):
@@ -1232,6 +1245,10 @@ async def explore(ctx: lightbulb.Context):
             death_reductions += loot.DEATH_REDUCTIONS["fire_potion"]
             if loot.roll_potion_activate("fire_potion"):
                 potion_activated |= PotionActivation.FIRE_POTION
+        if has_undead_potion:
+            death_reductions += loot.DEATH_REDUCTIONS["undying_potion"]
+            if loot.roll_potion_activate("undying_potion"):
+                potion_activated |= PotionActivation.UNDYING_POTION
         if has_strength_potion:
             death_reductions += loot.DEATH_REDUCTIONS["strength_potion"]
             if loot.roll_potion_activate("strength_potion"):
@@ -1255,16 +1272,20 @@ async def explore(ctx: lightbulb.Context):
             return
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), sword_existed, user.world, death_reductions)
-        r = random.random()
         # Dies
-        if r <= death_rate:
-            if not (user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION)):
+        if random.random() <= death_rate:
+            if not (user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) or 
+                    has_flag(potion_activated, PotionActivation.UNDYING_POTION)):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
-        # Disable fire potion if the user is not dead in the first place.
-        elif has_flag(potion_activated, PotionActivation.FIRE_POTION):
-            potion_activated ^= PotionActivation.FIRE_POTION
+            
+            # Fire potion takes priority over undying potion.
+            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) and has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+                potion_activated ^= PotionActivation.UNDYING_POTION
+        # Disable death-preventing potions if the user is not dead in the first place.
+        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
+            potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
         
         if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
             # Roll 4 more times, which is 5 times in total.
@@ -1288,9 +1309,12 @@ async def explore(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
+            if has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+                await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
+                response_str += "*Undying Potion* activated, saving you from death!\n"
             if has_flag(potion_activated, PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
-                response_str += "*Luck Potion* activated, giving you a reward boost!\n"
+                response_str += "*Luck Potion* activated, giving you more rare drops!\n"
             if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
                 response_str += "*Strength Potion* activated, giving you a reward boost!\n"
@@ -1334,6 +1358,7 @@ async def chop(ctx: lightbulb.Context):
         # Check external buffs for lowering death rate.
         has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
         has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
+        has_undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
         has_haste_potion = await psql.Equipment.get_one(conn, ctx.author.id, "haste_potion")
         has_nature_potion = await psql.Equipment.get_one(conn, ctx.author.id, "nature_potion")
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
@@ -1347,6 +1372,10 @@ async def chop(ctx: lightbulb.Context):
             death_reductions += loot.DEATH_REDUCTIONS["fire_potion"]
             if loot.roll_potion_activate("fire_potion"):
                 potion_activated |= PotionActivation.FIRE_POTION
+        if has_undead_potion:
+            death_reductions += loot.DEATH_REDUCTIONS["undying_potion"]
+            if loot.roll_potion_activate("undying_potion"):
+                potion_activated |= PotionActivation.UNDYING_POTION
         if has_haste_potion:
             death_reductions += loot.DEATH_REDUCTIONS["haste_potion"]
             if loot.roll_potion_activate("haste_potion"):
@@ -1366,20 +1395,24 @@ async def chop(ctx: lightbulb.Context):
         
         loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, external_buffs)
         if not loot_table:
-            await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
+            await ctx.respond("After a long chopping session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
         
         death_rate = get_death_rate(get_reward_value(loot_table, bot.item_cache), axe_existed, user.world, death_reductions)
-        r = random.random()
         # Dies
-        if r <= death_rate:
-            if not (user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION)):
+        if random.random() <= death_rate:
+            if not (user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) or 
+                    has_flag(potion_activated, PotionActivation.UNDYING_POTION)):
                 await process_death(conn, bot, user)
                 await ctx.respond("You had an accident and died miserably. All your equipments are lost, and you lost some of your items and money.", reply = True, mentions_reply = True)
                 return
-        # Disable fire potion if the user is not dead in the first place.
-        elif has_flag(potion_activated, PotionActivation.FIRE_POTION):
-            potion_activated ^= PotionActivation.FIRE_POTION
+            
+            # Fire potion takes priority over undying potion.
+            if user.world == "nether" and has_flag(potion_activated, PotionActivation.FIRE_POTION) and has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+                potion_activated ^= PotionActivation.UNDYING_POTION
+        # Disable death-preventing potions if the user is not dead in the first place.
+        elif has_flag(potion_activated, PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
+            potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
         
         if has_flag(potion_activated, PotionActivation.HASTE_POTION):
             # Roll 4 more times, which is 5 times in total.
@@ -1403,9 +1436,12 @@ async def chop(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
+            if has_flag(potion_activated, PotionActivation.UNDYING_POTION):
+                await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
+                response_str += "*Undying Potion* activated, saving you from death!\n"
             if has_flag(potion_activated, PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
-                response_str += "*Luck Potion* activated, giving you a reward boost!\n"
+                response_str += "*Luck Potion* activated, giving you more rare drops!\n"
             if has_flag(potion_activated, PotionActivation.HASTE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "haste_potion", has_haste_potion.remain_durability - 1)
                 response_str += "*Haste Potion* activated, giving you a reward boost!\n"

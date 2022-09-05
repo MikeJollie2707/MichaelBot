@@ -500,10 +500,10 @@
         "name": "Undying Potion",
         "aliases": ["totem_pot", "Totem Pot"],
         "emoji": "<:undying_potion:828136854657826836>",
-        "description": "The result of a secret research to achieve immortality. This potion is deemed to potentially cheat death.",
+        "description": "The result of a secret research to achieve immortality. This potion is deemed to cheat death.",
         "rarity": "legendary",
         "buy_price": null,
         "sell_price": 500,
-        "durability": 10
+        "durability": 20
     }
 ]

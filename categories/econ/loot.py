@@ -36,6 +36,7 @@ DEATH_REDUCTIONS = {
     "nature_potion": 0.05,
     "strength_potion": 0.02,
     "looting_potion": 0.05,
+    "undying_potion": 0.00,
 }
 
 class RewardRNG:
@@ -438,6 +439,18 @@ __BREW_RECIPE = {
         "gunpowder": 999,
         "blaze_rod": 99,
         "cost": 6969,
+        "result": 3
+    },
+    # 19479
+    "undying_potion": {
+        "nether_star": 51,
+        "luck_clover": 51,
+        "nether_respawner": 33,
+        "fire_potion": 9,
+        "redstone": 333,
+        "gunpowder": 333,
+        "blaze_rod": 33,
+        "cost": 420,
         "result": 3
     },
     # 1947
