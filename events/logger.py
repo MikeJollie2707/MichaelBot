@@ -1,4 +1,5 @@
 import datetime as dt
+from io import StringIO
 from textwrap import dedent
 
 import hikari
@@ -42,13 +43,6 @@ COLOR_CREATE = models.DefaultColor.green
 COLOR_DELETE = models.DefaultColor.orange
 COLOR_UPDATE = models.DefaultColor.yellow
 COLOR_OTHER = models.DefaultColor.teal
-
-# mystbin now has an API, but it has a 5 post/min ratelimit, make it not practical. This part also doesn't work anymore.
-async def send_to_mystbin(content: str) -> str:
-    mystbin_client = mystbin.Client()
-    paste = await mystbin_client.post(content, syntax = "md")
-    await mystbin_client.close()
-    return paste
 
 def bot_has_permission_in(bot: models.MichaelBot, channel: hikari.GuildChannel, permission: hikari.Permissions):
     bot_permissions = lightbulb.utils.permissions_in(channel, bot.cache.get_member(channel.get_guild().id, bot.get_me().id), True)
@@ -471,6 +465,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
 
                 added_permissions = []
                 removed_permissions = []
+                # Whether we got the log_time and executor from the necessary audit log.
                 retrieved_update = False
 
                 # Check for added permissions
@@ -575,6 +570,9 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                 # Now deal with edited permissions
                 for target_id in after.permission_overwrites:
                     if target_id in before.permission_overwrites and before.permission_overwrites[target_id] != after.permission_overwrites[target_id]:
+                        # Send the output to a text file if too long.
+                        log_attachment: hikari.Bytes = hikari.UNDEFINED
+
                         target_obj = event.get_guild().get_role(target_id)
                         if target_obj is None:
                             target_obj = event.get_guild().get_member(target_id)
@@ -628,9 +626,9 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                             {granted_message}{neutralized_message}{denied_message}
                         ''')
                         if len(content_message) > 1800:
-                            paste = await send_to_mystbin(content_message)
-                            embed.description = dedent(f'''
-                                ⚠ The log content is too long! View the full text here: <{paste}>
+                            log_attachment = hikari.Bytes(StringIO(content_message), "guild_channel_update.md")
+                            embed.description = dedent('''
+                                ⚠ The log content is too long, so I sent everything into a markdown file.
                             ''')
                         else:
                             embed.description = content_message
@@ -649,7 +647,7 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                         )
 
                         embed.timestamp = log_time_overwrite
-                        await bot.rest.create_message(log_channel, embed = embed)
+                        await bot.rest.create_message(log_channel, embed = embed, attachment = log_attachment)
 
 @plugin.listener(hikari.BanCreateEvent)
 async def on_guild_ban(event: hikari.BanCreateEvent):
@@ -808,6 +806,9 @@ async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent
         executor = None
 
         if len(event.old_messages) > 0:
+            # Send the output to a text file if too long.
+            log_attachment: hikari.Bytes = hikari.UNDEFINED
+
             async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MESSAGE_BULK_DELETE).limit(1):
                 for log_id in audit_log.entries:
                     entry = audit_log.entries[log_id]
@@ -821,10 +822,10 @@ async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent
                 content_message += f"{message.author} at {message.created_at.strftime('%b %m %Y %I:%M %p')}(UTC): {message.content}\n"
 
                 content_message += "\n"
-            paste = await send_to_mystbin(content_message)
+            log_attachment = hikari.Bytes(StringIO(content_message), "guild_bulk_message_delete.md")
             embed.title = "Bulk Message Deleted"
-            embed.description = dedent(f'''
-                The content might be long, so I pasted the full log here: <{paste}>
+            embed.description = dedent('''
+                The content might be long, so I pasted everything into a markdown file, just to be safe.
             ''')
             embed.add_field(
                 name = "Additional Info:",
@@ -847,7 +848,7 @@ async def on_guild_bulk_message_delete(event: hikari.GuildBulkMessageDeleteEvent
             )
 
             embed.timestamp = log_time
-            await bot.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed, attachment = log_attachment)
         else:
             embed.title = "Bulk Message Deleted"
             embed.description = "⚠ Deleted messages info cannot be found."
@@ -875,6 +876,7 @@ async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
         executor = None
 
         if event.old_message is not None:
+            log_attachment: hikari.Bytes = hikari.UNDEFINED
             # Since this event is pretty fucked by Discord I'm just gonna display the basic info lmfao not gonna bother look for who delete it.
             async for audit_log in bot.rest.fetch_audit_log(event.guild_id, event_type = hikari.AuditLogEventType.MESSAGE_DELETE).limit(1):
                 for log_id in audit_log.entries:
@@ -891,9 +893,9 @@ async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
             embed.title = "Message Deleted"
             content_message = f"**Content:** {event.old_message.content}" if event.old_message.content != "" else ""
             if len(content_message) > 1800:
-                paste = await send_to_mystbin(content_message)
-                embed.description = dedent(f'''
-                    ⚠ The deleted content is too long! View the full text here: <{paste}>
+                log_attachment = hikari.Bytes(StringIO(content_message), "guild_message_delete.md")
+                embed.description = dedent('''
+                    ⚠ The deleted content is too long, so I sent everything into a file.
                 ''')
             else:
                 embed.description = content_message
@@ -920,7 +922,7 @@ async def on_guild_message_delete(event: hikari.GuildMessageDeleteEvent):
             )
 
             embed.timestamp = log_time
-            await bot.rest.create_message(log_channel, content = "*Note: `Deleted by:` can be incorrect due to Discord limitation.*", embed = embed)
+            await bot.rest.create_message(log_channel, content = "*Note: `Deleted by:` can be incorrect due to Discord limitation.*", embed = embed, attachment = log_attachment)
         else:
             embed.title = "Message Deleted"
             embed.description = "⚠ Deleted message info cannot be found."
@@ -949,6 +951,7 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
             embed = hikari.Embed(color = COLOR_UPDATE)
             log_time: dt.datetime = dt.datetime.now().astimezone()
             executor = event.author
+            log_attachment: hikari.Bytes = hikari.UNDEFINED
 
             before = event.old_message
             after = event.message
@@ -976,9 +979,9 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
 
                 embed.title = "Message Edited"
                 if len(content_message) > 1800:
-                    paste = await send_to_mystbin(content_message)
-                    embed.description = dedent(f'''
-                        ⚠ The edited content is too long! View the full text here: <{paste}>
+                    log_attachment = hikari.Bytes(StringIO(content_message), "guild_message_update.md")
+                    embed.description = dedent('''
+                        ⚠ The edited content is too long, so I sent everything into a markdown file.
                     ''')
                 else:
                     embed.description = content_message
@@ -1000,7 +1003,7 @@ async def on_guild_message_update(event: hikari.GuildMessageUpdateEvent):
             )
             embed.timestamp = log_time
 
-            await bot.rest.create_message(log_channel, embed = embed)
+            await bot.rest.create_message(log_channel, embed = embed, attachment = log_attachment)
 
 @plugin.listener(hikari.RoleCreateEvent)
 async def on_role_create(event: hikari.RoleCreateEvent):
