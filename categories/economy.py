@@ -1131,6 +1131,10 @@ async def mine(ctx: lightbulb.Context):
             death_reductions += loot.DEATH_REDUCTIONS["fire_potion"]
             if loot.roll_potion_activate("fire_potion"):
                 potion_activated |= PotionActivation.FIRE_POTION
+        if has_undead_potion:
+            death_reductions += loot.DEATH_REDUCTIONS["undying_potion"]
+            if loot.roll_potion_activate("undying_potion"):
+                potion_activated |= PotionActivation.UNDYING_POTION
         if has_haste_potion:
             death_reductions += loot.DEATH_REDUCTIONS["haste_potion"]
             if loot.roll_potion_activate("haste_potion"):
