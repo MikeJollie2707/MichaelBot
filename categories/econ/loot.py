@@ -450,7 +450,7 @@ __BREW_RECIPE = {
     # 19479
     "undying_potion": {
         "nether_star": 51,
-        "luck_clover": 51,
+        "lucky_clover": 51,
         "nether_respawner": 33,
         "fire_potion": 9,
         "redstone": 333,
