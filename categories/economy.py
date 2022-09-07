@@ -1201,18 +1201,28 @@ async def mine(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
+                if has_fire_potion.remain_durability - 1 == 0:
+                    response_str += "*Fire Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.UNDYING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
                 response_str += "*Undying Potion* activated, saving you from death!\n"
+                if has_undead_potion.remain_durability - 1 == 0:
+                    response_str += "*Undying Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
+                if has_luck_potion.remain_durability - 1 == 0:
+                    response_str += "*Luck Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.HASTE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "haste_potion", has_haste_potion.remain_durability - 1)
                 response_str += "*Haste Potion* activated, giving you a reward boost!\n"
+                if has_haste_potion.remain_durability - 1 == 0:
+                    response_str += "*Haste Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.FORTUNE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fortune_potion", has_fortune_potion.remain_durability - 1)
                 response_str += "*Fortune Potion* activated, giving you a reward boost!\n"
+                if has_fortune_potion.remain_durability - 1 == 0:
+                    response_str += "*Fortune Potion* expired!\n"
             
             # Process badges.
             if loot_table.get("iron"):
@@ -1335,18 +1345,28 @@ async def explore(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
+                if has_fire_potion.remain_durability - 1 == 0:
+                    response_str += "*Fire Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.UNDYING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
                 response_str += "*Undying Potion* activated, saving you from death!\n"
+                if has_undead_potion.remain_durability - 1 == 0:
+                    response_str += "*Undying Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
+                if has_luck_potion.remain_durability - 1 == 0:
+                    response_str += "*Luck Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.STRENGTH_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "strength_potion", has_strength_potion.remain_durability - 1)
                 response_str += "*Strength Potion* activated, giving you a reward boost!\n"
+                if has_strength_potion.remain_durability - 1 == 0:
+                    response_str += "*Strength Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.LOOTING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "looting_potion", has_looting_potion.remain_durability - 1)
                 response_str += "*Looting Potion* activated, giving you a reward boost!\n"
+                if has_looting_potion.remain_durability - 1 == 0:
+                    response_str += "*Looting Potion* expired!\n"
             
             # Process badges.
             if loot_table.get("blaze_rod"):
@@ -1462,18 +1482,28 @@ async def chop(ctx: lightbulb.Context):
             if has_flag(potion_activated, PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
                 response_str += "*Fire Potion* activated, saving you from death!\n"
+                if has_fire_potion.remain_durability - 1 == 0:
+                    response_str += "*Fire Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.UNDYING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
                 response_str += "*Undying Potion* activated, saving you from death!\n"
+                if has_undead_potion.remain_durability - 1 == 0:
+                    response_str += "*Undying Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
+                if has_luck_potion.remain_durability - 1 == 0:
+                    response_str += "*Luck Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.HASTE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "haste_potion", has_haste_potion.remain_durability - 1)
                 response_str += "*Haste Potion* activated, giving you a reward boost!\n"
+                if has_haste_potion.remain_durability - 1 == 0:
+                    response_str += "*Haste Potion* expired!\n"
             if has_flag(potion_activated, PotionActivation.NATURE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "nature_potion", has_nature_potion.remain_durability - 1)
                 response_str += "*Nature Potion* activated, giving you a reward boost!\n"
+                if has_nature_potion.remain_durability - 1 == 0:
+                    response_str += "*Nature Potion* expired!\n"
             
             # Process badges.
             if loot_table.get("wood"):
