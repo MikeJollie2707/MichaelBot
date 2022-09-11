@@ -1100,6 +1100,8 @@ async def mine(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
+        # TODO: Rewrite this into a single psql.Equipment.get_user_equipments(), then use lambda to filter out the result.
+        # The idea is to reduce SQL calls, which is costly on connection (and also slow).
         pickaxe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_pickaxe")
         if not pickaxe_existed:
             await bot.reset_cooldown(ctx)
