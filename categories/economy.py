@@ -503,10 +503,10 @@ async def brew(ctx: lightbulb.Context):
         # Check for badges.
         brew1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew1")
         if brew1_badge and brew1_badge.completed():
-            recipe["result"] += 1
+            recipe["result"] += 1 * times
         brew2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew2")
         if brew2_badge and brew2_badge.completed():
-            recipe["result"] += 2
+            recipe["result"] += 2 * times
         
         async with conn.transaction():
             for inv in inventories:
