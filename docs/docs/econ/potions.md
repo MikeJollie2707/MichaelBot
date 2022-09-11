@@ -16,9 +16,9 @@ This document will briefly describe all current potions in more details. It won'
 
 ## Fire Potion
 
-The easiest potion to obtain. You can grab it in `market` with a price of 1500 as an alternate way besides the standard brewing system.
+The easiest potion to obtain. You can grab it in `market` with a price of 1500 alternatively besides the standard brewing system.
 
-- **Main Effect:** When the user "dies" the Nether, there is a 70% chance this potion will activate, negating the death of the user. 
+- **Main Effect:** When the user "dies" in the Nether, there is a 70% chance this potion will activate, negating the death of the user. 
 - **Passive Effect:** Lower the death chance by 2% on all dimensions.
 - **Durability:** 10
 
@@ -69,7 +69,7 @@ This is a powerful potion that basically removes the rate in which an item drops
 ## Undying Potion
 
 - **Main Effect:** When the user "dies", there is a 100% chance this potion will activate, negating the death of the user. If `Fire Potion` is activated, `Fire Potion` will be prioritized over this potion.
-- **Passive Effect:** While equipped, this potion will allow the user to equip 1 more potion.
+- **Passive Effect:** While equipped, this potion will allow the user to equip 1 more potion. As a `Legendary` equipment, this cannot be lost upon death while equipped.
 - **Durability:** 20
 
 This is a useful potion that guarantees you to not die, while essentially costing you no potion slot. Definitely useful to get.
