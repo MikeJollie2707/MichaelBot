@@ -314,6 +314,33 @@ async def shutdown(ctx: lightbulb.Context):
     await ctx.respond("Bot shutting down...")
     await ctx.bot.close()
 
+@plugin.command()
+@lightbulb.option("badge_id2", "The badge you're trying to update.")
+@lightbulb.option("badge_id1", "The badge you're getting the progress.")
+@lightbulb.command("sync-badge-progress", "Update a badge progress with another badge progress for all users. Useful when adding new tiers of badges.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def sync_badge_progress(ctx: lightbulb.Context):
+    badge_id1 = ctx.options.badge_id1
+    badge_id2 = ctx.options.badge_id2
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        async with conn.transaction():
+            for user_id in bot.user_cache.keys():
+                badge1 = await psql.UserBadge.get_one(conn, user_id, badge_id1)
+                badge2 = await psql.UserBadge.get_one(conn, user_id, badge_id2)
+
+                if not badge1:
+                    print(f"User {user_id} doesn't have {badge_id1}. Skipping...")
+                    continue
+
+                if not badge2:
+                    await psql.UserBadge.add_progress(conn, user_id, badge_id2, badge1.badge_progress)
+                else:
+                    await psql.UserBadge.update_column(conn, user_id, badge_id2, "badge_progress", badge1.badge_progress)
+    
+    await ctx.respond("Finished syncing!", reply = True)
+
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
 def unload(bot: models.MichaelBot):
