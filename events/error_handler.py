@@ -20,6 +20,11 @@ def __get_generic_error_embed() -> hikari.Embed:
         timestamp = dt.datetime.now().astimezone()
     )
 
+async def on_command_not_implemented(event: lightbulb.CommandErrorEvent, _: NotImplementedError):
+    embed = __get_generic_error_embed()
+    embed.description = ":warning: **You're using a command that's not implemented yet, and exist only so the dev don't forget about it. Just smile and ignore bois, smile and ignore.**"
+
+    await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_command_not_found(event: lightbulb.CommandErrorEvent, _: lightbulb.CommandNotFound):
     await event.bot.rest.trigger_typing(event.context.channel_id)
 async def on_command_cooldown(event: lightbulb.CommandErrorEvent, exception: lightbulb.CommandIsOnCooldown):
@@ -107,6 +112,7 @@ async def on_generic_error(event: lightbulb.CommandErrorEvent, exception: Except
     logger.error(f"An error occurred in '{event.context.command.qualname}', but is not handled!", exc_info = exception)
 
 __handler_mapping = {
+    NotImplementedError: on_command_not_implemented,
     lightbulb.CommandNotFound: on_command_not_found,
     lightbulb.CommandIsOnCooldown: on_command_cooldown,
     lightbulb.BotMissingRequiredPermission: on_bot_missing_permission,
