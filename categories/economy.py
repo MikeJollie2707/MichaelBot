@@ -164,6 +164,39 @@ def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -
     
     return value
 
+def filter_equipment_types(equipments: list[psql.Equipment], eq_types_or_ids: tuple[str]) -> tuple[psql.Equipment | None]:
+    '''Filter equipments based on their types (like for tools) or their ids (like for potions).
+
+    Warnings
+    --------
+    This is intended to work for equipments that belongs to only one user.
+
+    Parameters
+    ----------
+    equipments : list[psql.Equipment]
+        A list of equipment to filter.
+    eq_types_or_ids : tuple[str]
+        A tuple of the equipment's type or id.
+
+    Returns
+    -------
+    tuple[psql.Equipment | None]
+        The resultant equipment or `None` if none was found. The order of these equipments (including `None`) matches the order of `eq_types_or_ids`.
+    '''
+
+    results = []
+    for eq_type_or_id in eq_types_or_ids:
+        is_break = False
+        for equipment in equipments:
+            if equipment.eq_type == eq_type_or_id or equipment.item_id == eq_type_or_id:
+                results.append(equipment)
+                is_break = True
+                break
+        
+        if not is_break:
+            results.append(None)
+    return tuple(results)
+
 async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dict[str, int]):
     '''A shortcut to add rewards to the user.
 
@@ -1100,9 +1133,18 @@ async def mine(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
-        # TODO: Rewrite this into a single psql.Equipment.get_user_equipments(), then use lambda to filter out the result.
-        # The idea is to reduce SQL calls, which is costly on connection (and also slow).
-        pickaxe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_pickaxe")
+        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        relevant_equipments = filter_equipment_types(equipments, (
+            "_pickaxe", 
+            "luck_potion", 
+            "fire_potion", 
+            "undying_potion", 
+            "haste_potion", 
+            "fortune_potion",
+        ))
+
+        #pickaxe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_pickaxe")
+        pickaxe_existed = relevant_equipments[0]
         if not pickaxe_existed:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have a pickaxe!", reply = True, mentions_reply = True)
@@ -1117,11 +1159,11 @@ async def mine(ctx: lightbulb.Context):
         death_reductions = 0
         
         # Check external buffs for lowering death rate.
-        has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
-        has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
-        has_undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
-        has_haste_potion = await psql.Equipment.get_one(conn, ctx.author.id, "haste_potion")
-        has_fortune_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fortune_potion")
+        has_luck_potion = relevant_equipments[1]
+        has_fire_potion = relevant_equipments[2]
+        has_undead_potion = relevant_equipments[3]
+        has_haste_potion = relevant_equipments[4]
+        has_fortune_potion = relevant_equipments[5]
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, has_flag(potion_activated, PotionActivatetion.X_POTION) == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1256,7 +1298,17 @@ async def explore(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
-        sword_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_sword")
+        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        relevant_equipments = filter_equipment_types(equipments, (
+            "_sword",
+            "luck_potion",
+            "fire_potion",
+            "undead_potion",
+            "strength_potion",
+            "looting_potion",
+        ))
+        
+        sword_existed = relevant_equipments[0]
         if not sword_existed:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have a sword!", reply = True, mentions_reply = True)
@@ -1267,11 +1319,11 @@ async def explore(ctx: lightbulb.Context):
         death_reductions = 0
         
         # Check external buffs for lowering death rate.
-        has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
-        has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
-        has_undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
-        has_strength_potion = await psql.Equipment.get_one(conn, ctx.author.id, "strength_potion")
-        has_looting_potion = await psql.Equipment.get_one(conn, ctx.author.id, "looting_potion")
+        has_luck_potion = relevant_equipments[1]
+        has_fire_potion = relevant_equipments[2]
+        has_undead_potion = relevant_equipments[3]
+        has_strength_potion = relevant_equipments[4]
+        has_looting_potion = relevant_equipments[5]
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, has_flag(potion_activated, PotionActivatetion.X_POTION) == True guarantees x_potion exists.
         if has_luck_potion:
@@ -1393,7 +1445,17 @@ async def chop(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
-        axe_existed = await psql.Equipment.get_equipment(conn, ctx.author.id, "_axe")
+        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        relevant_equipments = filter_equipment_types(equipments, (
+            "_axe",
+            "luck_potion",
+            "fire_potion",
+            "undying_potion",
+            "haste_potion",
+            "nature_potion",
+        ))
+
+        axe_existed = relevant_equipments[0]
         if not axe_existed:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have an axe!", reply = True, mentions_reply = True)
@@ -1404,11 +1466,11 @@ async def chop(ctx: lightbulb.Context):
         death_reductions = 0
         
         # Check external buffs for lowering death rate.
-        has_luck_potion = await psql.Equipment.get_one(conn, ctx.author.id, "luck_potion")
-        has_fire_potion = await psql.Equipment.get_one(conn, ctx.author.id, "fire_potion")
-        has_undead_potion = await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion")
-        has_haste_potion = await psql.Equipment.get_one(conn, ctx.author.id, "haste_potion")
-        has_nature_potion = await psql.Equipment.get_one(conn, ctx.author.id, "nature_potion")
+        has_luck_potion = relevant_equipments[1]
+        has_fire_potion = relevant_equipments[2]
+        has_undead_potion = relevant_equipments[3]
+        has_haste_potion = relevant_equipments[4]
+        has_nature_potion = relevant_equipments[5]
         # Also roll the potion if they exist, you lose all of them anw if you dies so.
         # After this, x_activated == True guarantees x_potion exists.
         if has_luck_potion:
