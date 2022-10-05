@@ -1,10 +1,53 @@
 # The code uses a lot of `id`, which turns out to be shadowing the builtin `id()`.
 #pylint: disable=redefined-builtin
 
-'''Contains many functions that hide all "naked" SQL to use.
+'''Contains many functions and classes that hide all "naked" SQL to use.
+
+Classes
+-------
+This module has a dataclass for every table currently exist in `dbsetup.py`. These are used to nicely store a row of data in designated table.
+However, they don't have any member functions. All SQL functions are static. If you don't use any SQL functions due to performance, you can use
+these classes to organize your data a bit better than naked dictionary.
+
+SQL Functions
+-------------
+The SQL functions are meant to make the bot's code looks nice without SQL strings everywhere. They also can be slightly customized to deal with common operations.
+Therefore, these functions will contain overheads. If performance is your main concern, do not use any of these static functions.
 
 Generally, all these functions are self-contained, meaning if something screw up, they'll rollback on their own.
-However, using multiple functions at a time can be dangerous without wrapping them around a transaction.
+However, using multiple functions at a time in the bot's code can be dangerous without wrapping them around a transaction.
+
+Each class has a `__PREVENT_UPDATE` tuple that will contains columns that can't be updated via SQL functions for safety. These are usually primary keys or read-only attributes
+(attributes that doesn't exist on the table, but only for the sake of convenience, like from JOIN table).
+
+Other Functions
+---------------
+Some public functions can be convenient to use if you decide to not use the SQL functions and instead deal with SQL on your own.
+
+Example
+-------
+Without transaction:
+```py
+# This is just an example. In reality, you should use `models.UserCache` instead of directly working on `psql.User`.
+async with pool.acquire() as conn:
+    user: psql.User | None = await psql.User.get_one(conn, user_id)
+    assert user is not None
+
+    user.is_whitelist = ...
+    user.balance = ...
+    await psql.User.update(conn, user)
+```
+
+With transaction:
+```py
+async with pool.acquire() as conn:
+    users: list[psql.User] | None = await psql.User.get_all(conn)
+    async with conn.transaction():
+        for user in users:
+            user.is_whitelist = ...
+            user.balance = ...
+            await psql.User.update(conn, user)
+```
 '''
 
 from __future__ import annotations
@@ -13,18 +56,14 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import logging
-import random
 import typing as t
 
 import asyncpg
-import hikari
 
 from utils.helpers import ClassToDict
 
 logger = logging.getLogger("MichaelBot")
 T = t.TypeVar('T')
-
-# TODO: Add constraint checking when updating values.
 
 class Error(Exception):
     '''A base error for high-level PostgreSQL operations.'''
