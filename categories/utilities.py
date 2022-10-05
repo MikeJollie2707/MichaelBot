@@ -109,7 +109,7 @@ async def embed_from_json(ctx: lightbulb.Context):
             await bot.reset_cooldown(ctx)
             raise json.JSONDecodeError("JSON object must be enclosed in `{{}}`.", doc = raw_embed, pos = 0)
         
-        embed = helpers.embed_from_dict(json_embed)
+        embed = bot.entity_factory.deserialize_embed(json_embed)
         await ctx.respond(embed = embed)
 
         # Delete message later for user to look at what they did.
@@ -159,7 +159,7 @@ async def embed_to_json(ctx: lightbulb.Context):
         await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
     else:
         for embed in message.embeds:
-            d = helpers.embed_to_dict(embed)
+            d = bot.entity_factory.serialize_embed(embed)[0]
             
             # Might raise message too long error.
             await ctx.respond(f"```{json.dumps(d, indent = 4)}```")
