@@ -471,9 +471,10 @@ class User(ClassToDict):
     is_whitelist: bool = True
     balance: int = 0
     world: str = "overworld"
-    last_travel: dt.datetime = None
+    last_travel: t.Optional[dt.datetime] = None
     daily_streak: int = 0
-    last_daily: dt.datetime = None
+    last_daily: t.Optional[dt.datetime] = None
+    health: int = 100
     
     __WORLD_TYPE = ("overworld", "nether", "end")
     __PREVENT_UPDATE = ("id")
@@ -514,7 +515,8 @@ class User(ClassToDict):
             user.world, 
             user.last_travel,
             user.daily_streak, 
-            user.last_daily
+            user.last_daily,
+            user.health
         )
     @staticmethod
     async def delete(conn: asyncpg.Connection, id: int) -> int:
