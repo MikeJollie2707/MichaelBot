@@ -492,6 +492,13 @@ async def scan_reminders(bot: models.MichaelBot):
         user = bot.cache.get_user(upcoming_reminder.user_id)
         if user is None:
             print(upcoming_reminder.user_id)
+            try:
+                user = await bot.rest.fetch_user(upcoming_reminder.user_id)
+            except hikari.NotFoundError:
+                print(f"User {upcoming_reminder.user_id} doesn't exist. Removing this reminder...")
+                #await psql.Reminders.delete_reminder(conn, upcoming_reminder.remind_id, upcoming_reminder.user_id)
+                return
+            
         bot.create_task(do_remind(bot, user, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
 
 @plugin.command()
