@@ -17,26 +17,67 @@ RESERVED_KEYS = (
     "cost",
 )
 
-DEATH_REDUCTIONS = {
+# Define how many potions can be equipped by default.
+POTIONS_CAP = 3
+
+# Define how often sudden death will trigger and kill the user regardless of their common damage reduction.
+SUDDEN_DEATH_CHANCE = 0.0025
+SUDDEN_DEATH_MESSAGES = (
+    "You fell from y 319 all the way to y -64. Not even water can save you.\n",
+    "A mysterious force decided to kill you out of nowhere. Talk about deus ex machina.\n",
+    "You just got /kill. Too bad!\n",
+    "You got killed by crappy isekai writing. Apparently, you're not the main character of the story.\n",
+    "You saw a Warden and realized the bot doesn't have anything called Armor.\n",
+    "You were killed by [Intentional Bot Design]\n",
+)
+
+# Define the maximum healing effect of a food item. This also define what item is considered as food.
+FOOD_HEALING = {
+    "mushroom": 10,
+    "apple": 10,
+    "orange": 10,
+    "cherries": 8,
+    "carrot": 14,
+    "bacon": 17,
+    "meat": 20,
+    "chicken": 20,
+    "gold_apple": 60,
+}
+
+# Define the damage reduction for each item.
+DMG_REDUCTIONS = {
     # Tools
-    "wood_tool": 0.15,
-    "stone_tool": 0.15,
-    "iron_tool": 0.01,
-    "diamond_tool": 0.05,
-    "nether_tool": 0.10,
+    "wood_pickaxe": 50,
+    
+    "stone_sword": 50,
+    "stone_pickaxe": 50,
+    "stone_axe": 50,
+    
+    "iron_sword": 20,
+    "iron_pickaxe": 15,
+    "iron_axe": 20,
+
+    "diamond_sword": 25,
+    "diamond_pickaxe": 25,
+    "diamond_axe": 25,
+
+    "nether_sword": 25,
+    "nether_pickaxe": 25,
+    "nether_axe": 25,
 
     # Badges
-    "death1": 0.05,
+    "death1": 0,
+    "death3": 2,
 
     # Potions
-    "luck_potion": 0.10,
-    "fire_potion": 0.02,
-    "haste_potion": 0.02,
-    "fortune_potion": 0.05,
-    "nature_potion": 0.05,
-    "strength_potion": 0.02,
-    "looting_potion": 0.05,
-    "undying_potion": 0.00,
+    "luck_potion": 10,
+    "fire_potion": 2,
+    "haste_potion": 2,
+    "fortune_potion": 5,
+    "nature_potion": 5,
+    "strength_potion": 2,
+    "looting_potion": 5,
+    "undying_potion": 0,
 }
 
 class RewardRNG:
@@ -155,6 +196,9 @@ __ACTIVITY_LOOT = {
             # - spider_eye: 18.17%
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 6),
             "spider_eye": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "chicken": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
         "iron_sword": {
             # - rotten_flesh: 61.23%
@@ -163,6 +207,9 @@ __ACTIVITY_LOOT = {
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
             "spider_eye": RewardRNG(rate = 1, min_amount = 3, max_amount = 5),
             "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "chicken": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
         "diamond_sword": {
             # - rotten_flesh: 51.18%
@@ -173,6 +220,9 @@ __ACTIVITY_LOOT = {
             "spider_eye": RewardRNG(rate = 1, min_amount = 5, max_amount = 8),
             "gunpowder": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 4, amount_layout = (50, 35, 15)),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "chicken": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
         },
         "nether_sword": {
             # - rotten_flesh: 48.49%
@@ -183,6 +233,9 @@ __ACTIVITY_LOOT = {
             "spider_eye": RewardRNG(rate = 1, min_amount = 6, max_amount = 9),
             "gunpowder": RewardRNG(rate = 0.75, min_amount = 3, max_amount = 6, amount_layout = (40, 40, 10, 10)),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "chicken": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
 
         # Axe
@@ -196,6 +249,10 @@ __ACTIVITY_LOOT = {
             # - lucky_clover: 1.11%
             "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
+            "apple": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "orange": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "cherries": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "carrot": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
             "tulip": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
             "rose": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
@@ -212,6 +269,10 @@ __ACTIVITY_LOOT = {
             # - lucky_clover: 0.77%
             "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
+            "apple": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "orange": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "cherries": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "carrot": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
             "tulip": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
             "rose": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
@@ -228,6 +289,10 @@ __ACTIVITY_LOOT = {
             # - lucky_clover: 1.23%
             "wood": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
+            "apple": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "orange": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "cherries": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "carrot": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
             "tulip": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
             "rose": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 10),
@@ -244,6 +309,10 @@ __ACTIVITY_LOOT = {
             # - lucky_clover: 1.35%
             "wood": RewardRNG(rate = 1, min_amount = 2, max_amount = 3),
             "leaf": RewardRNG(rate = 1, min_amount = 25, max_amount = 30),
+            "apple": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "orange": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "cherries": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "carrot": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             "hibiscus": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
             "tulip": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
             "rose": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
@@ -294,6 +363,8 @@ __ACTIVITY_LOOT = {
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 3, max_amount = 6),
             "gold": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "magma_cream": RewardRNG(rate = 0.25, min_amount = 3, max_amount = 5),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "blaze_rod": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
         },
         "iron_sword": {
@@ -301,6 +372,8 @@ __ACTIVITY_LOOT = {
             "gold": RewardRNG(rate = 1, min_amount = 1, max_amount = 2, amount_layout = (90, 10)),
             "magma_cream": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 8),
             "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 4),
             "blaze_rod": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 2),
             "nether_star": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
@@ -310,6 +383,8 @@ __ACTIVITY_LOOT = {
             "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 2),
             "magma_cream": RewardRNG(rate = 0.75, min_amount = 7, max_amount = 10),
             "gunpowder": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 4, amount_layout = (50, 35, 15)),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "pearl": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 5),
             "blaze_rod": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3),
             "nether_star": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
@@ -319,6 +394,8 @@ __ACTIVITY_LOOT = {
             "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 3),
             "magma_cream": RewardRNG(rate = 0.75, min_amount = 8, max_amount = 10),
             "gunpowder": RewardRNG(rate = 0.75, min_amount = 3, max_amount = 6, amount_layout = (40, 40, 10, 10)),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
             "pearl": RewardRNG(rate = 0.5, min_amount = 4, max_amount = 6),
             "blaze_rod": RewardRNG(rate = 0.25, min_amount = 1, max_amount = 4),
             "nether_star": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
@@ -328,21 +405,29 @@ __ACTIVITY_LOOT = {
         "stone_axe": {
             "wood": RewardRNG(rate = 1, min_amount = 5, max_amount = 7),
             "dry_leaf": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
         "iron_axe": {
             "wood": RewardRNG(rate = 1, min_amount = 10, max_amount = 15),
             "dry_leaf": RewardRNG(rate = 1, min_amount = 150, max_amount = 200),
             "mushroom": RewardRNG(rate = 0.3, min_amount = 3, max_amount = 5),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
         "diamond_axe": {
             "wood": RewardRNG(rate = 1, min_amount = 15, max_amount = 20),
             "dry_leaf": RewardRNG(rate = 1, min_amount = 200, max_amount = 250),
             "mushroom": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 7),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         },
         "nether_axe": {
             "wood": RewardRNG(rate = 1, min_amount = 20, max_amount = 25),
             "dry_leaf": RewardRNG(rate = 1, min_amount = 250, max_amount = 300),
             "mushroom": RewardRNG(rate = 0.3, min_amount = 5, max_amount = 7),
+            "bacon": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
+            "meat": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 1),
         }
     },
 }

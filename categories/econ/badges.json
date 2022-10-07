@@ -111,7 +111,7 @@
         "id": "death1",
         "name": "Staph Dying!",
         "emoji": "🪦",
-        "description": "You died so many times, the bot has to give you a mercy on lowering your death rate a bit.",
+        "description": "You died so many times, the bot has to give you a mercy on increasing your damage reductions a bit.",
         "requirement": 50
     },
     {
@@ -120,6 +120,13 @@
         "emoji": "💀",
         "description": "Actually how?",
         "requirement": 100
+    },
+    {
+        "id": "death3",
+        "name": "Kasaneru IF",
+        "emoji": "0️⃣",
+        "description": "Repeating Life from Zero",
+        "requirement": 500
     },
     {
         "id": "brew0",
@@ -147,6 +154,6 @@
         "name": "Potion Master",
         "emoji": "<a:luck_potion:826871436769493062>",
         "description": "You know potions in the back of your hand. This allows you to use 1 more potion.",
-        "requirement": 1000
+        "requirement": 2000
     }
 ]
