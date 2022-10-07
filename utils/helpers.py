@@ -211,22 +211,6 @@ async def sleep_until(when: dt.datetime, /):
     if time.total_seconds() > 0:
         await asyncio.sleep(time.total_seconds())
 
-def striplist(arr: t.Sequence[str], /) -> str:
-    '''Return a string from a list, separated by comma.
-
-    Parameters
-    ----------
-    arr : t.Sequence[str]
-        A sequence of objects that are convertible to `str`.
-
-    Returns
-    -------
-    str
-        The final string. Empty if sequence is empty.
-    '''
-
-    return ", ".join(arr)
-
 # Default emojis for the navigators and stuffs. Just save it here for now.
 __default_emojis__ = {
     "first_page": get_emote(":last_track_button:"),

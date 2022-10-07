@@ -255,7 +255,7 @@ async def embed_interactive(ctx: lightbulb.Context):
             await ctx.respond("Embed must have at least a title or a description. If you don't want these fields, use `embed from-json`.")
             return
 
-        await ctx.respond(f"What's the color? You can enter a hex number or one of the following predefined colors: `{helpers.striplist(available_colors)}`")
+        await ctx.respond(f"What's the color? You can enter a hex number or one of the following predefined colors: `{', '.join(available_colors)}`")
         event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
         color_content = event.message.content.lower()
         if color_content in available_colors:
@@ -390,7 +390,7 @@ async def embed_interactive2(ctx: lightbulb.Context):
                 elif interaction.values[0] == "edit_color":
                     await interaction.create_initial_response(
                         hikari.ResponseType.MESSAGE_CREATE,
-                        f"What's the color? You can enter a hex number or one of the following predefined colors: `{helpers.striplist(available_colors)}`",
+                        f"What's the color? You can enter a hex number or one of the following predefined colors: `{', '.join(available_colors)}`",
                         flags = hikari.MessageFlag.EPHEMERAL
                     )
 
