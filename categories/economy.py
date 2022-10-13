@@ -32,38 +32,12 @@ class PotionActivation(IntFlag):
         else:
             return self & flags == flags
 
-def get_dmg_taken(reward_value: int, equipment: psql.Equipment, world: str, reductions: float = 0) -> int:
-    dmg: int = 0
-    dmg_cap: int = 50
-    multipliers: tuple[int | float] = (1, 1, 1.5)
-
+def get_final_damage(raw_damage: int, reductions: int) -> int:
     # Check sudden death
     if random.random() <= loot.SUDDEN_DEATH_CHANCE:
         return 9999999999
-
-    if world == "nether":
-        dmg_cap = 100
-        multipliers = (1, 1, 1.5, 1.5, 2)
     
-    if 0 <= reward_value <= 30:
-        dmg = random.randint(0, 5)
-    elif 31 <= reward_value <= 40:
-        dmg = random.randint(5, 25)
-    elif 41 <= reward_value <= 60:
-        dmg = random.randint(20, 40)
-    elif 61 <= reward_value <= 100:
-        dmg = random.randint(30, 60)
-    elif 101 <= reward_value <= 150:
-        dmg = random.randint(60, 70)
-    elif 151 <= reward_value <= 180:
-        dmg = random.randint(50, 100)
-    else:
-        dmg = round(reward_value / 2)
-    
-    dmg = min(dmg_cap, round(dmg * random.choice(multipliers)))
-    reductions += loot.DMG_REDUCTIONS.get(equipment.item_id, 0)
-
-    dmg = max(2, dmg - reductions)
+    dmg = max(2, raw_damage - reductions)
     return random.randint(int(dmg / 2) - 1, dmg)
 
 def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option: str = "text") -> str:
@@ -106,22 +80,22 @@ def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option
         rewards.insert(0, f"{CURRENCY_ICON}{money}")
     return ', '.join(rewards)
 
-def multiply_reward(loot_table: dict[str, int], multiplier: int):
+def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
     '''A shortcut to multiply the rewards in-place.
 
     Parameters
     ----------
     loot_table : dict[str, int]
         The loot table.
-    multiplier : int
-        The multiplier. Cannot be 0.
+    multiplier : int | float
+        The multiplier. Cannot be 0. If this is a float, the result will be rounded normally.
     '''
 
     if multiplier == 0:
         raise ValueError("'multiplier' cannot be 0.")
 
     for key in loot_table:
-        loot_table[key] *= multiplier
+        loot_table[key] = round(loot_table[key] * multiplier)
 
 def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -> int:
     '''Get the value of a loot table.
@@ -875,7 +849,7 @@ async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, inte
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
 @lightbulb.command("food", f"[{plugin.name}] Use a food item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -1178,10 +1152,19 @@ async def item_autocomplete(option: hikari.AutocompleteInteractionOption, intera
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("location", "The location to mine. The deeper you go, the higher the reward and risk.", choices = loot.MINE_LOCATION, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("mine", f"[{plugin.name}] Use your pickaxe to mine for resources.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def mine(ctx: lightbulb.Context):
+    location: str = ctx.options.location
     bot: models.MichaelBot = ctx.bot
+
+    user = bot.user_cache[ctx.author.id]
+    if location not in loot.WORLD_LOCATION[user.world]:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond(f"This location is not available in the {user.world.capitalize()}!",
+            reply = True, mentions_reply = True)
+        return
 
     potion_activated = PotionActivation(0)
     external_buffs = []
@@ -1204,13 +1187,12 @@ async def mine(ctx: lightbulb.Context):
             await ctx.respond("You don't have a pickaxe!", reply = True, mentions_reply = True)
             return
         
-        user = bot.user_cache[ctx.author.id]
         if pickaxe_existed.item_id == "bed_pickaxe" and user.world == "overworld":
             await bot.reset_cooldown(ctx)
             await ctx.respond("This pickaxe doesn't work in the Overworld!", reply = True, mentions_reply = True)
             return
         
-        dmg_reductions = 0
+        dmg_reductions = loot.DMG_REDUCTIONS.get(pickaxe_existed.item_id, 0)
         
         # Check external buffs for lowering death rate.
         has_luck_potion = relevant_equipments[1]
@@ -1254,12 +1236,12 @@ async def mine(ctx: lightbulb.Context):
         if (debris1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "debris1")) and debris1_badge.completed():
             external_buffs.append("debris1")
         
-        loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, external_buffs)
+        loot_table = loot.get_activity_loot("mine", pickaxe_existed.item_id, location, external_buffs)
         if not loot_table:
             await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
 
-        dmg_taken = get_dmg_taken(get_reward_value(loot_table, bot.item_cache), pickaxe_existed, user.world, dmg_reductions)
+        dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
         if dmg_taken > 100:
             response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
         elif dmg_taken > 0:
@@ -1284,7 +1266,10 @@ async def mine(ctx: lightbulb.Context):
         if potion_activated.has_flag(PotionActivation.HASTE_POTION):
             # Roll 4 more times, which is 5 times in total.
             for _ in range(0, 4):
-                _loot_table = loot.get_activity_loot(pickaxe_existed.item_id, user.world, external_buffs)
+                _loot_table = loot.get_activity_loot("mine", pickaxe_existed.item_id, user.world, external_buffs)
+                if not _loot_table:
+                    continue
+
                 for item_id in _loot_table:
                     if item_id in loot_table:
                         loot_table[item_id] += _loot_table[item_id]
@@ -1293,7 +1278,7 @@ async def mine(ctx: lightbulb.Context):
         if potion_activated.has_flag(PotionActivation.FORTUNE_POTION):
             multiply_reward(loot_table, 4)
         if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 2)
+            multiply_reward(loot_table, 2.25)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1348,10 +1333,19 @@ async def mine(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("location", "The location to explore. The deeper you go, the higher the reward and risk.", choices = loot.EXPLORE_LOCATION, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("explore", f"[{plugin.name}] Use your sword to explore the caverns.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def explore(ctx: lightbulb.Context):
+    location: str = ctx.options.location
     bot: models.MichaelBot = ctx.bot
+
+    user = bot.user_cache[ctx.author.id]
+    if location not in loot.WORLD_LOCATION[user.world]:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond(f"This location is not available in the {user.world.capitalize()}!",
+            reply = True, mentions_reply = True)
+        return
 
     potion_activated = PotionActivation(0)
     external_buffs = []
@@ -1373,10 +1367,8 @@ async def explore(ctx: lightbulb.Context):
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have a sword!", reply = True, mentions_reply = True)
             return
-        
-        user = bot.user_cache[ctx.author.id]
 
-        dmg_reductions = 0
+        dmg_reductions = loot.DMG_REDUCTIONS.get(sword_existed.item_id, 0)
         
         # Check external buffs for lowering death rate.
         has_luck_potion = relevant_equipments[1]
@@ -1416,12 +1408,12 @@ async def explore(ctx: lightbulb.Context):
         if (blaze1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "blaze1")) and blaze1_badge.completed():
             external_buffs.append("blaze1")
         
-        loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, external_buffs)
+        loot_table = loot.get_activity_loot("explore", sword_existed.item_id, location, external_buffs)
         if not loot_table:
             await ctx.respond("After a long exploring session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
         
-        dmg_taken = get_dmg_taken(get_reward_value(loot_table, bot.item_cache), sword_existed, user.world, dmg_reductions)
+        dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
         if dmg_taken > 100:
             response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
         elif dmg_taken > 0:
@@ -1446,7 +1438,10 @@ async def explore(ctx: lightbulb.Context):
         if potion_activated.has_flag(PotionActivation.STRENGTH_POTION):
             # Roll 4 more times, which is 5 times in total.
             for _ in range(0, 4):
-                _loot_table = loot.get_activity_loot(sword_existed.item_id, user.world, external_buffs)
+                _loot_table = loot.get_activity_loot("explore", sword_existed.item_id, user.world, external_buffs)
+                if not _loot_table:
+                    continue
+                
                 for item_id in _loot_table:
                     if item_id in loot_table:
                         loot_table[item_id] += _loot_table[item_id]
@@ -1455,7 +1450,7 @@ async def explore(ctx: lightbulb.Context):
         if potion_activated.has_flag(PotionActivation.LOOTING_POTION):
             multiply_reward(loot_table, 5)
         if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 2)
+            multiply_reward(loot_table, 2.25)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
@@ -1503,10 +1498,19 @@ async def explore(ctx: lightbulb.Context):
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("location", "The location to explore. Some places are more dangerous than others.", choices = loot.CHOP_LOCATION, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("chop", f"[{plugin.name}] Use your axe to explore the surface.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def chop(ctx: lightbulb.Context):
+    location: str = ctx.options.location
     bot: models.MichaelBot = ctx.bot
+
+    user = bot.user_cache[ctx.author.id]
+    if location not in loot.WORLD_LOCATION[user.world]:
+        await bot.reset_cooldown(ctx)
+        await ctx.respond(f"This location is not available in the {user.world.capitalize()}!",
+            reply = True, mentions_reply = True)
+        return
 
     potion_activated = PotionActivation(0)
     external_buffs = []
@@ -1529,9 +1533,7 @@ async def chop(ctx: lightbulb.Context):
             await ctx.respond("You don't have an axe!", reply = True, mentions_reply = True)
             return
         
-        user = bot.user_cache[ctx.author.id]
-        
-        dmg_reductions = 0
+        dmg_reductions = loot.DMG_REDUCTIONS.get(axe_existed.item_id, 0)
         
         # Check external buffs for lowering death rate.
         has_luck_potion = relevant_equipments[1]
@@ -1571,12 +1573,12 @@ async def chop(ctx: lightbulb.Context):
         if (wood2_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "wood2")) and wood2_badge.completed():
             external_buffs.append("wood2")
         
-        loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, external_buffs)
+        loot_table = loot.get_activity_loot("chop", axe_existed.item_id, location, external_buffs)
         if not loot_table:
             await ctx.respond("After a long chopping session, you came back with only dust and regret.", reply = True, mentions_reply = True)
             return
         
-        dmg_taken = get_dmg_taken(get_reward_value(loot_table, bot.item_cache), axe_existed, user.world, dmg_reductions)
+        dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
         if dmg_taken > 100:
             response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
         elif dmg_taken > 0:
@@ -1601,7 +1603,10 @@ async def chop(ctx: lightbulb.Context):
         if potion_activated.has_flag(PotionActivation.HASTE_POTION):
             # Roll 4 more times, which is 5 times in total.
             for _ in range(0, 4):
-                _loot_table = loot.get_activity_loot(axe_existed.item_id, user.world, external_buffs)
+                _loot_table = loot.get_activity_loot("chop", axe_existed.item_id, user.world, external_buffs)
+                if not _loot_table:
+                    continue
+
                 for item_id in _loot_table:
                     if item_id in loot_table:
                         loot_table[item_id] += _loot_table[item_id]
@@ -1610,7 +1615,7 @@ async def chop(ctx: lightbulb.Context):
         if potion_activated.has_flag(PotionActivation.NATURE_POTION):
             multiply_reward(loot_table, 4)
         if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 2)
+            multiply_reward(loot_table, 2.25)
         
         async with conn.transaction():
             await add_reward(conn, bot, ctx.author.id, loot_table)
