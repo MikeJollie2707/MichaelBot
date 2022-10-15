@@ -610,7 +610,7 @@ async def remind_remove(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("term", "The term to search. Example: `rickroll`.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("urban", f"[{plugin.name}] Search a term on urbandictionary.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def urban(ctx: lightbulb.Context):
     term = ctx.options.term
     bot: models.MichaelBot = ctx.bot
