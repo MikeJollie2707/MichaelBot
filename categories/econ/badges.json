@@ -24,6 +24,27 @@
         "requirement": 2000
     },
     {
+        "id": "eat0",
+        "name": "First Meal",
+        "emoji": "🍎",
+        "description": "Wow, you can eat! It's delicious.",
+        "requirement": 1
+    },
+    {
+        "id": "eat1",
+        "name": "Tasty Meal",
+        "emoji": "🥗",
+        "description": "After eating quite an amount of food, your body seems to absorb nutrients from food more efficiently.",
+        "requirement": 500
+    },
+    {
+        "id": "eat2",
+        "name": "Bizarre Eating",
+        "emoji": "🍜",
+        "description": "You ate a lot, and yet your belly doesn't grow. What a mystery.",
+        "requirement": 1000
+    },
+    {
         "id": "iron0",
         "name": "Metal Acquired",
         "emoji": "<:iron:820009715286671410>",

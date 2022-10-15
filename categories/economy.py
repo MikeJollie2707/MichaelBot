@@ -885,9 +885,18 @@ async def use_food(ctx: lightbulb.Context):
             return
         
         heal_amount = random.randint(int(loot.FOOD_HEALING[food.id] / 2), loot.FOOD_HEALING[food.id])
+        if (eat1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "eat1")) and eat1_badge.completed():
+            heal_amount += 5
+            
+            if (eat2_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "eat2")) and eat2_badge.completed():
+                heal_amount = round(heal_amount * 1.2)
+        
         # No need to cap health here. Only stop using food when health is already >= 100.
         user.health = user.health + heal_amount
 
+        await psql.UserBadge.add_progress(conn, ctx.author.id, "eat0")
+        await psql.UserBadge.add_progress(conn, ctx.author.id, "eat1")
+        await psql.UserBadge.add_progress(conn, ctx.author.id, "eat2")
         await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"You consumed *1x {food.emoji} {food.name}* and healed {heal_amount}HP.", reply = True)
