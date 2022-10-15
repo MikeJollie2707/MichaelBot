@@ -1258,10 +1258,14 @@ async def mine(ctx: lightbulb.Context):
             if user.world == "nether" and potion_activated.has_flag(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         else:
-            user.health -= dmg_taken
-            
-            # Disable death-preventing potions if the user is not dead in the first place.
-            potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
+            if not (dmg_taken > 40 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
+                user.health -= dmg_taken
+                
+                # Disable death-preventing potions if the user is not dead in the first place.
+                potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
+            else:
+                # Undying Potion activated and negated the damage, so we don't need to do anything.
+                pass
 
         if potion_activated.has_flag(PotionActivation.HASTE_POTION):
             # Roll 4 more times, which is 5 times in total.
@@ -1294,7 +1298,7 @@ async def mine(ctx: lightbulb.Context):
                     response_str += "*Fire Potion* expired!\n"
             if potion_activated.has_flag(PotionActivation.UNDYING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
-                response_str += "*Undying Potion* activated, saving you from death!\n"
+                response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
@@ -1430,10 +1434,14 @@ async def explore(ctx: lightbulb.Context):
             if user.world == "nether" and potion_activated.has_flag(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         else:
-            user.health -= dmg_taken
-            
-            # Disable death-preventing potions if the user is not dead in the first place.
-            potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
+            if not (dmg_taken > 40 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
+                user.health -= dmg_taken
+                
+                # Disable death-preventing potions if the user is not dead in the first place.
+                potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
+            else:
+                # Undying Potion activated and negated the damage, so we don't need to do anything.
+                pass
         
         if potion_activated.has_flag(PotionActivation.STRENGTH_POTION):
             # Roll 4 more times, which is 5 times in total.
@@ -1466,7 +1474,7 @@ async def explore(ctx: lightbulb.Context):
                     response_str += "*Fire Potion* expired!\n"
             if potion_activated.has_flag(PotionActivation.UNDYING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
-                response_str += "*Undying Potion* activated, saving you from death!\n"
+                response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
@@ -1595,10 +1603,14 @@ async def chop(ctx: lightbulb.Context):
             if user.world == "nether" and potion_activated.has_flag(PotionActivation.FIRE_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         else:
-            user.health -= dmg_taken
-            
-            # Disable death-preventing potions if the user is not dead in the first place.
-            potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
+            if not (dmg_taken > 40 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
+                user.health -= dmg_taken
+                
+                # Disable death-preventing potions if the user is not dead in the first place.
+                potion_activated &= ~(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION)
+            else:
+                # Undying Potion activated and negated the damage, so we don't need to do anything.
+                pass
         
         if potion_activated.has_flag(PotionActivation.HASTE_POTION):
             # Roll 4 more times, which is 5 times in total.
@@ -1631,7 +1643,7 @@ async def chop(ctx: lightbulb.Context):
                     response_str += "*Fire Potion* expired!\n"
             if potion_activated.has_flag(PotionActivation.UNDYING_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "undying_potion", has_undead_potion.remain_durability - 1)
-                response_str += "*Undying Potion* activated, saving you from death!\n"
+                response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
