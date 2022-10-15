@@ -6,7 +6,7 @@ from utils import models, psql
 
 __TRADE_WHITELIST = ("money",
     "wood", "stick", "rotten_flesh", "spider_eye", "gunpowder", "pearl",
-    "leaf", "hibiscus", "tulip", "rose", "lucky_clover",
+    "leaf", "hibiscus", "tulip", "rose", "lucky_clover", "gold_apple",
     "stone", "iron", "iron_pickaxe", "iron_sword", "iron_axe", "diamond", "obsidian",
     "overworld_ticket", "nether_ticket", "nether_respawner",
 )
@@ -84,6 +84,8 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
             # Limit diamond trade.
             if trade.item_dest == "diamond":
                 trade.hard_limit = 5
+            if trade.item_dest == "gold_apple":
+                trade.hard_limit = 5
             
             # Get the items' values.
             item_src = item_cache[trade.item_src]
@@ -122,6 +124,8 @@ def generate_trades(item_cache: models.ItemCache, next_reset: dt.datetime, amoun
 
             # Limit diamond trade.
             if trade.item_dest == "diamond":
+                trade.hard_limit = 5
+            if trade.item_dest == "gold_apple":
                 trade.hard_limit = 5
             
             # Get the item's value.

@@ -104,7 +104,7 @@ async def dice(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 2.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("content", "The string to repeat.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("echo", f"[{plugin.name}] Echo echo echo echo.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def echo(ctx: lightbulb.Context):
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()

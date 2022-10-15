@@ -1,6 +1,6 @@
 {
     "MichaelBot": {
-        "version": "0.1.18dev",
+        "version": "0.1.19dev",
         "description": "A utility bot",
         "prefix": "$",
         "launch_options": "",
@@ -9,7 +9,7 @@
         "secret": "bot_secret.json"
     },
     "MichaelBeta": {
-        "version": "0.1.18dev",
+        "version": "0.1.19dev",
         "description": "A testing bot for MichaelBot :)",
         "prefix": "!",
         "launch_options": "--debug",

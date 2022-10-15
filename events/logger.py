@@ -197,7 +197,7 @@ async def log_view(ctx: lightbulb.Context):
         timestamp = dt.datetime.now().astimezone()
     )
     if log_cache is not None:
-        for logging_option in log_cache.to_dict():
+        for logging_option in psql.asdict(log_cache):
             if logging_option == "log_channel":
                 if log_cache.log_channel is not None:
                     embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(log_cache.log_channel).mention}\n"
@@ -486,8 +486,8 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                     if target_obj is None:
                         target_obj = event.get_guild().get_member(target_id)
                     
-                    granted_str = helpers.striplist(helpers.get_friendly_permissions(after.permission_overwrites[target_id].allow))
-                    denied_str = helpers.striplist(helpers.get_friendly_permissions(after.permission_overwrites[target_id].deny))
+                    granted_str = ', '.join(helpers.get_friendly_permissions(after.permission_overwrites[target_id].allow))
+                    denied_str = ', '.join(helpers.get_friendly_permissions(after.permission_overwrites[target_id].deny))
                     
                     embed.description = dedent(f'''
                         **Channel:** {event.channel.mention}
@@ -536,8 +536,8 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                     if target_obj is None:
                         target_obj = event.get_guild().get_member(target_id)
                     
-                    granted_str = helpers.striplist(helpers.get_friendly_permissions(before.permission_overwrites[target_id].allow))
-                    denied_str = helpers.striplist(helpers.get_friendly_permissions(before.permission_overwrites[target_id].deny))
+                    granted_str = ', '.join(helpers.get_friendly_permissions(before.permission_overwrites[target_id].allow))
+                    denied_str = ', '.join(helpers.get_friendly_permissions(before.permission_overwrites[target_id].deny))
                     
                     embed.description = dedent(f'''
                         **Channel:** {event.channel.mention}
@@ -724,7 +724,7 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
                     embed.title = "Member Role Added"
                     embed.description = dedent(f'''
                         **Member:** {event.member.mention}
-                        **Role Added:** {helpers.striplist(new_roles)}
+                        **Role Added:** {', '.join(new_roles)}
                     ''')
                     if executor is not None:
                         embed.set_footer(
@@ -747,7 +747,7 @@ async def on_member_update(event: hikari.MemberUpdateEvent):
                     embed.title = "Member Role Removed"
                     embed.description = dedent(f'''
                         **Member:** {event.member.mention}
-                        **Role Removed:** {helpers.striplist(removed_roles)}
+                        **Role Removed:** {', '.join(removed_roles)}
                     ''')
                     if executor is not None:
                         embed.set_footer(

@@ -533,7 +533,7 @@ async def ping(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.GuildBucket)
 @lightbulb.option("new_prefix", "The new prefix. Should not be longer than 5 characters or contain spaces.", default = None)
 @lightbulb.command("prefix", f"[{plugin.name}] View or edit the bot prefix for the guild.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def prefix(ctx: lightbulb.Context):
     new_prefix = ctx.options.new_prefix
     bot: models.MichaelBot = ctx.bot

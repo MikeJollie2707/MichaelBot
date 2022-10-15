@@ -109,7 +109,7 @@ async def embed_from_json(ctx: lightbulb.Context):
             await bot.reset_cooldown(ctx)
             raise json.JSONDecodeError("JSON object must be enclosed in `{{}}`.", doc = raw_embed, pos = 0)
         
-        embed = helpers.embed_from_dict(json_embed)
+        embed = bot.entity_factory.deserialize_embed(json_embed)
         await ctx.respond(embed = embed)
 
         # Delete message later for user to look at what they did.
@@ -159,7 +159,7 @@ async def embed_to_json(ctx: lightbulb.Context):
         await ctx.respond("There's no embed in this message!", reply = True, mentions_reply = True)
     else:
         for embed in message.embeds:
-            d = helpers.embed_to_dict(embed)
+            d = bot.entity_factory.serialize_embed(embed)[0]
             
             # Might raise message too long error.
             await ctx.respond(f"```{json.dumps(d, indent = 4)}```")
@@ -255,7 +255,7 @@ async def embed_interactive(ctx: lightbulb.Context):
             await ctx.respond("Embed must have at least a title or a description. If you don't want these fields, use `embed from-json`.")
             return
 
-        await ctx.respond(f"What's the color? You can enter a hex number or one of the following predefined colors: `{helpers.striplist(available_colors)}`")
+        await ctx.respond(f"What's the color? You can enter a hex number or one of the following predefined colors: `{', '.join(available_colors)}`")
         event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
         color_content = event.message.content.lower()
         if color_content in available_colors:
@@ -390,7 +390,7 @@ async def embed_interactive2(ctx: lightbulb.Context):
                 elif interaction.values[0] == "edit_color":
                     await interaction.create_initial_response(
                         hikari.ResponseType.MESSAGE_CREATE,
-                        f"What's the color? You can enter a hex number or one of the following predefined colors: `{helpers.striplist(available_colors)}`",
+                        f"What's the color? You can enter a hex number or one of the following predefined colors: `{', '.join(available_colors)}`",
                         flags = hikari.MessageFlag.EPHEMERAL
                     )
 
@@ -492,6 +492,13 @@ async def scan_reminders(bot: models.MichaelBot):
         user = bot.cache.get_user(upcoming_reminder.user_id)
         if user is None:
             print(upcoming_reminder.user_id)
+            try:
+                user = await bot.rest.fetch_user(upcoming_reminder.user_id)
+            except hikari.NotFoundError:
+                print(f"User {upcoming_reminder.user_id} doesn't exist. Removing this reminder...")
+                #await psql.Reminders.delete_reminder(conn, upcoming_reminder.remind_id, upcoming_reminder.user_id)
+                return
+            
         bot.create_task(do_remind(bot, user, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
 
 @plugin.command()
@@ -603,7 +610,7 @@ async def remind_remove(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("term", "The term to search. Example: `rickroll`.", modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("urban", f"[{plugin.name}] Search a term on urbandictionary.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def urban(ctx: lightbulb.Context):
     term = ctx.options.term
     bot: models.MichaelBot = ctx.bot

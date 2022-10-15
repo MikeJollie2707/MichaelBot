@@ -70,6 +70,7 @@ async def setup_database(user, password, database, host, port):
                 last_travel TIMESTAMP WITH TIME ZONE,
                 daily_streak INT NOT NULL DEFAULT 0 CHECK (daily_streak >= 0),
                 last_daily TIMESTAMP WITH TIME ZONE,
+                health INT NOT NULL DEFAULT 100,
                 CONSTRAINT world_type
                     CHECK (world IN ('overworld', 'nether', 'end'))
             );

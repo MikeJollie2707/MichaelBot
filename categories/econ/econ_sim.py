@@ -1,7 +1,19 @@
-import loot
+'''Simulate/test the economy system.
+
+This is ONLY meant to be run directly. DO NOT IMPORT THIS.
+'''
+
 import json
+import loot
 
 def _cache_load() -> dict[str, dict]:
+    '''Return the item information as a raw cache.
+
+    Returns
+    -------
+    dict[str, dict]
+        The items' information.
+    '''
     item_cache = {}
     with open("categories/econ/items.json", encoding = 'utf-8') as fin:
         item_data = json.load(fin)
@@ -93,5 +105,6 @@ def tool_simulator(tool_id: str, world: str, simulation_time: int = 10 ** 6):
 
 if __name__ == "__main__":
     #average_loot_value("diamond_sword", "nether")
-    #tool_simulator("nether_axe", "overworld", 10 ** 6)
-    loot_value(loot.__BREW_RECIPE["undying_potion"], False)
+    #tool_simulator("wood_pickaxe", "overworld", 10 ** 1)
+    #loot_value(loot.__BREW_RECIPE["undying_potion"], False)
+    loot_value(loot.get_activity_loot("iron_sword", "nether"), False)

@@ -165,6 +165,78 @@
         "durability": 35
     },
     {
+        "id": "apple",
+        "name": "Apple",
+        "emoji": "🍎",
+        "description": "A common fruit that hangs on trees. It is known to give humanity crazy wisdom like gravity, but it also was kind of a trap in ancient times.",
+        "rarity": "common",
+        "buy_price": 5,
+        "sell_price": 2
+    },
+    {
+        "id": "orange",
+        "name": "Orange",
+        "emoji": "🍊",
+        "description": "A common fruit that hangs on trees. Although the emoji is called `tangerine`, I refuse to use that word. Too hard to spell.",
+        "rarity": "common",
+        "buy_price": 5,
+        "sell_price": 2
+    },
+    {
+        "id": "cherries",
+        "name": "Cherries",
+        "emoji": "🍒",
+        "description": "A common fruit that hangs on trees. They're little, but I hate them.",
+        "rarity": "common",
+        "buy_price": 5,
+        "sell_price": 2
+    },
+    {
+        "id": "carrot",
+        "name": "Carrot",
+        "emoji": "🥕",
+        "description": "A vegetable that grows on the ground peko.",
+        "rarity": "common+",
+        "buy_price": 11,
+        "sell_price": 10
+    },
+    {
+        "id": "bacon",
+        "name": "Bacon",
+        "emoji": "🥓",
+        "description": "A pretty cool looking slice of meat. Unfortunately, I've never tasted it.",
+        "rarity": "common+",
+        "buy_price": 14,
+        "sell_price": 10
+    },
+    {
+        "id": "meat",
+        "name": "Meat",
+        "emoji": "🥩",
+        "description": "It's meat. I don't know what else to say.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 20
+    },
+    {
+        "id": "chicken",
+        "name": "Chicken",
+        "emoji": "🍗",
+        "description": "Chicken's leg. Or poultry's leg. I just think of chicken when I first see this emoji. Chicken it is.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 20
+    },
+    {
+        "id": "gold_apple",
+        "name": "Golden Apple",
+        "emoji": "🍏",
+        "description": "Let's pretend this is gold for a sec. Or maybe you're George. Who knows.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 100
+    },
+    {
         "id": "iron",
         "name": "Iron",
         "emoji": "<:iron:820009715286671410>",

@@ -91,6 +91,7 @@ async def count_slashes(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     count: int = 0
+    # TODO: Group this into categories so it's less painful to look at.
     for s_cmd in bot.slash_commands.values():
         count += 1
         print(s_cmd.qualname)
@@ -172,7 +173,7 @@ async def cache_view_guild(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Guild Module",
-            value = f"```{guild_cache.to_dict()}```"
+            value = f"```{psql.asdict(guild_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -194,7 +195,7 @@ async def cache_view_log(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Log Module",
-            value = f"```{log_cache.to_dict()}```"
+            value = f"```{psql.asdict(log_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -216,7 +217,7 @@ async def cache_view_user(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "User Module",
-            value = f"```{user_cache.to_dict()}```"
+            value = f"```{psql.asdict(user_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -238,11 +239,25 @@ async def cache_view_item(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Item Module",
-            value = f"```{item_cache.to_dict()}```"
+            value = f"```{psql.asdict(item_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
         await ctx.respond("Cache for this item doesn't exist.", reply = True, mentions_reply = True)
+
+@plugin.command()
+@lightbulb.option("value_name", "The value's exact name. This should exist in either loot.py or trader.py")
+@lightbulb.command("get-econ-value", "Display secret values of economy setting.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def get_econ_value(ctx: lightbulb.Context):
+    from categories.econ import loot, trader
+    value_name = ctx.options.value_name
+
+    value = loot.__dict__.get(value_name)
+    if not value:
+        value = trader.__dict__.get(value_name)
+    
+    await ctx.respond(f"```{value}```", reply = True)
 
 @plugin.command()
 @lightbulb.command("purge-guild-slashes", "Force delete every slash commands in test guilds.", hidden = True)
@@ -313,6 +328,33 @@ async def reset_cooldown(ctx: lightbulb.Context):
 async def shutdown(ctx: lightbulb.Context):
     await ctx.respond("Bot shutting down...")
     await ctx.bot.close()
+
+@plugin.command()
+@lightbulb.option("badge_id2", "The badge you're trying to update.")
+@lightbulb.option("badge_id1", "The badge you're getting the progress.")
+@lightbulb.command("sync-badge-progress", "Update a badge progress with another badge progress for all users. Useful when adding new tiers of badges.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def sync_badge_progress(ctx: lightbulb.Context):
+    badge_id1 = ctx.options.badge_id1
+    badge_id2 = ctx.options.badge_id2
+    bot: models.MichaelBot = ctx.bot
+
+    async with bot.pool.acquire() as conn:
+        async with conn.transaction():
+            for user_id in bot.user_cache.keys():
+                badge1 = await psql.UserBadge.get_one(conn, user_id, badge_id1)
+                badge2 = await psql.UserBadge.get_one(conn, user_id, badge_id2)
+
+                if not badge1:
+                    print(f"User {user_id} doesn't have {badge_id1}. Skipping...")
+                    continue
+
+                if not badge2:
+                    await psql.UserBadge.add_progress(conn, user_id, badge_id2, badge1.badge_progress)
+                else:
+                    await psql.UserBadge.update_column(conn, user_id, badge_id2, "badge_progress", badge1.badge_progress)
+    
+    await ctx.respond("Finished syncing!", reply = True)
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)

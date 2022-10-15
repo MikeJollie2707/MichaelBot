@@ -24,6 +24,27 @@
         "requirement": 2000
     },
     {
+        "id": "eat0",
+        "name": "First Meal",
+        "emoji": "🍎",
+        "description": "Wow, you can eat! It's delicious.",
+        "requirement": 1
+    },
+    {
+        "id": "eat1",
+        "name": "Tasty Meal",
+        "emoji": "🥗",
+        "description": "After eating quite an amount of food, your body seems to absorb nutrients from food more efficiently.",
+        "requirement": 500
+    },
+    {
+        "id": "eat2",
+        "name": "Bizarre Eating",
+        "emoji": "🍜",
+        "description": "You ate a lot, and yet your belly doesn't grow. What a mystery.",
+        "requirement": 1000
+    },
+    {
         "id": "iron0",
         "name": "Metal Acquired",
         "emoji": "<:iron:820009715286671410>",
@@ -111,7 +132,7 @@
         "id": "death1",
         "name": "Staph Dying!",
         "emoji": "🪦",
-        "description": "You died so many times, the bot has to give you a mercy on lowering your death rate a bit.",
+        "description": "You died so many times, the bot has to give you a mercy on increasing your damage reductions a bit.",
         "requirement": 50
     },
     {
@@ -120,6 +141,13 @@
         "emoji": "💀",
         "description": "Actually how?",
         "requirement": 100
+    },
+    {
+        "id": "death3",
+        "name": "Kasaneru IF",
+        "emoji": "0️⃣",
+        "description": "Repeating Life from Zero",
+        "requirement": 500
     },
     {
         "id": "brew0",
@@ -147,6 +175,6 @@
         "name": "Potion Master",
         "emoji": "<a:luck_potion:826871436769493062>",
         "description": "You know potions in the back of your hand. This allows you to use 1 more potion.",
-        "requirement": 1000
+        "requirement": 2000
     }
 ]
