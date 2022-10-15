@@ -1370,7 +1370,7 @@ async def explore(ctx: lightbulb.Context):
             "_sword",
             "luck_potion",
             "fire_potion",
-            "undead_potion",
+            "undying_potion",
             "strength_potion",
             "looting_potion",
         ))
