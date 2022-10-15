@@ -1,4 +1,4 @@
-'''Contains many useful functions.'''
+'''Contains many useful constants and functions.'''
 
 import asyncio
 import datetime as dt
@@ -75,6 +75,7 @@ COMMAND_STANDARD_PERMISSIONS = (
     hikari.Permissions.READ_MESSAGE_HISTORY,
 )
 
+# TODO: Might deprecate this because dataclass has asdict() to convert to a dict.
 class ClassToDict:
     def to_dict(self) -> dict:
         if not hasattr(self, "__slots__") or not self.__slots__:

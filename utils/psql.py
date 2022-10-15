@@ -57,10 +57,10 @@ import dataclasses
 import datetime as dt
 import logging
 import typing as t
+# This is for files that use this can also use asdict.
+from dataclasses import asdict
 
 import asyncpg
-
-from utils.helpers import ClassToDict
 
 logger = logging.getLogger("MichaelBot")
 T = t.TypeVar('T')
@@ -249,7 +249,7 @@ async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kw
         return None
 
 @dataclasses.dataclass(slots = True)
-class Guild(ClassToDict):
+class Guild:
     '''Represent an entry in the `Guilds` table along with possible operations related to the table.
 
     It is advised to use the cache in the bot instead. These methods are for mostly cache construction.
@@ -347,7 +347,7 @@ class Guild(ClassToDict):
                 await Guild.update_column(conn, guild.id, change, getattr(guild, change))
 
 @dataclasses.dataclass(slots = True)    
-class GuildLog(ClassToDict):
+class GuildLog:
     '''Represent an entry in the `GuildsLogs` table along with possible operations related to the table.
 
     It is advised to use the cache in the bot instead. These methods are for mostly cache construction.
@@ -460,7 +460,7 @@ class GuildLog(ClassToDict):
                 await GuildLog.update_column(conn, guild.guild_id, change, getattr(guild, change))
 
 @dataclasses.dataclass(slots = True)
-class User(ClassToDict):
+class User:
     '''Represent an entry in the `Users` table along with possible operations related to the table.
 
     It is advised to use the cache in the bot instead. These methods are for mostly cache construction.
@@ -614,7 +614,7 @@ class User(ClassToDict):
                 await User.update_column(conn, user.id, change, getattr(user, change))
 
 @dataclasses.dataclass(slots = True)
-class Reminders(ClassToDict):
+class Reminders:
     '''Represent an entry in the `Reminders` table along with possible operations related to the table.'''
 
     remind_id: int
@@ -678,7 +678,7 @@ class Reminders(ClassToDict):
         return await run_and_return_count(conn, query, remind_id, user_id)
 
 @dataclasses.dataclass(slots = True)
-class Item(ClassToDict):
+class Item:
     '''Represent an entry in the `Items` table along with possible operations related to the table.
 
     This is mostly used for the bot's cache purpose. If you're using this directly in a code, you're probably doing it wrong.
@@ -801,7 +801,7 @@ class Item(ClassToDict):
                 logger.info("Updated item '%s' in the following columns: %s.", item.id, diff_col)
 
 @dataclasses.dataclass(slots = True)
-class Inventory(ClassToDict):
+class Inventory:
     '''Represent an entry in the `UserInventory` table along with possible operations related to the table.'''
 
     user_id: int
@@ -963,7 +963,7 @@ class Inventory(ClassToDict):
                 await Inventory.update_column(conn, inventory.user_id, inventory.item_id, change, getattr(inventory, change))
 
 @dataclasses.dataclass(slots = True)
-class Equipment(ClassToDict):
+class Equipment:
     '''Represent an entry in the `UserEquipment` table along with possible operations related to the table.'''
 
     user_id: int
@@ -1158,7 +1158,7 @@ class Equipment(ClassToDict):
         return '_' + item_id.split('_')[-1]
 
 @dataclasses.dataclass(slots = True)
-class ActiveTrade(ClassToDict):
+class ActiveTrade:
     id: int
     type: str
     item_src: str
@@ -1273,7 +1273,7 @@ class UserTrade:
                 await UserTrade.update_column(conn, user_trade.user_id, user_trade.trade_id, user_trade.trade_type, change, getattr(user_trade, change))
 
 @dataclasses.dataclass(slots = True)
-class Badge(ClassToDict):
+class Badge:
     id: str
     sort_id: int
     name: str
@@ -1350,7 +1350,7 @@ class Badge(ClassToDict):
                 logger.info("Updated item '%s' in the following columns: %s.", badge.id, diff_col)
 
 @dataclasses.dataclass(slots = True)
-class UserBadge(ClassToDict):
+class UserBadge:
     '''Represent an entry in the `UserEquipment` table along with possible operations related to the table.
     
     Note that `badge_requirement` is a read-only attribute; it doesn't matter if you try to update it, it'll be ignored because it doesn't belong to this table.

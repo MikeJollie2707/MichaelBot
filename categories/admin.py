@@ -91,6 +91,7 @@ async def count_slashes(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     count: int = 0
+    # TODO: Group this into categories so it's less painful to look at.
     for s_cmd in bot.slash_commands.values():
         count += 1
         print(s_cmd.qualname)
@@ -172,7 +173,7 @@ async def cache_view_guild(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Guild Module",
-            value = f"```{guild_cache.to_dict()}```"
+            value = f"```{psql.asdict(guild_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -194,7 +195,7 @@ async def cache_view_log(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Log Module",
-            value = f"```{log_cache.to_dict()}```"
+            value = f"```{psql.asdict(log_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -216,7 +217,7 @@ async def cache_view_user(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "User Module",
-            value = f"```{user_cache.to_dict()}```"
+            value = f"```{psql.asdict(user_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
@@ -238,11 +239,25 @@ async def cache_view_item(ctx: lightbulb.Context):
             timestamp = dt.datetime.now().astimezone()
         ).add_field(
             name = "Item Module",
-            value = f"```{item_cache.to_dict()}```"
+            value = f"```{psql.asdict(item_cache)}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:
         await ctx.respond("Cache for this item doesn't exist.", reply = True, mentions_reply = True)
+
+@plugin.command()
+@lightbulb.option("value_name", "The value's exact name. This should exist in either loot.py or trader.py")
+@lightbulb.command("get-econ-value", "Display secret values of economy setting.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def get_econ_value(ctx: lightbulb.Context):
+    from categories.econ import loot, trader
+    value_name = ctx.options.value_name
+
+    value = loot.__dict__.get(value_name)
+    if not value:
+        value = trader.__dict__.get(value_name)
+    
+    await ctx.respond(f"```{value}```", reply = True)
 
 @plugin.command()
 @lightbulb.command("purge-guild-slashes", "Force delete every slash commands in test guilds.", hidden = True)

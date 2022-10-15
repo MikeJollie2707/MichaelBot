@@ -197,7 +197,7 @@ async def log_view(ctx: lightbulb.Context):
         timestamp = dt.datetime.now().astimezone()
     )
     if log_cache is not None:
-        for logging_option in log_cache.to_dict():
+        for logging_option in psql.asdict(log_cache):
             if logging_option == "log_channel":
                 if log_cache.log_channel is not None:
                     embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(log_cache.log_channel).mention}\n"
