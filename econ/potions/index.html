@@ -822,59 +822,59 @@
 <p>Potions can be obtained via <strong>brewing</strong>, which is just crafting but for potions. You'll need a lot of items along with some money, then use <code>brew &lt;potion&gt;</code>. Currently, each brew will give you 3 potions.</p>
 <p>This document will briefly describe all current potions in more details. It won't list the brew recipe because this can be easily checked via <code>info item</code>. All of the info here can be verified in the source code in <code>categories/economy.py</code> and <code>categories/econ/loot.py</code> if you have trust issues with me.</p>
 <h2 id="fire-potion">Fire Potion</h2>
-<p>The easiest potion to obtain. You can grab it in <code>market</code> with a price of 1500 as an alternate way besides the standard brewing system.</p>
+<p>The easiest potion to obtain. You can grab it in <code>market</code> with a price of 1500 alternatively besides the standard brewing system.</p>
 <ul>
-<li><strong>Main Effect:</strong> When the user "dies" the Nether, there is a 70% chance this potion will activate, negating the death of the user. </li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 2% on all dimensions.</li>
+<li><strong>Main Effect:</strong> When the user dies in the Nether, there is a 70% chance this potion will activate, negating the death of the user. </li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 2 on all dimensions.</li>
 <li><strong>Durability:</strong> 10</li>
 </ul>
-<p>Basically, after applying the passive 2% reduction, this lower your death rate by 70%. This is very good when you just enter Nether for the first few times.</p>
+<p>This is a more lazy option if you're tight on food, so you decide whether or not to invest in this potion. Just to note, if you enter the Nether with low gear (which you shouldn't anyway), you should get this because the Nether will most likely one-hit you in some locations.</p>
 <h2 id="haste-potion">Haste Potion</h2>
 <ul>
 <li><strong>Main Effect:</strong> A 50% chance to roll the drop 5 times and get all of them while mining and chopping.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 2% while mining.</li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 2 while mining.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
 <p>Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.</p>
 <h2 id="fortune-potion">Fortune Potion</h2>
 <ul>
 <li><strong>Main Effect:</strong> A 50% chance to multiply the drop by 4 times while mining.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 5% while mining.</li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 5 while mining.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
 <h2 id="nature-potion">Nature Potion</h2>
 <ul>
 <li><strong>Main Effect:</strong> A 50% chance to multiply the drop by 4 times while chopping.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 5% while chopping.</li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 5 while chopping.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
 <h2 id="strength-potion">Strength Potion</h2>
 <ul>
 <li><strong>Main Effect:</strong> A 50% chance to roll the drop 5 times and get all of them while exploring.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 2% while exploring.</li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 2 while exploring.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
 <p>Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.</p>
 <h2 id="looting-potion">Looting Potion</h2>
 <ul>
 <li><strong>Main Effect:</strong> A 50% chance to multiply the drop by 4 times while exploring.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 5% while exploring.</li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 5 while exploring.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
 <h2 id="luck-potion">Luck Potion</h2>
 <ul>
-<li><strong>Main Effect:</strong> A 50% chance to multiplies the drop by 2 times. Also ensure that 1. If a possible drop is already dropped, it'll then drop <code>max_amount</code> and 2. If a possible drop is not dropped, it'll then drop <code>min_amount</code> or 1, whichever is higher.</li>
-<li><strong>Passive Effect:</strong> Lower the death chance by 10% on all dimensions. As a <code>Legendary</code> equipment, this cannot be lost upon death while equipped.</li>
+<li><strong>Main Effect:</strong> A 50% chance to multiplies the drop by 2 times. Also ensure that 1. If a possible drop is already dropped, it'll then drop <code>max_amount</code> and 2. If a possible drop is not dropped, it'll then drop <code>min_amount</code>.</li>
+<li><strong>Passive Effect:</strong> Lower the maximum damage by 10 on all dimensions. As a <code>Legendary</code> equipment, this cannot be lost upon death while equipped.</li>
 <li><strong>Durability:</strong> 50</li>
 </ul>
-<p>This is a powerful potion that basically removes the rate in which an item drops. It'd be basically 50%, completely based on whether the potion activates or not. However, this does contribute to the death chance calculation. The 10% death reductions should absolutely offset this.</p>
+<p>This is a powerful potion that basically removes the rate in which an item drops. It'd be basically 50%, completely based on whether the potion activates or not. However, note that there's a chance an item won't be dropped if its <code>min_amount</code> is 0.</p>
 <h2 id="undying-potion">Undying Potion</h2>
 <ul>
-<li><strong>Main Effect:</strong> When the user "dies", there is a 100% chance this potion will activate, negating the death of the user. If <code>Fire Potion</code> is activated, <code>Fire Potion</code> will be prioritized over this potion.</li>
-<li><strong>Passive Effect:</strong> While equipped, this potion will allow the user to equip 1 more potion.</li>
+<li><strong>Main Effect:</strong> When the user receives a lethal damage or a damage over 40, there is a 100% chance this potion will activate, negating the said damage to the user. If <code>Fire Potion</code> is activated, <code>Fire Potion</code> will be prioritized over this potion.</li>
+<li><strong>Passive Effect:</strong> While equipped, this potion will allow the user to equip 1 more potion. As a <code>Legendary</code> equipment, this cannot be lost upon death while equipped.</li>
 <li><strong>Durability:</strong> 20</li>
 </ul>
-<p>This is a useful potion that guarantees you to not die, while essentially costing you no potion slot. Definitely useful to get.</p>
+<p>This is an extremely useful potion that guarantees you to not die, while essentially costing you no potion slot. It also renders some locations no longer dangerous, since most of the damage dealt by those location are typically well over 50. Definitely useful to get.</p>
 
 
 

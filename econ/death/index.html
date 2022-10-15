@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#death-mechanism" class="md-skip">
+        <a href="#damage-mechanism" class="md-skip">
           Skip to content
         </a>
       
@@ -615,33 +615,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#implementation-of-probability" class="md-nav__link">
-    Implementation of Probability
+  <a href="#brief" class="md-nav__link">
+    Brief
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#death-chance" class="md-nav__link">
-    Death Chance
+  <a href="#reward-value" class="md-nav__link">
+    Reward Value
   </a>
   
-    <nav class="md-nav" aria-label="Death Chance">
+    <nav class="md-nav" aria-label="Reward Value">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#death-cap" class="md-nav__link">
-    Death Cap
+  <a href="#damage-reductions" class="md-nav__link">
+    Damage Reductions
   </a>
   
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#death-reductions" class="md-nav__link">
-    Death Reductions
-  </a>
-  
-    <nav class="md-nav" aria-label="Death Reductions">
+    <nav class="md-nav" aria-label="Damage Reductions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -738,33 +731,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#implementation-of-probability" class="md-nav__link">
-    Implementation of Probability
+  <a href="#brief" class="md-nav__link">
+    Brief
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#death-chance" class="md-nav__link">
-    Death Chance
+  <a href="#reward-value" class="md-nav__link">
+    Reward Value
   </a>
   
-    <nav class="md-nav" aria-label="Death Chance">
+    <nav class="md-nav" aria-label="Reward Value">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#death-cap" class="md-nav__link">
-    Death Cap
+  <a href="#damage-reductions" class="md-nav__link">
+    Damage Reductions
   </a>
   
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#death-reductions" class="md-nav__link">
-    Death Reductions
-  </a>
-  
-    <nav class="md-nav" aria-label="Death Reductions">
+    <nav class="md-nav" aria-label="Damage Reductions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -809,61 +795,54 @@
 
 
 
-<h1 id="death-mechanism">Death Mechanism</h1>
-<p>The death mechanism is somewhat punishing for the beginners, but it'll strike harder for non-beginners if they don't understand a thing. This page will attempt to explain the death mechanism in MichaelBot in a simple way. You can always check out <code>categories/economy.py</code> for more technical details.</p>
-<p>Also note that the death mechanism only happens to action commands (<code>mine</code>, <code>explore</code>, <code>chop</code>).</p>
-<h2 id="implementation-of-probability">Implementation of Probability</h2>
-<p>Probability in MichaelBot is very easily implemented. Normally, when you say "there's a 15% you'll die on the next action command", MichaelBot implement this as (note that I don't study too deep into probability, so I might get a few terms wrong):</p>
-<ul>
-<li>Set <code>0.15</code> (15 / 100 = 0.15) as the probability.</li>
-<li>Generate a random decimal number between <code>0</code> and <code>1</code> (inclusive).</li>
-<li>If this number is smaller or equal to <code>0.15</code>, the bot says that this number hits, and you'll die. Otherwise, this number misses, and you won't die.</li>
-</ul>
-<p>In this page, I'll often refer the second step as <strong>RNG</strong> (random number generator). Understand this might make the later sections easier to understand.</p>
-<h2 id="death-chance">Death Chance</h2>
-<p>Death chance (or death rate) is calculated based on the value of the reward you'll get. The value in this case is basically the sell prices of all items time the amount of each items. <strong>This is calculated before any multipliers are applied.</strong> For example, if you have an x2 reward multiplier, this will be applied <em>after</em> the death chance is calculated, so you won't have double the death chance. <em>Luck Potion's main effect, however, will be applied before calculating death chance.</em> The number after this step is referred to as <strong>raw death chance</strong> (death chance that has not been processed).</p>
-<h3 id="death-cap">Death Cap</h3>
-<p>Death Chance Cap, or Death Cap, is a number that limits the upper bound of your death chance. The purpose of this is to prevent you from dying all the time. Without this, you can reach 50% or even 100% death chance, giving you a very terrible experience.</p>
-<p>Currently, the death cap for Overworld is 15% (<code>0.15</code>) and for Nether is 30% (<code>0.30</code>).</p>
-<p>The exact formula for converting reward value to death chance can be found in <code>get_death_rate()</code> in <code>categories/economy.py</code>, but basically, at around a value of <code>100</code> (= 100 money), the death chance would be around <code>0.15</code>, which is the cap of the Overworld. This death chance will then be capped by the Death Cap. For example, if the reward value is like <code>1000</code>, which makes the death chance super high, this step will then cap the death chance to the values defined above.</p>
-<h3 id="death-reductions">Death Reductions</h3>
-<p>Death Rate Reductions, or Death Reductions, further lower the death chance. <strong>This is applied after capping the death chance.</strong> Basically the bot will check for your relevant equipments and any relevant boosts you have that lower the death chance and apply directly to this chance. For example, a diamond tool has a death reduction of 5%, so it'll take the current death chance <strong>and subtract 5% out of that (not multiply 95%).</strong> This will be applied continuously until it goes through all the reductions. Finally, it'll return a non-negative death chance. <strong>From <code>0.1.16</code> (and its development version <code>0.1.16dev</code>) onward, the minimum death chance is <code>0.005</code> (or 0.5%), even after applying all death reductions.</strong> This value was <code>0</code> prior to this update. This final value is your <strong>death chance</strong>.</p>
+<h1 id="damage-mechanism">Damage Mechanism</h1>
+<p>The damage mechanism can be beneficial if you know what's going on in order to avoid damage lost and eventually, death. You can always check out <code>categories/economy.py</code> for more technical details.</p>
+<p>Also note that the damage mechanism only happens to action commands (<code>mine</code>, <code>explore</code>, <code>chop</code>).</p>
+<h2 id="brief">Brief</h2>
+<p>Overall, the bot will use the loot table generated from each action command to determine the <strong>maximum damage</strong> you'll receive. After a few processing, the actual damage you'll be taking (or <strong>final damage</strong>) will be a random value in the range of <code>[max_dmg / 2, max_dmg]</code>. Thus, the damage mentioned for the rest of the page will refer to <strong>max damage</strong>, unless stated otherwise.</p>
+<h2 id="reward-value">Reward Value</h2>
+<p>When a loot table is generated for action commands (before multipliers and rerolls start to apply), the bot also generate the max damage for this action. These are manually defined, but generally, the better the reward, the higher the damage. The exact values can be found in <code>categories/econ/loot.py</code>, under the <code>__&lt;ACTION&gt;_LOOT</code> variable.</p>
+<h3 id="damage-reductions">Damage Reductions</h3>
+<p>Damage Reductions further lower the damage. Basically the bot will check for your relevant equipments and any relevant boosts you have that lower the damage and apply directly. For example, a diamond pickaxe has a damage reduction of 25, so it'll take the current damage and subtract 25 out of that. This will be applied continuously until it goes through all the reductions. However, no matter how many reductions you apply, <em>the max damage can't be lower than 2</em>.</p>
+<p>Finally, your <strong>final damage</strong> will be determined by a random number between <code>[floor(dmg / 2) - 1, dmg]</code>, where <code>dmg</code> is the max damage. This is to ensure there are varieties in the final damage.</p>
 <p>Example:</p>
 <ul>
-<li>You have a diamond pickaxe, so you're having a 5% reductions.</li>
-<li>You also have a strength potion equipped, so you have another 8% reductions.</li>
-<li>You mine something and get a raw death chance of 21%.</li>
-<li>You're mining in the Overworld, so the bot caps your death chance to 15%.</li>
-<li>Now the bot applies reductions. You have 5% + 8% = 13% reductions. Thus, you'll have 15% - 13% = 2% death chance.</li>
-<li>Since this is larger than 0.5%, 2% will be your death chance.</li>
+<li>You have a diamond pickaxe, so you're having a 25 damage reductions.</li>
+<li>You also have a strength potion equipped, so you have another 2 damage reductions.</li>
+<li>You mine something and get a raw damage of 60.</li>
+<li>You're mining in the Overworld, so the bot caps your damage to 50.</li>
+<li>Now the bot applies reductions. You have 25 + 2 = 27 reductions. Thus, you'll at most receive 50 - 27 = 23 damage.</li>
+<li>Your final damage (the damage you're actually taking) will be a random number between <code>[floor(23 / 2) - 1, 23]</code>, which is <code>[10, 23]</code>.</li>
 </ul>
 <h4 id="available-reductions">Available Reductions</h4>
-<p>These are the current reductions:</p>
+<p>All damage reductions can be found in <code>categories/econ/loot.py</code>, defined by the <code>DMG_REDUCTIONS</code> variable.</p>
 <ul>
-<li>Wood tools: 15%</li>
-<li>Stone tools: 15%</li>
-<li>Iron tools: 1%</li>
-<li>Diamond tools: 5%</li>
-<li>Netherite tools: 10%</li>
-<li>Fire Potion: 2%</li>
-<li>Haste Potion: 2% when mining and chopping</li>
-<li>Strength Potion: 2% when exploring</li>
-<li>Fortune Potion: 5% when mining</li>
-<li>Looting Potion: 5% when exploring</li>
-<li>Nature Potion: 5% when chopping</li>
-<li>Luck Potion: 10%</li>
-<li><code>Staph Dying!</code> badge: 5%</li>
+<li>Wood tools: 0</li>
+<li>Stone tools: 10</li>
+<li>Iron sword + axe: 20</li>
+<li>Iron pickaxe: 15</li>
+<li>Diamond tools: 25</li>
+<li>Netherite tools: 25</li>
+<li>Fire Potion: 2</li>
+<li>Haste Potion: 2 when mining and chopping</li>
+<li>Strength Potion: 2 when exploring</li>
+<li>Fortune Potion: 5 when mining</li>
+<li>Looting Potion: 5 when exploring</li>
+<li>Nature Potion: 5 when chopping</li>
+<li>Luck Potion: 10</li>
+<li><code>Staph Dying!</code> badge: 3 per equipment (including potions)</li>
+<li><code>Kasaneru IF</code> badge: 2 per equipment (including potions)</li>
 </ul>
-<p>Note that for <code>x tools</code>, this means that the percent only applies to the corresponding action. For example, if you have a diamond pickaxe and an iron sword, then when mining, you'll have the 5% reductions, while when you're exploring, you'll have the 1% reductions.</p>
-<p>The reason behind such huge numbers behind wood and stone tools is to completely remove death from the player while in the Overworld, or as MikeJollie likes to say, "beginners' spawn protection". However, as of <code>0.1.16</code>, this is no longer the case.</p>
+<p>Note that for tools, reduction only applies to the corresponding action. For example, if you have a diamond pickaxe and an iron sword, then when mining, you'll have the 25 reductions, while when you're exploring, you'll have the 20 reductions.</p>
 <h2 id="death-penalty">Death Penalty</h2>
-<p>When the RNG is bad enough to hit the death chance, the user will dies. The penalty of dying are:</p>
+<p>If you don't monitor your health and let it drop to 0 or below, you dies. These are the consequences of death:</p>
 <ul>
 <li>Losing all equipments with few exceptions.</li>
 <li>Losing all potions.</li>
 <li>Losing 20% of current balance (rounded up).</li>
 <li>Losing 5% (2% if <code>How are you still sane?</code> badge is acquired) of all items in inventory (rounded up).</li>
 <li>If the user is in a different world, they'll be forced to be in the Overworld, with a few exceptions. <em>This won't update the cooldown in <code>travel</code></em>.</li>
+<li>Health reset back to 100.</li>
 </ul>
 <p>Out of all of these, losing all potions and 5% of all items in inventory are arguably the worst, so don't die :)</p>
 
