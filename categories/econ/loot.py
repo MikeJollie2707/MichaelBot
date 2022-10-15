@@ -1325,8 +1325,8 @@ def get_activity_loot(action_type: str, equipment_id: str, location: str, extern
         The action's type. Either `mine`, `explore`, or `chop`.
     equipment_id : str
         The equipment's id. The function won't check for valid id.
-    world : str
-        The world's name. The function won't check for valid world.
+    location : str
+        The location's name. The function won't check for valid world.
     external_buffs : t.Sequence[str]
         A list of buffs' ids that can affect the drop. Example: `['luck_potion']`
 
