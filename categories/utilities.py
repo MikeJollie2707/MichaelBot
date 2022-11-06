@@ -437,30 +437,47 @@ async def embed_interactive2(ctx: lightbulb.Context):
             await msg.edit("Session expired.", embeds = None, components = None)
             return
 
-async def do_remind(bot: models.MichaelBot, user: hikari.User, message: str, when: dt.datetime = None, remind_id: int = None):
-    '''Send `user` a DM about `message` at time `when`.
+async def do_remind(bot: models.MichaelBot, user_id: int, message: str, when: dt.datetime = None, remind_id: int = None):
+    '''Send `user_id` a DM about `message` at time `when`.
 
+    If it's not possible to send the reminder, this function will ignore the reminder. However, if the user can't be found, it'll delete the reminder.
+
+    Warnings
+    --------
     This should be created as a `Task` to avoid logic-blocking (the code itself is not async-blocking).
 
-    Args:
-        bot (models.MichaelBot): Bot instance.
-        user (hikari.User): The user to DM.
-        message (str): The message to be sent.
-        when (dt.datetime, optional): The time to send. If `None` or smaller than current time, the message will be sent immediately.
-        remind_id (int, optional): The reminder's id to be removed once the reminder is sent. If `None`, reminder will not be removed from database.
+    Parameters
+    ----------
+    bot : models.MichaelBot
+        The bot instance.
+    user_id : int
+        The user's id to send the reminder to.
+    message : str
+        The message to remind.
+    when : dt.datetime, optional
+        The UTC (tz aware) time to send the reminder. If `None`, the message is sent virtually immediately.
+    remind_id : int, optional
+        The reminder's id to delete once the reminder is sent. Use `None` if the reminder is created in-memory instead of on external storage.
     '''
+
     if when is not None:
         await helpers.sleep_until(when)
     
     try:
-        # BUG: user seems to be None in some cases.
-        await user.send("Hi there! You told me to remind you about:\n" + message)
+        dm_channel = await bot.rest.create_dm_channel(user_id)
+        await bot.rest.create_message(dm_channel, "Hi there! You told me to remind you about:\n" + message)
 
         if remind_id is not None:
             async with bot.pool.acquire() as conn:
-                await psql.Reminders.delete_reminder(conn, remind_id, user.id)
+                await psql.Reminders.delete_reminder(conn, remind_id, user_id)
+    except hikari.BadRequestError:
+        # Remove reminder if user is not found.
+        print(f"User {user_id} doesn't exist. Removing this reminder...")
+        async with bot.pool.acquire() as conn:
+            await psql.Reminders.delete_reminder(conn, remind_id, user_id)
     except hikari.ForbiddenError:
         # Don't remove reminder if the sending fails, will retry to send on next refresh cycle.
+        # Although this most likely to be a block or sth, so maybe remove it once we know what happens to cause this error.
         pass
 @tasks.task(s = NOTIFY_REFRESH, auto_start = True, pass_app = True, wait_before_execution = True)
 async def scan_reminders(bot: models.MichaelBot):
@@ -469,8 +486,10 @@ async def scan_reminders(bot: models.MichaelBot):
     - If there are any past reminders (tried to send, but couldn't due to permissions, disconnect, etc.), it'll try sending them again.
     - If there are any future reminders within `NOTIFY_REFRESH` seconds, it'll create `do_remind()` task to be launched.
 
-    Args:
-        bot (models.MichaelBot): The bot.
+    Parameters
+    ----------
+    bot : models.MichaelBot
+        The bot instance.
     '''
 
     if bot.pool is None: return
@@ -483,23 +502,10 @@ async def scan_reminders(bot: models.MichaelBot):
         upcoming = await psql.Reminders.get_reminders(conn, current, future)
     
     for missed_reminder in passed:
-        user = bot.cache.get_user(missed_reminder.user_id)
-        if user is None:
-            print(missed_reminder.user_id)
-        bot.create_task(do_remind(bot, user, missed_reminder.message, current, missed_reminder.remind_id))
+        bot.create_task(do_remind(bot, missed_reminder.user_id, missed_reminder.message, current, missed_reminder.remind_id))
     
     for upcoming_reminder in upcoming:
-        user = bot.cache.get_user(upcoming_reminder.user_id)
-        if user is None:
-            print(upcoming_reminder.user_id)
-            try:
-                user = await bot.rest.fetch_user(upcoming_reminder.user_id)
-            except hikari.NotFoundError:
-                print(f"User {upcoming_reminder.user_id} doesn't exist. Removing this reminder...")
-                #await psql.Reminders.delete_reminder(conn, upcoming_reminder.remind_id, upcoming_reminder.user_id)
-                return
-            
-        bot.create_task(do_remind(bot, user, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
+        bot.create_task(do_remind(bot, upcoming_reminder.user_id, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -535,7 +541,7 @@ async def remind_create(ctx: lightbulb.Context):
     elif interval.total_seconds() > 30 * 24 * 60 * 60:
         await ctx.respond("The interval is too large. Must be at most 30 days.", reply = True, mentions_reply = True)
     elif interval.total_seconds() < NOTIFY_REFRESH:
-        bot.create_task(do_remind(bot, ctx.author, ctx.options.message, when))
+        bot.create_task(do_remind(bot, ctx.author.id, ctx.options.message, when))
         await ctx.respond("A short reminder has been created. Expect the bot to DM you soon:tm:", reply = True)
     else:
         async with bot.pool.acquire() as conn:
