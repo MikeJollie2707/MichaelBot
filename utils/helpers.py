@@ -61,6 +61,7 @@ __PERMISSIONS_MAPPING__ = {
     hikari.Permissions.MOVE_MEMBERS: "Move Members",
 
     # Events Permissions
+    hikari.Permissions.MANAGE_EVENTS: "Manage Events",
 
     # Advanced Permissions
     hikari.Permissions.ADMINISTRATOR: "Administrator",
