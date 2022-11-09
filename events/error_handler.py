@@ -37,13 +37,13 @@ async def on_bot_missing_permission(event: lightbulb.CommandErrorEvent, exceptio
         logger.error(f"Command '{event.context.command.qualname}' is missing permissions, but one of them is `Send Messages`.")
         return
     
-    missing_perms = ', '.join(helpers.get_friendly_permissions(exception.missing_perms))
+    missing_perms = ', '.join(helpers.get_friendly_permissions_formatted(exception.missing_perms))
     embed = __get_generic_error_embed()
     embed.description = f":warning: **Bot is missing the following permissions: {missing_perms}.**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_user_missing_permission(event: lightbulb.CommandErrorEvent, exception: lightbulb.MissingRequiredPermission):
-    missing_perms = ', '.join(helpers.get_friendly_permissions(exception.missing_perms))
+    missing_perms = ', '.join(helpers.get_friendly_permissions_formatted(exception.missing_perms))
     embed = __get_generic_error_embed()
     embed.description = f":warning: **You're missing the following permissions: {missing_perms}.**"
 
@@ -69,7 +69,7 @@ async def on_missing_arguments(event: lightbulb.CommandErrorEvent, exception: li
     embed.description = f":warning: **You're missing the following arguments: {missing_arguments}.**"
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
-async def on_max_concurrency_reached(event: lightbulb.CommandErrorEvent, exception: lightbulb.MaxConcurrencyLimitReached):
+async def on_max_concurrency_reached(event: lightbulb.CommandErrorEvent, _: lightbulb.MaxConcurrencyLimitReached):
     embed = __get_generic_error_embed()
     embed.description = ":warning: **This command cannot be run multiple times while the previous one is still active.**"
 

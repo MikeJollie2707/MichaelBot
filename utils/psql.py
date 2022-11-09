@@ -41,12 +41,23 @@ async with pool.acquire() as conn:
 With transaction:
 ```py
 async with pool.acquire() as conn:
-    users: list[psql.User] | None = await psql.User.get_all(conn)
+    users: list[psql.User] = await psql.User.get_all(conn)
     async with conn.transaction():
         for user in users:
             user.is_whitelist = ...
             user.balance = ...
             await psql.User.update(conn, user)
+```
+
+Query with constraint:
+```py
+def e_in_name(user: psql.User) -> bool:
+    # Apply any filtering here.
+    return 'e' in user.name
+
+async with pool.acquire() as conn:
+    users: list[psql.User] = await psql.User.get_all_where(conn, where = e_in_name)
+    # Do stuffs.
 ```
 '''
 

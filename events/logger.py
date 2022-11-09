@@ -486,8 +486,8 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                     if target_obj is None:
                         target_obj = event.get_guild().get_member(target_id)
                     
-                    granted_str = ', '.join(helpers.get_friendly_permissions(after.permission_overwrites[target_id].allow))
-                    denied_str = ', '.join(helpers.get_friendly_permissions(after.permission_overwrites[target_id].deny))
+                    granted_str = ', '.join(helpers.get_friendly_permissions_formatted(after.permission_overwrites[target_id].allow))
+                    denied_str = ', '.join(helpers.get_friendly_permissions_formatted(after.permission_overwrites[target_id].deny))
                     
                     embed.description = dedent(f'''
                         **Channel:** {event.channel.mention}
@@ -536,8 +536,8 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
                     if target_obj is None:
                         target_obj = event.get_guild().get_member(target_id)
                     
-                    granted_str = ', '.join(helpers.get_friendly_permissions(before.permission_overwrites[target_id].allow))
-                    denied_str = ', '.join(helpers.get_friendly_permissions(before.permission_overwrites[target_id].deny))
+                    granted_str = ', '.join(helpers.get_friendly_permissions_formatted(before.permission_overwrites[target_id].allow))
+                    denied_str = ', '.join(helpers.get_friendly_permissions_formatted(before.permission_overwrites[target_id].deny))
                     
                     embed.description = dedent(f'''
                         **Channel:** {event.channel.mention}
@@ -597,16 +597,16 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
 
                         # Bunch of text format here.
                         granted_message = ',\n'.join(
-                            [f"{permission_str}: `Granted -> Denied`" for permission_str in helpers.get_friendly_permissions(granted_to_denied)] + 
-                            [f"{permission_str}: `Granted -> Neutral`" for permission_str in helpers.get_friendly_permissions(granted_to_neutral)]
+                            [f"{permission_str}: `Granted -> Denied`" for permission_str in helpers.get_friendly_permissions_formatted(granted_to_denied)] + 
+                            [f"{permission_str}: `Granted -> Neutral`" for permission_str in helpers.get_friendly_permissions_formatted(granted_to_neutral)]
                         )
                         neutralized_message = ',\n'.join(
-                            [f"{permission_str}: `Neutral -> Granted`" for permission_str in helpers.get_friendly_permissions(neutral_to_granted)] + 
-                            [f"{permission_str}: `Neutral -> Denied`" for permission_str in helpers.get_friendly_permissions(neutral_to_denied)]
+                            [f"{permission_str}: `Neutral -> Granted`" for permission_str in helpers.get_friendly_permissions_formatted(neutral_to_granted)] + 
+                            [f"{permission_str}: `Neutral -> Denied`" for permission_str in helpers.get_friendly_permissions_formatted(neutral_to_denied)]
                         )
                         denied_message = ',\n'.join(
-                            [f"{permission_str}: `Denied -> Granted`" for permission_str in helpers.get_friendly_permissions(denied_to_granted)] + 
-                            [f"{permission_str}: `Denied -> Neutral`" for permission_str in helpers.get_friendly_permissions(denied_to_neutral)]
+                            [f"{permission_str}: `Denied -> Granted`" for permission_str in helpers.get_friendly_permissions_formatted(denied_to_granted)] + 
+                            [f"{permission_str}: `Denied -> Neutral`" for permission_str in helpers.get_friendly_permissions_formatted(denied_to_neutral)]
                         )
 
                         if granted_message == "":
@@ -1020,8 +1020,8 @@ async def on_role_create(event: hikari.RoleCreateEvent):
                 log_time = entry.created_at
                 executor = await entry.fetch_user()
 
-                allow_perms = helpers.get_friendly_permissions(event.role.permissions)
-                deny_perms = helpers.get_friendly_permissions(~event.role.permissions)
+                allow_perms = helpers.get_friendly_permissions_formatted(event.role.permissions)
+                deny_perms = helpers.get_friendly_permissions_formatted(~event.role.permissions)
 
                 allow_str = ", ".join(allow_perms) if len(allow_perms) > 0 else "None"
                 deny_str = ", ".join(deny_perms) if len(deny_perms) > 0 else "None"
@@ -1075,8 +1075,8 @@ async def on_role_delete(event: hikari.RoleDeleteEvent):
                 log_time = entry.created_at
                 executor = await entry.fetch_user()
 
-                allow_perms = helpers.get_friendly_permissions(event.old_role.permissions)
-                deny_perms = helpers.get_friendly_permissions(~event.old_role.permissions)
+                allow_perms = helpers.get_friendly_permissions_formatted(event.old_role.permissions)
+                deny_perms = helpers.get_friendly_permissions_formatted(~event.old_role.permissions)
 
                 allow_str = ", ".join(allow_perms) if len(allow_perms) > 0 else "None"
                 deny_str = ", ".join(deny_perms) if len(deny_perms) > 0 else "None"
@@ -1203,10 +1203,10 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
                 denied = event.old_role.permissions & ~event.role.permissions
 
                 granted_message = ", ".join(
-                    [f"{permission_str}: `Denied -> Granted`" for permission_str in helpers.get_friendly_permissions(granted)]
+                    [f"{permission_str}: `Denied -> Granted`" for permission_str in helpers.get_friendly_permissions_formatted(granted)]
                 )
                 denied_message = ", ".join(
-                    [f"{permission_str}: `Granted -> Denied`" for permission_str in helpers.get_friendly_permissions(denied)]
+                    [f"{permission_str}: `Granted -> Denied`" for permission_str in helpers.get_friendly_permissions_formatted(denied)]
                 )
 
                 if denied_message != "" and granted_message != "":
