@@ -962,26 +962,38 @@ async def _equipments(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("view_option", "Options to view inventory.", choices = ("compact", "full", "value"), default = "compact")
 @lightbulb.command("inventory", f"[{plugin.name}] View your inventory.", aliases = ["inv"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def inventory(ctx: lightbulb.Context):
-    view_option = ctx.options.view_option
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+@inventory.child
+@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("view_options", "Options to view inventory.", choices = ("compact", "full", "safe", "value"), default = "compact")
+@lightbulb.command("view", f"[{plugin.name}] View your inventory.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def inv_view(ctx: lightbulb.Context):
+    view_option = ctx.options.view_options
     bot: models.MichaelBot = ctx.bot
     
     async with bot.pool.acquire() as conn:
-        inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
-        if not inventories:
-            await ctx.respond("*Cricket noises*", reply = True)
-            return
-        
         if view_option == "compact":
+            inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
+            if not inventories:
+                await ctx.respond("*Cricket noises*", reply = True)
+                return
+            
             inv_dict: dict[str, int] = {}
             for inv in inventories:
                 inv_dict[inv.item_id] = inv.amount
             await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{get_reward_str(bot, inv_dict, option = 'emote')}", reply = True)
         elif view_option == "full":
+            inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
+            if not inventories:
+                await ctx.respond("*Cricket noises*", reply = True)
+                return
+            
             page = nav.ItemListBuilder(inventories, 5)
             @page.set_page_start_formatter
-            def start_format(index: int, inv: psql.Inventory) -> hikari.Embed:
+            def start_format(_index: int, _inv: psql.Inventory) -> hikari.Embed:
                 return helpers.get_default_embed(
                     title = f"**{ctx.author.username}'s Inventory**",
                     description = "",
@@ -993,7 +1005,7 @@ async def inventory(ctx: lightbulb.Context):
                     ctx.author.avatar_url
                 )
             @page.set_entry_formatter
-            def entry_format(embed: hikari.Embed, index: int, inv: psql.Inventory):
+            def entry_format(embed: hikari.Embed, _index: int, inv: psql.Inventory):
                 item = bot.item_cache[inv.item_id]
                 embed.add_field(
                     name = f"{inv.amount}x {item.emoji} {item.name}",
@@ -1002,11 +1014,121 @@ async def inventory(ctx: lightbulb.Context):
             
             await nav.run_view(page.build(authors = (ctx.author.id,)), ctx)
         elif view_option == "value":
+            inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
             value = 0
             for inv in inventories:
                 item = bot.item_cache[inv.item_id]
                 value += item.sell_price * inv.amount
             await ctx.respond(f"If you sell all your items in your inventory, you'll get: {CURRENCY_ICON}{value}.", reply = True)
+        elif view_option == "safe":
+            # Basically just compact + shulker_inventories
+            inventories = await psql.ExtraInventory.get_user_inventory(conn, ctx.author.id)
+            if not inventories:
+                await ctx.respond("*Cricket noises*", reply = True)
+                return
+            
+            inv_dict: dict[str, int] = {}
+            for inv in inventories:
+                inv_dict[inv.item_id] = inv.amount
+            await ctx.respond(f"**{ctx.author.username}'s Inventory (Safe)**\n{get_reward_str(bot, inv_dict, option = 'emote')}", reply = True)
+
+@inventory.child
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("amount", "The amount to transfer. By default, all will be transferred.", 
+    type = int, 
+    min_value = 1,
+    default = loot.MAX_SAFE_SPACE_BASE,
+)
+@lightbulb.option("item", "An item in your inventory.", autocomplete = item_autocomplete)
+@lightbulb.command("save", f"[{plugin.name}] Transfer an item from your inventory to a safe spot.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def inv_save(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
+    amount: int = min(max(ctx.options.amount, 1), loot.MAX_SAFE_SPACE_BASE)
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if not item:
+        await ctx.respond("This is not an item!", reply = True, mentions_reply = True)
+        return
+    
+    if item.id == "shulker_box":
+        await ctx.respond("You can't add this item!", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        shulker_inv = await psql.Inventory.get_one(conn, ctx.author.id, "shulker_box")
+        if not shulker_inv:
+            await ctx.respond("You don't have a shulker box! Shulker box is needed in order to safely store items.", reply = True, mentions_reply = True)
+            return
+        
+        slots_count = min(shulker_inv.amount, loot.MAX_SHULKER_EFFECT)
+        max_item_per_slot = loot.MAX_SAFE_SPACE_BASE
+        # Extra shulker boxes will increase the cap per slot.
+        if shulker_inv.amount > loot.MAX_SHULKER_EFFECT:
+            max_item_per_slot += loot.SAFE_SPACE_PER_EXTRA_SHULKER * (shulker_inv.amount - loot.MAX_SHULKER_EFFECT)
+        
+        item_inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
+        if not item_inv:
+            await ctx.respond("You don't have this item in your inventory!", reply = True, mentions_reply = True)
+            return
+        
+        amount = min(item_inv.amount, amount)
+
+        safe_inventories = await psql.ExtraInventory.get_user_inventory(conn, ctx.author.id)
+        _t = tuple(filter(lambda inv: inv.item_id == item.id, safe_inventories))
+        if len(_t) >= 1:
+            safe_inv = _t[0]
+            if safe_inv.amount >= max_item_per_slot:
+                await ctx.respond(f"You already have {max_item_per_slot} of this item saved. You can't put more than that!", 
+                    reply = True, mentions_reply = True, flags = hikari.MessageFlag.EPHEMERAL)
+                return
+            
+            amount = min(amount, max_item_per_slot - safe_inv.amount)
+        elif len(safe_inventories) >= slots_count:
+            await ctx.respond(f"You already have {slots_count} unique items saved. You can't put more than that!",
+                reply = True, mentions_reply = True, flags = hikari.MessageFlag.EPHEMERAL)
+            return
+        async with conn.transaction():
+            await psql.ExtraInventory.add(conn, ctx.author.id, item.id, amount)
+            await psql.Inventory.remove(conn, ctx.author.id, item.id, amount)
+    await ctx.respond(f"Moved {get_reward_str(bot, {item.id: amount})} to the safe inventory.", reply = True)
+
+@inventory.child
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("amount", "The amount to transfer. By default, only 1 will be transferred.", 
+    type = int,
+    min_value = 1, 
+    default = 1,
+)
+@lightbulb.option("item", "An item in your extra inventory.", autocomplete = item_autocomplete)
+@lightbulb.command("unsave", f"[{plugin.name}] Transfer an item from the safe spot back to the main inventory.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def inv_unsave(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
+    amount: int = max(ctx.options.amount, 1)
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if not item:
+        await ctx.respond("This is not an item!", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        safe_inv = await psql.ExtraInventory.get_one(conn, ctx.author.id, item.id)
+        if not safe_inv:
+            await ctx.respond("You don't have this item in your safe inventory!", reply = True, mentions_reply = True)
+            return
+        
+        amount = min(safe_inv.amount, amount)
+        async with conn.transaction():
+            await psql.ExtraInventory.remove(conn, ctx.author.id, item.id, amount)
+            await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
+    await ctx.respond(f"Moved {get_reward_str(bot, {item.id: amount})} to the main inventory.", reply = True)
 
 @plugin.command()
 @lightbulb.command("market", f"[{plugin.name}] View public purchases.")

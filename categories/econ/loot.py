@@ -19,8 +19,27 @@ RESERVED_KEYS = (
     "raw_damage"
 )
 
+# Define items that will not be multiplied by `multiply_reward()`, which also prevent them from being affected by multiplying potions.
+PREVENT_MULTIPLY = (
+    "shulker_box",
+    "streak_freezer",
+)
+
+# Define items that will not be removed upon death.
+NON_REMOVABLE_ON_DEATH = (
+    "shulker_box",
+    "streak_freezer",
+)
+
 # Define how many potions can be equipped by default.
 POTIONS_CAP = 3
+
+# Define how many shulker slot to be counted. This doesn't mean the user can't own more shulker boxes, it just extra shulker boxes won't count towards extra slots.
+MAX_SHULKER_EFFECT = 27
+
+# Define the base maximum amount of items per slot can the extra slot hold. For each shulker that exceed MAX_SHULKER_EFFECT, a SAFE_SLOT_PER_EXTRA_SHULKER multiplier will add towards the total items.
+MAX_SAFE_SPACE_BASE = 50
+SAFE_SPACE_PER_EXTRA_SHULKER = 10
 
 # Define how often sudden death will trigger and kill the user regardless of their common damage reduction.
 SUDDEN_DEATH_CHANCE = 0.0025
