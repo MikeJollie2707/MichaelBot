@@ -608,6 +608,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../action/" class="md-nav__link">
+        Action Commands
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../trade/" class="md-nav__link">
         Trading System
       </a>
@@ -636,8 +650,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../potions/" class="md-nav__link">
         Potions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safe_inventory/" class="md-nav__link">
+        Safe Inventory
       </a>
     </li>
   
@@ -724,13 +766,13 @@
 /craft Wood Pickaxe
 </code></pre>
 <p>Note that for prefix commands, some items' name need to be enclosed inside <code>""</code> like <code>"Wood Pickaxe"</code>. This is not a problem for slash commands.</p>
-<p>A pickaxe (in this case, the <code>Wood Pickaxe</code>) is considered to be an equipment, a subset of items that can be equipped and used. Other equipment can include a sword, axe, and potion (some of these are mere concept and not yet added). To use certain equipments, you'll need to equip them using <code>equip</code>. Sword, pickaxe, and axe are considered as <em>tools</em>, while potions are on their own.</p>
-<pre><code>/equip tool Wood Pickaxe
+<p>A pickaxe (in this case, the <code>Wood Pickaxe</code>) is considered to be an equipment, a subset of items that can be equipped and used. Other equipment can include a sword, axe, and <a href="../potions/">potion</a>. To use certain equipments, you'll need to equip them using <code>use</code>. Sword, pickaxe, and axe are considered as <em>tools</em>, while potions are on their own.</p>
+<pre><code>/use tool Wood Pickaxe
 </code></pre>
-<p>Now that you have your wooden pickaxe equipped, time to go mining.</p>
-<pre><code>/mine
+<p>Now that you have your wooden pickaxe equipped, time to go <a href="../action/">mining</a>.</p>
+<pre><code>/mine 5 (Overworld)
 </code></pre>
-<p>These are considered to be <em>action commands</em>. These need certain equipments to be equipped before performing the action. In this case, <code>mine</code> requires a pickaxe equipped before using it, otherwise, it'll send an error.</p>
+<p>These are considered to be <a href="../action/"><em>action commands</em></a>. These need certain equipments to be equipped before performing the action. In this case, <code>mine</code> requires a pickaxe equipped before using it, otherwise, it'll send an error.</p>
 <p>After the mining, you'll have some stone. Use them to craft more tools like in Minecraft. At this point, the progression is similar to Minecraft, so you should be able to progress. If not, feel free to explore what the system can do.</p>
 
 
@@ -766,13 +808,13 @@
       
       
         
-        <a href="../trade/" class="md-footer__link md-footer__link--next" aria-label="Next: Trading System" rel="next">
+        <a href="../action/" class="md-footer__link md-footer__link--next" aria-label="Next: Action Commands" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Trading System
+              Action Commands
             </div>
           </div>
           <div class="md-footer__button md-icon">

@@ -567,6 +567,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../action/" class="md-nav__link">
+        Action Commands
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../trade/" class="md-nav__link">
         Trading System
       </a>
@@ -676,8 +690,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../potions/" class="md-nav__link">
         Potions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safe_inventory/" class="md-nav__link">
+        Safe Inventory
       </a>
     </li>
   
@@ -823,6 +865,7 @@
 <li>Iron pickaxe: 15</li>
 <li>Diamond tools: 25</li>
 <li>Netherite tools: 25</li>
+<li>Star tools: 30</li>
 <li>Fire Potion: 2</li>
 <li>Haste Potion: 2 when mining and chopping</li>
 <li>Strength Potion: 2 when exploring</li>
@@ -830,8 +873,8 @@
 <li>Looting Potion: 5 when exploring</li>
 <li>Nature Potion: 5 when chopping</li>
 <li>Luck Potion: 10</li>
-<li><code>Staph Dying!</code> badge: 3 per equipment (including potions)</li>
-<li><code>Kasaneru IF</code> badge: 2 per equipment (including potions)</li>
+<li><code>Staph Dying!</code> badge: 2 per equipment (including potions)</li>
+<li><code>Kasaneru IF</code> badge: 3 per equipment (including potions)</li>
 </ul>
 <p>Note that for tools, reduction only applies to the corresponding action. For example, if you have a diamond pickaxe and an iron sword, then when mining, you'll have the 25 reductions, while when you're exploring, you'll have the 20 reductions.</p>
 <h2 id="death-penalty">Death Penalty</h2>
@@ -840,7 +883,11 @@
 <li>Losing all equipments with few exceptions.</li>
 <li>Losing all potions.</li>
 <li>Losing 20% of current balance (rounded up).</li>
-<li>Losing 5% (2% if <code>How are you still sane?</code> badge is acquired) of all items in inventory (rounded up).</li>
+<li>Losing 5% of all items in inventory (rounded up).<ul>
+<li>If the user is in the <code>End</code>, this will be 95% of the inventory rounded down.</li>
+<li>If you have <code>How are you still sane?</code> badge, this penalty is halved.</li>
+</ul>
+</li>
 <li>If the user is in a different world, they'll be forced to be in the Overworld, with a few exceptions. <em>This won't update the cooldown in <code>travel</code></em>.</li>
 <li>Health reset back to 100.</li>
 </ul>
@@ -879,13 +926,13 @@
       
       
         
-        <a href="../potions/" class="md-footer__link md-footer__link--next" aria-label="Next: Potions" rel="next">
+        <a href="../world/" class="md-footer__link md-footer__link--next" aria-label="Next: World" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Potions
+              World
             </div>
           </div>
           <div class="md-footer__button md-icon">

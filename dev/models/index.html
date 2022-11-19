@@ -821,6 +821,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../econ/action/" class="md-nav__link">
+        Action Commands
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../econ/trade/" class="md-nav__link">
         Trading System
       </a>
@@ -849,8 +863,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../../econ/world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../econ/potions/" class="md-nav__link">
         Potions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../econ/safe_inventory/" class="md-nav__link">
+        Safe Inventory
       </a>
     </li>
   
@@ -2782,7 +2824,11 @@ otherwise, two or more cache might exist at the same time, causing some sort of 
 <span class="normal">458</span>
 <span class="normal">459</span>
 <span class="normal">460</span>
-<span class="normal">461</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MichaelBot</span><span class="p">(</span><span class="n">lightbulb</span><span class="o">.</span><span class="n">BotApp</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.&#39;&#39;&#39;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
@@ -2910,7 +2956,11 @@ otherwise, two or more cache might exist at the same time, causing some sort of 
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># The bucket for a user exists, but no cooldown is applied.</span>
+                <span class="k">return</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -3302,7 +3352,11 @@ otherwise, two or more cache might exist at the same time, causing some sort of 
 <span class="normal">458</span>
 <span class="normal">459</span>
 <span class="normal">460</span>
-<span class="normal">461</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">reset_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">Context</span><span class="p">):</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">reset_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">lightbulb</span><span class="o">.</span><span class="n">Context</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A shortcut to reset a command&#39;s cooldown.</span>
 
 <span class="sd">    Parameters</span>
@@ -3312,7 +3366,11 @@ otherwise, two or more cache might exist at the same time, causing some sort of 
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">ctx</span><span class="o">.</span><span class="n">invoked</span><span class="o">.</span><span class="n">cooldown_manager</span><span class="o">.</span><span class="n">reset_cooldown</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># The bucket for a user exists, but no cooldown is applied.</span>
+            <span class="k">return</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>

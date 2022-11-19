@@ -500,15 +500,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#utils.helpers.get_friendly_permissions" class="md-nav__link">
-    get_friendly_permissions()
+  <a href="#utils.helpers.get_friendly_permissions_formatted" class="md-nav__link">
+    get_friendly_permissions_formatted()
   </a>
   
-    <nav class="md-nav" aria-label="get_friendly_permissions()">
+    <nav class="md-nav" aria-label="get_friendly_permissions_formatted()">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#utils.helpers.get_friendly_permissions--notes" class="md-nav__link">
+  <a href="#utils.helpers.get_friendly_permissions_formatted--notes" class="md-nav__link">
     Notes
   </a>
   
@@ -658,6 +658,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../econ/action/" class="md-nav__link">
+        Action Commands
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../econ/trade/" class="md-nav__link">
         Trading System
       </a>
@@ -686,8 +700,36 @@
   
   
     <li class="md-nav__item">
+      <a href="../../econ/world/" class="md-nav__link">
+        World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../econ/potions/" class="md-nav__link">
         Potions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../econ/safe_inventory/" class="md-nav__link">
+        Safe Inventory
       </a>
     </li>
   
@@ -746,15 +788,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#utils.helpers.get_friendly_permissions" class="md-nav__link">
-    get_friendly_permissions()
+  <a href="#utils.helpers.get_friendly_permissions_formatted" class="md-nav__link">
+    get_friendly_permissions_formatted()
   </a>
   
-    <nav class="md-nav" aria-label="get_friendly_permissions()">
+    <nav class="md-nav" aria-label="get_friendly_permissions_formatted()">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#utils.helpers.get_friendly_permissions--notes" class="md-nav__link">
+  <a href="#utils.helpers.get_friendly_permissions_formatted--notes" class="md-nav__link">
     Notes
   </a>
   
@@ -917,7 +959,17 @@
 
       <details class="quote">
         <summary>Source code in <code>utils/helpers.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -929,17 +981,7 @@
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_emote</span><span class="p">(</span><span class="n">discord_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_emote</span><span class="p">(</span><span class="n">discord_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Return the Unicode emoji based on the name provided.</span>
 
 <span class="sd">    Parameters</span>
@@ -972,12 +1014,12 @@
 
 
 
-<h2 id="utils.helpers.get_friendly_permissions" class="doc doc-heading">
-        <span class="doc doc-object-name doc-function-name">get_friendly_permissions</span>
+<h2 id="utils.helpers.get_friendly_permissions_formatted" class="doc doc-heading">
+        <span class="doc doc-object-name doc-function-name">get_friendly_permissions_formatted</span>
 
 
 </h2>
-<div class="highlight"><pre><span></span><code><span class="n">get_friendly_permissions</span><span class="p">(</span><span class="n">permissions</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Permissions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<div class="highlight"><pre><span></span><code><span class="n">get_friendly_permissions_formatted</span><span class="p">(</span><span class="n">permissions</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Permissions</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">formatter</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;`</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -1006,6 +1048,16 @@ This returns the exact Discord's string of the permission.</p>
               <em>required</em>
           </td>
         </tr>
+        <tr>
+          <td><code>formatter</code></td>
+          <td>
+                <code><span title="typing">t</span>.<span title="typing.Callable">Callable</span>[[str], str]</code>
+          </td>
+          <td><p>A transformation to apply for each permission text. By default, this apply a Discord highlight effect.</p></td>
+          <td>
+                <code>lambda s: f&#39;`{s}`&#39;</code>
+          </td>
+        </tr>
     </tbody>
   </table>
 
@@ -1022,16 +1074,26 @@ This returns the exact Discord's string of the permission.</p>
           <td>
                 <code><span title="typing">t</span>.<span title="typing.List">List</span>[str]</code>
           </td>
-          <td><p>A list of highlighted permissions string represented in the permission provided.</p></td>
+          <td><p>A list of permissions string represented in the permission provided.</p></td>
         </tr>
     </tbody>
   </table>
-      <h4 id="utils.helpers.get_friendly_permissions--notes">Notes</h4>
+      <h4 id="utils.helpers.get_friendly_permissions_formatted--notes">Notes</h4>
 <p><code>Manage Events</code> cannot be found in Hikari's documentation. Therefore, it is not included.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils/helpers.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
@@ -1046,15 +1108,7 @@ This returns the exact Discord's string of the permission.</p>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_friendly_permissions</span><span class="p">(</span><span class="n">permissions</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Permissions</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_friendly_permissions_formatted</span><span class="p">(</span><span class="n">permissions</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Permissions</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">formatter</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&#39;&#39;&#39;Return a list of highlighted permissions string presented in the permission provided.</span>
 <span class="sd">    This returns the exact Discord&#39;s string of the permission.</span>
 
@@ -1062,11 +1116,13 @@ This returns the exact Discord's string of the permission.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    permissions : hikari.Permissions</span>
 <span class="sd">        A permission object.</span>
+<span class="sd">    formatter : t.Callable[[str], str]</span>
+<span class="sd">        A transformation to apply for each permission text. By default, this apply a Discord highlight effect.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    t.List[str]</span>
-<span class="sd">        A list of highlighted permissions string represented in the permission provided.</span>
+<span class="sd">        A list of permissions string represented in the permission provided.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1076,7 +1132,7 @@ This returns the exact Discord's string of the permission.</p>
     <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">permission</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">__PERMISSIONS_MAPPING__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">permissions</span> <span class="o">&amp;</span> <span class="n">permission</span><span class="p">:</span>
-            <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">formatter</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">l</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1157,7 +1213,15 @@ This returns the exact Discord's string of the permission.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils/helpers.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
@@ -1188,15 +1252,7 @@ This returns the exact Discord's string of the permission.</p>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_default_embed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">author</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Member</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Embed</span><span class="p">:</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_default_embed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">author</span><span class="p">:</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Member</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hikari</span><span class="o">.</span><span class="n">Embed</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Return a default embed to work with for consistency.</span>
 
 <span class="sd">    Args:</span>
@@ -1304,7 +1360,15 @@ This returns the exact Discord's string of the permission.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils/helpers.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
@@ -1318,15 +1382,7 @@ This returns the exact Discord's string of the permission.</p>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">mention</span><span class="p">(</span><span class="n">mentionable_object</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">hikari</span><span class="o">.</span><span class="n">PartialUser</span><span class="p">,</span> <span class="n">hikari</span><span class="o">.</span><span class="n">PartialRole</span><span class="p">,</span> <span class="n">hikari</span><span class="o">.</span><span class="n">TextableGuildChannel</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">mention</span><span class="p">(</span><span class="n">mentionable_object</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">hikari</span><span class="o">.</span><span class="n">PartialUser</span><span class="p">,</span> <span class="n">hikari</span><span class="o">.</span><span class="n">PartialRole</span><span class="p">,</span> <span class="n">hikari</span><span class="o">.</span><span class="n">TextableGuildChannel</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Return the appropriate mention string for a mentionable object.</span>
 
 <span class="sd">    Parameters</span>
@@ -1401,17 +1457,17 @@ This returns the exact Discord's string of the permission.</p>
 
       <details class="quote">
         <summary>Source code in <code>utils/helpers.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
 <span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">sleep_until</span><span class="p">(</span><span class="n">when</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">sleep_until</span><span class="p">(</span><span class="n">when</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Wait until the specified time.</span>
 
 <span class="sd">    Parameters</span>
