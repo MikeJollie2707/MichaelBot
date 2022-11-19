@@ -2298,6 +2298,12 @@ async def travel(ctx: lightbulb.Context):
             return
         
         async with conn.transaction():
+            # Give free shulker box when first in the End.
+            if world == "end":
+                shulker_box = await psql.Inventory.get_one(conn, ctx.author.id, "shulker_box")
+                if not shulker_box:
+                    await psql.Inventory.add(conn, ctx.author.id, "shulker_box", 3)
+
             await psql.Inventory.remove(conn, ctx.author.id, ticket.item_id)
             user.world = world
             user.last_travel = dt.datetime.now().astimezone()
