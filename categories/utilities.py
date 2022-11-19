@@ -464,8 +464,11 @@ async def do_remind(bot: models.MichaelBot, user_id: int, message: str, when: dt
         await helpers.sleep_until(when)
     
     try:
-        dm_channel = await bot.rest.create_dm_channel(user_id)
-        await bot.rest.create_message(dm_channel, "Hi there! You told me to remind you about:\n" + message)
+        user = bot.cache.get_user(user_id)
+        if user is None:
+            user = await bot.rest.fetch_user(user_id)
+        
+        await user.send(f"Hi there! You told me to remind you about:\n{message}")
 
         if remind_id is not None:
             async with bot.pool.acquire() as conn:
@@ -478,6 +481,14 @@ async def do_remind(bot: models.MichaelBot, user_id: int, message: str, when: dt
     except hikari.ForbiddenError:
         # Don't remove reminder if the sending fails, will retry to send on next refresh cycle.
         # Although this most likely to be a block or sth, so maybe remove it once we know what happens to cause this error.
+
+        # This code is to remove reminders that stuck because of ForbiddenError.
+        #if when is not None:
+        #    current = dt.datetime.now().astimezone()
+        #    if (current - when).total_seconds() > 3600 * 24 * 30:
+        #        print(f"Reminder {remind_id} for {user_id} is too old. Removing this reminder...")
+        #        async with bot.pool.acquire() as conn:
+        #            await psql.Reminders.delete_reminder(conn, remind_id, user_id)
         pass
 @tasks.task(s = NOTIFY_REFRESH, auto_start = True, pass_app = True, wait_before_execution = True)
 async def scan_reminders(bot: models.MichaelBot):
@@ -502,7 +513,7 @@ async def scan_reminders(bot: models.MichaelBot):
         upcoming = await psql.Reminders.get_reminders(conn, current, future)
     
     for missed_reminder in passed:
-        bot.create_task(do_remind(bot, missed_reminder.user_id, missed_reminder.message, current, missed_reminder.remind_id))
+        bot.create_task(do_remind(bot, missed_reminder.user_id, missed_reminder.message, None, missed_reminder.remind_id))
     
     for upcoming_reminder in upcoming:
         bot.create_task(do_remind(bot, upcoming_reminder.user_id, upcoming_reminder.message, upcoming_reminder.awake_time, upcoming_reminder.remind_id))
