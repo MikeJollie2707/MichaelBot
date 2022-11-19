@@ -1479,28 +1479,28 @@ __CRAFT_RECIPE = {
 }
 
 __BREW_RECIPE = {
-    # 28143
+    # 37491
     "luck_potion": {
         "nether_star": 66,
         "lucky_clover": 420,
-        "hibiscus": 999,
-        "tulip": 999,
-        "rose": 999,
-        "redstone": 999,
-        "gunpowder": 999,
-        "blaze_rod": 99,
+        "hibiscus": 777,
+        "tulip": 777,
+        "rose": 777,
+        "redstone": 777,
+        "gunpowder": 777,
+        "blaze_rod": 69,
         "cost": 6969,
         "result": 3
     },
-    # 19479
+    # 35058
     "undying_potion": {
-        "nether_star": 51,
-        "lucky_clover": 51,
+        "nether_star": 99,
+        "lucky_clover": 99,
         "nether_respawner": 33,
         "fire_potion": 9,
-        "redstone": 333,
-        "gunpowder": 333,
-        "blaze_rod": 33,
+        "redstone": 666,
+        "gunpowder": 666,
+        "blaze_rod": 99,
         "cost": 420,
         "result": 3
     },
@@ -1580,13 +1580,13 @@ __BREW_RECIPE = {
 }
 
 __POTION_CHANCE = {
-    "fire_potion": 0.70,
+    "fire_potion": 1,
     "haste_potion": 0.50,
     "fortune_potion": 0.50,
     "nature_potion": 0.50,
     "strength_potion": 0.50,
     "looting_potion": 0.50,
-    "luck_potion": 0.50,
+    "luck_potion": 0.65,
     "undying_potion": 1,
 }
 
