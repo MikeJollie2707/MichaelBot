@@ -140,6 +140,15 @@ async def on_guild_leave(event: hikari.GuildLeaveEvent):
         bot.guild_cache.remove_local(event.guild_id)
         logger.info(f"Bot left guild '{event.guild_id}'. Cache entry removed.")
 
+@plugin.listener(hikari.GuildMessageCreateEvent)
+async def on_guild_message(event: hikari.GuildMessageCreateEvent):
+    msg = event.message
+    if msg.author.is_bot or event.guild_id != 868449475323101224:
+        return
+    
+    if msg.content.startswith('/'):
+        await event.app.rest.create_message(event.channel_id, "L, you just got slashed phone user.", reply = msg.id, mentions_reply = True)
+
 @plugin.listener(hikari.StoppingEvent)
 async def on_stopping(event: hikari.StoppingEvent):
     bot: models.MichaelBot = event.app
