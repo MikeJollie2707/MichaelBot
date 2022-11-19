@@ -76,17 +76,6 @@ COMMAND_STANDARD_PERMISSIONS = (
     hikari.Permissions.READ_MESSAGE_HISTORY,
 )
 
-# TODO: Might deprecate this because dataclass has asdict() to convert to a dict.
-class ClassToDict:
-    def to_dict(self) -> dict:
-        if not hasattr(self, "__slots__") or not self.__slots__:
-            return self.__dict__
-        
-        d = {}
-        for attr in self.__slots__:
-            d[attr] = getattr(self, attr)
-        return d
-
 def get_emote(discord_text: str, /) -> str:
     '''Return the Unicode emoji based on the name provided.
 
