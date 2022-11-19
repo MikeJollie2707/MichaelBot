@@ -10,7 +10,7 @@ In addition to their main effects, potions often have their **passive effects**.
 
 All potions will be cleared when you die, so you have to plan carefully with your death chance.
 
-Potions can be obtained via **brewing**, which is just crafting but for potions. You'll need a lot of items along with some money, then use `brew <potion>`. Currently, each brew will give you 3 potions.
+Potions can be obtained via **brewing**, which is just crafting but for potions. You'll need a lot of items along with some money, then use `brew <potion>`. Currently, each brew will give you 3 potions, but this can be increased via [badges](badges.md).
 
 This document will briefly describe all current potions in more details. It won't list the brew recipe because this can be easily checked via `info item`. All of the info here can be verified in the source code in `categories/economy.py` and `categories/econ/loot.py` if you have trust issues with me.
 
@@ -18,7 +18,7 @@ This document will briefly describe all current potions in more details. It won'
 
 The easiest potion to obtain. You can grab it in `market` with a price of 1500 alternatively besides the standard brewing system.
 
-- **Main Effect:** When the user dies in the Nether, there is a 70% chance this potion will activate, negating the death of the user. 
+- **Main Effect:** When the user dies in the Nether, there is a 100% chance this potion will activate, negating the death of the user. 
 - **Passive Effect:** Lower the maximum damage by 2 on all dimensions.
 - **Durability:** 10
 
@@ -60,11 +60,11 @@ Note that because it says "roll", you don't necessarily get x5 rewards, but your
 
 ## Luck Potion
 
-- **Main Effect:** A 50% chance to multiplies the drop by 2 times. Also ensure that 1. If a possible drop is already dropped, it'll then drop `max_amount` and 2. If a possible drop is not dropped, it'll then drop `min_amount`.
+- **Main Effect:** A 65% chance to multiplies the drop by 2.25 times (rounded up). Also ensure that 1. If a possible drop is already dropped, it'll then drop `max_amount` and 2. If a possible drop is not dropped, it'll then drop `min_amount`.
 - **Passive Effect:** Lower the maximum damage by 10 on all dimensions. As a `Legendary` equipment, this cannot be lost upon death while equipped.
 - **Durability:** 50
 
-This is a powerful potion that basically removes the rate in which an item drops. It'd be basically 50%, completely based on whether the potion activates or not. However, note that there's a chance an item won't be dropped if its `min_amount` is 0.
+This is a powerful potion that basically removes the rate in which most items drop. It'd be basically 50%, completely based on whether the potion activates or not. However, note that there's a chance an item won't be dropped if its `min_amount` is 0.
 
 ## Undying Potion
 
@@ -72,4 +72,4 @@ This is a powerful potion that basically removes the rate in which an item drops
 - **Passive Effect:** While equipped, this potion will allow the user to equip 1 more potion. As a `Legendary` equipment, this cannot be lost upon death while equipped.
 - **Durability:** 20
 
-This is an extremely useful potion that guarantees you to not die, while essentially costing you no potion slot. It also renders some locations no longer dangerous, since most of the damage dealt by those location are typically well over 50. Definitely useful to get.
+This is an extremely useful potion that guarantees you to not die, while essentially costing you no potion slot. It also renders some locations no longer dangerous, since most of the damage dealt by those location are typically well over 40. Definitely useful to get.
