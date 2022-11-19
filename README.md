@@ -24,7 +24,7 @@ More features will be added as I work on to restore the bot to its glory.
 
 ## Libraries
 
-These are the libraries I used. All of these can be installed with `requirement.txt` (or `win_requirement.txt` if you're on Windows).
+These are the libraries I used. All of these can be installed with `requirement.txt`. If you're on Windows, use `win_requirement.txt` instead (`uvloop` is not available on Windows). Note that I don't actively maintain on Windows, so if there are any troubles relating to version with `win_requirement.txt`, create an issue and I'll try to update it.
 
 - [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb) & [hikari-miru](https://github.com/HyperGH/hikari-miru)
 - [Lavalink](https://github.com/freyacodes/Lavalink) & [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)

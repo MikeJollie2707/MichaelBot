@@ -458,4 +458,8 @@ class MichaelBot(lightbulb.BotApp):
         '''
         
         if ctx.invoked.cooldown_manager is not None:
-            await ctx.invoked.cooldown_manager.reset_cooldown(ctx)
+            try:
+                await ctx.invoked.cooldown_manager.reset_cooldown(ctx)
+            except KeyError:
+                # The bucket for a user exists, but no cooldown is applied.
+                return

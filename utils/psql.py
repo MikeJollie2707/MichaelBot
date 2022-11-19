@@ -41,12 +41,23 @@ async with pool.acquire() as conn:
 With transaction:
 ```py
 async with pool.acquire() as conn:
-    users: list[psql.User] | None = await psql.User.get_all(conn)
+    users: list[psql.User] = await psql.User.get_all(conn)
     async with conn.transaction():
         for user in users:
             user.is_whitelist = ...
             user.balance = ...
             await psql.User.update(conn, user)
+```
+
+Query with constraint:
+```py
+def e_in_name(user: psql.User) -> bool:
+    # Apply any filtering here.
+    return 'e' in user.name
+
+async with pool.acquire() as conn:
+    users: list[psql.User] = await psql.User.get_all_where(conn, where = e_in_name)
+    # Do stuffs.
 ```
 '''
 
@@ -89,7 +100,7 @@ class UpdateError(Error):
 class DuplicateArrayElement(UpdateError):
     '''Raised when trying to add an element that's already available in a unique-only list (set).'''
 
-def record_to_type(record: asyncpg.Record, /, result_type: t.Type[T] = dict) -> T:
+def record_to_type(record: asyncpg.Record, /, result_type: t.Type[T] = dict) -> T | dict | None:
     '''Convert a `asyncpg.Record` into a `dict` or `None` if the object is already `None`.
 
     This is for convenience purpose, where `dict(Record)` will return `{}` which is not an accurate
@@ -1448,3 +1459,166 @@ class UserBadge:
         return await UserBadge.update_column(conn, user_id, badge_id, "badge_progress", existing_badge.badge_progress)
     def completed(self):
         return self.badge_progress >= self.badge_requirement
+
+@dataclasses.dataclass(slots = True)
+class ExtraInventory:
+    # Although this class is practically a clone of Inventory, we need to manually define all of them because of default args.
+    '''Represent an entry in the `UserExtraInventory` table along with possible operations related to the table.'''
+
+    user_id: int
+    item_id: str
+    amount: int
+
+    __PREVENT_UPDATE = ("user_id", "item_id")
+
+    @staticmethod
+    async def get_all(conn: asyncpg.Connection, *, as_dict: bool = False) -> list[t.Union[ExtraInventory, dict]]:
+        '''Get all entries in the table.'''
+
+        return await ExtraInventory.get_all_where(conn, as_dict = as_dict)
+    @staticmethod
+    async def get_all_where(conn: asyncpg.Connection, *, where: t.Callable[[ExtraInventory], bool] = lambda r: True, as_dict: bool = False) -> list[t.Union[ExtraInventory, dict]]:
+        '''Get all entires in the table that matches the condition.'''
+
+        query = """
+            SELECT * FROM UserExtraInventory
+            ORDER BY amount DESC;
+        """
+        return await __get_all__(conn, query, where = where, result_type = ExtraInventory if not as_dict else dict)
+    @staticmethod
+    async def get_one(conn: asyncpg.Connection, user_id: int, item_id: str, *, as_dict: bool = False) -> t.Union[Inventory, dict]:
+        '''Get the first entry in the table that matches the pkey provided.'''
+
+        query = """
+            SELECT * FROM UserExtraInventory
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+
+        return await __get_one__(conn, query, user_id, item_id, result_type = Inventory if not as_dict else dict)
+    @staticmethod
+    async def get_user_inventory(conn, user_id: int, *, as_dict: bool = False) -> list[t.Union[ExtraInventory, dict]]:
+        '''Get all entries in the table that belongs to a user.'''
+
+        return await ExtraInventory.get_all_where(conn, where = lambda r: r.user_id == user_id, as_dict = as_dict)
+    @staticmethod
+    async def insert_one(conn: asyncpg.Connection, inventory: ExtraInventory) -> int:
+        '''Insert an entry into the table.'''
+
+        query = insert_into_query("UserExtraInventory", len(ExtraInventory.__slots__))
+        return await run_and_return_count(conn, query, inventory.user_id, inventory.item_id, inventory.amount)
+    @staticmethod
+    async def delete(conn: asyncpg.Connection, user_id: int, item_id: str) -> int:
+        query = """
+            DELETE FROM UserExtraInventory
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+        return await run_and_return_count(conn, query, user_id, item_id)
+    @staticmethod
+    async def update_column(conn: asyncpg.Connection, user_id: int, item_id: str, column: str, new_value) -> int:
+        '''Update a specific column with a new value.
+
+        Warnings
+        --------
+        Columns that are in `__PREVENT_UPDATE` (usually primary keys) will be ignored. To update such columns, use raw SQL.
+
+        Notes
+        -----
+        Always prefer using other functions to update rather than this function if possible.
+        '''
+
+        if column in ExtraInventory.__PREVENT_UPDATE:
+            return 0
+        
+        query = f"""
+            UPDATE UserExtraInventory
+            SET {column} = ($3)
+            WHERE user_id = ($1) AND item_id = ($2);
+        """
+        return await run_and_return_count(conn, query, user_id, item_id, new_value)
+    @staticmethod
+    async def add(conn: asyncpg.Connection, user_id: int, item_id: str, amount: int = 1) -> int:
+        '''Add item into the user's inventory.
+
+        Notes
+        -----
+        This should be preferred over `ExtraInventory.insert_one()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        user_id : int
+            The user's id to insert.
+        item_id : str
+            The item's id to insert.
+        amount : int, optional
+            The amount of items to add. Default to 1.
+
+        Returns
+        -------
+        int
+            The number of entries affected. Should be 1 or 0.
+        '''
+
+        existed = await ExtraInventory.get_one(conn, user_id, item_id)
+        if not existed:
+            return await ExtraInventory.insert_one(conn, ExtraInventory(user_id, item_id, amount))
+        else:
+            return await ExtraInventory.update_column(conn, user_id, item_id, "amount", existed.amount + amount)
+    @staticmethod
+    async def remove(conn: asyncpg.Connection, user_id: int, item_id: str, amount: int = 1) -> int:
+        '''Remove item from the user's inventory.
+
+        Notes
+        -----
+        This should be preferred over `ExtraInventory.delete()`.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        user_id : int
+            The user's id to insert.
+        item_id : str
+            The item's id to insert.
+        amount : int, optional
+            The amount of items to remove. Default to 1.
+
+        Returns
+        -------
+        int
+            The number of entries affected. Should be 1 or 0.
+        '''
+        existed = await ExtraInventory.get_one(conn, user_id, item_id)
+        if not existed:
+            return 0
+        elif existed.amount <= amount:
+            return await ExtraInventory.delete(conn, user_id, item_id)
+        else:
+            return await ExtraInventory.update_column(conn, user_id, item_id, "amount", existed.amount - amount)
+    @staticmethod
+    async def update(conn: asyncpg.Connection, inventory: ExtraInventory) -> int:
+        '''Update an entry based on the provided object, or insert it if not existed.
+
+        This function calls `get_one()` internally, causing an overhead.
+
+        Notes
+        -----
+        This function has its own transaction.
+        '''
+
+        existing_inv = await ExtraInventory.get_one(conn, inventory.user_id, inventory.item_id)
+        if not existing_inv:
+            return await ExtraInventory.insert_one(conn, inventory)
+        
+        if inventory.amount <= 0:
+            return await ExtraInventory.delete(conn, inventory.user_id, inventory.item_id)
+
+        diff_col = []
+        for col in existing_inv.__slots__:
+            if col in ("user_id", "item_id", "amount"):
+                if getattr(existing_inv, col) != getattr(inventory, col):
+                    diff_col.append(col)
+        async with conn.transaction():
+            for change in diff_col:
+                await ExtraInventory.update_column(conn, inventory.user_id, inventory.item_id, change, getattr(inventory, change))

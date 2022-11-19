@@ -15,18 +15,18 @@ Next, you'll need to *craft* some items to move on. Like Minecraft, you usually 
 
 Note that for prefix commands, some items' name need to be enclosed inside `""` like `"Wood Pickaxe"`. This is not a problem for slash commands.
 
-A pickaxe (in this case, the `Wood Pickaxe`) is considered to be an equipment, a subset of items that can be equipped and used. Other equipment can include a sword, axe, and potion (some of these are mere concept and not yet added). To use certain equipments, you'll need to equip them using `equip`. Sword, pickaxe, and axe are considered as *tools*, while potions are on their own.
+A pickaxe (in this case, the `Wood Pickaxe`) is considered to be an equipment, a subset of items that can be equipped and used. Other equipment can include a sword, axe, and [potion](potions.md). To use certain equipments, you'll need to equip them using `use`. Sword, pickaxe, and axe are considered as *tools*, while potions are on their own.
 
 ```
-/equip tool Wood Pickaxe
+/use tool Wood Pickaxe
 ```
 
-Now that you have your wooden pickaxe equipped, time to go mining.
+Now that you have your wooden pickaxe equipped, time to go [mining](action.md).
 
 ```
-/mine
+/mine 5 (Overworld)
 ```
 
-These are considered to be *action commands*. These need certain equipments to be equipped before performing the action. In this case, `mine` requires a pickaxe equipped before using it, otherwise, it'll send an error.
+These are considered to be [*action commands*](action.md). These need certain equipments to be equipped before performing the action. In this case, `mine` requires a pickaxe equipped before using it, otherwise, it'll send an error.
 
 After the mining, you'll have some stone. Use them to craft more tools like in Minecraft. At this point, the progression is similar to Minecraft, so you should be able to progress. If not, feel free to explore what the system can do.

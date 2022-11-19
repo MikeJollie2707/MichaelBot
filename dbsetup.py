@@ -109,6 +109,15 @@ async def setup_database(user, password, database, host, port):
             );
         """)
 
+        await create_table(conn, "UserExtraInventory", """
+            CREATE TABLE UserExtraInventory (
+                user_id INT8 NOT NULL REFERENCES Users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                item_id TEXT NOT NULL REFERENCES Items(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                amount INT NOT NULL CHECK (amount >= 0),
+                PRIMARY KEY (user_id, item_id)
+            );
+        """)
+
         await create_table(conn, "UserEquipment", """
             CREATE TABLE UserEquipment (
                 user_id INT8 NOT NULL REFERENCES Users(id) ON UPDATE CASCADE ON DELETE CASCADE,

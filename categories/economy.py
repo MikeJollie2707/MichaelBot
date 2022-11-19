@@ -17,6 +17,7 @@ CURRENCY_ICON = "<:emerald:993835688137072670>"
 TRADE_REFRESH = 3600 * 4
 
 class PotionActivation(IntFlag):
+    '''A bit class that stores whether a potion is activated. This saves some memory.'''
     FIRE_POTION = auto()
     HASTE_POTION = auto()
     FORTUNE_POTION = auto()
@@ -29,8 +30,7 @@ class PotionActivation(IntFlag):
     def has_flag(self, flags, *, any_flag: bool = False) -> bool:
         if any_flag:
             return bool(self & flags)
-        else:
-            return self & flags == flags
+        return self & flags == flags
 
 def get_final_damage(raw_damage: int, reductions: int) -> int:
     # Check sudden death
@@ -82,6 +82,7 @@ def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option
 
 def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
     '''A shortcut to multiply the rewards in-place.
+    This will not multiply rewards that are defined in `loot.PREVENT_MULTIPLY`.
 
     Parameters
     ----------
@@ -95,7 +96,8 @@ def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
         raise ValueError("'multiplier' cannot be 0.")
 
     for key in loot_table:
-        loot_table[key] = round(loot_table[key] * multiplier)
+        if key not in loot.PREVENT_MULTIPLY:
+            loot_table[key] = round(loot_table[key] * multiplier)
 
 def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -> int:
     '''Get the value of a loot table.
@@ -213,8 +215,10 @@ async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dic
 async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     '''A shortcut to process a user's death.
 
-    This includes wiping all their equipped tools, 5% of their inventories, 20% of their money,
+    This includes wiping all their equipped tools, applying penalties to inventories and money,
     and move them to the Overworld.
+
+    This also attempt the following badges: `death0`, `death1`, `death2`, `death3`.
 
     Notes
     -----
@@ -252,17 +256,29 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
             await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
         for inv in inventories:
-            if inv.item_id == "streak_freezer":
+            if inv.item_id in loot.NON_REMOVABLE_ON_DEATH:
                 continue
             
             if user.world == "nether" and inv.item_id == "nether_respawner":
                 inv.amount -= 1
                 back_to_overworld = False
             else:
+                strict_penalty = False # Round up or down, default to down.
+                death_penalty = 0.05
+                if user.world == "end":
+                    death_penalty = 0.95
+                    strict_penalty = True
                 if not death2_badge.completed():
-                    inv.amount -= inv.amount * 5 // 100
+                    death_penalty *= 0.5
+                
+                if not strict_penalty:
+                    inv.amount -= int(inv.amount * death_penalty)
                 else:
-                    inv.amount -= inv.amount * 2 // 100
+                    # Round up.
+                    inv.amount -= int(inv.amount * death_penalty) + 1
+                
+                inv.amount = max(0, inv.amount)
+                
             await psql.Inventory.update(conn, inv)
         
         user.balance -= user.balance * 20 // 100
@@ -271,6 +287,66 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
         user.health = 100
         
         await bot.user_cache.update(conn, user)
+
+async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    items = []
+    for item in bot.item_cache.values():
+        items.append(item.name)
+    
+    if option.value == '':
+        return items[:25]
+    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
+
+async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    equipments = []
+    for item in bot.item_cache.values():
+        if psql.Equipment.is_true_equipment(item.id):
+            equipments.append(item.name)
+    
+    if option.value == '':
+        return equipments[:25]
+    return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
+
+async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    potions = []
+    for item in bot.item_cache.values():
+        if psql.Equipment.is_potion(item.id):
+            potions.append(item.name)
+    
+    if option.value == '':
+        return potions[:25]
+    return [match_potion for match_potion in potions if match_algorithm(match_potion, option.value)][:25]
+
+async def food_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+    
+    foods = []
+    for item in bot.item_cache.values():
+        if item.id in loot.FOOD_HEALING:
+            foods.append(item.name)
+        
+    if option.value == '':
+        return foods[:25]
+    return [match_food for match_food in foods if match_algorithm(match_food, option.value)][:25]
+
 
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
@@ -696,7 +772,7 @@ async def use(ctx: lightbulb.Context):
 
 @use.child
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("equipment", "The equipment's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("equipment", "The equipment's name or alias to use.", type = converters.ItemConverter, autocomplete = equipment_autocomplete)
 @lightbulb.command("tool", f"[{plugin.name}] Use a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_tool(ctx: lightbulb.Context):
@@ -760,28 +836,13 @@ async def use_tool(ctx: lightbulb.Context):
         response_str += f"Equipped {item.emoji} *{item.name}*."
         
         await ctx.respond(response_str, reply = True)
-@use_tool.autocomplete("equipment")
-async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    equipments = []
-    for item in bot.item_cache.values():
-        if psql.Equipment.is_true_equipment(item.id):
-            equipments.append(item.name)
-    
-    if option.value == '':
-        return equipments[:25]
-    return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
 @use.child
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = potion_autocomplete)
 @lightbulb.command("potion", f"[{plugin.name}] Use a potion.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_potion(ctx: lightbulb.Context):
@@ -829,28 +890,13 @@ async def use_potion(ctx: lightbulb.Context):
         await psql.Equipment.transfer_from_inventory(conn, inv)
         
     await ctx.respond(f"Equipped {potion.emoji} *{potion.name}*", reply = True)
-@use_potion.autocomplete("potion")
-async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    potions = []
-    for item in bot.item_cache.values():
-        if psql.Equipment.is_potion(item.id):
-            potions.append(item.name)
-    
-    if option.value == '':
-        return potions[:25]
-    return [match_potion for match_potion in potions if match_algorithm(match_potion, option.value)][:25]
 
 @use.child
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = food_autocomplete)
 @lightbulb.command("food", f"[{plugin.name}] Use a food item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_food(ctx: lightbulb.Context):
@@ -900,21 +946,6 @@ async def use_food(ctx: lightbulb.Context):
         await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"You consumed *1x {food.emoji} {food.name}* and healed {heal_amount}HP.", reply = True)
-@use_food.autocomplete("food")
-async def food_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-    
-    foods = []
-    for item in bot.item_cache.values():
-        if item.id in loot.FOOD_HEALING:
-            foods.append(item.name)
-        
-    if option.value == '':
-        return foods[:25]
-    return [match_food for match_food in foods if match_algorithm(match_food, option.value)][:25]
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
@@ -962,26 +993,38 @@ async def _equipments(ctx: lightbulb.Context):
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("view_option", "Options to view inventory.", choices = ("compact", "full", "value"), default = "compact")
 @lightbulb.command("inventory", f"[{plugin.name}] View your inventory.", aliases = ["inv"])
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)
 async def inventory(ctx: lightbulb.Context):
-    view_option = ctx.options.view_option
+    raise lightbulb.CommandNotFound(invoked_with = ctx.invoked_with)
+@inventory.child
+@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("view_options", "Options to view inventory.", choices = ("compact", "full", "safe", "value"), default = "compact")
+@lightbulb.command("view", f"[{plugin.name}] View your inventory.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def inv_view(ctx: lightbulb.Context):
+    view_option = ctx.options.view_options
     bot: models.MichaelBot = ctx.bot
     
     async with bot.pool.acquire() as conn:
-        inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
-        if not inventories:
-            await ctx.respond("*Cricket noises*", reply = True)
-            return
-        
         if view_option == "compact":
+            inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
+            if not inventories:
+                await ctx.respond("*Cricket noises*", reply = True)
+                return
+            
             inv_dict: dict[str, int] = {}
             for inv in inventories:
                 inv_dict[inv.item_id] = inv.amount
             await ctx.respond(f"**{ctx.author.username}'s Inventory**\n{get_reward_str(bot, inv_dict, option = 'emote')}", reply = True)
         elif view_option == "full":
+            inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
+            if not inventories:
+                await ctx.respond("*Cricket noises*", reply = True)
+                return
+            
             page = nav.ItemListBuilder(inventories, 5)
             @page.set_page_start_formatter
-            def start_format(index: int, inv: psql.Inventory) -> hikari.Embed:
+            def start_format(_index: int, _inv: psql.Inventory) -> hikari.Embed:
                 return helpers.get_default_embed(
                     title = f"**{ctx.author.username}'s Inventory**",
                     description = "",
@@ -993,7 +1036,7 @@ async def inventory(ctx: lightbulb.Context):
                     ctx.author.avatar_url
                 )
             @page.set_entry_formatter
-            def entry_format(embed: hikari.Embed, index: int, inv: psql.Inventory):
+            def entry_format(embed: hikari.Embed, _index: int, inv: psql.Inventory):
                 item = bot.item_cache[inv.item_id]
                 embed.add_field(
                     name = f"{inv.amount}x {item.emoji} {item.name}",
@@ -1002,11 +1045,121 @@ async def inventory(ctx: lightbulb.Context):
             
             await nav.run_view(page.build(authors = (ctx.author.id,)), ctx)
         elif view_option == "value":
+            inventories = await psql.Inventory.get_user_inventory(conn, ctx.author.id)
             value = 0
             for inv in inventories:
                 item = bot.item_cache[inv.item_id]
                 value += item.sell_price * inv.amount
             await ctx.respond(f"If you sell all your items in your inventory, you'll get: {CURRENCY_ICON}{value}.", reply = True)
+        elif view_option == "safe":
+            # Basically just compact + shulker_inventories
+            inventories = await psql.ExtraInventory.get_user_inventory(conn, ctx.author.id)
+            if not inventories:
+                await ctx.respond("*Cricket noises*", reply = True)
+                return
+            
+            inv_dict: dict[str, int] = {}
+            for inv in inventories:
+                inv_dict[inv.item_id] = inv.amount
+            await ctx.respond(f"**{ctx.author.username}'s Inventory (Safe)**\n{get_reward_str(bot, inv_dict, option = 'emote')}", reply = True)
+
+@inventory.child
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("amount", "The amount to transfer. By default, all will be transferred.", 
+    type = int, 
+    min_value = 1,
+    default = loot.MAX_SAFE_SPACE_BASE,
+)
+@lightbulb.option("item", "An item in your inventory.", autocomplete = item_autocomplete)
+@lightbulb.command("save", f"[{plugin.name}] Transfer an item from your inventory to a safe spot.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def inv_save(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
+    amount: int = min(max(ctx.options.amount, 1), loot.MAX_SAFE_SPACE_BASE)
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if not item:
+        await ctx.respond("This is not an item!", reply = True, mentions_reply = True)
+        return
+    
+    if item.id == "shulker_box":
+        await ctx.respond("You can't add this item!", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        shulker_inv = await psql.Inventory.get_one(conn, ctx.author.id, "shulker_box")
+        if not shulker_inv:
+            await ctx.respond("You don't have a shulker box! Shulker box is needed in order to safely store items.", reply = True, mentions_reply = True)
+            return
+        
+        slots_count = min(shulker_inv.amount, loot.MAX_SHULKER_EFFECT)
+        max_item_per_slot = loot.MAX_SAFE_SPACE_BASE
+        # Extra shulker boxes will increase the cap per slot.
+        if shulker_inv.amount > loot.MAX_SHULKER_EFFECT:
+            max_item_per_slot += loot.SAFE_SPACE_PER_EXTRA_SHULKER * (shulker_inv.amount - loot.MAX_SHULKER_EFFECT)
+        
+        item_inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
+        if not item_inv:
+            await ctx.respond("You don't have this item in your inventory!", reply = True, mentions_reply = True)
+            return
+        
+        amount = min(item_inv.amount, amount)
+
+        safe_inventories = await psql.ExtraInventory.get_user_inventory(conn, ctx.author.id)
+        _t = tuple(filter(lambda inv: inv.item_id == item.id, safe_inventories))
+        if len(_t) >= 1:
+            safe_inv = _t[0]
+            if safe_inv.amount >= max_item_per_slot:
+                await ctx.respond(f"You already have {max_item_per_slot} of this item saved. You can't put more than that!", 
+                    reply = True, mentions_reply = True, flags = hikari.MessageFlag.EPHEMERAL)
+                return
+            
+            amount = min(amount, max_item_per_slot - safe_inv.amount)
+        elif len(safe_inventories) >= slots_count:
+            await ctx.respond(f"You already have {slots_count} unique items saved. You can't put more than that!",
+                reply = True, mentions_reply = True, flags = hikari.MessageFlag.EPHEMERAL)
+            return
+        async with conn.transaction():
+            await psql.ExtraInventory.add(conn, ctx.author.id, item.id, amount)
+            await psql.Inventory.remove(conn, ctx.author.id, item.id, amount)
+    await ctx.respond(f"Moved {get_reward_str(bot, {item.id: amount})} to the safe inventory.", reply = True)
+
+@inventory.child
+@lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("amount", "The amount to transfer. By default, only 1 will be transferred.", 
+    type = int,
+    min_value = 1, 
+    default = 1,
+)
+@lightbulb.option("item", "An item in your extra inventory.", autocomplete = item_autocomplete)
+@lightbulb.command("unsave", f"[{plugin.name}] Transfer an item from the safe spot back to the main inventory.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
+async def inv_unsave(ctx: lightbulb.Context):
+    item: psql.Item = ctx.options.item
+    amount: int = max(ctx.options.amount, 1)
+    bot: models.MichaelBot = ctx.bot
+
+    if isinstance(ctx, lightbulb.SlashContext):
+        item = await converters.ItemConverter(ctx).convert(item)
+    
+    if not item:
+        await ctx.respond("This is not an item!", reply = True, mentions_reply = True)
+        return
+
+    async with bot.pool.acquire() as conn:
+        safe_inv = await psql.ExtraInventory.get_one(conn, ctx.author.id, item.id)
+        if not safe_inv:
+            await ctx.respond("You don't have this item in your safe inventory!", reply = True, mentions_reply = True)
+            return
+        
+        amount = min(safe_inv.amount, amount)
+        async with conn.transaction():
+            await psql.ExtraInventory.remove(conn, ctx.author.id, item.id, amount)
+            await psql.Inventory.add(conn, ctx.author.id, item.id, amount)
+    await ctx.respond(f"Moved {get_reward_str(bot, {item.id: amount})} to the main inventory.", reply = True)
 
 @plugin.command()
 @lightbulb.command("market", f"[{plugin.name}] View public purchases.")
@@ -1049,7 +1202,7 @@ async def market_view(ctx: lightbulb.Context):
 
 @market.child
 @lightbulb.option("amount", "The amount to purchase. Default to 1.", type = int, min_value = 1, default = 1)
-@lightbulb.option("item", "The item to purchase.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The item to purchase.", type = converters.ItemConverter, autocomplete = item_autocomplete)
 @lightbulb.command("buy", f"[{plugin.name}] Buy an item from the market.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_buy(ctx: lightbulb.Context):
@@ -1089,7 +1242,7 @@ async def market_buy(ctx: lightbulb.Context):
 
 @market.child
 @lightbulb.option("amount", "The amount to sell, or 0 to sell all. Default to 1.", type = int, min_value = 0, default = 1)
-@lightbulb.option("item", "The item to sell.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The item to sell.", type = converters.ItemConverter, autocomplete = item_autocomplete)
 @lightbulb.command("sell", f"[{plugin.name}] Sell items from your inventory.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_sell(ctx: lightbulb.Context):
@@ -1139,25 +1292,6 @@ async def market_sell(ctx: lightbulb.Context):
             await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"Successfully sold {get_reward_str(bot, {item.id : amount}, option = 'emote')} for {CURRENCY_ICON}{profit}.", reply = True)
-
-@market_buy.autocomplete("item")
-@market_sell.autocomplete("item")
-async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    # Specifically for this command, we can autocomplete items
-    # that appears in inventory, but we'll need to cache, 
-    # otherwise it'll be very expensive to request DB every character.
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    items = []
-    for item in bot.item_cache.values():
-        items.append(item.name)
-    
-    if option.value == '':
-        return items[:25]
-    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
@@ -1246,13 +1380,10 @@ async def mine(ctx: lightbulb.Context):
             external_buffs.append("debris1")
         
         loot_table = loot.get_activity_loot("mine", pickaxe_existed.item_id, location, external_buffs)
-        if not loot_table:
-            await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
-            return
 
         dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
-        if dmg_taken > 100:
-            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
+        if dmg_taken > 1000:
+            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES) if user.world != "end" else "You fell into the Void.\n"
         elif dmg_taken > 0:
             response_str += f"You took a damage of {dmg_taken}.\n"
 
@@ -1298,7 +1429,7 @@ async def mine(ctx: lightbulb.Context):
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
             # Update health.
             await bot.user_cache.update(conn, user)
-            
+
             # Process potions.
             if potion_activated.has_flag(PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
@@ -1310,6 +1441,19 @@ async def mine(ctx: lightbulb.Context):
                 response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
+            
+            # Because we do take damage even if there's no drop, we need to check if the drop is empty before decreasing the potions that affect drops.
+            empty_table = True
+            for item, amount in loot_table.items():
+                if not item == "raw_damage" and amount != 0:
+                    empty_table = False
+                    break
+            
+            if empty_table:
+                response_str += "After a long exploring session, you came back with only dust and regret."
+                await ctx.respond(response_str, reply = True, mentions_reply = True)
+                return
+
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
@@ -1370,7 +1514,7 @@ async def explore(ctx: lightbulb.Context):
             "_sword",
             "luck_potion",
             "fire_potion",
-            "undead_potion",
+            "undying_potion",
             "strength_potion",
             "looting_potion",
         ))
@@ -1422,13 +1566,9 @@ async def explore(ctx: lightbulb.Context):
             external_buffs.append("blaze1")
         
         loot_table = loot.get_activity_loot("explore", sword_existed.item_id, location, external_buffs)
-        if not loot_table:
-            await ctx.respond("After a long exploring session, you came back with only dust and regret.", reply = True, mentions_reply = True)
-            return
-        
         dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
-        if dmg_taken > 100:
-            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
+        if dmg_taken > 1000:
+            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES) if user.world != "end" else "You fell into the Void.\n"
         elif dmg_taken > 0:
             response_str += f"You took a damage of {dmg_taken}.\n"
 
@@ -1486,6 +1626,19 @@ async def explore(ctx: lightbulb.Context):
                 response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
+            
+            # Because we do take damage even if there's no drop, we need to check if the drop is empty before decreasing the potions that affect drops.
+            empty_table = True
+            for item, amount in loot_table.items():
+                if not item == "raw_damage" and amount != 0:
+                    empty_table = False
+                    break
+            
+            if empty_table:
+                response_str += "After a long exploring session, you came back with only dust and regret."
+                await ctx.respond(response_str, reply = True, mentions_reply = True)
+                return
+
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
@@ -1591,13 +1744,10 @@ async def chop(ctx: lightbulb.Context):
             external_buffs.append("wood2")
         
         loot_table = loot.get_activity_loot("chop", axe_existed.item_id, location, external_buffs)
-        if not loot_table:
-            await ctx.respond("After a long chopping session, you came back with only dust and regret.", reply = True, mentions_reply = True)
-            return
         
         dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
-        if dmg_taken > 100:
-            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
+        if dmg_taken > 1000:
+            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES) if user.world != "end" else "You fell into the Void.\n"
         elif dmg_taken > 0:
             response_str += f"You took a damage of {dmg_taken}.\n"
 
@@ -1655,6 +1805,19 @@ async def chop(ctx: lightbulb.Context):
                 response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
+            
+            # Because we do take damage even if there's no drop, we need to check if the drop is empty before decreasing the potions that affect drops.
+            empty_table = True
+            for item, amount in loot_table.items():
+                if not item == "raw_damage" and amount != 0:
+                    empty_table = False
+                    break
+            
+            if empty_table:
+                response_str += "After a long exploring session, you came back with only dust and regret."
+                await ctx.respond(response_str, reply = True, mentions_reply = True)
+                return
+
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
@@ -2104,14 +2267,14 @@ async def _barter(ctx: lightbulb.Context):
     - There is a hard cooldown of 4 hours between each travel, so plan ahead before moving.
     - It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether"))
+@lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether", "end"))
 @lightbulb.command("travel", f"[{plugin.name}] Travel to another world.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def travel(ctx: lightbulb.Context):
     world: str = ctx.options.world
     bot: models.MichaelBot = ctx.bot
 
-    if world not in ("overworld", "nether"):
+    if world not in ("overworld", "nether", "end"):
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["world"]])
     
     user = bot.user_cache[ctx.author.id]
@@ -2127,23 +2290,29 @@ async def travel(ctx: lightbulb.Context):
             return
     
     async with bot.pool.acquire() as conn:
-        ticket = None
-        if world == "overworld":
-            ticket = await psql.Inventory.get_one(conn, ctx.author.id, "overworld_ticket")
-        elif world == "nether":
-            ticket = await psql.Inventory.get_one(conn, ctx.author.id, "nether_ticket")
+        # We already check if world is in pre-determined arguments, so it's safe to do this.
+        ticket = await psql.Inventory.get_one(conn, ctx.author.id, f"{world}_ticket")
         
         if ticket is None:
             await ctx.respond("You don't have the ticket to travel!", reply = True, mentions_reply = True)
             return
         
         async with conn.transaction():
+            # Give free shulker box when first in the End.
+            if world == "end":
+                shulker_box = await psql.Inventory.get_one(conn, ctx.author.id, "shulker_box")
+                if not shulker_box:
+                    await psql.Inventory.add(conn, ctx.author.id, "shulker_box", 3)
+
             await psql.Inventory.remove(conn, ctx.author.id, ticket.item_id)
             user.world = world
             user.last_travel = dt.datetime.now().astimezone()
             await bot.user_cache.update(conn, user)
         
-        await ctx.respond(f"Successfully moved to the `{world.capitalize()}`.", reply = True)
+        success_announce = f"Successfully moved to the `{world.capitalize()}`."
+        if world == "end":
+            success_announce += "\n*Friendly reminder: Dying in the End will wipe 95%% of your inventory. Safe important items in your safe inventory before proceeding.*"
+        await ctx.respond(success_announce, reply = True)
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)

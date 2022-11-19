@@ -359,6 +359,16 @@
         "sell_price": 50
     },
     {
+        "id": "end_ticket",
+        "name": "End Ticket",
+        "aliases": ["Space Ticket"],
+        "emoji": "<:end_ticket:839207656219738126>",
+        "description": "A one-way ticket to the middle of nowhere.",
+        "rarity": "rare",
+        "buy_price": null,
+        "sell_price": 50
+    },
+    {
         "id": "redstone",
         "name": "Redstone",
         "emoji": "<:redstone:822527280777396264>",
@@ -410,7 +420,7 @@
         "description": "When in your inventory, this allows you to stay in the Nether after your death. After each death in the Nether, this will be reduced by 1, skipping the usual penalty.",
         "rarity": "common+",
         "buy_price": 500,
-        "sell_price": 100
+        "sell_price": 400
     },
     {
         "id": "blaze_rod",
@@ -483,10 +493,88 @@
         "sell_price": 200
     },
     {
+        "id": "space_rock",
+        "name": "Space Rock",
+        "emoji": "<:space_rock:839207608275435620>",
+        "description": "A rock from space, possibly a remnant of planets.",
+        "rarity": "common",
+        "buy_price": null,
+        "sell_price": 3
+    },
+    {
+        "id": "star_fragment",
+        "name": "Star Fragment",
+        "emoji": "✨",
+        "description": "A fragment of what was once a star.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200
+    },
+    {
+        "id": "comet_fragment",
+        "name": "Comet Fragment",
+        "emoji": "☄️",
+        "description": "A fragment of a comet. It stores some mysterious energy in it.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 200
+    },
+    {
+        "id": "star_gem",
+        "name": "Star Gem",
+        "emoji": "🌟",
+        "description": "A gem created after assembling its fragments. It holds quite some power.",
+        "rarity": "epic",
+        "buy_price": null,
+        "sell_price": 500
+    },
+    {
+        "id": "fragile_star_pickaxe",
+        "name": "Star Pickaxe (Fragile)",
+        "aliases": ["Fragile Star Pickaxe", "fsp"],
+        "emoji": "<:fragile_star_pickaxe:885027789122732093>",
+        "description": "A fragile pickaxe made from the power of the star, which allows you to get rare drops more often. It doesn't last very long.",
+        "rarity": "legendary",
+        "buy_price": null,
+        "sell_price": 500,
+        "durability": 25
+    },
+    {
+        "id": "fragile_star_sword",
+        "name": "Star Sword (Fragile)",
+        "aliases": ["Fragile Star Sword", "fss"],
+        "emoji": "<:fragile_star_sword:885027788904599553>",
+        "description": "A fragile sword made from the power of the star, which allows you to get rare drops more often. It doesn't last very long.",
+        "rarity": "legendary",
+        "buy_price": null,
+        "sell_price": 500,
+        "durability": 25
+    },
+    {
+        "id": "fragile_star_axe",
+        "name": "Star Axe (Fragile)",
+        "aliases": ["Fragile Star Axe", "fsa"],
+        "emoji": "",
+        "description": "A fragile axe made from the power of the star, which allows you to get rare drops more often. It doesn't last very long.",
+        "rarity": "legendary",
+        "buy_price": null,
+        "sell_price": 500,
+        "durability": 25
+    },
+    {
         "id": "streak_freezer",
         "name": "Streak Freezer",
         "emoji": "⌛",
         "description": "When in your inventory, this will negate one missed day of your daily streak. This will be consumed even if you can't negate the streak loss fully.",
+        "rarity": "legendary",
+        "buy_price": null,
+        "sell_price": 0
+    },
+    {
+        "id": "shulker_box",
+        "name": "Shulker Box",
+        "emoji": "<:shulker_box:1040814019134623784>",
+        "description": "When in your inventory, this will create an extra space for storing items that won't be removed upon death.",
         "rarity": "legendary",
         "buy_price": null,
         "sell_price": 0

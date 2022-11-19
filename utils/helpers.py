@@ -61,6 +61,7 @@ __PERMISSIONS_MAPPING__ = {
     hikari.Permissions.MOVE_MEMBERS: "Move Members",
 
     # Events Permissions
+    hikari.Permissions.MANAGE_EVENTS: "Manage Events",
 
     # Advanced Permissions
     hikari.Permissions.ADMINISTRATOR: "Administrator",
@@ -74,17 +75,6 @@ COMMAND_STANDARD_PERMISSIONS = (
     hikari.Permissions.SEND_MESSAGES,
     hikari.Permissions.READ_MESSAGE_HISTORY,
 )
-
-# TODO: Might deprecate this because dataclass has asdict() to convert to a dict.
-class ClassToDict:
-    def to_dict(self) -> dict:
-        if not hasattr(self, "__slots__") or not self.__slots__:
-            return self.__dict__
-        
-        d = {}
-        for attr in self.__slots__:
-            d[attr] = getattr(self, attr)
-        return d
 
 def get_emote(discord_text: str, /) -> str:
     '''Return the Unicode emoji based on the name provided.
@@ -110,7 +100,7 @@ def get_emote(discord_text: str, /) -> str:
         raise KeyError(f"Emoji {discord_text} cannot be found.")
     return ret
 
-def get_friendly_permissions(permissions: hikari.Permissions, /) -> t.List[str]:
+def get_friendly_permissions_formatted(permissions: hikari.Permissions, /, *, formatter: t.Callable[[str], str] = lambda s: f"`{s}`") -> t.List[str]:
     '''Return a list of highlighted permissions string presented in the permission provided.
     This returns the exact Discord's string of the permission.
 
@@ -118,11 +108,13 @@ def get_friendly_permissions(permissions: hikari.Permissions, /) -> t.List[str]:
     ----------
     permissions : hikari.Permissions
         A permission object.
+    formatter : t.Callable[[str], str]
+        A transformation to apply for each permission text. By default, this apply a Discord highlight effect.
 
     Returns
     -------
     t.List[str]
-        A list of highlighted permissions string represented in the permission provided.
+        A list of permissions string represented in the permission provided.
 
     Notes
     -----
@@ -132,7 +124,7 @@ def get_friendly_permissions(permissions: hikari.Permissions, /) -> t.List[str]:
     l = []
     for permission, text in __PERMISSIONS_MAPPING__.items():
         if permissions & permission:
-            l.append(f"`{text}`")
+            l.append(formatter(text))
     return l
 
 def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed:

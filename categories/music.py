@@ -1,6 +1,7 @@
 '''Music Commands'''
 
 import datetime as dt
+import itertools as itools
 from textwrap import dedent
 
 import hikari
@@ -96,7 +97,8 @@ async def join(ctx: lightbulb.Context):
     
     if voice_channel is None:
         states = bot.cache.get_voice_states_view_for_guild(ctx.guild_id)
-        voice_state = [state async for state in states.iterator().filter(lambda i: i.user_id == ctx.author.id)]
+        voice_state = list(itools.filterfalse(lambda i: i.user_id != ctx.author.id, states.values()))
+        
         if not voice_state:
             await ctx.respond("You are not in a voice channel.")
             return

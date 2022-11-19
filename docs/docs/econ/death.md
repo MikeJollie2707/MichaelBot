@@ -37,6 +37,7 @@ All damage reductions can be found in `categories/econ/loot.py`, defined by the 
 - Iron pickaxe: 15
 - Diamond tools: 25
 - Netherite tools: 25
+- Star tools: 30
 - Fire Potion: 2
 - Haste Potion: 2 when mining and chopping
 - Strength Potion: 2 when exploring
@@ -44,8 +45,8 @@ All damage reductions can be found in `categories/econ/loot.py`, defined by the 
 - Looting Potion: 5 when exploring
 - Nature Potion: 5 when chopping
 - Luck Potion: 10
-- `Staph Dying!` badge: 3 per equipment (including potions)
-- `Kasaneru IF` badge: 2 per equipment (including potions)
+- `Staph Dying!` badge: 2 per equipment (including potions)
+- `Kasaneru IF` badge: 3 per equipment (including potions)
 
 Note that for tools, reduction only applies to the corresponding action. For example, if you have a diamond pickaxe and an iron sword, then when mining, you'll have the 25 reductions, while when you're exploring, you'll have the 20 reductions.
 
@@ -56,7 +57,9 @@ If you don't monitor your health and let it drop to 0 or below, you dies. These 
 - Losing all equipments with few exceptions.
 - Losing all potions.
 - Losing 20% of current balance (rounded up).
-- Losing 5% (2% if `How are you still sane?` badge is acquired) of all items in inventory (rounded up).
+- Losing 5% of all items in inventory (rounded up).
+    - If the user is in the `End`, this will be 95% of the inventory rounded down.
+    - If you have `How are you still sane?` badge, this penalty is halved.
 - If the user is in a different world, they'll be forced to be in the Overworld, with a few exceptions. *This won't update the cooldown in `travel`*.
 - Health reset back to 100.
 

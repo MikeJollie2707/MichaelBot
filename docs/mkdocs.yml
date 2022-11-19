@@ -49,9 +49,12 @@ nav:
     - psql.py: dev/psql.md
   - Economy:
     - Getting Started: econ/start.md
+    - Action Commands: econ/action.md
     - Trading System: econ/trade.md
     - Death Mechanism: econ/death.md
+    - World: econ/world.md
     - Potions: econ/potions.md
+    - Safe Inventory: econ/safe_inventory.md
     - Badges: econ/badges.md
 
 dev_addr: '127.0.0.1:8001'
