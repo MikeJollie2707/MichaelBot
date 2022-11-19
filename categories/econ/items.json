@@ -554,7 +554,7 @@
         "id": "fragile_star_axe",
         "name": "Star Axe (Fragile)",
         "aliases": ["Fragile Star Axe", "fsa"],
-        "emoji": "",
+        "emoji": "<:fragile_star_axe:885027789223378974>",
         "description": "A fragile axe made from the power of the star, which allows you to get rare drops more often. It doesn't last very long.",
         "rarity": "legendary",
         "buy_price": null,
