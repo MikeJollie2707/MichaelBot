@@ -266,7 +266,7 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
                 strict_penalty = False # Round up or down, default to down.
                 death_penalty = 0.05
                 if user.world == "end":
-                    death_penalty = 0.75
+                    death_penalty = 0.95
                     strict_penalty = True
                 if not death2_badge.completed():
                     death_penalty *= 0.5
@@ -2309,7 +2309,10 @@ async def travel(ctx: lightbulb.Context):
             user.last_travel = dt.datetime.now().astimezone()
             await bot.user_cache.update(conn, user)
         
-        await ctx.respond(f"Successfully moved to the `{world.capitalize()}`.", reply = True)
+        success_announce = f"Successfully moved to the `{world.capitalize()}`."
+        if world == "end":
+            success_announce += "\n*Friendly reminder: Dying in the End will wipe 95%% of your inventory. Safe important items in your safe inventory before proceeding.*"
+        await ctx.respond(success_announce, reply = True)
 
 def load(bot: models.MichaelBot):
     bot.add_plugin(plugin)
