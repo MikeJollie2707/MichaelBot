@@ -272,6 +272,66 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
         
         await bot.user_cache.update(conn, user)
 
+async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    items = []
+    for item in bot.item_cache.values():
+        items.append(item.name)
+    
+    if option.value == '':
+        return items[:25]
+    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
+
+async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    equipments = []
+    for item in bot.item_cache.values():
+        if psql.Equipment.is_true_equipment(item.id):
+            equipments.append(item.name)
+    
+    if option.value == '':
+        return equipments[:25]
+    return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
+
+async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    potions = []
+    for item in bot.item_cache.values():
+        if psql.Equipment.is_potion(item.id):
+            potions.append(item.name)
+    
+    if option.value == '':
+        return potions[:25]
+    return [match_potion for match_potion in potions if match_algorithm(match_potion, option.value)][:25]
+
+async def food_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+    
+    foods = []
+    for item in bot.item_cache.values():
+        if item.id in loot.FOOD_HEALING:
+            foods.append(item.name)
+        
+    if option.value == '':
+        return foods[:25]
+    return [match_food for match_food in foods if match_algorithm(match_food, option.value)][:25]
+
+
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
 plugin.add_checks(
@@ -696,7 +756,7 @@ async def use(ctx: lightbulb.Context):
 
 @use.child
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("equipment", "The equipment's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("equipment", "The equipment's name or alias to use.", type = converters.ItemConverter, autocomplete = equipment_autocomplete)
 @lightbulb.command("tool", f"[{plugin.name}] Use a tool. Get to work!")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_tool(ctx: lightbulb.Context):
@@ -760,28 +820,13 @@ async def use_tool(ctx: lightbulb.Context):
         response_str += f"Equipped {item.emoji} *{item.name}*."
         
         await ctx.respond(response_str, reply = True)
-@use_tool.autocomplete("equipment")
-async def equipment_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    equipments = []
-    for item in bot.item_cache.values():
-        if psql.Equipment.is_true_equipment(item.id):
-            equipments.append(item.name)
-    
-    if option.value == '':
-        return equipments[:25]
-    return [match_equipment for match_equipment in equipments if match_algorithm(match_equipment, option.value)][:25]
 
 @use.child
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("potion", "The potion's name or alias to use.", type = converters.ItemConverter, autocomplete = potion_autocomplete)
 @lightbulb.command("potion", f"[{plugin.name}] Use a potion.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_potion(ctx: lightbulb.Context):
@@ -829,28 +874,13 @@ async def use_potion(ctx: lightbulb.Context):
         await psql.Equipment.transfer_from_inventory(conn, inv)
         
     await ctx.respond(f"Equipped {potion.emoji} *{potion.name}*", reply = True)
-@use_potion.autocomplete("potion")
-async def potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    potions = []
-    for item in bot.item_cache.values():
-        if psql.Equipment.is_potion(item.id):
-            potions.append(item.name)
-    
-    if option.value == '':
-        return potions[:25]
-    return [match_potion for match_potion in potions if match_algorithm(match_potion, option.value)][:25]
 
 @use.child
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = food_autocomplete)
 @lightbulb.command("food", f"[{plugin.name}] Use a food item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def use_food(ctx: lightbulb.Context):
@@ -900,21 +930,6 @@ async def use_food(ctx: lightbulb.Context):
         await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"You consumed *1x {food.emoji} {food.name}* and healed {heal_amount}HP.", reply = True)
-@use_food.autocomplete("food")
-async def food_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-    
-    foods = []
-    for item in bot.item_cache.values():
-        if item.id in loot.FOOD_HEALING:
-            foods.append(item.name)
-        
-    if option.value == '':
-        return foods[:25]
-    return [match_food for match_food in foods if match_algorithm(match_food, option.value)][:25]
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10, uses = 1, bucket = lightbulb.UserBucket)
@@ -1171,7 +1186,7 @@ async def market_view(ctx: lightbulb.Context):
 
 @market.child
 @lightbulb.option("amount", "The amount to purchase. Default to 1.", type = int, min_value = 1, default = 1)
-@lightbulb.option("item", "The item to purchase.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The item to purchase.", type = converters.ItemConverter, autocomplete = item_autocomplete)
 @lightbulb.command("buy", f"[{plugin.name}] Buy an item from the market.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_buy(ctx: lightbulb.Context):
@@ -1211,7 +1226,7 @@ async def market_buy(ctx: lightbulb.Context):
 
 @market.child
 @lightbulb.option("amount", "The amount to sell, or 0 to sell all. Default to 1.", type = int, min_value = 0, default = 1)
-@lightbulb.option("item", "The item to sell.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The item to sell.", type = converters.ItemConverter, autocomplete = item_autocomplete)
 @lightbulb.command("sell", f"[{plugin.name}] Sell items from your inventory.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def market_sell(ctx: lightbulb.Context):
@@ -1261,25 +1276,6 @@ async def market_sell(ctx: lightbulb.Context):
             await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"Successfully sold {get_reward_str(bot, {item.id : amount}, option = 'emote')} for {CURRENCY_ICON}{profit}.", reply = True)
-
-@market_buy.autocomplete("item")
-@market_sell.autocomplete("item")
-async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    # Specifically for this command, we can autocomplete items
-    # that appears in inventory, but we'll need to cache, 
-    # otherwise it'll be very expensive to request DB every character.
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    items = []
-    for item in bot.item_cache.values():
-        items.append(item.name)
-    
-    if option.value == '':
-        return items[:25]
-    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
