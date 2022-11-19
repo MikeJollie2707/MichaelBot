@@ -86,9 +86,13 @@ DMG_REDUCTIONS = {
     "nether_pickaxe": 25,
     "nether_axe": 25,
 
+    "fragile_star_pickaxe": 30,
+    "fragile_star_sword": 30,
+    "fragile_star_axe": 30,
+
     # Badges
-    "death1": 3,
-    "death3": 2,
+    "death1": 2,
+    "death3": 3,
 
     # Potions
     "luck_potion": 10,
@@ -200,6 +204,11 @@ __MINE_LOOT = {
             "iron": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3),
             "raw_damage": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
         },
+        "fragile_star_pickaxe": {
+            "stone": RewardRNG(rate = 1, min_amount = 11, max_amount = 14),
+            "iron": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 4),
+            "raw_damage": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
+        },
     },
     "4 (Overworld)": {
         "wood_pickaxe": {
@@ -228,7 +237,13 @@ __MINE_LOOT = {
             "iron": RewardRNG(rate = 0.5, min_amount = 2, max_amount = 6),
             "diamond": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 20),
-        }
+        },
+        "fragile_star_pickaxe": {
+            "stone": RewardRNG(rate = 1, min_amount = 10, max_amount = 13),
+            "iron": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 7),
+            "diamond": RewardRNG(rate = 0.015, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 20),
+        },
     },
     "3 (Overworld)": {
         "wood_pickaxe": {
@@ -258,6 +273,13 @@ __MINE_LOOT = {
             "iron": RewardRNG(rate = 0.3, min_amount = 2, max_amount = 6),
             "diamond": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 2),
             "obsidian": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 15, max_amount = 30),
+        },
+        "fragile_star_pickaxe": {
+            "stone": RewardRNG(rate = 1, min_amount = 10, max_amount = 13),
+            "iron": RewardRNG(rate = 0.45, min_amount = 2, max_amount = 7),
+            "diamond": RewardRNG(rate = 0.075, min_amount = 1, max_amount = 2),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
             "raw_damage": RewardRNG(rate = 1, min_amount = 15, max_amount = 30),
         },
     },
@@ -291,6 +313,13 @@ __MINE_LOOT = {
             "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
             "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 40),
         },
+        "fragile_star_pickaxe": {
+            "stone": RewardRNG(rate = 1, min_amount = 10, max_amount = 13),
+            "iron": RewardRNG(rate = 0.3, min_amount = 2, max_amount = 7),
+            "diamond": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 4),
+            "obsidian": RewardRNG(rate = 0.45, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 40),
+        },
     },
     "1 (Overworld)": {
         "wood_pickaxe": {
@@ -320,6 +349,13 @@ __MINE_LOOT = {
             "iron": RewardRNG(rate = 0.2, min_amount = 2, max_amount = 6),
             "diamond": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 3),
             "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 60),
+        },
+        "fragile_star_pickaxe": {
+            "stone": RewardRNG(rate = 1, min_amount = 10, max_amount = 13),
+            "iron": RewardRNG(rate = 0.3, min_amount = 2, max_amount = 7),
+            "diamond": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 4),
+            "obsidian": RewardRNG(rate = 0.45, min_amount = 1, max_amount = 2),
             "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 60),
         },
     },
@@ -366,6 +402,14 @@ __MINE_LOOT = {
             "debris": RewardRNG(rate = 0, min_amount = 0, max_amount = 0),
             "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
         },
+        "fragile_star_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 18, max_amount = 24),
+            "stone": RewardRNG(rate = 0.375, min_amount = 6, max_amount = 8),
+            "gold": RewardRNG(rate = 0.15, min_amount = 8, max_amount = 12),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 1),
+            "debris": RewardRNG(rate = 0.0075, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 20),
+        },
     },
     "-2 (Nether)": {
         "wood_pickaxe": {
@@ -408,6 +452,14 @@ __MINE_LOOT = {
             "gold": RewardRNG(rate = 0.4, min_amount = 14, max_amount = 20),
             "debris": RewardRNG(rate = 0.005, min_amount = 1, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 50),
+        },
+        "fragile_star_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 18, max_amount = 24),
+            "stone": RewardRNG(rate = 0.375, min_amount = 6, max_amount = 8),
+            "gold": RewardRNG(rate = 0.6, min_amount = 8, max_amount = 12),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 1),
+            "debris": RewardRNG(rate = 0.0075, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 40),
         },
     },
     "-3 (Nether)": {
@@ -452,6 +504,14 @@ __MINE_LOOT = {
             "debris": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 2),
             "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 100),
         },
+        "fragile_star_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 18, max_amount = 24),
+            "stone": RewardRNG(rate = 0.375, min_amount = 6, max_amount = 8),
+            "gold": RewardRNG(rate = 0.6, min_amount = 8, max_amount = 12),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 1),
+            "debris": RewardRNG(rate = 0.015, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 20, max_amount = 65),
+        },
     },
     "-4 (Nether)": {
         "wood_pickaxe": {
@@ -495,6 +555,14 @@ __MINE_LOOT = {
             "debris": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 4),
             "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 100),
         },
+        "fragile_star_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 18, max_amount = 24),
+            "stone": RewardRNG(rate = 0.375, min_amount = 6, max_amount = 8),
+            "gold": RewardRNG(rate = 0.6, min_amount = 8, max_amount = 12),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 1),
+            "debris": RewardRNG(rate = 0.075, min_amount = 1, max_amount = 3),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 75),
+        }
     },
     "-5 (Nether)": {
         "wood_pickaxe": {
@@ -538,7 +606,44 @@ __MINE_LOOT = {
             "debris": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
             "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 100),
         },
+        "fragile_star_pickaxe": {
+            "redstone": RewardRNG(rate = 1, min_amount = 18, max_amount = 24),
+            "stone": RewardRNG(rate = 0.375, min_amount = 6, max_amount = 8),
+            "gold": RewardRNG(rate = 1, min_amount = 8, max_amount = 12),
+            "obsidian": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 1),
+            "debris": RewardRNG(rate = 0.075, min_amount = 1, max_amount = 5),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 80),
+        }
     },
+
+    "Wasteland (End)": {
+        "wood_pickaxe": {
+            "raw_damage": RewardRNG(rate = 0, min_amount = 0, max_amount = 0),
+        },
+        "stone_pickaxe": {
+            "space_rock": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 30),
+        },
+        "iron_pickaxe": {
+            "space_rock": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 40, max_amount = 50),
+        },
+        "diamond_pickaxe": {
+            "space_rock": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
+            "comet_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1, amount_layout = [90, 10]),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
+        },
+        "nether_pickaxe": {
+            "space_rock": RewardRNG(rate = 1, min_amount = 2, max_amount = 5),
+            "comet_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1, amount_layout = [90, 10]),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
+        },
+        "fragile_star_pickaxe": {
+            "space_rock": RewardRNG(rate = 1, min_amount = 2, max_amount = 6),
+            "comet_fragment": RewardRNG(rate = 0.075, min_amount = 0, max_amount = 1, amount_layout = [90, 10]),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
+        },
+    }
 }
 
 # Define the loot generated for an exploring session in each location.
@@ -574,6 +679,13 @@ __EXPLORE_LOOT = {
             "chicken": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 2),
             "raw_damage": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
         },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 0.75, min_amount = 4, max_amount = 6),
+            "meat": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
+            "bacon": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
+            "chicken": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
+        },
     },
     "4 (Overworld)": {
         "stone_sword": {
@@ -597,6 +709,12 @@ __EXPLORE_LOOT = {
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
             "spider_eye": RewardRNG(rate = 0.2, min_amount = 3, max_amount = 5),
             "gunpowder": RewardRNG(rate = 0.2, min_amount = 1, max_amount = 4),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 20),
+        },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 12),
+            "spider_eye": RewardRNG(rate = 0.3, min_amount = 4, max_amount = 6),
+            "gunpowder": RewardRNG(rate = 0.3, min_amount = 1, max_amount = 5),
             "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 20),
         },
     },
@@ -626,6 +744,13 @@ __EXPLORE_LOOT = {
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 15, max_amount = 30),
         },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 6, max_amount = 12),
+            "spider_eye": RewardRNG(rate = 0.75, min_amount = 4, max_amount = 7),
+            "gunpowder": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 6),
+            "pearl": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 15, max_amount = 30),
+        },
     },
     "2 (Overworld)": {
         "stone_sword": {
@@ -651,6 +776,13 @@ __EXPLORE_LOOT = {
             "spider_eye": RewardRNG(rate = 0.8, min_amount = 5, max_amount = 7),
             "gunpowder": RewardRNG(rate = 0.8, min_amount = 1, max_amount = 4),
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 40),
+        },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 8, max_amount = 12),
+            "spider_eye": RewardRNG(rate = 1, min_amount = 6, max_amount = 8),
+            "gunpowder": RewardRNG(rate = 1, min_amount = 1, max_amount = 5),
+            "pearl": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 40),
         },
     },
@@ -680,6 +812,13 @@ __EXPLORE_LOOT = {
             "pearl": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 3),
             "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 60),
         },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 12, max_amount = 14),
+            "spider_eye": RewardRNG(rate = 1, min_amount = 6, max_amount = 12),
+            "gunpowder": RewardRNG(rate = 1, min_amount = 4, max_amount = 7),
+            "pearl": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 4),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 60),
+        }
     },
 
     "Fortress (Nether)": {
@@ -714,6 +853,14 @@ __EXPLORE_LOOT = {
             "blaze_rod": RewardRNG(rate = 0.25, min_amount = 1, max_amount = 4),
             "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 50),
         },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 11, max_amount = 13),
+            "gold": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
+            "magma_cream": RewardRNG(rate = 0.375, min_amount = 10, max_amount = 12),
+            "gunpowder": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 2),
+            "blaze_rod": RewardRNG(rate = 0.375, min_amount = 1, max_amount = 5),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 25, max_amount = 50),
+        }
     },
     "Bastion Remnant (Nether)": {
         "stone_sword": {
@@ -746,6 +893,14 @@ __EXPLORE_LOOT = {
             "debris": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 3),
             "raw_damage": RewardRNG(rate = 1, min_amount = 40, max_amount = 60),
         },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 0.75, min_amount = 6, max_amount = 8),
+            "gold": RewardRNG(rate = 1, min_amount = 18, max_amount = 24),
+            "magma_cream": RewardRNG(rate = 0.375, min_amount = 12, max_amount = 18),
+            "meat": RewardRNG(rate = 0.375, min_amount = 6, max_amount = 10),
+            "debris": RewardRNG(rate = 0.015, min_amount = 1, max_amount = 4),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 40, max_amount = 60),
+        },
     },
     "Abandoned Factory (Nether)": {
         "stone_sword": {
@@ -754,7 +909,7 @@ __EXPLORE_LOOT = {
             "stone_axe": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 1),
             "gold": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
             "debris": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
-            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 99),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "iron_sword": {
             "iron_sword": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 1),
@@ -762,7 +917,7 @@ __EXPLORE_LOOT = {
             "iron_axe": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 1),
             "gold": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 5),
             "debris": RewardRNG(rate = 0.01, min_amount = 1, max_amount = 1),
-            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 99),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "diamond_sword": {
             "iron_sword": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 1),
@@ -771,7 +926,7 @@ __EXPLORE_LOOT = {
             "gold": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 10),
             "debris": RewardRNG(rate = 0.03, min_amount = 1, max_amount = 1),
             "netherite": RewardRNG(rate = 0.015, min_amount = 0, max_amount = 1),
-            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 99),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "nether_sword": {
             "iron_sword": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 1),
@@ -780,8 +935,17 @@ __EXPLORE_LOOT = {
             "gold": RewardRNG(rate = 0.5, min_amount = 3, max_amount = 10),
             "debris": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
             "netherite": RewardRNG(rate = 0.03, min_amount = 0, max_amount = 1),
-            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 99),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
+        "fragile_star_sword": {
+            "iron_sword": RewardRNG(rate = 0.75, min_amount = 1, max_amount = 1),
+            "iron_pickaxe": RewardRNG(rate = 0.75, min_amount = 1, max_amount = 1),
+            "iron_axe": RewardRNG(rate = 0.75, min_amount = 1, max_amount = 1),
+            "gold": RewardRNG(rate = 0.75, min_amount = 4, max_amount = 12),
+            "debris": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 1),
+            "netherite": RewardRNG(rate = 0.045, min_amount = 0, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
+        }
     },
     "Hidden Shrine (Nether)": {
         "stone_sword": {
@@ -795,24 +959,52 @@ __EXPLORE_LOOT = {
             "gold": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
             "magma_cream": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
             "gunpowder": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
-            "meat": RewardRNG(rate = 1, min_amount = 1, max_amount = 20),
             "pearl": RewardRNG(rate = 1, min_amount = 1, max_amount = 20),
             "blaze_rod": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
             "nether_star": RewardRNG(rate = 0.05, min_amount = 1, max_amount = 1),
-            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 110),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 150),
         },
         "nether_sword": {
             "rotten_flesh": RewardRNG(rate = 1, min_amount = 1, max_amount = 60),
             "gold": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
             "magma_cream": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
             "gunpowder": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
-            "meat": RewardRNG(rate = 1, min_amount = 1, max_amount = 20),
             "pearl": RewardRNG(rate = 1, min_amount = 1, max_amount = 20),
             "blaze_rod": RewardRNG(rate = 1, min_amount = 1, max_amount = 30),
             "nether_star": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 1),
-            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 110),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 150),
+        },
+        "fragile_star_sword": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 1, max_amount = 72),
+            "gold": RewardRNG(rate = 1, min_amount = 1, max_amount = 36),
+            "magma_cream": RewardRNG(rate = 1, min_amount = 1, max_amount = 36),
+            "gunpowder": RewardRNG(rate = 1, min_amount = 1, max_amount = 36),
+            "pearl": RewardRNG(rate = 1, min_amount = 1, max_amount = 24),
+            "blaze_rod": RewardRNG(rate = 1, min_amount = 1, max_amount = 36),
+            "nether_star": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 150),
         },
     },
+
+    "Void Domain (End)": {
+        "stone_sword": {
+            "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
+        },
+        "iron_sword": {
+            "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
+        },
+        "diamond_sword": {
+            "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
+        },
+        "nether_sword": {
+            "star_fragment": RewardRNG(rate = 0.01, min_amount = 0, max_amount = 2, amount_layout = [50, 40, 10]),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
+        },
+        "fragile_star_sword": {
+            "star_fragment": RewardRNG(rate = 0.15, min_amount = 0, max_amount = 2, amount_layout = [50, 40, 10]),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
+        }
+    }
 }
 
 # Define the loot generated for a chopping session in each location.
@@ -871,7 +1063,20 @@ __CHOP_LOOT = {
             "rose": RewardRNG(rate = 0.5, min_amount = 8, max_amount = 10),
             "lucky_clover": RewardRNG(rate = 0.15, min_amount = 2, max_amount = 6),
             "raw_damage": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
-        }
+        },
+        "fragile_star_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
+            "leaf": RewardRNG(rate = 1, min_amount = 30, max_amount = 36),
+            "apple": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "orange": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "cherries": RewardRNG(rate = 1, min_amount = 1, max_amount = 5),
+            "carrot": RewardRNG(rate = 0.75, min_amount = 1, max_amount = 2),
+            "hibiscus": RewardRNG(rate = 0.75, min_amount = 10, max_amount = 12),
+            "tulip": RewardRNG(rate = 0.75, min_amount = 10, max_amount = 12),
+            "rose": RewardRNG(rate = 0.75, min_amount = 10, max_amount = 12),
+            "lucky_clover": RewardRNG(rate = 0.225, min_amount = 2, max_amount = 7),
+            "raw_damage": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 2),
+        },
     },
     "Village (Overworld)": {
         "stone_axe": {
@@ -913,7 +1118,17 @@ __CHOP_LOOT = {
             "bed_pickaxe": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
             "iron": RewardRNG(rate = 0.1, min_amount = 1, max_amount = 5),
             "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 10),
-        }
+        },
+        "fragile_star_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
+            "apple": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "orange": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "cherries": RewardRNG(rate = 1, min_amount = 1, max_amount = 5),
+            "carrot": RewardRNG(rate = 0.75, min_amount = 1, max_amount = 2),
+            "bed_pickaxe": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 6),
+            "iron": RewardRNG(rate = 0.15, min_amount = 1, max_amount = 6),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 1, max_amount = 10),
+        },
     },
     "Desert Temple (Overworld)": {
         "stone_axe": {
@@ -942,6 +1157,13 @@ __CHOP_LOOT = {
             "spider_eye": RewardRNG(rate = 0.5, min_amount = 2, max_amount = 5),
             "gunpowder": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 4),
             "diamond": RewardRNG(rate = 0.02, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 5, max_amount = 100, amount_layout = tuple([50, 48] + [0] * 93 + [2])),
+        },
+        "fragile_star_axe": {
+            "rotten_flesh": RewardRNG(rate = 1, min_amount = 5, max_amount = 8),
+            "spider_eye": RewardRNG(rate = 0.75, min_amount = 2, max_amount = 6),
+            "gunpowder": RewardRNG(rate = 0.75, min_amount = 1, max_amount = 5),
+            "diamond": RewardRNG(rate = 0.03, min_amount = 1, max_amount = 2),
             "raw_damage": RewardRNG(rate = 1, min_amount = 5, max_amount = 100, amount_layout = tuple([50, 48] + [0] * 93 + [2])),
         }
     },
@@ -977,6 +1199,14 @@ __CHOP_LOOT = {
             "bacon": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "meat": RewardRNG(rate = 1, min_amount = 1, max_amount = 3),
             "raw_damage": RewardRNG(rate = 1, min_amount = 20, max_amount = 35),
+        },
+        "fragile_star_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 24, max_amount = 30),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 200, max_amount = 360),
+            "mushroom": RewardRNG(rate = 0.36, min_amount = 6, max_amount = 8),
+            "bacon": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "meat": RewardRNG(rate = 1, min_amount = 1, max_amount = 4),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 20, max_amount = 35),
         }
     },
     "Warped Forest (Nether)": {
@@ -1003,6 +1233,12 @@ __CHOP_LOOT = {
             "dry_leaf": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
             "pearl": RewardRNG(rate = 1, min_amount = 1, max_amount = 5),
             "raw_damage": RewardRNG(rate = 1, min_amount = 20, max_amount = 35),
+        },
+        "fragile_star_axe": {
+            "wood": RewardRNG(rate = 1, min_amount = 24, max_amount = 30),
+            "dry_leaf": RewardRNG(rate = 1, min_amount = 120, max_amount = 180),
+            "pearl": RewardRNG(rate = 1, min_amount = 1, max_amount = 6),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 20, max_amount = 35),
         }
     },
     "Soul Sand Valley (Nether)": {
@@ -1021,7 +1257,11 @@ __CHOP_LOOT = {
         "nether_axe": {
             "gunpowder": RewardRNG(rate = 1, min_amount = 3, max_amount = 6),
             "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 75),
-        }
+        },
+        "fragile_star_axe": {
+            "gunpowder": RewardRNG(rate = 1, min_amount = 4, max_amount = 7),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 75),
+        },
     },
     "Basalt Deltas (Nether)": {
         "stone_axe": {
@@ -1039,6 +1279,70 @@ __CHOP_LOOT = {
         "nether_axe": {
             "magma_cream": RewardRNG(rate = 1, min_amount = 20, max_amount = 60),
             "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 75),
+        },
+        "fragile_star_axe": {
+            "magma_cream": RewardRNG(rate = 1, min_amount = 24, max_amount = 72),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 30, max_amount = 75),
+        },
+    },
+
+    "End City (End)": {
+        "stone_axe": {
+            "gold": RewardRNG(rate = 1, min_amount = 5, max_amount = 7),
+            "diamond": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
+            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
+        },
+        "iron_axe": {
+            "gold": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
+            "diamond": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 6),
+            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
+        },
+        "diamond_axe": {
+            "gold": RewardRNG(rate = 1, min_amount = 10, max_amount = 12),
+            "diamond": RewardRNG(rate = 0.5, min_amount = 6, max_amount = 8),
+            "comet_fragment": RewardRNG(rate = 0.001, min_amount = 0, max_amount = 1),
+            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
+        },
+        "nether_axe": {
+            "gold": RewardRNG(rate = 1, min_amount = 10, max_amount = 12),
+            "diamond": RewardRNG(rate = 0.5, min_amount = 6, max_amount = 8),
+            "comet_fragment": RewardRNG(rate = 0.001, min_amount = 0, max_amount = 1),
+            "star_fragment": RewardRNG(rate = 0.001, min_amount = 0, max_amount = 2),
+            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
+        },
+        "fragile_star_axe": {
+            "gold": RewardRNG(rate = 1, min_amount = 12, max_amount = 14),
+            "diamond": RewardRNG(rate = 0.75, min_amount = 7, max_amount = 9),
+            "comet_fragment": RewardRNG(rate = 0.015, min_amount = 0, max_amount = 1),
+            "star_fragment": RewardRNG(rate = 0.015, min_amount = 0, max_amount = 2),
+            "shulker_box": RewardRNG(rate = 0.006, min_amount = 0, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
+        }
+    },
+    "Floating Island (End)": {
+        "stone_axe": {
+            "pearl": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 1),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
+        },
+        "iron_axe": {
+            "pearl": RewardRNG(rate = 1, min_amount = 1, max_amount = 2),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
+        },
+        "diamond_axe": {
+            "pearl": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 100),
+        },
+        "nether_axe": {
+            "pearl": RewardRNG(rate = 1, min_amount = 5, max_amount = 12),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 100),
+        },
+        "fragile_star_axe": {
+            "pearl": RewardRNG(rate = 1, min_amount = 6, max_amount = 14),
+            "raw_damage": RewardRNG(rate = 1, min_amount = 10, max_amount = 100),
         }
     }
 }
@@ -1056,6 +1360,9 @@ WORLD_LOCATION = {
         "Fortress (Nether)", "Bastion Remnant (Nether)", "Abandoned Factory (Nether)", "Hidden Shrine (Nether)",
         "Crimson Forest (Nether)", "Warped Forest (Nether)", "Soul Sand Valley (Nether)", "Basalt Deltas (Nether)",
     ),
+    "end": (
+        "Wasteland (End)", "Void Domain (End)", "End City (End)", "Floating Island (End)"
+    )
 }
 
 # Define the crafting recipe for items.
@@ -1140,6 +1447,33 @@ __CRAFT_RECIPE = {
         "netherite": 1,
         "iron": 20,
         "diamond_axe": 1,
+        "result": 1
+    },
+    "end_ticket": {
+        "nether_star": 4,
+        "pearl": 2,
+        "blaze_rod": 1,
+        "result": 2
+    },
+    "star_gem": {
+        "star_fragment": 10,
+        "comet_fragment": 10,
+        "space_rock": 250,
+        "result": 1
+    },
+    "fragile_star_pickaxe": {
+        "star_gem": 1,
+        "nether_pickaxe": 1,
+        "result": 1
+    },
+    "fragile_star_sword": {
+        "star_gem": 1,
+        "nether_sword": 1,
+        "result": 1
+    },
+    "fragile_star_axe": {
+        "star_gem": 1,
+        "nether_axe": 1,
         "result": 1
     }
 }

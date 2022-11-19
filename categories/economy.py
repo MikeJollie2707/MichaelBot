@@ -17,6 +17,7 @@ CURRENCY_ICON = "<:emerald:993835688137072670>"
 TRADE_REFRESH = 3600 * 4
 
 class PotionActivation(IntFlag):
+    '''A bit class that stores whether a potion is activated. This saves some memory.'''
     FIRE_POTION = auto()
     HASTE_POTION = auto()
     FORTUNE_POTION = auto()
@@ -29,8 +30,7 @@ class PotionActivation(IntFlag):
     def has_flag(self, flags, *, any_flag: bool = False) -> bool:
         if any_flag:
             return bool(self & flags)
-        else:
-            return self & flags == flags
+        return self & flags == flags
 
 def get_final_damage(raw_damage: int, reductions: int) -> int:
     # Check sudden death
@@ -82,6 +82,7 @@ def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option
 
 def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
     '''A shortcut to multiply the rewards in-place.
+    This will not multiply rewards that are defined in `loot.PREVENT_MULTIPLY`.
 
     Parameters
     ----------
@@ -95,7 +96,8 @@ def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
         raise ValueError("'multiplier' cannot be 0.")
 
     for key in loot_table:
-        loot_table[key] = round(loot_table[key] * multiplier)
+        if key not in loot.PREVENT_MULTIPLY:
+            loot_table[key] = round(loot_table[key] * multiplier)
 
 def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -> int:
     '''Get the value of a loot table.
@@ -213,8 +215,10 @@ async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dic
 async def process_death(conn, bot: models.MichaelBot, user: psql.User):
     '''A shortcut to process a user's death.
 
-    This includes wiping all their equipped tools, 5% of their inventories, 20% of their money,
+    This includes wiping all their equipped tools, applying penalties to inventories and money,
     and move them to the Overworld.
+
+    This also attempt the following badges: `death0`, `death1`, `death2`, `death3`.
 
     Notes
     -----
@@ -252,17 +256,29 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
             await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
         for inv in inventories:
-            if inv.item_id == "streak_freezer":
+            if inv.item_id in loot.NON_REMOVABLE_ON_DEATH:
                 continue
             
             if user.world == "nether" and inv.item_id == "nether_respawner":
                 inv.amount -= 1
                 back_to_overworld = False
             else:
+                strict_penalty = False # Round up or down, default to down.
+                death_penalty = 0.05
+                if user.world == "end":
+                    death_penalty = 0.75
+                    strict_penalty = True
                 if not death2_badge.completed():
-                    inv.amount -= inv.amount * 5 // 100
+                    death_penalty *= 0.5
+                
+                if not strict_penalty:
+                    inv.amount -= int(inv.amount * death_penalty)
                 else:
-                    inv.amount -= inv.amount * 2 // 100
+                    # Round up.
+                    inv.amount -= int(inv.amount * death_penalty) + 1
+                
+                inv.amount = max(0, inv.amount)
+                
             await psql.Inventory.update(conn, inv)
         
         user.balance -= user.balance * 20 // 100
@@ -1364,13 +1380,10 @@ async def mine(ctx: lightbulb.Context):
             external_buffs.append("debris1")
         
         loot_table = loot.get_activity_loot("mine", pickaxe_existed.item_id, location, external_buffs)
-        if not loot_table:
-            await ctx.respond("After a long mining session, you came back with only dust and regret.", reply = True, mentions_reply = True)
-            return
 
         dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
-        if dmg_taken > 100:
-            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
+        if dmg_taken > 1000:
+            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES) if user.world != "end" else "You fell into the Void.\n"
         elif dmg_taken > 0:
             response_str += f"You took a damage of {dmg_taken}.\n"
 
@@ -1416,7 +1429,7 @@ async def mine(ctx: lightbulb.Context):
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
             # Update health.
             await bot.user_cache.update(conn, user)
-            
+
             # Process potions.
             if potion_activated.has_flag(PotionActivation.FIRE_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "fire_potion", has_fire_potion.remain_durability - 1)
@@ -1428,6 +1441,19 @@ async def mine(ctx: lightbulb.Context):
                 response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
+            
+            # Because we do take damage even if there's no drop, we need to check if the drop is empty before decreasing the potions that affect drops.
+            empty_table = True
+            for item, amount in loot_table.items():
+                if not item == "raw_damage" and amount != 0:
+                    empty_table = False
+                    break
+            
+            if empty_table:
+                response_str += "After a long exploring session, you came back with only dust and regret."
+                await ctx.respond(response_str, reply = True, mentions_reply = True)
+                return
+
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
@@ -1540,13 +1566,9 @@ async def explore(ctx: lightbulb.Context):
             external_buffs.append("blaze1")
         
         loot_table = loot.get_activity_loot("explore", sword_existed.item_id, location, external_buffs)
-        if not loot_table:
-            await ctx.respond("After a long exploring session, you came back with only dust and regret.", reply = True, mentions_reply = True)
-            return
-        
         dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
-        if dmg_taken > 100:
-            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
+        if dmg_taken > 1000:
+            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES) if user.world != "end" else "You fell into the Void.\n"
         elif dmg_taken > 0:
             response_str += f"You took a damage of {dmg_taken}.\n"
 
@@ -1604,6 +1626,19 @@ async def explore(ctx: lightbulb.Context):
                 response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
+            
+            # Because we do take damage even if there's no drop, we need to check if the drop is empty before decreasing the potions that affect drops.
+            empty_table = True
+            for item, amount in loot_table.items():
+                if not item == "raw_damage" and amount != 0:
+                    empty_table = False
+                    break
+            
+            if empty_table:
+                response_str += "After a long exploring session, you came back with only dust and regret."
+                await ctx.respond(response_str, reply = True, mentions_reply = True)
+                return
+
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
@@ -1709,13 +1744,10 @@ async def chop(ctx: lightbulb.Context):
             external_buffs.append("wood2")
         
         loot_table = loot.get_activity_loot("chop", axe_existed.item_id, location, external_buffs)
-        if not loot_table:
-            await ctx.respond("After a long chopping session, you came back with only dust and regret.", reply = True, mentions_reply = True)
-            return
         
         dmg_taken = get_final_damage(loot_table["raw_damage"], dmg_reductions)
-        if dmg_taken > 100:
-            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES)
+        if dmg_taken > 1000:
+            response_str += random.choice(loot.SUDDEN_DEATH_MESSAGES) if user.world != "end" else "You fell into the Void.\n"
         elif dmg_taken > 0:
             response_str += f"You took a damage of {dmg_taken}.\n"
 
@@ -1773,6 +1805,19 @@ async def chop(ctx: lightbulb.Context):
                 response_str += "*Undying Potion* activated, negating the most recent damage!\n"
                 if has_undead_potion.remain_durability - 1 == 0:
                     response_str += "*Undying Potion* expired!\n"
+            
+            # Because we do take damage even if there's no drop, we need to check if the drop is empty before decreasing the potions that affect drops.
+            empty_table = True
+            for item, amount in loot_table.items():
+                if not item == "raw_damage" and amount != 0:
+                    empty_table = False
+                    break
+            
+            if empty_table:
+                response_str += "After a long exploring session, you came back with only dust and regret."
+                await ctx.respond(response_str, reply = True, mentions_reply = True)
+                return
+
             if potion_activated.has_flag(PotionActivation.LUCK_POTION):
                 await psql.Equipment.update_durability(conn, ctx.author.id, "luck_potion", has_luck_potion.remain_durability - 1)
                 response_str += "*Luck Potion* activated, giving you more rare drops!\n"
@@ -2222,14 +2267,14 @@ async def _barter(ctx: lightbulb.Context):
     - There is a hard cooldown of 4 hours between each travel, so plan ahead before moving.
     - It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether"))
+@lightbulb.option("world", "The world to travel to.", choices = ("overworld", "nether", "end"))
 @lightbulb.command("travel", f"[{plugin.name}] Travel to another world.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def travel(ctx: lightbulb.Context):
     world: str = ctx.options.world
     bot: models.MichaelBot = ctx.bot
 
-    if world not in ("overworld", "nether"):
+    if world not in ("overworld", "nether", "end"):
         raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["world"]])
     
     user = bot.user_cache[ctx.author.id]
@@ -2245,11 +2290,8 @@ async def travel(ctx: lightbulb.Context):
             return
     
     async with bot.pool.acquire() as conn:
-        ticket = None
-        if world == "overworld":
-            ticket = await psql.Inventory.get_one(conn, ctx.author.id, "overworld_ticket")
-        elif world == "nether":
-            ticket = await psql.Inventory.get_one(conn, ctx.author.id, "nether_ticket")
+        # We already check if world is in pre-determined arguments, so it's safe to do this.
+        ticket = await psql.Inventory.get_one(conn, ctx.author.id, f"{world}_ticket")
         
         if ticket is None:
             await ctx.respond("You don't have the ticket to travel!", reply = True, mentions_reply = True)
