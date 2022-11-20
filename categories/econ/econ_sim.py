@@ -71,7 +71,7 @@ def average_loot_value(tool_id: str, world: str, simulation_time: int = 10 ** 6)
     print(f"Total value: {value}")
     print(f"Average values: {value / SIMULATION_TIME}")
 
-def tool_simulator(tool_id: str, world: str, simulation_time: int = 10 ** 6):
+def tool_simulator(tool_id: str, location: str, *, external_buffs: list[str] = None, sim_time: int = 10 ** 6):
     '''Simulate an action session.
 
     Parameters
@@ -79,17 +79,26 @@ def tool_simulator(tool_id: str, world: str, simulation_time: int = 10 ** 6):
     tool_id : str
         A valid tool id.
     world : str
-        Either `overworld` or `nether`.
-    simulation_time : int, optional
+        A valid location defined in `loot.XYZ_LOCATION`.
+    external_buffs : list[str]
+        Any external buffs to pass into `loot.get_activity_loot()`.
+    sim_time : int, optional
         How many times the simulation runs, by default 10**6
     '''
 
-    SIMULATION_TIME = simulation_time
+    SIMULATION_TIME = sim_time
     total: int = 0
     rate_tracker: dict[str, int] = {}
 
+    action_type = "mine"
+    if "_sword" in tool_id:
+        action_type = "explore"
+    elif "_axe" in tool_id:
+        action_type = "chop"
+
     for _ in range(0, SIMULATION_TIME):
-        loot_rate = loot.get_activity_loot(tool_id, world)
+        loot_rate = loot.get_activity_loot(action_type, tool_id, location, external_buffs)
+        del loot_rate["raw_damage"]
 
         for reward in loot_rate:
             if reward not in rate_tracker:
@@ -100,11 +109,14 @@ def tool_simulator(tool_id: str, world: str, simulation_time: int = 10 ** 6):
             total += loot_rate[reward]
 
     print(f"Sim {SIMULATION_TIME:,} times, total amount: {total:,}")
+    print(f"Buffs: {external_buffs}")
     for item, amount in rate_tracker.items():
         print(f"- {item}: {amount:,} / {total:,} ({float(amount) / total * 100 :.5f}%)")
 
 if __name__ == "__main__":
     #average_loot_value("diamond_sword", "nether")
-    #tool_simulator("wood_pickaxe", "overworld", 10 ** 1)
+    tool_simulator("fragile_star_axe", "End City (End)", 
+        external_buffs=["luck_potion"],
+        sim_time=200
+    )
     #loot_value(loot.__BREW_RECIPE["undying_potion"], False)
-    loot_value(loot.get_activity_loot("iron_sword", "nether"), False)
