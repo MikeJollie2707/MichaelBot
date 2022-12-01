@@ -255,6 +255,14 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
 
             await psql.Equipment.delete(conn, user.id, equipment.item_id)
         
+        strict_penalty = False # Round up or down, default to down.
+        death_penalty = 0.05
+        if user.world == "end":
+            death_penalty = 0.95
+            strict_penalty = True
+        if death2_badge.completed():
+            death_penalty *= 0.5
+        
         for inv in inventories:
             if inv.item_id in loot.NON_REMOVABLE_ON_DEATH:
                 continue
@@ -263,14 +271,6 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
                 inv.amount -= 1
                 back_to_overworld = False
             else:
-                strict_penalty = False # Round up or down, default to down.
-                death_penalty = 0.05
-                if user.world == "end":
-                    death_penalty = 0.95
-                    strict_penalty = True
-                if not death2_badge.completed():
-                    death_penalty *= 0.5
-                
                 if not strict_penalty:
                     inv.amount -= int(inv.amount * death_penalty)
                 else:
@@ -346,7 +346,6 @@ async def food_autocomplete(option: hikari.AutocompleteInteractionOption, intera
     if option.value == '':
         return foods[:25]
     return [match_food for match_food in foods if match_algorithm(match_food, option.value)][:25]
-
 
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
