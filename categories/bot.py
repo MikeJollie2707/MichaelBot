@@ -12,7 +12,7 @@ import psutil
 from utils import checks, converters, helpers, models
 from utils.nav import ButtonNavigator, run_view
 
-from categories.economy import CURRENCY_ICON
+from categories.economy import CURRENCY_ICON, item_autocomplete
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")
@@ -38,6 +38,43 @@ def get_memory_size(byte: int, /, suffix: str = "B") -> str:
         if byte < factor:
             return f"{byte:.2f}{unit}{suffix}"
         byte /= factor
+
+async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    # Use dictionary to ensure unique values.
+    valid_match = {}
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return input_value in name
+        #return name.startswith(input_value)
+
+    for plg_name, _ in bot.plugins.items():
+        if match_algorithm(plg_name.lower(), option.value) and not plg_name.startswith('.'):
+            # Just dummy value.
+            valid_match[plg_name] = True
+    
+    # Return categories by default.
+    if option.value == '':
+        return tuple(valid_match.keys())[:25]
+    
+    for cmd_name, p_cmd in bot.prefix_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not p_cmd.hidden:
+            valid_match[cmd_name] = True
+    for cmd_name, s_cmd in bot.slash_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not s_cmd.hidden:
+            valid_match[cmd_name] = True
+    for cmd_name, m_cmd in bot.message_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not m_cmd.hidden:
+            valid_match[cmd_name] = True
+    for cmd_name, u_cmd in bot.user_commands.items():
+        if match_algorithm(cmd_name.lower(), option.value) and not u_cmd.hidden:
+            valid_match[cmd_name] = True
+    
+    # dict.keys() is not subscriptable.
+    if len(valid_match.keys()) > 0:
+        return tuple(valid_match.keys())[:25]
+    
+    return []
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -79,7 +116,7 @@ async def changelog(ctx: lightbulb.Context):
     await run_view(page_nav, ctx)
 
 @plugin.command()
-@lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = True, default = None, modifier = helpers.CONSUME_REST_OPTION)
+@lightbulb.option("name", "Category name or command name. Is case-sensitive.", autocomplete = help_name_autocomplete, default = None, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("help", f"[{plugin.name}] Get help information for the bot.", aliases = ['h'], auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _help(ctx: lightbulb.Context):
@@ -90,43 +127,6 @@ async def _help(ctx: lightbulb.Context):
         raise NotImplementedError("`help` command class doesn't exist.")
     
     await bot.help_command.send_help(ctx, obj)
-@_help.autocomplete("name")
-async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    # Use dictionary to ensure unique values.
-    valid_match = {}
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return input_value in name
-        #return name.startswith(input_value)
-
-    for plg_name, _ in bot.plugins.items():
-        if match_algorithm(plg_name.lower(), option.value) and not plg_name.startswith('.'):
-            # Just dummy value.
-            valid_match[plg_name] = True
-    
-    # Return categories by default.
-    if option.value == '':
-        return tuple(valid_match.keys())[:25]
-    
-    for cmd_name, p_cmd in bot.prefix_commands.items():
-        if match_algorithm(cmd_name.lower(), option.value) and not p_cmd.hidden:
-            valid_match[cmd_name] = True
-    for cmd_name, s_cmd in bot.slash_commands.items():
-        if match_algorithm(cmd_name.lower(), option.value) and not s_cmd.hidden:
-            valid_match[cmd_name] = True
-    for cmd_name, m_cmd in bot.message_commands.items():
-        if match_algorithm(cmd_name.lower(), option.value) and not m_cmd.hidden:
-            valid_match[cmd_name] = True
-    for cmd_name, u_cmd in bot.user_commands.items():
-        if match_algorithm(cmd_name.lower(), option.value) and not u_cmd.hidden:
-            valid_match[cmd_name] = True
-    
-    # dict.keys() is not subscriptable.
-    if len(valid_match.keys()) > 0:
-        return tuple(valid_match.keys())[:25]
-    
-    return []
 
 @plugin.command()
 @lightbulb.command("info", f"[{plugin.name}] Show information about the bot.", aliases = ["about"])
@@ -145,6 +145,7 @@ async def info_bot(ctx: lightbulb.Context):
         description = bot.info["description"],
         timestamp = dt.datetime.now().astimezone(),
         author = ctx.author
+    # TODO: Change version to reflect branch's name unless the branch is main.
     ).add_field(
         name = "Version:",
         value = bot.info["version"],
@@ -161,9 +162,10 @@ async def info_bot(ctx: lightbulb.Context):
         name = "Bot Info:",
         value = dedent('''
                 > **Language:** Python
-                > **Created on:** Jan 10, 2022 (originally Nov 13, 2019)
+                > **Created on:** Jan 10, 2022 (originally May 13, 2019)
                 > **Library:** [hikari](https://github.com/hikari-py/hikari), [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb), [Lavalink](https://github.com/freyacodes/Lavalink), [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
                 > **Source:** [GitHub](https://github.com/MikeJollie2707/MichaelBot \"MichaelBot\"), [Dashboard](https://github.com/nhxv/discord-bot)
+                > **Documentation:** [here](https://mikejollie2707.github.io/MichaelBot/)
                 '''),
         inline = False
     ).set_thumbnail(bot.get_me().avatar_url)
@@ -227,7 +229,7 @@ async def info_host(ctx: lightbulb.Context):
     await ctx.respond(embed = embed, reply = True)
 
 @info.child
-@lightbulb.option("item", "The item to show.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The item to show.", type = converters.ItemConverter, autocomplete = item_autocomplete)
 @lightbulb.command("item", f"[{plugin.name}] Show information for an item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def info_item(ctx: lightbulb.Context):
@@ -296,21 +298,6 @@ async def info_item(ctx: lightbulb.Context):
         )
     
     await ctx.respond(embed = embed, reply = True)
-@info_item.autocomplete("item")
-async def item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    # Exactly the same as in economy.py
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    items = []
-    for item in bot.item_cache.values():
-        items.append(item.name)
-    
-    if option.value == '':
-        return items[:25]
-    return [match_equipment for match_equipment in items if match_algorithm(match_equipment, option.value)][:25]
 
 @info.child
 @lightbulb.option("member", "A Discord member. Default to yourself.", type = hikari.Member, default = None)
