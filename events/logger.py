@@ -1,15 +1,17 @@
 import datetime as dt
+import typing as t
 from io import StringIO
 from textwrap import dedent
 
+import asyncio
 import hikari
 import humanize
 import lightbulb
-import mystbin
+import miru
 
 from utils import checks, helpers, models, psql
 
-EVENT_OPTION_MAPPING = {
+__EVENT_OPTION_MAPPING: dict[t.Type[hikari.Event], str] = {
     hikari.GuildChannelCreateEvent: "guild_channel_create",
     hikari.GuildChannelDeleteEvent: "guild_channel_delete",
     hikari.GuildChannelUpdateEvent: "guild_channel_update",
@@ -26,14 +28,68 @@ EVENT_OPTION_MAPPING = {
     hikari.RoleDeleteEvent: "role_delete",
     hikari.RoleUpdateEvent: "role_update",
     
-    # Since lightbulb events have hierachy and stuffs we need to map all of them (or at least the one we use)
+    # Since lightbulb events have hierarchy to separate prefix and slash (and others), due to how is_loggable() works,
+    # we need to map these out instead of using top-level events like CommandErrorEvent.
     lightbulb.PrefixCommandCompletionEvent: "command_complete",
     lightbulb.SlashCommandCompletionEvent: "command_complete",
     lightbulb.PrefixCommandErrorEvent: "command_error",
     lightbulb.SlashCommandErrorEvent: "command_error"
 }
 
-command_event_choices = list(EVENT_OPTION_MAPPING.values())
+__EVENT_GROUPING: dict[str, list[t.Type[hikari.Event]]] = {
+    "channel": [
+        hikari.GuildChannelCreateEvent,
+        hikari.GuildChannelDeleteEvent,
+        hikari.GuildChannelUpdateEvent,
+    ],
+    "member": [
+        hikari.MemberCreateEvent,
+        hikari.MemberDeleteEvent,
+        hikari.MemberUpdateEvent,
+    ],
+    "message": [
+        hikari.GuildBulkMessageDeleteEvent,
+        hikari.GuildMessageDeleteEvent,
+        hikari.GuildMessageUpdateEvent,
+    ],
+    "role": [
+        hikari.RoleCreateEvent,
+        hikari.RoleDeleteEvent,
+        hikari.RoleUpdateEvent,
+    ],
+    "guild": [
+        hikari.GuildUpdateEvent,
+        hikari.BanCreateEvent,
+        hikari.BanDeleteEvent,
+    ],
+    #"command": [
+    #    
+    #]
+}
+
+__EVENT_FRIENDLY: dict[t.Type[hikari.Event], str] = {
+    hikari.GuildChannelCreateEvent: "Create Channel Events",
+    hikari.GuildChannelDeleteEvent: "Delete Channel Events",
+    hikari.GuildChannelUpdateEvent: "Update Channel Events",
+    hikari.BanCreateEvent: "Ban Member Events",
+    hikari.BanDeleteEvent: "Unban Member Events",
+    hikari.GuildUpdateEvent: "Update Guild Events",
+    hikari.MemberCreateEvent: "Member Join Events",
+    hikari.MemberDeleteEvent: "Member Leave Events",
+    hikari.MemberUpdateEvent: "Update Member Events",
+    hikari.GuildBulkMessageDeleteEvent: "Mass Delete Message Events",
+    hikari.GuildMessageDeleteEvent: "Delete Message Events",
+    hikari.GuildMessageUpdateEvent: "Update Message Events",
+    hikari.RoleCreateEvent: "Create Role Events",
+    hikari.RoleDeleteEvent: "Delete Role Events",
+    hikari.RoleUpdateEvent: "Update Role Events",
+    
+    lightbulb.CommandCompletionEvent: "Command Finish Events",
+    lightbulb.PrefixCommandErrorEvent: "Prefix Command Error Events",
+    lightbulb.SlashCommandErrorEvent: "Slash Command Error Events"
+}
+
+command_event_choices = list(__EVENT_OPTION_MAPPING.values())
 # Hard-code this shit lmao
 command_event_choices.remove("command_complete")
 command_event_choices.remove("command_error")
@@ -64,16 +120,16 @@ def is_loggable(event: hikari.Event):
     log_cache = bot.log_cache.get(guild.id)
 
     if log_cache is None: return False
-    if type(event) not in EVENT_OPTION_MAPPING: return False
+    if type(event) not in __EVENT_OPTION_MAPPING: return False
     if log_cache.log_channel is None: return False
-    if getattr(log_cache, EVENT_OPTION_MAPPING[type(event)]) is None: return False
+    if getattr(log_cache, __EVENT_OPTION_MAPPING[type(event)]) is None: return False
 
     channel = bot.cache.get_guild_channel(log_cache.log_channel)
     if channel is None: return False
 
     is_text_channel = channel.type == hikari.ChannelType.GUILD_TEXT
     has_send_message = bot_has_permission_in(bot, channel, hikari.Permissions.SEND_MESSAGES)
-    option_enabled = getattr(log_cache, EVENT_OPTION_MAPPING[type(event)])
+    option_enabled = getattr(log_cache, __EVENT_OPTION_MAPPING[type(event)])
 
     return is_text_channel and has_send_message and option_enabled
 
@@ -135,7 +191,7 @@ async def log_enable(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - Author needs to have `Manage Server`.
 '''))
-@lightbulb.command("log-disable", f"[{plugin.name}] Disable logging or part of the logging system.")
+@lightbulb.command("log-disable", f"[{plugin.name}] Disable logging system.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_disable(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
@@ -154,65 +210,131 @@ async def log_disable(ctx: lightbulb.Context):
 @plugin.command()
 @lightbulb.set_help(dedent('''
     - Author needs to have `Manage Server`.
-    - It is recommended to use the `Slash Command` version of the command.
+    - Only 1 instance of this command can be run in a server at a time.
 '''))
-@lightbulb.option("logging_option", "Log type to toggle. Check `log-view` to see all options.", choices = command_event_choices)
-@lightbulb.command("log-option-toggle", f"[{plugin.name}] Toggle individual logging option.")
-@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
-async def log_option_toggle(ctx: lightbulb.Context):
-    logging_option = ctx.options.logging_option
-    bot: models.MichaelBot = ctx.bot
-
-    if logging_option not in EVENT_OPTION_MAPPING.values():
-        raise lightbulb.NotEnoughArguments(missing = [ctx.invoked.options["logging_option"]])
-    
-    log_cache = bot.log_cache.get(ctx.guild_id)
-    if log_cache is not None:
-        setattr(log_cache, logging_option, not getattr(log_cache, logging_option))
-        
-        async with bot.pool.acquire() as conn:
-            await bot.log_cache.update(conn, log_cache)
-        
-        if getattr(log_cache, logging_option):
-            await ctx.respond(f"Enabled `{logging_option}`.", reply = True)
-        else:
-            await ctx.respond(f"Disabled `{logging_option}`.", reply = True)
-    else:
-        await ctx.respond("Logging is not enabled.", reply = True, mentions_reply = True)
-
-@plugin.command()
-@lightbulb.set_help(dedent('''
-    - Author needs to have `Manage Server`.
-'''))
-@lightbulb.command("log-view", f"[{plugin.name}] View all log settings.")
+@lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.GuildBucket)
+@lightbulb.command("log-view", f"[{plugin.name}] View and configure all log settings.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def log_view(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
+    # Make sure this is the correct button.
+    BUTTON_PREFIX_ID = "log-sub_view-"
 
-    log_cache = bot.log_cache.get(ctx.guild_id)
+    main_description = '\n'.join([f"- **{event_category.capitalize()} Events**" for event_category in __EVENT_GROUPING.keys()])
     embed = helpers.get_default_embed(
         title = f"Log Settings for {ctx.get_guild().name}",
-        description = "",
+        description = main_description,
         author = ctx.author,
         timestamp = dt.datetime.now().astimezone()
     )
-    if log_cache is not None:
-        for logging_option in psql.asdict(log_cache):
-            if logging_option == "log_channel":
-                if log_cache.log_channel is not None:
-                    embed.description += f"**Log Destination:** {bot.cache.get_guild_channel(log_cache.log_channel).mention}\n"
-                else:
-                    embed.description += "**Log Destination:** `None`\n"
-            else:
-                embed.description += f"`{logging_option}`: {'Enabled' if getattr(log_cache, logging_option) else 'Disabled'}\n"
-    else:
-        embed.description += "**Log Destination:** `None`\n"
-    embed.set_author(
-        name = ctx.get_guild().name,
-        icon = ctx.get_guild().icon_url
-    )
+    embed.set_footer("To enable logging or set logging channel, use /log-enable.")
+    log_cache = bot.log_cache.get(ctx.guild_id)
+    if log_cache is None or log_cache.log_channel is None:
+        embed.description += "*Logging does not seem to be enabled. Try using `log-enable`.\n"
+        await ctx.respond("**Log Destination:** `None`", embed = embed, reply = True)
+        return
 
-    await ctx.respond(embed = embed, reply = True)
+    # Main view is the main menu with category listing. This is unchanged throughout the session.
+    # Sub view is the sub menu with event listing. This is updated throughout the session.
+    main_view = miru.View()
+    main_view.add_item(miru.Select(
+        options = (
+            miru.SelectOption("Channel", "channel"),
+            miru.SelectOption("Member", "member"),
+            miru.SelectOption("Message", "message"),
+            miru.SelectOption("Role", "role"),
+            miru.SelectOption("Guild", "guild"),
+        ),
+    ))
+    submit_button = miru.Button(
+        style = hikari.ButtonStyle.SUCCESS, 
+        label = "Save changes",
+        emoji = helpers.get_emote(":floppy_disk:"), 
+        custom_id = BUTTON_PREFIX_ID + "submit"
+    )
+    main_view.add_item(submit_button)
+
+    sub_view = miru.View()
+    return_button = miru.Button(
+        style = hikari.ButtonStyle.SECONDARY, 
+        emoji = helpers.get_emote(":arrow_up_small:"), 
+        custom_id = BUTTON_PREFIX_ID + "return"
+    )
+    # We need to save which category we're working on because otherwise, after choosing a toggle, we don't know which category we're working on.
+    # Visual purpose.
+    sub_view_value = ""
+
+    msg_proxy = await ctx.respond(f"**Log Destination:** {bot.cache.get_guild_channel(log_cache.log_channel).mention}\n", embed = embed, components = main_view.build())
+    
+    def is_valid_interaction(event: hikari.InteractionCreateEvent) -> bool:
+        if not isinstance(event.interaction, hikari.ComponentInteraction):
+            return False
+        
+        if event.interaction.member.id != ctx.author.id or event.interaction.channel_id != ctx.channel_id:
+            return False
+        
+        if event.interaction.values:
+            return event.interaction.values[0] in __EVENT_GROUPING.keys()
+        
+        return event.interaction.custom_id.startswith(BUTTON_PREFIX_ID)
+    
+    # We need to create a deferred response before editing. Otherwise, we get interaction failed.
+    while True:
+        try:
+            event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = 120, predicate = is_valid_interaction)
+            interaction: hikari.ComponentInteraction = event.interaction
+            # User selected menu.
+            if interaction.values:
+                sub_view_value = interaction.values[0]
+                
+                sub_view.clear_items()
+                embed.description = f"**{sub_view_value.capitalize()} events:**\n"
+                embed.description += "Select a button to toggle between enable and disable.\n"
+                for event in __EVENT_GROUPING[sub_view_value]: # Already check for valid interaction option, no need to check in-bound.
+                    friendly_name = __EVENT_FRIENDLY[event]
+                    attr_name = __EVENT_OPTION_MAPPING[event]
+                    sub_view.add_item(miru.Button(style = hikari.ButtonStyle.PRIMARY, label = friendly_name, custom_id = BUTTON_PREFIX_ID + __EVENT_OPTION_MAPPING[event]))
+
+                    embed.description += f"- `{friendly_name}`: {'✅' if getattr(log_cache, attr_name) else '❌'}\n"
+                sub_view.add_item(return_button)
+                
+                await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
+                await msg_proxy.edit(embed = embed, components = sub_view.build())
+            
+            elif interaction.custom_id.startswith(BUTTON_PREFIX_ID):
+                # Remove the prefix.
+                attr_name = interaction.custom_id[len(BUTTON_PREFIX_ID):]
+                
+                if attr_name == "return":
+                    embed.description = main_description
+                    await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
+                    await msg_proxy.edit(embed = embed, components = main_view.build())
+                    
+                    continue
+                elif attr_name == "submit":
+                    async with bot.pool.acquire() as conn:
+                        await bot.log_cache.update(conn, log_cache)
+                    await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
+                    await msg_proxy.edit("Successfully updated! ✅", embeds = None, components = None)
+                    
+                    return
+
+                setattr(log_cache, attr_name, not getattr(log_cache, attr_name))
+                
+                embed.description = f"**{sub_view_value.capitalize()} events:**\n"
+                embed.description += "Select a button to toggle between enable and disable.\n"
+                for event in __EVENT_GROUPING[sub_view_value]: # Already check for valid interaction option, no need to check in-bound.
+                    friendly_name = __EVENT_FRIENDLY[event]
+                    attr_name = __EVENT_OPTION_MAPPING[event]
+
+                    embed.description += f"- `{friendly_name}`: {'✅' if getattr(log_cache, attr_name) else '❌'}\n"
+                
+                await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
+                await msg_proxy.edit(embed = embed)
+
+        except asyncio.TimeoutError:
+            await msg_proxy.edit("Session expired. None of the changes are saved.", embeds = None, components = None)
+            return
 
 @plugin.listener(hikari.GuildChannelCreateEvent)
 async def on_guild_channel_create(event: hikari.GuildChannelCreateEvent):
