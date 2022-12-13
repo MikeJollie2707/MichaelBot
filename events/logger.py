@@ -773,11 +773,74 @@ async def on_guild_channel_update(event: hikari.GuildChannelUpdateEvent):
 
 @plugin.listener(hikari.BanCreateEvent)
 async def on_guild_ban(event: hikari.BanCreateEvent):
-    pass
+    if is_loggable(event):
+        bot: models.MichaelBot = event.app
+        log_channel = bot.log_cache[event.guild_id].log_channel
+        embed = hikari.Embed(color = COLOR_MODERATION)
+        log_time = dt.datetime.now().astimezone()
+        executor = None
+        
+        async for audit_log in bot.rest.fetch_audit_log(event. guild_id, event_type = hikari.AuditLogEventType.MEMBER_BAN_ADD).limit(1):
+            for log_id in audit_log.entries:
+                entry = audit_log.entries[log_id]
+                log_time = entry.created_at
+                executor = await entry.fetch_user()
+                break
+        
+        ban_entry = await event.fetch_ban()
+        embed.title = "User Banned"
+        embed.description = dedent(f'''
+            **User:** {ban_entry.user.mention}
+            **User Name:** {ban_entry.user.username},
+            **Reason:** {ban_entry.reason if ban_entry.reason else "Not provided."}
+        ''')
+        embed.set_footer(
+            text = f"Banned by: {executor}",
+            icon = executor.avatar_url
+        )
+        embed.set_author(
+            name = event.get_guild().name,
+            icon = event.get_guild().icon_url
+        )
+        embed.timestamp = log_time
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.BanDeleteEvent)
 async def on_guild_unban(event: hikari.BanDeleteEvent):
-    pass
+    if is_loggable(event):
+        bot: models.MichaelBot = event.app
+        log_channel = bot.log_cache[event.guild_id].log_channel
+        embed = hikari.Embed(color = COLOR_MODERATION)
+        log_time = dt.datetime.now().astimezone()
+        executor = None
+        
+        reason = None
+        
+        async for audit_log in bot.rest.fetch_audit_log(event. guild_id, event_type = hikari.AuditLogEventType.MEMBER_BAN_REMOVE).limit(1):
+            for log_id in audit_log.entries:
+                entry = audit_log.entries[log_id]
+                log_time = entry.created_at
+                executor = await entry.fetch_user()
+                reason = entry.reason
+                break
+        
+        #unban_entry = await event.
+        embed.title = "User Unbanned"
+        embed.description = dedent(f'''
+            **User:** {event.user.mention},
+            **User Name:** {event.user.username},
+            **Reason:** {reason if reason else "Not provided."}
+        ''')
+        embed.set_footer(
+            text = f"Unbanned by: {executor}",
+            icon = executor.avatar_url
+        )
+        embed.set_author(
+            name = event.get_guild().name,
+            icon = event.get_guild().icon_url
+        )
+        embed.timestamp = log_time
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.GuildUpdateEvent)
 async def on_guild_update(event: hikari.GuildUpdateEvent):
@@ -814,7 +877,24 @@ async def on_member_join(event: hikari.MemberCreateEvent):
 
 @plugin.listener(hikari.MemberDeleteEvent)
 async def on_member_leave(event: hikari.MemberDeleteEvent):
-    pass
+    if is_loggable(event):
+        bot: models.MichaelBot = event.app
+        log_channel = bot.log_cache[event.guild_id].log_channel
+        embed = hikari.Embed(color = COLOR_DELETE)
+        log_time = dt.datetime.now().astimezone()
+        
+        embed.title = "Member Left"
+        embed.description = dedent(f'''
+            **Member:** {event.old_member.mention}
+            **Name:** {event.old_member}
+        ''')
+        embed.set_author(
+            name = event.get_guild().name,
+            icon = event.get_guild().icon_url
+        )
+
+        embed.timestamp = log_time
+        await bot.rest.create_message(log_channel, embed = embed)
 
 @plugin.listener(hikari.MemberUpdateEvent)
 async def on_member_update(event: hikari.MemberUpdateEvent):
