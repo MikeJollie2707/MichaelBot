@@ -9,11 +9,11 @@ The bot existed before using `discord.py`, but the library discontinued (and it 
 ## Features
 
 - Basic Information
-- Interactive Help Menu
 - Fun Commands
 - Utility Commands
 - Report and Suggest Features
 - Music
+- Economy Commands
 
 More features will be added as I work on to restore the bot to its glory.
 
@@ -26,8 +26,11 @@ More features will be added as I work on to restore the bot to its glory.
 
 These are the libraries I used. All of these can be installed with `requirement.txt`. If you're on Windows, use `win_requirement.txt` instead (`uvloop` is not available on Windows). Note that I don't actively maintain on Windows, so if there are any troubles relating to version with `win_requirement.txt`, create an issue and I'll try to update it.
 
-- [hikari](https://github.com/hikari-py/hikari) & [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb) & [hikari-miru](https://github.com/HyperGH/hikari-miru)
-- [Lavalink](https://github.com/freyacodes/Lavalink) & [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
+- [hikari](https://github.com/hikari-py/hikari)
+    - [hikari-lightbulb](https://github.com/tandemdude/hikari-lightbulb)
+    - [hikari-miru](https://github.com/HyperGH/hikari-miru)
+- [Lavalink](https://github.com/freyacodes/Lavalink)
+    - [lavaplayer](https://github.com/HazemMeqdad/lavaplayer)
 - [asyncpg](https://github.com/MagicStack/asyncpg)
 - [emoji](https://github.com/carpedm20/emoji/)
 - [humanize](https://github.com/jmoiron/humanize)
@@ -35,8 +38,11 @@ These are the libraries I used. All of these can be installed with `requirement.
 - [pytimeparse](https://github.com/wroberts/pytimeparse)
 - [py_expression_eval](https://github.com/axiacore/py-expression-eval)
 - [uvloop](https://github.com/MagicStack/uvloop)
-- [pylint](https://github.com/PyCQA/pylint)
-- [mkdocs](https://github.com/mkdocs/mkdocs) & [mkdocs-material](https://github.com/squidfunk/mkdocs-material) & [mkdocstrings](https://github.com/mkdocstrings/mkdocstrings)
+- [mkdocs](https://github.com/mkdocs/mkdocs)
+    - [mkdocs-material](https://github.com/squidfunk/mkdocs-material)
+    - [mkdocstrings](https://github.com/mkdocstrings/mkdocstrings)
+    - [mkdocstrings-python](https://github.com/mkdocstrings/python)
+- [pip-autoremove](https://github.com/invl/pip-autoremove)
 
 Build instructions available [here](./docs/docs/INSTALLATION.md).
 
@@ -48,7 +54,7 @@ This project is under the [MIT LICENSE](LICENSE).
 
 These are the resources I used for the bot.
 
-- [hikari Documentation](https://www.hikari-py.dev/hikari/index.html) (a bit hard to follow)
+- [hikari Documentation](https://docs.hikari-py.dev/en/stable/) (a bit hard to follow)
 - [lightbulb Documentation](https://hikari-lightbulb.readthedocs.io/en/latest/index.html) (very useful place to start)
 - [lavaplayer Documentation](https://lavaplayer.readthedocs.io/en/latest/)
 - [XJ9 Bot](https://github.com/kamfretoz/XJ9) (inspiration for `error_handler.py` and a few others)
