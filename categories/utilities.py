@@ -4,6 +4,7 @@
 import asyncio
 import datetime as dt
 import json
+from io import StringIO
 from textwrap import dedent
 
 import hikari
@@ -14,7 +15,7 @@ import py_expression_eval
 from lightbulb.ext import tasks
 
 from utils import checks, converters, errors, helpers, models, psql
-from utils.nav import ItemListBuilder, run_view
+from utils.nav import ItemListBuilder, ModalWithCallback, run_view
 
 NOTIFY_REFRESH = 2 * 60
 
@@ -216,89 +217,12 @@ async def embed_simple_autocomplete(option: hikari.AutocompleteInteractionOption
     - Bot needs to have `Manage Messages`.
     - This is an alternative to `embed simple`.
 '''))
-@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("interactive", f"[{plugin.name}] Create a simple embed with prompts.")
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.command("interactive", f"[{plugin.name}] Create a complex embed with visual prompts.")
+@lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def embed_interactive(ctx: lightbulb.Context):
-    bot: models.MichaelBot = ctx.bot
-
-    def is_response(event: hikari.GuildMessageCreateEvent):
-        msg = event.message
-        return msg.author == ctx.author and msg.channel_id == ctx.channel_id
-    
-    title = ""
-    description = ""
-    color = None
-    channel = None
-    available_colors = models.DefaultColor.available_names
-
-    await ctx.event.message.delete()
-    try:
-        await ctx.respond("What's the title? (Type `None` to skip)")
-        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
-        if event.message.content.strip('`') != "None":
-            title = event.message.content
-        
-        await event.message.delete()
-        await ctx.delete_last_response()
-
-        await ctx.respond("What's the description? (Type `None` to skip)")
-        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
-        if event.message.content.strip('`') != "None":
-            description = event.message.content
-        
-        await event.message.delete()
-        await ctx.delete_last_response()
-
-        if title == "" and description == "":
-            await ctx.respond("Embed must have at least a title or a description. If you don't want these fields, use `embed from-json`.")
-            return
-
-        await ctx.respond(f"What's the color? You can enter a hex number or one of the following predefined colors: `{', '.join(available_colors)}`")
-        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
-        color_content = event.message.content.lower()
-        if color_content in available_colors:
-            color = models.DefaultColor.get_color(color_content)
-        else:
-            try:
-                color = hikari.Color(int(color_content, base = 16))
-            except ValueError:
-                await ctx.respond("Invalid color.")
-                return
-        
-        await event.message.delete()
-        await ctx.delete_last_response()
-
-        await ctx.respond("Which channel to send this embed? (Type `None` to send it here)")
-        event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = 120, predicate = is_response)
-        if event.message.content.strip('`') != "None":
-            channel = await lightbulb.TextableGuildChannelConverter(ctx).convert(event.message.content.strip('`'))
-        if channel is None:
-            channel = ctx.get_channel()
-        
-        await event.message.delete()
-        await ctx.delete_last_response()
-
-        embed = hikari.Embed(
-            title = title,
-            description = description,
-            color = color
-        )
-        await bot.rest.create_message(channel, embed = embed)
-    except asyncio.TimeoutError:
-        await ctx.respond("Session timed out.")
-
-@_embed.child
-@lightbulb.set_help(dedent('''
-    - Bot needs to have `Manage Messages`.
-    - This is an alternative to `embed simple`.
-'''))
-@lightbulb.add_cooldown(length = 3.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.add_checks(lightbulb.bot_has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES))
-@lightbulb.command("interactive2", f"[{plugin.name}] Create a simple embed with visual prompts.")
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def embed_interactive2(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     embed = hikari.Embed(
@@ -312,14 +236,29 @@ async def embed_interactive2(ctx: lightbulb.Context):
     
     # This is solely to build the button/select, we'll manually manage the interaction
     # because it'll be very complex and littered with abstractions otherwise.
+    # TODO: Add more options.
     view = miru.View()
     view.add_item(miru.Select(
         options = (
             miru.SelectOption(label = "Edit Title", value = "edit_title"),
             miru.SelectOption(label = "Edit Description", value = "edit_description"),
+            miru.SelectOption(label = "Add Field", value = "add_field"),
+            miru.SelectOption(label = "Remove Field", value = "remove_field"),
             miru.SelectOption(label = "Edit Color", value = "edit_color"),
-            miru.SelectOption(label = "Edit Destination", value = "edit_destination")
+            miru.SelectOption(label = "Toggle Current Timestamp", value = "toggle_timestamp"),
+            miru.SelectOption(label = "Edit Destination", value = "edit_destination"),
         )
+    ))
+    view.add_item(miru.Button(
+        style = hikari.ButtonStyle.SECONDARY,
+        label = "Toggle Inline",
+        custom_id = "toggle_inline",
+    ))
+    view.add_item(miru.Button(
+        style = hikari.ButtonStyle.SECONDARY,
+        label = "Export to JSON",
+        custom_id = "export",
+        emoji = helpers.get_emote(":printer:")
     ))
     view.add_item(miru.Button(
         style = hikari.ButtonStyle.PRIMARY,
@@ -337,57 +276,155 @@ async def embed_interactive2(ctx: lightbulb.Context):
         if event.interaction.member.id != ctx.author.id:
             return False
         
+        # Filter select menu.
         if event.interaction.values:
-            return event.interaction.values[0] in ("edit_title", "edit_description", "edit_color", "edit_destination")
-        return event.interaction.custom_id == "send"
+            return event.interaction.values[0] in (
+                "edit_title",
+                "edit_description",
+                "add_field",
+                "remove_field",
+                "edit_color",
+                "toggle_timestamp",
+                "edit_destination",
+            )
+        # Filter buttons.
+        return event.interaction.custom_id in ("toggle_inline", "export", "send")
     
     def is_response(event: hikari.GuildMessageCreateEvent):
         msg = event.message
         return msg.author == ctx.author and msg.channel_id == ctx.channel_id
     
+    # TODO: Handle case when the edited embed is ill-formed (empty, max capacity, etc.)
     while True:
         try:
             event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = timeout, predicate = is_valid_interaction)
             interaction: hikari.ComponentInteraction = event.interaction
+            # Need to force typing despite already type hint. Good job linter.
+            assert isinstance(interaction, hikari.ComponentInteraction)
+            
             # User selected menu.
             if interaction.values:
                 if interaction.values[0] == "edit_title":
-                    await interaction.create_initial_response(
-                        hikari.ResponseType.MESSAGE_CREATE,
-                        "What's the title? (Type `None` to clear)",
-                        flags = hikari.MessageFlag.EPHEMERAL
-                    )
-                    
-                    try:
-                        setter_event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = timeout, predicate = is_response)
-                        if setter_event.message.content.strip('`') != "None":
-                            embed.title = setter_event.message.content
+                    title_modal = ModalWithCallback("Edit Title", timeout = timeout)
+                    title_modal.add_item(miru.TextInput(
+                        label = "What's the title?",
+                        placeholder = "Submit nothing will clear this field.", 
+                        custom_id = "title_prompt",
+                        max_length = 256,
+                    ))
+                    @title_modal.as_callback
+                    async def edit_title(context: miru.ModalContext):
+                        response: str = context.get_value_by_id("title_prompt")
+                        if response.strip('`') != "":
+                            embed.title = response
                         else:
                             embed.title = ""
                         
-                        await msg.edit(embed = embed)
-                        await setter_event.message.delete()
-                    except asyncio.TimeoutError:
-                        await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+                        await context.edit_response(embed = embed)
+                    await title_modal.send(interaction)                        
                 elif interaction.values[0] == "edit_description":
+                    description_modal = ModalWithCallback("Edit Description", timeout = timeout)
+                    description_modal.add_item(miru.TextInput(
+                        label = "What's the description?", 
+                        style = hikari.TextInputStyle.PARAGRAPH,
+                        placeholder = "Submit nothing will clear this field.",
+                        custom_id = "description_prompt", 
+                    ))
+                    @description_modal.as_callback
+                    async def edit_description(context: miru.ModalContext):
+                        response: str = context.get_value_by_id("description_prompt")
+                        embed.description = response
+                        
+                        await context.edit_response(embed = embed)
+                    
+                    await description_modal.send(interaction)
+                elif interaction.values[0] == "add_field":
+                    if len(embed.fields) >= 25:
+                        await interaction.create_initial_response(
+                            hikari.ResponseType.MESSAGE_CREATE,
+                            "An embed can only have up to 25 fields!",
+                            flags = hikari.MessageFlag.EPHEMERAL,
+                        )
+                        continue
+                    
+                    add_field_modal = ModalWithCallback("Add Field", timeout = timeout)
+                    add_field_modal.add_item(miru.TextInput(
+                        label = "What's the field's name?",
+                        required = True,
+                        max_length = 256,
+                        custom_id = "add_field_name_prompt",
+                    )).add_item(miru.TextInput(
+                        label = "What's the field's value?",
+                        style = hikari.TextInputStyle.PARAGRAPH,
+                        required = True,
+                        max_length = 1024,
+                        custom_id = "add_field_value_prompt",
+                    ))
+                    # Modal doesn't have a checkbox option so we can't use it to toggle inline unfortunately.
+                    # Inline will need to be set by a separate button and not in this modal.
+                    @add_field_modal.as_callback
+                    async def add_field(context: miru.ModalContext):
+                        response_name: str = context.get_value_by_id("add_field_name_prompt")
+                        response_value: str = context.get_value_by_id("add_field_value_prompt")
+                        embed.add_field(response_name, response_value)
+                        
+                        await context.edit_response(embed = embed)
+                    
+                    await add_field_modal.send(interaction)
+                elif interaction.values[0] == "remove_field":
+                    if not embed.fields:
+                        await interaction.create_initial_response(
+                            hikari.ResponseType.MESSAGE_CREATE,
+                            "There's no field to remove!",
+                            flags = hikari.MessageFlag.EPHEMERAL,
+                        )
+                        continue
+                    
+                    def interaction_filter(event: hikari.InteractionCreateEvent):
+                        if not isinstance(event.interaction, hikari.ComponentInteraction):
+                            return False
+                        
+                        if event.interaction.member.id != ctx.author.id:
+                            return False
+                        
+                        if not event.interaction.values:
+                            return False
+                        return event.interaction.custom_id == str(interaction.id)
+                        
+                    # Since max field of embed is 25, we can use a select menu.
+                    remove_field_view = miru.View()
+                    remove_field_options = []
+                    for index, field in enumerate(embed.fields):
+                        remove_field_options.append(miru.SelectOption(
+                            label = field.name,
+                            value = str(index),
+                        ))
+                    # We're using interaction's id to make sure it's unique.
+                    remove_field_view.add_item(miru.Select(
+                        options = remove_field_options,
+                        custom_id = f"{interaction.id}",
+                        placeholder = "Select a field to remove.",
+                    ))
                     await interaction.create_initial_response(
                         hikari.ResponseType.MESSAGE_CREATE,
-                        "What's the description? (Type `None` to clear)",
-                        flags = hikari.MessageFlag.EPHEMERAL
+                        "Which field to remove?",
+                        components = remove_field_view.build(),
+                        flags = hikari.MessageFlag.EPHEMERAL,
                     )
+                    remove_field_event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = timeout, predicate = interaction_filter)
+                    remove_field_inter: hikari.ComponentInteraction = remove_field_event.interaction
+                    assert remove_field_inter.values
                     
-                    try:
-                        setter_event = await bot.wait_for(hikari.GuildMessageCreateEvent, timeout = timeout, predicate = is_response)
-                        if setter_event.message.content.strip('`') != "None":
-                            embed.description = setter_event.message.content
-                        else:
-                            embed.description = ""
-                        
-                        await msg.edit(embed = embed)
-                        await setter_event.message.delete()
-                    except asyncio.TimeoutError:
-                        await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+                    if remove_field_inter.values:
+                        # Since we use only integers, there's no way this raises ValueError.
+                        remove_index = int(remove_field_inter.values[0])
+                        embed.remove_field(remove_index)
+                    
+                    await remove_field_inter.create_initial_response(hikari.ResponseType.MESSAGE_UPDATE)
+                    await msg.edit(embed = embed)
+                    await interaction.delete_initial_response()
                 elif interaction.values[0] == "edit_color":
+                    # The prompt for color is too long, so we can't fit it in a modal. Unfortunate.
                     await interaction.create_initial_response(
                         hikari.ResponseType.MESSAGE_CREATE,
                         f"What's the color? You can enter a hex number or one of the following predefined colors: `{', '.join(available_colors)}`",
@@ -410,7 +447,37 @@ async def embed_interactive2(ctx: lightbulb.Context):
                         await setter_event.message.delete()
                     except asyncio.TimeoutError:
                         await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+                        await asyncio.sleep(5)
+                    await interaction.delete_initial_response()
+                elif interaction.values[0] == "toggle_timestamp":
+                    if not embed.timestamp:
+                        embed.timestamp = dt.datetime.now().astimezone()
+                    else:
+                        embed.timestamp = None
+                    
+                    await interaction.create_initial_response(hikari.ResponseType.MESSAGE_UPDATE)
+                    await msg.edit(embed = embed)
                 elif interaction.values[0] == "edit_destination":
+                    # The reason we don't use modal is because it's easier for user to input channel from default Discord messages.
+                    # I'll keep this code here just in case Discord change modal input.
+
+                    #async def edit_destination(context: miru.ModalContext):
+                    #    response: str = context.get_value_by_id("destination_prompt")
+                    #    if response:
+                    #        channel = await lightbulb.TextableGuildChannelConverter(ctx).convert(response)
+                    #        if channel is None:
+                    #            channel = ctx.get_channel()
+                    #    
+                    #    await context.edit_response(f"Destination: {channel.mention}")
+                    #
+                    #destination_modal = ModalWithCallback("Edit Destination", callback = edit_destination, timeout = timeout)
+                    #destination_modal.add_item(miru.TextInput(
+                    #    label = "Which channel to send this embed?",
+                    #    placeholder = "Submit nothing will set destination to this channel.",
+                    #    custom_id = "destination_prompt",
+                    #))
+                    #await destination_modal.send(interaction)
+                    
                     await interaction.create_initial_response(
                         hikari.ResponseType.MESSAGE_CREATE,
                         "Which channel to send this embed? (Type `None` to send it here)",
@@ -428,6 +495,37 @@ async def embed_interactive2(ctx: lightbulb.Context):
                         await setter_event.message.delete()
                     except asyncio.TimeoutError:
                         await interaction.edit_initial_response(f"`{interaction.custom_id}` session expired.")
+                        await asyncio.sleep(5)
+                    await interaction.delete_initial_response()
+            elif interaction.custom_id == "toggle_inline":
+                if not embed.fields:
+                    await interaction.create_initial_response(
+                        hikari.ResponseType.MESSAGE_CREATE,
+                        "This button only works when the embed has at least one field.",
+                        flags = hikari.MessageFlag.EPHEMERAL,
+                    )
+                    continue
+                
+                last_field = embed.fields[-1]
+                embed.edit_field(-1, inline = not last_field.is_inline)
+                await interaction.create_initial_response(hikari.ResponseType.MESSAGE_UPDATE)
+                await msg.edit(embed = embed)
+            elif interaction.custom_id == "export":
+                d = bot.entity_factory.serialize_embed(embed)[0]
+                d_text = json.dumps(str(d), indent = 4)
+                if len(d_text) > 2000:
+                    await interaction.create_initial_response(
+                        hikari.ResponseType.MESSAGE_CREATE,
+                        "The content is too large, so I throw them in this file!",
+                        attachment = hikari.Bytes(StringIO(d_text), "embed_export.json"),
+                        flags = hikari.MessageFlag.EPHEMERAL,
+                    )
+                else:
+                    await interaction.create_initial_response(
+                        hikari.ResponseType.MESSAGE_CREATE,
+                        f"```{d_text}```",
+                        flags = hikari.MessageFlag.EPHEMERAL,
+                    )
             elif interaction.custom_id == "send":
                 # No need to response to the interaction if we just delete the message.
                 await bot.rest.create_message(channel, embed = embed)
