@@ -114,7 +114,7 @@ class ButtonNavigator(nav.NavigatorView):
             if isinstance(item, hikari.Embed):
                 item.set_footer(f"Page {index + 1}/{len(self.pages)}")
     
-    def get_default_buttons(self) -> t.List[nav.NavButton[nav.NavigatorView]]:
+    def get_default_buttons(self) -> t.Sequence[nav.NavButton]:
         '''
         Returns a list of default buttons.
         These are `FirstButton()`, `PrevButton()`, `NextButton()`, `LastButton()`, and `StopButtonDelete()`.

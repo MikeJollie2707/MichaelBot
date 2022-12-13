@@ -271,7 +271,7 @@ class ItemCache:
 
         self.__item_mapping[item.id] = item
 
-# Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py#L164
+# Reference: https://github.com/Rapptz/discord.py/blob/master/discord/colour.py
 @dataclass(frozen = True)
 class DefaultColor:
     '''Store several default colors to use instantly.'''
@@ -316,13 +316,18 @@ class DefaultColor:
         for attr in DefaultColor.__dict__:
             if attr.startswith("__"):
                 continue
-            if attr in ("get_color", "available_names"):
+            if attr in ("get_color", "load", "available_names"):
                 continue
             DefaultColor.available_names.append(attr)
 
     @staticmethod
     def get_color(color: str):
         return getattr(DefaultColor(), color)
+    @staticmethod
+    def load():
+        '''Load this class. This will make `available_names` available.
+        '''
+        _ = DefaultColor()
 
 @dataclass
 class NodeExtra:
@@ -397,6 +402,8 @@ class MichaelBot(lightbulb.BotApp):
             if option in ["--quiet", "-q"]:
                 log_level = ""
         
+        DefaultColor.load()
+
         super().__init__(
             token,
             prefix,
