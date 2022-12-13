@@ -78,7 +78,7 @@ def tool_simulator(tool_id: str, location: str, *, external_buffs: list[str] = N
     ----------
     tool_id : str
         A valid tool id.
-    world : str
+    location : str
         A valid location defined in `loot.XYZ_LOCATION`.
     external_buffs : list[str]
         Any external buffs to pass into `loot.get_activity_loot()`.
@@ -101,6 +101,9 @@ def tool_simulator(tool_id: str, location: str, *, external_buffs: list[str] = N
         del loot_rate["raw_damage"]
 
         for reward in loot_rate:
+            if reward == "raw_damage":
+                continue
+            
             if reward not in rate_tracker:
                 rate_tracker[reward] = loot_rate[reward]
             else:
@@ -109,7 +112,7 @@ def tool_simulator(tool_id: str, location: str, *, external_buffs: list[str] = N
             total += loot_rate[reward]
 
     print(f"Sim {SIMULATION_TIME:,} times, total amount: {total:,}")
-    print(f"Buffs: {external_buffs}")
+    print(f"Tool: {tool_id}. External buffs: {external_buffs}")
     for item, amount in rate_tracker.items():
         print(f"- {item}: {amount:,} / {total:,} ({float(amount) / total * 100 :.5f}%)")
 

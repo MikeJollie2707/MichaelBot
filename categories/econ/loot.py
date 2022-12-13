@@ -630,17 +630,17 @@ __MINE_LOOT = {
         },
         "diamond_pickaxe": {
             "space_rock": RewardRNG(rate = 1, min_amount = 2, max_amount = 4),
-            "comet_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1, amount_layout = [90, 10]),
+            "comet_fragment": RewardRNG(rate = 0.01, min_amount = 0, max_amount = 1, amount_layout = (30, 70)),
             "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
         },
         "nether_pickaxe": {
             "space_rock": RewardRNG(rate = 1, min_amount = 2, max_amount = 5),
-            "comet_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1, amount_layout = [90, 10]),
+            "comet_fragment": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1, amount_layout = (30, 70)),
             "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
         },
         "fragile_star_pickaxe": {
             "space_rock": RewardRNG(rate = 1, min_amount = 2, max_amount = 6),
-            "comet_fragment": RewardRNG(rate = 0.075, min_amount = 0, max_amount = 1, amount_layout = [90, 10]),
+            "comet_fragment": RewardRNG(rate = 0.15, min_amount = 0, max_amount = 1, amount_layout = (30, 70)),
             "raw_damage": RewardRNG(rate = 1, min_amount = 80, max_amount = 100),
         },
     }
@@ -997,13 +997,13 @@ __EXPLORE_LOOT = {
             "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
         },
         "nether_sword": {
-            "star_fragment": RewardRNG(rate = 0.01, min_amount = 0, max_amount = 2, amount_layout = [50, 40, 10]),
+            "star_fragment": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 2, amount_layout = [50, 40, 10]),
             "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
         },
         "fragile_star_sword": {
-            "star_fragment": RewardRNG(rate = 0.15, min_amount = 0, max_amount = 2, amount_layout = [50, 40, 10]),
+            "star_fragment": RewardRNG(rate = 0.09, min_amount = 0, max_amount = 2, amount_layout = [50, 45, 5]),
             "raw_damage": RewardRNG(rate = 1, min_amount = 100, max_amount = 150),
-        }
+        },
     }
 }
 
@@ -1290,38 +1290,38 @@ __CHOP_LOOT = {
         "stone_axe": {
             "gold": RewardRNG(rate = 1, min_amount = 5, max_amount = 7),
             "diamond": RewardRNG(rate = 0.5, min_amount = 1, max_amount = 3),
-            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "shulker_box": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "iron_axe": {
             "gold": RewardRNG(rate = 1, min_amount = 5, max_amount = 10),
             "diamond": RewardRNG(rate = 0.5, min_amount = 5, max_amount = 6),
-            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "shulker_box": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "diamond_axe": {
             "gold": RewardRNG(rate = 1, min_amount = 10, max_amount = 12),
             "diamond": RewardRNG(rate = 0.5, min_amount = 6, max_amount = 8),
-            "comet_fragment": RewardRNG(rate = 0.001, min_amount = 0, max_amount = 1),
-            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "comet_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "shulker_box": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "nether_axe": {
             "gold": RewardRNG(rate = 1, min_amount = 10, max_amount = 12),
             "diamond": RewardRNG(rate = 0.5, min_amount = 6, max_amount = 8),
-            "comet_fragment": RewardRNG(rate = 0.001, min_amount = 0, max_amount = 1),
-            "star_fragment": RewardRNG(rate = 0.001, min_amount = 0, max_amount = 2),
-            "shulker_box": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "comet_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 1),
+            "star_fragment": RewardRNG(rate = 0.005, min_amount = 0, max_amount = 2),
+            "shulker_box": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
         },
         "fragile_star_axe": {
             "gold": RewardRNG(rate = 1, min_amount = 12, max_amount = 14),
             "diamond": RewardRNG(rate = 0.75, min_amount = 7, max_amount = 9),
-            "comet_fragment": RewardRNG(rate = 0.015, min_amount = 0, max_amount = 1),
-            "star_fragment": RewardRNG(rate = 0.015, min_amount = 0, max_amount = 2),
-            "shulker_box": RewardRNG(rate = 0.006, min_amount = 0, max_amount = 1),
+            "comet_fragment": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 1),
+            "star_fragment": RewardRNG(rate = 0.05, min_amount = 0, max_amount = 2),
+            "shulker_box": RewardRNG(rate = 0.06, min_amount = 0, max_amount = 1),
             "raw_damage": RewardRNG(rate = 1, min_amount = 50, max_amount = 100),
-        }
+        },
     },
     "Floating Island (End)": {
         "stone_axe": {
@@ -1456,9 +1456,9 @@ __CRAFT_RECIPE = {
         "result": 2
     },
     "star_gem": {
-        "star_fragment": 10,
-        "comet_fragment": 10,
-        "space_rock": 250,
+        "star_fragment": 150,
+        "comet_fragment": 150,
+        "space_rock": 2500,
         "result": 1
     },
     "fragile_star_pickaxe": {
@@ -1749,6 +1749,9 @@ def get_activity_loot(action_type: str, equipment_id: str, location: str, extern
         elif item_id == "wood":
             if "wood2" in external_buffs:
                 rng.shift_min_amount(2)
+
+        if "luck_potion" in external_buffs:
+            rng.rate *= 3
         
         reward[item_id] = rng.roll()
         

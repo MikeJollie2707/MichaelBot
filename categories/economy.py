@@ -1,6 +1,7 @@
 import asyncio
 import datetime as dt
 import random
+import typing as t
 from enum import IntFlag, auto
 from textwrap import dedent
 
@@ -80,25 +81,6 @@ def get_reward_str(bot: models.MichaelBot, loot_table: dict[str, int], *, option
         rewards.insert(0, f"{CURRENCY_ICON}{money}")
     return ', '.join(rewards)
 
-def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
-    '''A shortcut to multiply the rewards in-place.
-    This will not multiply rewards that are defined in `loot.PREVENT_MULTIPLY`.
-
-    Parameters
-    ----------
-    loot_table : dict[str, int]
-        The loot table.
-    multiplier : int | float
-        The multiplier. Cannot be 0. If this is a float, the result will be rounded normally.
-    '''
-
-    if multiplier == 0:
-        raise ValueError("'multiplier' cannot be 0.")
-
-    for key in loot_table:
-        if key not in loot.PREVENT_MULTIPLY:
-            loot_table[key] = round(loot_table[key] * multiplier)
-
 def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -> int:
     '''Get the value of a loot table.
 
@@ -128,6 +110,60 @@ def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -
         value += item.sell_price * amount
     
     return value
+
+def add_reward(reward1: dict[str, int], reward2: dict[str, int], /) -> dict[str, int]:
+    '''A shortcut to combine two rewards together.
+
+    Parameters
+    ----------
+    reward1 : dict[str, int]
+        A loot table.
+    reward2 : dict[str, int]
+        A loot table.
+
+    Returns
+    -------
+    dict[str, int]
+        A loot table after combining the two.
+    '''
+
+    result: dict[str, int] = {}
+    for key in reward1:
+        result[key] = reward1[key]
+    for key in reward2:
+        if result.get(key):
+            result[key] += reward2[key]
+        else:
+            result[key] = reward2[key]
+
+def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
+    '''A shortcut to multiply the rewards in-place.
+    This will not multiply rewards that are defined in `loot.PREVENT_MULTIPLY`.
+
+    Parameters
+    ----------
+    loot_table : dict[str, int]
+        The loot table.
+    multiplier : int | float
+        The multiplier. Cannot be 0. If this is a float, the result will be rounded normally.
+    '''
+
+    if multiplier == 0:
+        raise ValueError("'multiplier' cannot be 0.")
+
+    for key in loot_table:
+        if key not in loot.PREVENT_MULTIPLY:
+            loot_table[key] = round(loot_table[key] * multiplier)
+
+def repeat_function(times: int, callback: t.Callable[[], dict[str, int]], *args) -> dict[str, int]:
+    result: dict[str, int] = {}
+    for _ in range(0, times):
+        res = callback(*args)
+        if not res: continue
+        
+        result = add_reward(result, res)
+    
+    return result
 
 def filter_equipment_types(equipments: list[psql.Equipment], eq_types_or_ids: tuple[str]) -> tuple[psql.Equipment | None]:
     '''Filter equipments based on their types (like for tools) or their ids (like for potions).
@@ -162,7 +198,7 @@ def filter_equipment_types(equipments: list[psql.Equipment], eq_types_or_ids: tu
             results.append(None)
     return tuple(results)
 
-async def add_reward(conn, bot: models.MichaelBot, user_id: int, loot_table: dict[str, int]):
+async def add_reward_to_user(conn, bot: models.MichaelBot, user_id: int, loot_table: dict[str, int]):
     '''A shortcut to add rewards to the user.
 
     For some special keys (as defined in `loot.RESERVED_KEYS`), this will attempt to add money also.
@@ -347,6 +383,36 @@ async def food_autocomplete(option: hikari.AutocompleteInteractionOption, intera
         return foods[:25]
     return [match_food for match_food in foods if match_algorithm(match_food, option.value)][:25]
 
+async def craftable_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    valid_match = []
+    for item in bot.item_cache.values():
+        if loot.get_craft_recipe(item.id):
+            valid_match.append(item.name)
+    
+    if option.value == '':
+        return valid_match[:25]
+    return [valid_item for valid_item in valid_match if match_algorithm(valid_item, option.value)][:25]
+
+async def brewable_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
+    bot: models.MichaelBot = interaction.app
+
+    def match_algorithm(name: str, input_value: str):
+        return name.lower().startswith(input_value.lower())
+
+    valid_match = []
+    for item in bot.item_cache.values():
+        if loot.get_brew_recipe(item.id) and psql.Equipment.is_potion(item.id):
+            valid_match.append(item.name)
+    
+    if option.value == '':
+        return valid_match[:25]
+    return [valid_item for valid_item in valid_match if match_algorithm(valid_item, option.value)][:25]
+
 plugin = lightbulb.Plugin("Economy", "Economic Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":dollar:")
 plugin.add_checks(
@@ -502,7 +568,7 @@ async def addmoney(ctx: lightbulb.Context):
 '''))
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
-@lightbulb.option("potion", "the name or alias of the potion to brew.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("potion", "the name or alias of the potion to brew.", type = converters.ItemConverter, autocomplete = brewable_autocomplete)
 @lightbulb.command("brew", f"[{plugin.name}] Brew various potions.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def brew(ctx: lightbulb.Context):
@@ -586,28 +652,13 @@ async def brew(ctx: lightbulb.Context):
                 await psql.Inventory.update(conn, inv)
             # Update balance.
             await bot.user_cache.update(conn, user)
-            await add_reward(conn, bot, ctx.author.id, {potion.id: recipe["result"]})
+            await add_reward_to_user(conn, bot, ctx.author.id, {potion.id: recipe["result"]})
 
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew0", recipe["result"])
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew1", recipe["result"])
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew2", recipe["result"])
             await psql.UserBadge.add_progress(conn, ctx.author.id, "brew3", recipe["result"])
     await ctx.respond(f"Successfully brewed {get_reward_str(bot, {potion.id: recipe['result']})}.", reply = True)
-@brew.autocomplete("potion")
-async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    valid_match = []
-    for item in bot.item_cache.values():
-        if loot.get_brew_recipe(item.id) and psql.Equipment.is_potion(item.id):
-            valid_match.append(item.name)
-    
-    if option.value == '':
-        return valid_match[:25]
-    return [valid_item for valid_item in valid_match if match_algorithm(valid_item, option.value)][:25]
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -615,7 +666,7 @@ async def brew_potion_autocomplete(option: hikari.AutocompleteInteractionOption,
 '''))
 @lightbulb.add_cooldown(length = 1, uses = 1, bucket = lightbulb.UserBucket)
 @lightbulb.option("times", "How many times this command is executed. Default to 1.", type = int, min_value = 1, max_value = 100, default = 1)
-@lightbulb.option("item", "The name or alias of the item to craft.", type = converters.ItemConverter, autocomplete = True)
+@lightbulb.option("item", "The name or alias of the item to craft.", type = converters.ItemConverter, autocomplete = craftable_autocomplete)
 @lightbulb.command("craft", f"[{plugin.name}] Craft various items.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def craft(ctx: lightbulb.Context):
@@ -676,23 +727,8 @@ async def craft(ctx: lightbulb.Context):
         async with conn.transaction():
             for inv in inventories:
                 await psql.Inventory.update(conn, inv)
-            await add_reward(conn, bot, ctx.author.id, {item.id: recipe["result"]})
+            await add_reward_to_user(conn, bot, ctx.author.id, {item.id: recipe["result"]})
     await ctx.respond(f"Successfully crafted {get_reward_str(bot, {item.id: recipe['result']})}.", reply = True)
-@craft.autocomplete("item")
-async def craft_item_autocomplete(option: hikari.AutocompleteInteractionOption, interaction: hikari.AutocompleteInteraction):
-    bot: models.MichaelBot = interaction.app
-
-    def match_algorithm(name: str, input_value: str):
-        return name.lower().startswith(input_value.lower())
-
-    valid_match = []
-    for item in bot.item_cache.values():
-        if loot.get_craft_recipe(item.id):
-            valid_match.append(item.name)
-    
-    if option.value == '':
-        return valid_match[:25]
-    return [valid_item for valid_item in valid_match if match_algorithm(valid_item, option.value)][:25]
 
 @plugin.command()
 @lightbulb.set_help(dedent('''
@@ -755,7 +791,7 @@ async def daily(ctx: lightbulb.Context):
             daily_loot = loot.get_daily_loot(user.daily_streak)
             if user.daily_streak % 10 == 0:
                 daily_loot["streak_freezer"] = 1
-            await add_reward(conn, bot, ctx.author.id, daily_loot)
+            await add_reward_to_user(conn, bot, ctx.author.id, daily_loot)
             response += f"You received: {get_reward_str(bot, daily_loot, option = 'emote')}\n"
 
         await ctx.respond(response, reply = True)
@@ -820,7 +856,7 @@ async def use_tool(ctx: lightbulb.Context):
                     
                     # Clean the dict to prevent any dumb side-effect.
                     del craftable["result"]
-                    await add_reward(conn, bot, ctx.author.id, craftable)
+                    await add_reward_to_user(conn, bot, ctx.author.id, craftable)
 
                     reward_str = get_reward_str(bot, craftable, option = "emote")
                     if not reward_str:
@@ -1234,7 +1270,7 @@ async def market_buy(ctx: lightbulb.Context):
 
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            await add_reward(conn, bot, ctx.author.id, {item.id: amount})
+            await add_reward_to_user(conn, bot, ctx.author.id, {item.id: amount})
             await bot.user_cache.update(conn, user)
     
     await ctx.respond(f"Successfully purchased {get_reward_str(bot, {item.id : amount}, option = 'emote')}.", reply = True)
@@ -1407,24 +1443,15 @@ async def mine(ctx: lightbulb.Context):
                 pass
 
         if potion_activated.has_flag(PotionActivation.HASTE_POTION):
-            # Roll 4 more times, which is 5 times in total.
-            for _ in range(0, 4):
-                _loot_table = loot.get_activity_loot("mine", pickaxe_existed.item_id, user.world, external_buffs)
-                if not _loot_table:
-                    continue
-
-                for item_id in _loot_table:
-                    if item_id in loot_table:
-                        loot_table[item_id] += _loot_table[item_id]
-                    else:
-                        loot_table[item_id] = _loot_table[item_id]
+            _loot_table = repeat_function(6, loot.get_activity_loot, "mine", pickaxe_existed.item_id, location, external_buffs)
+            loot_table = add_reward(loot_table, _loot_table)
         if potion_activated.has_flag(PotionActivation.FORTUNE_POTION):
             multiply_reward(loot_table, 4)
         if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 2.25)
+            multiply_reward(loot_table, 3)
         
         async with conn.transaction():
-            await add_reward(conn, bot, ctx.author.id, loot_table)
+            await add_reward_to_user(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, pickaxe_existed.item_id, pickaxe_existed.remain_durability - 1)
             # Update health.
             await bot.user_cache.update(conn, user)
@@ -1592,24 +1619,15 @@ async def explore(ctx: lightbulb.Context):
                 pass
         
         if potion_activated.has_flag(PotionActivation.STRENGTH_POTION):
-            # Roll 4 more times, which is 5 times in total.
-            for _ in range(0, 4):
-                _loot_table = loot.get_activity_loot("explore", sword_existed.item_id, user.world, external_buffs)
-                if not _loot_table:
-                    continue
-                
-                for item_id in _loot_table:
-                    if item_id in loot_table:
-                        loot_table[item_id] += _loot_table[item_id]
-                    else:
-                        loot_table[item_id] = _loot_table[item_id]
+            _loot_table = repeat_function(6, loot.get_activity_loot, "explore", sword_existed.item_id, location, external_buffs)
+            loot_table = add_reward(loot_table, _loot_table)
         if potion_activated.has_flag(PotionActivation.LOOTING_POTION):
             multiply_reward(loot_table, 5)
         if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 2.25)
+            multiply_reward(loot_table, 3)
         
         async with conn.transaction():
-            await add_reward(conn, bot, ctx.author.id, loot_table)
+            await add_reward_to_user(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, sword_existed.item_id, sword_existed.remain_durability - 1)
             # Update health.
             await bot.user_cache.update(conn, user)
@@ -1771,24 +1789,15 @@ async def chop(ctx: lightbulb.Context):
                 pass
         
         if potion_activated.has_flag(PotionActivation.HASTE_POTION):
-            # Roll 4 more times, which is 5 times in total.
-            for _ in range(0, 4):
-                _loot_table = loot.get_activity_loot("chop", axe_existed.item_id, user.world, external_buffs)
-                if not _loot_table:
-                    continue
-
-                for item_id in _loot_table:
-                    if item_id in loot_table:
-                        loot_table[item_id] += _loot_table[item_id]
-                    else:
-                        loot_table[item_id] = _loot_table[item_id]
+            _loot_table = repeat_function(6, loot.get_activity_loot, "chop", axe_existed.item_id, user.world, external_buffs)
+            loot_table = add_reward(loot_table, _loot_table)
         if potion_activated.has_flag(PotionActivation.NATURE_POTION):
             multiply_reward(loot_table, 4)
         if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 2.25)
+            multiply_reward(loot_table, 3)
         
         async with conn.transaction():
-            await add_reward(conn, bot, ctx.author.id, loot_table)
+            await add_reward_to_user(conn, bot, ctx.author.id, loot_table)
             await psql.Equipment.update_durability(conn, ctx.author.id, axe_existed.item_id, axe_existed.remain_durability - 1)
             # Update health.
             await bot.user_cache.update(conn, user)
@@ -2037,7 +2046,7 @@ async def _trade(ctx: lightbulb.Context):
                         )
                     else:
                         async with conn.transaction():
-                            await add_reward(conn, bot, ctx.author.id, {selected_trade.item_dest: selected_trade.amount_dest})
+                            await add_reward_to_user(conn, bot, ctx.author.id, {selected_trade.item_dest: selected_trade.amount_dest})
                             user.balance -= selected_trade.amount_src
                             await bot.user_cache.update(conn, user)
                             user_trade.count += 1
@@ -2066,7 +2075,7 @@ async def _trade(ctx: lightbulb.Context):
                     else:
                         async with conn.transaction():
                             await psql.Inventory.remove(conn, ctx.author.id, selected_trade.item_src, selected_trade.amount_src)
-                            await add_reward(conn, bot, ctx.author.id, {selected_trade.item_dest: selected_trade.amount_dest})
+                            await add_reward_to_user(conn, bot, ctx.author.id, {selected_trade.item_dest: selected_trade.amount_dest})
                             user_trade.count += 1
                             await psql.UserTrade.update(conn, user_trade)
 
@@ -2230,7 +2239,7 @@ async def _barter(ctx: lightbulb.Context):
                     else:
                         async with conn.transaction():
                             await psql.Inventory.remove(conn, ctx.author.id, selected_barter.item_src, selected_barter.amount_src)
-                            await add_reward(conn, bot, ctx.author.id, {selected_barter.item_dest: selected_barter.amount_dest})
+                            await add_reward_to_user(conn, bot, ctx.author.id, {selected_barter.item_dest: selected_barter.amount_dest})
                             user_trade.count += 1
                             await psql.UserTrade.update(conn, user_trade)
 
