@@ -47,7 +47,7 @@ async def run_view(view: miru.View, ctx: lightbulb.Context, initial_content: t.U
             raise TypeError("'initial_content' must be provided if 'view' is not type 'NavigatorView'.")
     
     resp_proxy = await ctx.respond(initial_content, components = view.build())
-    view.start(await resp_proxy.message())
+    await view.start(await resp_proxy)
     await view.wait()
 
 def timeout_button() -> nav.NavButton:

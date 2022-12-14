@@ -79,7 +79,7 @@ if __name__ == "__main__":
     )
     
     tasks.load(bot)
-    miru.load(bot)
+    miru.install(bot)
 
     for extension in sorted(EXTENSIONS):
         bot.load_extensions(extension)

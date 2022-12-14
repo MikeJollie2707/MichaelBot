@@ -504,7 +504,7 @@ async def bet(ctx: lightbulb.Context):
     if user.balance == money:
         confirm_menu = nav.ConfirmView(timeout = 10, authors = (ctx.author.id, ))
         resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
-        confirm_menu.start(await resp.message())
+        await confirm_menu.start(await resp)
         res = await confirm_menu.wait()
         if not res:
             if res is None:
@@ -1991,7 +1991,7 @@ async def _trade(ctx: lightbulb.Context):
     # Logically this should be ephemeral, but you can't get an ephemeral message object...
     resp = await ctx.respond(embed = embed, components = view.build())
     msg = await resp.message()
-    view.start(msg)
+    await view.start(msg)
 
     def is_select_interaction(event: hikari.InteractionCreateEvent):
         if not isinstance(event.interaction, hikari.ComponentInteraction):
@@ -2183,7 +2183,7 @@ async def _barter(ctx: lightbulb.Context):
     # Logically this should be ephemeral, but you can't get an ephemeral message object...
     resp = await ctx.respond(embed = embed, components = view.build())
     msg = await resp.message()
-    view.start(msg)
+    await view.start(msg)
 
     def is_select_interaction(event: hikari.InteractionCreateEvent):
         if not isinstance(event.interaction, hikari.ComponentInteraction):
