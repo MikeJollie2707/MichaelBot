@@ -135,6 +135,8 @@ def add_reward(reward1: dict[str, int], reward2: dict[str, int], /) -> dict[str,
             result[key] += reward2[key]
         else:
             result[key] = reward2[key]
+    
+    return result
 
 def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
     '''A shortcut to multiply the rewards in-place.
