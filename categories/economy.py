@@ -1435,7 +1435,7 @@ async def mine(ctx: lightbulb.Context):
             if user.world == "nether" and potion_activated.has_flag(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         else:
-            if not (dmg_taken > 40 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
+            if not (dmg_taken > 60 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
                 user.health -= dmg_taken
                 
                 # Disable death-preventing potions if the user is not dead in the first place.
@@ -1611,7 +1611,7 @@ async def explore(ctx: lightbulb.Context):
             if user.world == "nether" and potion_activated.has_flag(PotionActivation.FIRE_POTION | PotionActivation.UNDYING_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         else:
-            if not (dmg_taken > 40 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
+            if not (dmg_taken > 60 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
                 user.health -= dmg_taken
                 
                 # Disable death-preventing potions if the user is not dead in the first place.
@@ -1781,7 +1781,7 @@ async def chop(ctx: lightbulb.Context):
             if user.world == "nether" and potion_activated.has_flag(PotionActivation.FIRE_POTION):
                 potion_activated ^= PotionActivation.UNDYING_POTION
         else:
-            if not (dmg_taken > 40 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
+            if not (dmg_taken > 60 and potion_activated.has_flag(PotionActivation.UNDYING_POTION)):
                 user.health -= dmg_taken
                 
                 # Disable death-preventing potions if the user is not dead in the first place.
