@@ -91,16 +91,27 @@ async def count_slashes(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     count: int = 0
-    # TODO: Group this into categories so it's less painful to look at.
+    slash_commands: dict[str, list[str]] = {}
     for s_cmd in bot.slash_commands.values():
+        category_name = s_cmd.plugin.name if s_cmd.plugin else "Miscellaneous"
+        if slash_commands.get(category_name):
+            slash_commands[category_name].append(s_cmd.qualname)
+        else:
+            slash_commands[category_name] = [s_cmd.qualname]
         count += 1
-        print(s_cmd.qualname)
-        if isinstance(s_cmd, (lightbulb.PrefixCommandGroup, lightbulb.SlashCommandGroup)):
+        if isinstance(s_cmd, lightbulb.SlashCommandGroup):
             for sub_cmd in s_cmd.subcommands.values():
                 count += 1
-                print(sub_cmd.qualname)
+                slash_commands[category_name].append(sub_cmd.qualname)
     
-    await ctx.respond(f"There are {count} slash commands (View details in terminal).", reply = True)
+    display = ""
+    for category_name, cmds in slash_commands.items():
+        display += f"{category_name}:\n"
+        for cmd_name in cmds:
+            display += f"- {cmd_name}\n"
+        display += '\n'
+    
+    await ctx.respond(f"There are {count} slash commands.\n```{display}```", reply = True)
 
 @plugin.command()
 @lightbulb.command("force-sync-cache", "Force update the cache with the current data in database.", hidden = True)
