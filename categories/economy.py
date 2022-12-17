@@ -111,33 +111,6 @@ def get_reward_value(loot_table: dict[str, int], item_cache: models.ItemCache) -
     
     return value
 
-def add_reward(reward1: dict[str, int], reward2: dict[str, int], /) -> dict[str, int]:
-    '''A shortcut to combine two rewards together.
-
-    Parameters
-    ----------
-    reward1 : dict[str, int]
-        A loot table.
-    reward2 : dict[str, int]
-        A loot table.
-
-    Returns
-    -------
-    dict[str, int]
-        A loot table after combining the two.
-    '''
-
-    result: dict[str, int] = {}
-    for key in reward1:
-        result[key] = reward1[key]
-    for key in reward2:
-        if result.get(key):
-            result[key] += reward2[key]
-        else:
-            result[key] = reward2[key]
-    
-    return result
-
 def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
     '''A shortcut to multiply the rewards in-place.
     This will not multiply rewards that are defined in `loot.PREVENT_MULTIPLY`.
@@ -156,16 +129,6 @@ def multiply_reward(loot_table: dict[str, int], multiplier: int | float):
     for key in loot_table:
         if key not in loot.PREVENT_MULTIPLY:
             loot_table[key] = round(loot_table[key] * multiplier)
-
-def repeat_function(times: int, callback: t.Callable[[], dict[str, int]], *args) -> dict[str, int]:
-    result: dict[str, int] = {}
-    for _ in range(0, times):
-        res = callback(*args)
-        if not res: continue
-        
-        result = add_reward(result, res)
-    
-    return result
 
 def filter_equipment_types(equipments: list[psql.Equipment], eq_types_or_ids: tuple[str]) -> tuple[psql.Equipment | None]:
     '''Filter equipments based on their types (like for tools) or their ids (like for potions).
@@ -272,8 +235,8 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
         The user to process.
     '''
 
-    equipments = await psql.Equipment.fetch_user_equipments(conn, user.id)
-    inventories = await psql.Inventory.get_user_inventory(conn, user.id)
+    equipments: list[psql.Equipment] = await psql.Equipment.fetch_user_equipments(conn, user.id)
+    inventories: list[psql.Inventory] = await psql.Inventory.get_user_inventory(conn, user.id)
     back_to_overworld = True
     
     async with conn.transaction():
@@ -291,7 +254,7 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
             if "nether_" in equipment.item_id and user.world == "nether":
                 continue
 
-            await psql.Equipment.delete(conn, user.id, equipment.item_id)
+            await psql.Equipment.delete(conn, user_id = user.id, item_id = equipment.item_id)
         
         strict_penalty = False # Round up or down, default to down.
         death_penalty = 0.05
@@ -932,7 +895,7 @@ async def use_potion(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.add_cooldown(length = 5, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 10, bucket = lightbulb.UserBucket, algorithm = lightbulb.SlidingWindowCooldownAlgorithm)
 @lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = food_autocomplete)
 @lightbulb.command("food", f"[{plugin.name}] Use a food item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
@@ -1331,7 +1294,7 @@ async def market_sell(ctx: lightbulb.Context):
     await ctx.respond(f"Successfully sold {get_reward_str(bot, {item.id : amount}, option = 'emote')} for {CURRENCY_ICON}{profit}.", reply = True)
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 4, bucket = lightbulb.UserBucket, algorithm = lightbulb.SlidingWindowCooldownAlgorithm)
 @lightbulb.option("location", "The location to mine. The deeper you go, the higher the reward and risk.", choices = loot.MINE_LOCATION, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("mine", f"[{plugin.name}] Use your pickaxe to mine for resources.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -1399,10 +1362,12 @@ async def mine(ctx: lightbulb.Context):
             dmg_reductions += loot.DMG_REDUCTIONS["haste_potion"]
             if loot.roll_potion_activate("haste_potion"):
                 potion_activated |= PotionActivation.HASTE_POTION
+                external_buffs.append("haste_potion")
         if has_fortune_potion:
             dmg_reductions += loot.DMG_REDUCTIONS["fortune_potion"]
             if loot.roll_potion_activate("fortune_potion"):
                 potion_activated |= PotionActivation.FORTUNE_POTION
+                external_buffs.append("fortune_potion")
         
         # Check for badges.
         if (death1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death1")) and death1_badge.completed():
@@ -1443,14 +1408,6 @@ async def mine(ctx: lightbulb.Context):
             else:
                 # Undying Potion activated and negated the damage, so we don't need to do anything.
                 pass
-
-        if potion_activated.has_flag(PotionActivation.HASTE_POTION):
-            _loot_table = repeat_function(6, loot.get_activity_loot, "mine", pickaxe_existed.item_id, location, external_buffs)
-            loot_table = add_reward(loot_table, _loot_table)
-        if potion_activated.has_flag(PotionActivation.FORTUNE_POTION):
-            multiply_reward(loot_table, 4)
-        if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 3)
         
         async with conn.transaction():
             await add_reward_to_user(conn, bot, ctx.author.id, loot_table)
@@ -1517,7 +1474,7 @@ async def mine(ctx: lightbulb.Context):
     await ctx.respond(response_str, reply = True)
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 4, bucket = lightbulb.UserBucket, algorithm = lightbulb.SlidingWindowCooldownAlgorithm)
 @lightbulb.option("location", "The location to explore. The deeper you go, the higher the reward and risk.", choices = loot.EXPLORE_LOCATION, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("explore", f"[{plugin.name}] Use your sword to explore the caverns.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -1580,10 +1537,12 @@ async def explore(ctx: lightbulb.Context):
             dmg_reductions += loot.DMG_REDUCTIONS["strength_potion"]
             if loot.roll_potion_activate("strength_potion"):
                 potion_activated |= PotionActivation.STRENGTH_POTION
+                external_buffs.append("strength_potion")
         if has_looting_potion:
             dmg_reductions += loot.DMG_REDUCTIONS["looting_potion"]
             if loot.roll_potion_activate("looting_potion"):
                 potion_activated |= PotionActivation.LOOTING_POTION
+                external_buffs.append("looting_potion")
         
         # Check for badges.
         if (death1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death1")) and death1_badge.completed():
@@ -1619,14 +1578,6 @@ async def explore(ctx: lightbulb.Context):
             else:
                 # Undying Potion activated and negated the damage, so we don't need to do anything.
                 pass
-        
-        if potion_activated.has_flag(PotionActivation.STRENGTH_POTION):
-            _loot_table = repeat_function(6, loot.get_activity_loot, "explore", sword_existed.item_id, location, external_buffs)
-            loot_table = add_reward(loot_table, _loot_table)
-        if potion_activated.has_flag(PotionActivation.LOOTING_POTION):
-            multiply_reward(loot_table, 5)
-        if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 3)
         
         async with conn.transaction():
             await add_reward_to_user(conn, bot, ctx.author.id, loot_table)
@@ -1686,7 +1637,7 @@ async def explore(ctx: lightbulb.Context):
     await ctx.respond(response_str, reply = True)
 
 @plugin.command()
-@lightbulb.add_cooldown(length = 120, uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.add_cooldown(length = 120, uses = 4, bucket = lightbulb.UserBucket, algorithm = lightbulb.SlidingWindowCooldownAlgorithm)
 @lightbulb.option("location", "The location to explore. Some places are more dangerous than others.", choices = loot.CHOP_LOCATION, modifier = helpers.CONSUME_REST_OPTION)
 @lightbulb.command("chop", f"[{plugin.name}] Use your axe to explore the surface.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
@@ -1749,10 +1700,12 @@ async def chop(ctx: lightbulb.Context):
             dmg_reductions += loot.DMG_REDUCTIONS["haste_potion"]
             if loot.roll_potion_activate("haste_potion"):
                 potion_activated |= PotionActivation.HASTE_POTION
+                external_buffs.append("haste_potion")
         if has_nature_potion:
             dmg_reductions += loot.DMG_REDUCTIONS["nature_potion"]
             if loot.roll_potion_activate("nature_potion"):
                 potion_activated |= PotionActivation.NATURE_POTION
+                external_buffs.append("nature_potion")
         
         # Check for badges.
         if (death1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death1")) and death1_badge.completed():
@@ -1789,14 +1742,6 @@ async def chop(ctx: lightbulb.Context):
             else:
                 # Undying Potion activated and negated the damage, so we don't need to do anything.
                 pass
-        
-        if potion_activated.has_flag(PotionActivation.HASTE_POTION):
-            _loot_table = repeat_function(6, loot.get_activity_loot, "chop", axe_existed.item_id, user.world, external_buffs)
-            loot_table = add_reward(loot_table, _loot_table)
-        if potion_activated.has_flag(PotionActivation.NATURE_POTION):
-            multiply_reward(loot_table, 4)
-        if potion_activated.has_flag(PotionActivation.LUCK_POTION):
-            multiply_reward(loot_table, 3)
         
         async with conn.transaction():
             await add_reward_to_user(conn, bot, ctx.author.id, loot_table)

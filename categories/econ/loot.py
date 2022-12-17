@@ -1721,45 +1721,72 @@ def get_activity_loot(action_type: str, equipment_id: str, location: str, extern
     if not equipment_loot:
         return None
     
-    for item_id, rng in equipment_loot.items():
-        if item_id == "raw_damage":
-            reward[item_id] = rng.roll()
+    # We go thru the badges and stuff before repeating. This is inefficient if we later iterate only once, but it doesn't really matter.
+    for item_id in equipment_loot:
+        if item_id == "raw_damage" and reward.get("raw_damage") is None:
+            reward[item_id] = equipment_loot[item_id].roll()
             continue
         
-        if item_id == "iron":
-            if "iron2" in external_buffs:
-                rng.rate += 0.10
-        elif item_id == "diamond":
-            if "diamond1" in external_buffs:
-                rng.rate += 0.05
-            if "diamond2" in external_buffs:
-                rng.rate += 0.10
-                rng.shift_min_amount(2)
-        elif item_id == "debris":
-            if "debris1" in external_buffs:
-                rng.rate += 0.025
-            if "debris2" in external_buffs:
-                rng.rate += 0.05
-                rng.shift_min_amount(1)
-        
-        elif item_id == "blaze_rod":
-            if "blaze1" in external_buffs:
-                rng.rate += 0.05
-        
-        elif item_id == "wood":
-            if "wood2" in external_buffs:
-                rng.shift_min_amount(2)
+        match item_id:
+            case "iron":
+                if "iron2" in external_buffs:
+                    equipment_loot[item_id].rate += 0.10
+            case "diamond":
+                if "diamond1" in external_buffs:
+                    equipment_loot[item_id].rate += 0.05
+                if "diamond2" in external_buffs:
+                    equipment_loot[item_id].rate += 0.10
+            case "iron":
+                if "iron2" in external_buffs:
+                    equipment_loot[item_id].rate += 0.10
+            case "diamond":
+                if "diamond1" in external_buffs:
+                    equipment_loot[item_id].rate += 0.05
+                if "diamond2" in external_buffs:
+                    equipment_loot[item_id].rate += 0.10
+                    equipment_loot[item_id].shift_min_amount(2)
+            case "debris":
+                if "debris1" in external_buffs:
+                    equipment_loot[item_id].rate += 0.025
+                if "debris2" in external_buffs:
+                    equipment_loot[item_id].rate += 0.05
+                    equipment_loot[item_id].shift_min_amount(1)
+            case "blaze_rod":
+                if "blaze1" in external_buffs:
+                    equipment_loot[item_id].rate += 0.05
+            case "wood":
+                if "wood2" in external_buffs:
+                    equipment_loot[item_id].shift_min_amount(2)
 
         if "luck_potion" in external_buffs:
-            rng.rate *= 3
-        
-        reward[item_id] = rng.roll()
-        
-        if "luck_potion" in external_buffs:
-            if reward[item_id] == 0:
-                reward[item_id] = rng.min_amount
+            equipment_loot[item_id].rate *= 3
+    
+    times = 1
+    if "haste_potion" in external_buffs or "strength_potion" in external_buffs:
+        times = 7
+    
+    for _ in range(times):
+        for item_id, rng in equipment_loot.items():
+            if item_id == "raw_damage":
+                continue
+            
+            amount = rng.roll()
+            
+            if "luck_potion" in external_buffs:
+                if amount == 0:
+                    amount = rng.min_amount
+                else:
+                    amount = rng.max_amount
+                amount *= 3
+            if "fortune_potion" in external_buffs or "nature_potion" in external_buffs:
+                amount *= 4
+            if "looting_potion" in external_buffs:
+                amount *= 5
+            
+            if not reward.get(item_id):
+                reward[item_id] = amount
             else:
-                reward[item_id] = rng.max_amount
+                reward[item_id] += amount
 
     return reward
 
