@@ -41,13 +41,22 @@ async def retrieve_prefix(bot: MichaelBot, message: hikari.Message):
 def load_info(bot_name: str) -> tuple[dict]:
     '''Return the bot information in `config.json`
 
-    This strictly requires `secret` field in the json.
+    Parameters
+    ----------
+    bot_name : str
+        The bot index to be loaded from `config.json`
 
-    Args:
-        bot_name (str): The bot index to load in `config.json`
-
-    Returns:
-        tuple[dict]: Two objects, `(bot_info, secrets)`.
+    Returns
+    -------
+    tuple[dict]
+        The bot's information in the form `(bot_info, secrets)`.
+    
+    Exceptions
+    ----------
+    FileNotFoundError
+        Either `config.json` is not found in `setup/`, or the `secret` key contains a non-existing file.
+    KeyError
+        `secret` key is not defined in the bot general configuration.
     '''
     
     bot_info: dict = None

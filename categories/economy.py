@@ -272,7 +272,7 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
         The user to process.
     '''
 
-    equipments = await psql.Equipment.get_user_equipments(conn, user.id)
+    equipments = await psql.Equipment.fetch_user_equipments(conn, user.id)
     inventories = await psql.Inventory.get_user_inventory(conn, user.id)
     back_to_overworld = True
     
@@ -282,7 +282,7 @@ async def process_death(conn, bot: models.MichaelBot, user: psql.User):
         await psql.UserBadge.add_progress(conn, user.id, "death2")
         await psql.UserBadge.add_progress(conn, user.id, "death3")
 
-        death2_badge = await psql.UserBadge.get_one(conn, user.id, "death2")
+        death2_badge = await psql.UserBadge.fetch_one(conn, user_id = user.id, badge_id = "death2")
 
         for equipment in equipments:
             item = bot.item_cache[equipment.item_id]
@@ -430,7 +430,7 @@ async def badges(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        ubadges = await psql.UserBadge.get_user_badges(conn, ctx.author.id)
+        ubadges = await psql.UserBadge.fetch_user_badges(conn, ctx.author.id)
         if not ubadges:
             await ctx.respond("*Cricket noises*", reply = True)
             return
@@ -480,7 +480,7 @@ async def balance(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        user = await psql.User.get_one(conn, ctx.author.id)
+        user = await psql.User.fetch_one(conn, user_id = ctx.author.id)
         await ctx.respond(f"You have {CURRENCY_ICON}{user.balance}.")
 
 @plugin.command()
@@ -614,7 +614,7 @@ async def brew(ctx: lightbulb.Context):
         success: bool = True
         missing: dict[str, int] = {}
         # Only retrieve relevant items.
-        inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
+        inventories = await psql.Inventory.fetch_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
 
         # Loop through inventories and reduce amount and track how many items missing.
         # In case inv is missing a few items or all items, then missing won't have that key, and will be checked in a separate loop.
@@ -642,10 +642,10 @@ async def brew(ctx: lightbulb.Context):
             return
         
         # Check for badges.
-        brew1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew1")
+        brew1_badge = await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "brew1")
         if brew1_badge and brew1_badge.completed():
             recipe["result"] += 1 * times
-        brew2_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "brew2")
+        brew2_badge = await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "brew2")
         if brew2_badge and brew2_badge.completed():
             recipe["result"] += 2 * times
         
@@ -699,7 +699,7 @@ async def craft(ctx: lightbulb.Context):
         success: bool = True
         missing: dict[str, int] = {}
         # Only retrieve relevant items.
-        inventories = await psql.Inventory.get_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
+        inventories = await psql.Inventory.fetch_all_where(conn, where = lambda r: r.item_id in recipe and r.user_id == ctx.author.id)
 
         # Loop through inventories and reduce amount and track how many items missing.
         # In case inv is missing a few items or all items, then missing won't have that key, and will be checked in a separate loop.
@@ -751,7 +751,7 @@ async def daily(ctx: lightbulb.Context):
         assert user is not None
 
         now = dt.datetime.now().astimezone()
-        has_streak_freeze = await psql.Inventory.get_one(conn, ctx.author.id, "streak_freezer")
+        has_streak_freeze = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = "streak_freezer")
         async with conn.transaction():
             if user.last_daily is None:
                 response += "Yooo first time collecting daily, welcome!\n"
@@ -829,14 +829,14 @@ async def use_tool(ctx: lightbulb.Context):
         return
     
     async with bot.pool.acquire() as conn:
-        inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
+        inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = item.id)
         if not inv:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have this equipment in your inventory!", reply = True, mentions_reply = True)
             return
         
         # Check for equipment type conflict.
-        existed: psql.Equipment = await psql.Equipment.get_equipment(conn, ctx.author.id, psql.Equipment.get_equipment_type(item.id))
+        existed: psql.Equipment = await psql.Equipment.fetch_equipment(conn, user_id = ctx.author.id, item_id = psql.Equipment.get_equipment_type(item.id))
         response_str = ""
 
         if existed:
@@ -899,18 +899,18 @@ async def use_potion(ctx: lightbulb.Context):
         return
     
     async with bot.pool.acquire() as conn:
-        inv = await psql.Inventory.get_one(conn, ctx.author.id, potion.id)
+        inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = potion.id)
         if not inv:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have this potion in your inventory!", reply = True, mentions_reply = True)
             return
 
-        potions = await psql.Equipment.get_user_potions(conn, ctx.author.id)
+        potions = await psql.Equipment.fetch_user_potions(conn, ctx.author.id)
         
         potions_cap = loot.POTIONS_CAP
-        if (brew3_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "brew3")) and brew3_badge.completed():
+        if (brew3_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "brew3")) and brew3_badge.completed():
             potions_cap += 1
-        if await psql.Equipment.get_one(conn, ctx.author.id, "undying_potion"):
+        if await psql.Equipment.fetch_one(conn, user_id = ctx.author.id, item_id = "undying_potion"):
             potions_cap += 1
         
         if len(potions) >= potions_cap:
@@ -918,7 +918,7 @@ async def use_potion(ctx: lightbulb.Context):
             await ctx.respond(f"You currently have {len(potions)} potions equipped. You'll need to wait for one of them to expire before using another.", reply = True, mentions_reply = True)
             return
         
-        existed = await psql.Equipment.get_one(conn, ctx.author.id, potion.id)
+        existed = await psql.Equipment.fetch_one(conn, user_id = ctx.author.id, item_id = potion.id)
         if existed:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You're already using this potion.", reply = True, mentions_reply = True)
@@ -955,7 +955,7 @@ async def use_food(ctx: lightbulb.Context):
     
     heal_amount: int = 0
     async with bot.pool.acquire() as conn:
-        inv = await psql.Inventory.get_one(conn, ctx.author.id, food.id)
+        inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = food.id)
         if not inv:
             await bot.reset_cooldown(ctx)
             await ctx.respond("You don't have this item in your inventory!", reply = True, mentions_reply = True)
@@ -968,10 +968,10 @@ async def use_food(ctx: lightbulb.Context):
             return
         
         heal_amount = random.randint(int(loot.FOOD_HEALING[food.id] / 2), loot.FOOD_HEALING[food.id])
-        if (eat1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "eat1")) and eat1_badge.completed():
+        if (eat1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "eat1")) and eat1_badge.completed():
             heal_amount += 5
             
-            if (eat2_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "eat2")) and eat2_badge.completed():
+            if (eat2_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "eat2")) and eat2_badge.completed():
                 heal_amount = round(heal_amount * 1.2)
         
         # No need to cap health here. Only stop using food when health is already >= 100.
@@ -1005,7 +1005,7 @@ async def _equipments(ctx: lightbulb.Context):
     )
 
     async with bot.pool.acquire() as conn:
-        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        equipments = await psql.Equipment.fetch_user_equipments(conn, ctx.author.id)
         if not equipments:
             embed.description = "*Cricket noises*"
         else:
@@ -1127,7 +1127,7 @@ async def inv_save(ctx: lightbulb.Context):
         return
 
     async with bot.pool.acquire() as conn:
-        shulker_inv = await psql.Inventory.get_one(conn, ctx.author.id, "shulker_box")
+        shulker_inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = "shulker_box")
         if not shulker_inv:
             await ctx.respond("You don't have a shulker box! Shulker box is needed in order to safely store items.", reply = True, mentions_reply = True)
             return
@@ -1138,7 +1138,7 @@ async def inv_save(ctx: lightbulb.Context):
         if shulker_inv.amount > loot.MAX_SHULKER_EFFECT:
             max_item_per_slot += loot.SAFE_SPACE_PER_EXTRA_SHULKER * (shulker_inv.amount - loot.MAX_SHULKER_EFFECT)
         
-        item_inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
+        item_inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = item.id)
         if not item_inv:
             await ctx.respond("You don't have this item in your inventory!", reply = True, mentions_reply = True)
             return
@@ -1187,7 +1187,7 @@ async def inv_unsave(ctx: lightbulb.Context):
         return
 
     async with bot.pool.acquire() as conn:
-        safe_inv = await psql.ExtraInventory.get_one(conn, ctx.author.id, item.id)
+        safe_inv = await psql.ExtraInventory.fetch_one(conn, user_id = ctx.author.id, item_id = item.id)
         if not safe_inv:
             await ctx.respond("You don't have this item in your safe inventory!", reply = True, mentions_reply = True)
             return
@@ -1303,7 +1303,7 @@ async def market_sell(ctx: lightbulb.Context):
         return
 
     async with bot.pool.acquire() as conn:
-        inv = await psql.Inventory.get_one(conn, ctx.author.id, item.id)
+        inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = item.id)
         if not inv or inv.amount < amount:
             await ctx.respond("You don't have enough of this item to sell.", reply = True, mentions_reply = True)
             return
@@ -1312,11 +1312,11 @@ async def market_sell(ctx: lightbulb.Context):
             amount = inv.amount
         
         if item.id == "wood":
-            wood1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "wood1")
+            wood1_badge = await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "wood1")
             if wood1_badge and wood1_badge.completed():
                 item.sell_price += 1
         elif item.id == "iron":
-            iron1_badge = await psql.UserBadge.get_one(conn, ctx.author.id, "iron1")
+            iron1_badge = await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "iron1")
             if iron1_badge and iron1_badge.completed():
                 item.sell_price += 2
         
@@ -1351,7 +1351,7 @@ async def mine(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
-        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        equipments = await psql.Equipment.fetch_user_equipments(conn, ctx.author.id)
         relevant_equipments = filter_equipment_types(equipments, (
             "_pickaxe", 
             "luck_potion", 
@@ -1405,15 +1405,15 @@ async def mine(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.FORTUNE_POTION
         
         # Check for badges.
-        if (death1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "death1")) and death1_badge.completed():
+        if (death1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death1")) and death1_badge.completed():
             dmg_reductions += loot.DMG_REDUCTIONS["death1"] * len(equipments)
-        if (death3_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "death3")) and death3_badge.completed():
+        if (death3_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death3")) and death3_badge.completed():
             dmg_reductions += loot.DMG_REDUCTIONS["death3"] * len(equipments)
-        if (iron2_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "iron2")) and iron2_badge.completed():
+        if (iron2_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "iron2")) and iron2_badge.completed():
             external_buffs.append("iron2")
-        if (diamond1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "diamond1")) and diamond1_badge.completed():
+        if (diamond1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "diamond1")) and diamond1_badge.completed():
             external_buffs.append("diamond1")
-        if (debris1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "debris1")) and debris1_badge.completed():
+        if (debris1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "debris1")) and debris1_badge.completed():
             external_buffs.append("debris1")
         
         loot_table = loot.get_activity_loot("mine", pickaxe_existed.item_id, location, external_buffs)
@@ -1537,7 +1537,7 @@ async def explore(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
-        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        equipments = await psql.Equipment.fetch_user_equipments(conn, ctx.author.id)
         relevant_equipments = filter_equipment_types(equipments, (
             "_sword",
             "luck_potion",
@@ -1586,11 +1586,11 @@ async def explore(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.LOOTING_POTION
         
         # Check for badges.
-        if (death1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "death1")) and death1_badge.completed():
+        if (death1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death1")) and death1_badge.completed():
             dmg_reductions += loot.DMG_REDUCTIONS["death1"] * len(equipments)
-        if (death3_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "death3")) and death3_badge.completed():
+        if (death3_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death3")) and death3_badge.completed():
             dmg_reductions += loot.DMG_REDUCTIONS["death3"] * len(equipments)
-        if (blaze1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "blaze1")) and blaze1_badge.completed():
+        if (blaze1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "blaze1")) and blaze1_badge.completed():
             external_buffs.append("blaze1")
         
         loot_table = loot.get_activity_loot("explore", sword_existed.item_id, location, external_buffs)
@@ -1706,7 +1706,7 @@ async def chop(ctx: lightbulb.Context):
     response_str = ""
 
     async with bot.pool.acquire() as conn:
-        equipments = await psql.Equipment.get_user_equipments(conn, ctx.author.id)
+        equipments = await psql.Equipment.fetch_user_equipments(conn, ctx.author.id)
         relevant_equipments = filter_equipment_types(equipments, (
             "_axe",
             "luck_potion",
@@ -1755,11 +1755,11 @@ async def chop(ctx: lightbulb.Context):
                 potion_activated |= PotionActivation.NATURE_POTION
         
         # Check for badges.
-        if (death1_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "death1")) and death1_badge.completed():
+        if (death1_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death1")) and death1_badge.completed():
             dmg_reductions += loot.DMG_REDUCTIONS["death1"] * len(equipments)
-        if (death3_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "death3")) and death3_badge.completed():
+        if (death3_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "death3")) and death3_badge.completed():
             dmg_reductions += loot.DMG_REDUCTIONS["death3"] * len(equipments)
-        if (wood2_badge := await psql.UserBadge.get_one(conn, ctx.author.id, "wood2")) and wood2_badge.completed():
+        if (wood2_badge := await psql.UserBadge.fetch_one(conn, user_id = ctx.author.id, badge_id = "wood2")) and wood2_badge.completed():
             external_buffs.append("wood2")
         
         loot_table = loot.get_activity_loot("chop", axe_existed.item_id, location, external_buffs)
@@ -1891,7 +1891,7 @@ async def refresh_trade(bot: models.MichaelBot):
     current = dt.datetime.now().astimezone()
 
     async with bot.pool.acquire() as conn:
-        trades = await psql.ActiveTrade.get_all(conn)
+        trades = await psql.ActiveTrade.fetch_all(conn)
         if trades:
             # Since all trades has virtually the same refresh time, check one is enough.
             # If trade is not yet reset, create a task to reset.
@@ -1925,13 +1925,13 @@ async def _trade(ctx: lightbulb.Context):
         return
 
     async with bot.pool.acquire() as conn:
-        trades = await psql.ActiveTrade.get_all_where(conn, where = lambda r: r.type == "trade")
+        trades = await psql.ActiveTrade.fetch_all_where(conn, where = lambda r: r.type == "trade")
         # In case the trades get yeet manually during bot uptime.
         if not trades:
             await do_refresh_trade(bot)
-            trades = await psql.ActiveTrade.get_all_where(conn, where = lambda r: r.type == "trade")
+            trades = await psql.ActiveTrade.fetch_all_where(conn, where = lambda r: r.type == "trade")
         
-        user_trades = await psql.UserTrade.get_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "trade")
+        user_trades = await psql.UserTrade.fetch_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "trade")
 
     embed = helpers.get_default_embed(
         description = f"*Trades will refresh in {humanize.precisedelta(trades[0].next_reset - dt.datetime.now().astimezone(), format = '%0.0f')}*",
@@ -2031,7 +2031,7 @@ async def _trade(ctx: lightbulb.Context):
             
             # Process trade here.
             async with bot.pool.acquire() as conn:
-                user_trade = await psql.UserTrade.get_one(conn, ctx.author.id, selected, "trade")
+                user_trade = await psql.UserTrade.fetch_one(conn, user_id = ctx.author.id, trade_id = selected, trade_type = "trade")
                 if user_trade is None:
                     user_trade = psql.UserTrade(ctx.author.id, selected_trade.id, selected_trade.type, selected_trade.hard_limit, 0)
 
@@ -2040,7 +2040,7 @@ async def _trade(ctx: lightbulb.Context):
                         flags = hikari.MessageFlag.EPHEMERAL
                     )
                 elif selected_trade.item_src == "money":
-                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_trade.item_dest)
+                    inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = selected_trade.item_dest)
 
                     if user.balance < selected_trade.amount_src:
                         await ctx.respond("You don't have enough money to make this trade!", reply = True, mentions_reply = True, 
@@ -2054,7 +2054,7 @@ async def _trade(ctx: lightbulb.Context):
                             user_trade.count += 1
                             await psql.UserTrade.update(conn, user_trade)
                 elif selected_trade.item_dest == "money":
-                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_trade.item_src)
+                    inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = selected_trade.item_src)
 
                     if inv is None or inv.amount < selected_trade.amount_src:
                         await ctx.respond("You don't have enough items to make this trade!", reply = True, mentions_reply = True,
@@ -2068,7 +2068,7 @@ async def _trade(ctx: lightbulb.Context):
                             user_trade.count += 1
                             await psql.UserTrade.update(conn, user_trade)
                 else:
-                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_trade.item_src)
+                    inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = selected_trade.item_src)
 
                     if inv is None or inv.amount < selected_trade.amount_src:
                         await ctx.respond("You don't have enough items to make this trade!", reply = True, mentions_reply = True,
@@ -2128,13 +2128,13 @@ async def _barter(ctx: lightbulb.Context):
         return
 
     async with bot.pool.acquire() as conn:
-        barters = await psql.ActiveTrade.get_all_where(conn, where = lambda r: r.type == "barter")
+        barters = await psql.ActiveTrade.fetch_all_where(conn, where = lambda r: r.type == "barter")
         # In case the trades get yeet manually during bot uptime.
         if not barters:
             await do_refresh_trade(bot)
-            barters = await psql.ActiveTrade.get_all_where(conn, where = lambda r: r.type == "barter")
+            barters = await psql.ActiveTrade.fetch_all_where(conn, where = lambda r: r.type == "barter")
         
-        user_barters = await psql.UserTrade.get_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "barter")
+        user_barters = await psql.UserTrade.fetch_all_where(conn, where = lambda r: r.user_id == ctx.author.id and r.trade_type == "barter")
 
     embed = helpers.get_default_embed(
         description = f"*Barters will refresh in {humanize.precisedelta(barters[0].next_reset - dt.datetime.now().astimezone(), format = '%0.0f')}*",
@@ -2223,7 +2223,7 @@ async def _barter(ctx: lightbulb.Context):
             
             # Process trade here.
             async with bot.pool.acquire() as conn:
-                user_trade = await psql.UserTrade.get_one(conn, ctx.author.id, selected, "barter")
+                user_trade = await psql.UserTrade.fetch_one(conn, user_id = ctx.author.id, trade_id = selected, trade_type = "barter")
                 if user_trade is None:
                     user_trade = psql.UserTrade(ctx.author.id, selected_barter.id, selected_barter.type, selected_barter.hard_limit, 0)
 
@@ -2232,7 +2232,7 @@ async def _barter(ctx: lightbulb.Context):
                         flags = hikari.MessageFlag.EPHEMERAL
                     )
                 else:
-                    inv = await psql.Inventory.get_one(conn, ctx.author.id, selected_barter.item_src)
+                    inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = selected_barter.item_src)
 
                     if inv is None or inv.amount < selected_barter.amount_src:
                         await ctx.respond("You don't have enough items to make this barter!", reply = True, mentions_reply = True,
@@ -2301,7 +2301,7 @@ async def travel(ctx: lightbulb.Context):
     
     async with bot.pool.acquire() as conn:
         # We already check if world is in pre-determined arguments, so it's safe to do this.
-        ticket = await psql.Inventory.get_one(conn, ctx.author.id, f"{world}_ticket")
+        ticket = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = f"{world}_ticket")
         
         if ticket is None:
             await ctx.respond("You don't have the ticket to travel!", reply = True, mentions_reply = True)
@@ -2310,7 +2310,7 @@ async def travel(ctx: lightbulb.Context):
         async with conn.transaction():
             # Give free shulker box when first in the End.
             if world == "end":
-                shulker_box = await psql.Inventory.get_one(conn, ctx.author.id, "shulker_box")
+                shulker_box = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = "shulker_box")
                 if not shulker_box:
                     await psql.Inventory.add(conn, ctx.author.id, "shulker_box", 3)
 

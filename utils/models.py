@@ -63,13 +63,13 @@ class GuildCache:
         await psql.Guild.update(conn, guild)
         self.__guild_mapping[guild.id] = guild
     async def update_from_db(self, conn: asyncpg.Connection, guild_id: int):
-        guild = await psql.Guild.get_one(conn, guild_id)
+        guild = await psql.Guild.fetch_one(conn, id = guild_id)
         if guild is None:
             del self.__guild_mapping[guild_id]
         
         self.__guild_mapping[guild.id] = guild
     async def update_all_from_db(self, conn: asyncpg.Connection):
-        guilds = await psql.Guild.get_all(conn)
+        guilds = await psql.Guild.fetch_all(conn)
         
         self.__guild_mapping = {}
 
@@ -113,13 +113,13 @@ class LogCache:
         await psql.GuildLog.update(conn, guild)
         self.__log_mapping[guild.guild_id] = guild
     async def update_from_db(self, conn: asyncpg.Connection, guild_id: int):
-        guild = await psql.GuildLog.get_one(conn, guild_id)
+        guild = await psql.GuildLog.fetch_one(conn, guild_id = guild_id)
         if guild is None:
             del self.__log_mapping[guild_id]
         
         self.__log_mapping[guild.guild_id] = guild
     async def update_all_from_db(self, conn: asyncpg.Connection):
-        guilds = await psql.GuildLog.get_all(conn)
+        guilds = await psql.GuildLog.fetch_all(conn)
         
         self.__log_mapping = {}
 
@@ -196,7 +196,7 @@ class UserCache:
         
         self.__user_mapping[user.id] = user
     async def update_all_from_db(self, conn: asyncpg.Connection):
-        users = await psql.User.get_all(conn)
+        users = await psql.User.fetch_all(conn)
         
         self.__user_mapping = {}
         

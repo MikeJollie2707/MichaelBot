@@ -91,7 +91,7 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
                 async for guild in bot.rest.fetch_my_guilds():
                     if bot.guild_cache.get(guild.id) is None:
                         # If guild not available in cache, try get it in db.
-                        existed = await psql.Guild.get_one(conn, guild.id)
+                        existed = await psql.Guild.fetch_one(conn, id = guild.id)
                         if not existed:
                             # Very new guild.
                             await bot.guild_cache.insert(conn, psql.Guild(guild.id, guild.name))
@@ -122,7 +122,7 @@ async def on_guild_join(event: hikari.GuildJoinEvent):
             
             # Pretty much same code as on_shard_ready().
             if bot.guild_cache.get(guild.id) is None:
-                existed = await psql.Guild.get_one(conn, guild.id)
+                existed = await psql.Guild.fetch_one(conn, id = guild.id)
                 if not existed:
                     await bot.guild_cache.insert(conn, psql.Guild(guild.id, guild.name))
                 else:

@@ -43,7 +43,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
         async with bot.pool.acquire() as conn:
             # Checking cache to sync if needed.
             if guild_cache is None:
-                guild = await psql.Guild.get_one(conn, ctx.guild_id)
+                guild = await psql.Guild.fetch_one(conn, id = ctx.guild_id)
                 if guild is None:
                     guild = psql.Guild(ctx.guild_id, ctx.get_guild().name)
                     await bot.guild_cache.insert(conn, guild)
@@ -53,7 +53,7 @@ async def is_command_enabled(ctx: lightbulb.Context) -> bool:
                 guild_cache = guild
             
             if user_cache is None:
-                user = await psql.User.get_one(conn, ctx.author.id)
+                user = await psql.User.fetch_one(conn, id = ctx.author.id)
                 if user is None:
                     user = psql.User(ctx.author.id, ctx.author.username)
                     await bot.user_cache.insert(conn, user)

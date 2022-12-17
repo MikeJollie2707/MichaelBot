@@ -33,7 +33,7 @@ async def blacklist_guild(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         guild_cache = bot.guild_cache.get(guild_id)
         if guild_cache is None:
-            guild = await psql.Guild.get_one(conn, guild_id)
+            guild = await psql.Guild.fetch_one(conn, id = guild_id)
             if guild is None:
                 await ctx.respond("Can't blacklist a guild that's not available in database.", reply = True, mentions_reply = True)
                 return
@@ -71,7 +71,7 @@ async def blacklist_user(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         user_cache = bot.user_cache.get(user_id)
         if user_cache is None:
-            user = await psql.User.get_one(conn, user_id)
+            user = await psql.User.fetch_one(conn, id = user_id)
             if user is None:
                 await ctx.respond("Can't blacklist a user that's not available in database.", reply = True, mentions_reply = True)
                 return
@@ -110,15 +110,15 @@ async def force_sync_cache(ctx: lightbulb.Context):
 
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
-            guilds = await psql.Guild.get_all(conn)
+            guilds = await psql.Guild.fetch_all(conn)
             for guild in guilds:
                 bot.guild_cache.update_local(guild)
             
-            logs = await psql.GuildLog.get_all(conn)
+            logs = await psql.GuildLog.fetch_all(conn)
             for log in logs:
                 bot.log_cache.update_local(log)
             
-            users = await psql.User.get_all(conn)
+            users = await psql.User.fetch_all(conn)
             for user in users:
                 bot.user_cache.update_local(user)
     
@@ -342,8 +342,8 @@ async def sync_badge_progress(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         async with conn.transaction():
             for user_id in bot.user_cache.keys():
-                badge1 = await psql.UserBadge.get_one(conn, user_id, badge_id1)
-                badge2 = await psql.UserBadge.get_one(conn, user_id, badge_id2)
+                badge1 = await psql.UserBadge.fetch_one(conn, user_id = user_id, badge_id = badge_id1)
+                badge2 = await psql.UserBadge.fetch_one(conn, user_id = user_id, badge_id = badge_id2)
 
                 if not badge1:
                     print(f"User {user_id} doesn't have {badge_id1}. Skipping...")
@@ -352,7 +352,7 @@ async def sync_badge_progress(ctx: lightbulb.Context):
                 if not badge2:
                     await psql.UserBadge.add_progress(conn, user_id, badge_id2, badge1.badge_progress)
                 else:
-                    await psql.UserBadge.update_column(conn, user_id, badge_id2, "badge_progress", badge1.badge_progress)
+                    await psql.UserBadge.update_column(conn, {"badge_progress": badge1.badge_progress}, user_id = user_id, badge_id = badge_id2)
     
     await ctx.respond("Finished syncing!", reply = True)
 

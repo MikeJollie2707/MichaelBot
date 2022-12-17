@@ -16,7 +16,8 @@ class IntervalConverter(lightbulb.BaseConverter):
         raise TypeError(f"'{arg}' cannot be parsed as a time expression.")
 
 class ItemConverter(lightbulb.BaseConverter):
-    '''A converter to convert a string into a `psql.Item` object.'''
-    async def convert(self, arg: str) -> psql.Item:
-        bot: models.MichaelBot = self.context.bot
+    '''A converter to convert a string into a `psql.Item` object, or `None` if such item can't be found.'''
+    async def convert(self, arg: str) -> psql.Item | None:
+        bot = self.context.bot
+        assert isinstance(bot, models.MichaelBot)
         return bot.item_cache.get_by_name(arg)

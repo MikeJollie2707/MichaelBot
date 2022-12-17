@@ -12,59 +12,59 @@ from utils import models
 
 __PERMISSIONS_MAPPING__ = {
     # Community Server Permissions
-    hikari.Permissions.REQUEST_TO_SPEAK:    "Request to Speak",
-    hikari.Permissions.VIEW_GUILD_INSIGHTS: "Server Insights",
+    hikari.Permissions.REQUEST_TO_SPEAK:            "Request to Speak",
+    hikari.Permissions.VIEW_GUILD_INSIGHTS:         "Server Insights",
 
     # General Server Permissions
-    hikari.Permissions.VIEW_CHANNEL: "View Channels",
-    hikari.Permissions.MANAGE_CHANNELS: "Manage Channels",
-    hikari.Permissions.MANAGE_ROLES: "Manage Roles",
-    hikari.Permissions.MANAGE_EMOJIS_AND_STICKERS: "Manage Emojis and Stickers",
-    hikari.Permissions.VIEW_AUDIT_LOG: "View Audit Log",
-    hikari.Permissions.MANAGE_WEBHOOKS: "Manage Webhooks",
-    hikari.Permissions.MANAGE_GUILD: "Manage Server",
+    hikari.Permissions.VIEW_CHANNEL:                "View Channels",
+    hikari.Permissions.MANAGE_CHANNELS:             "Manage Channels",
+    hikari.Permissions.MANAGE_ROLES:                "Manage Roles",
+    hikari.Permissions.MANAGE_EMOJIS_AND_STICKERS:  "Manage Emojis and Stickers",
+    hikari.Permissions.VIEW_AUDIT_LOG:              "View Audit Log",
+    hikari.Permissions.MANAGE_WEBHOOKS:             "Manage Webhooks",
+    hikari.Permissions.MANAGE_GUILD:                "Manage Server",
 
     # Membership Permissions
-    hikari.Permissions.CREATE_INSTANT_INVITE: "Create Invite",
-    hikari.Permissions.CHANGE_NICKNAME: "Change Nickname",
-    hikari.Permissions.MANAGE_NICKNAMES: "Manage Nicknames",
-    hikari.Permissions.KICK_MEMBERS: "Kick Members",
-    hikari.Permissions.BAN_MEMBERS: "Ban Members",
-    hikari.Permissions.MODERATE_MEMBERS: "Timeout Members",
+    hikari.Permissions.CREATE_INSTANT_INVITE:       "Create Invite",
+    hikari.Permissions.CHANGE_NICKNAME:             "Change Nickname",
+    hikari.Permissions.MANAGE_NICKNAMES:            "Manage Nicknames",
+    hikari.Permissions.KICK_MEMBERS:                "Kick Members",
+    hikari.Permissions.BAN_MEMBERS:                 "Ban Members",
+    hikari.Permissions.MODERATE_MEMBERS:            "Timeout Members",
 
     # Text Channel Permissions
-    hikari.Permissions.SEND_MESSAGES: "Send Messages",
-    hikari.Permissions.SEND_MESSAGES_IN_THREADS: "Send Messages in Threads",
-    hikari.Permissions.CREATE_PUBLIC_THREADS: "Create Public Threads",
-    hikari.Permissions.CREATE_PRIVATE_THREADS: "Create Private Threads",
-    hikari.Permissions.EMBED_LINKS: "Embed Links",
-    hikari.Permissions.ATTACH_FILES: "Attach Files",
-    hikari.Permissions.ADD_REACTIONS: "Add Reactions",
-    hikari.Permissions.USE_EXTERNAL_EMOJIS: "Use External Emoji",
-    hikari.Permissions.USE_EXTERNAL_STICKERS: "Use External Stickers",
-    hikari.Permissions.MENTION_ROLES: "Mention @everyone, @here, and All Roles",
-    hikari.Permissions.MANAGE_MESSAGES: "Manage Messages",
-    hikari.Permissions.MANAGE_THREADS: "Manage Threads",
-    hikari.Permissions.READ_MESSAGE_HISTORY: "Read Message History",
-    hikari.Permissions.SEND_TTS_MESSAGES: "Send Text-to-Speech Messages",
-    hikari.Permissions.USE_APPLICATION_COMMANDS: "Use Application Commands",
+    hikari.Permissions.SEND_MESSAGES:               "Send Messages",
+    hikari.Permissions.SEND_MESSAGES_IN_THREADS:    "Send Messages in Threads",
+    hikari.Permissions.CREATE_PUBLIC_THREADS:       "Create Public Threads",
+    hikari.Permissions.CREATE_PRIVATE_THREADS:      "Create Private Threads",
+    hikari.Permissions.EMBED_LINKS:                 "Embed Links",
+    hikari.Permissions.ATTACH_FILES:                "Attach Files",
+    hikari.Permissions.ADD_REACTIONS:               "Add Reactions",
+    hikari.Permissions.USE_EXTERNAL_EMOJIS:         "Use External Emoji",
+    hikari.Permissions.USE_EXTERNAL_STICKERS:       "Use External Stickers",
+    hikari.Permissions.MENTION_ROLES:               "Mention @everyone, @here, and All Roles",
+    hikari.Permissions.MANAGE_MESSAGES:             "Manage Messages",
+    hikari.Permissions.MANAGE_THREADS:              "Manage Threads",
+    hikari.Permissions.READ_MESSAGE_HISTORY:        "Read Message History",
+    hikari.Permissions.SEND_TTS_MESSAGES:           "Send Text-to-Speech Messages",
+    hikari.Permissions.USE_APPLICATION_COMMANDS:    "Use Application Commands",
 
     # Voice Channel Permissions
-    hikari.Permissions.CONNECT: "Connect",
-    hikari.Permissions.SPEAK: "Speak",
-    hikari.Permissions.STREAM: "Video",
-    hikari.Permissions.START_EMBEDDED_ACTIVITIES: "Use Activities",
-    hikari.Permissions.USE_VOICE_ACTIVITY: "Use Voice Activity",
-    hikari.Permissions.PRIORITY_SPEAKER: "Priority Speaker",
-    hikari.Permissions.MUTE_MEMBERS: "Mute Members",
-    hikari.Permissions.DEAFEN_MEMBERS: "Deafen Members",
-    hikari.Permissions.MOVE_MEMBERS: "Move Members",
+    hikari.Permissions.CONNECT:                     "Connect",
+    hikari.Permissions.SPEAK:                       "Speak",
+    hikari.Permissions.STREAM:                      "Video",
+    hikari.Permissions.START_EMBEDDED_ACTIVITIES:   "Use Activities",
+    hikari.Permissions.USE_VOICE_ACTIVITY:          "Use Voice Activity",
+    hikari.Permissions.PRIORITY_SPEAKER:            "Priority Speaker",
+    hikari.Permissions.MUTE_MEMBERS:                "Mute Members",
+    hikari.Permissions.DEAFEN_MEMBERS:              "Deafen Members",
+    hikari.Permissions.MOVE_MEMBERS:                "Move Members",
 
     # Events Permissions
-    hikari.Permissions.MANAGE_EVENTS: "Manage Events",
+    hikari.Permissions.MANAGE_EVENTS:               "Manage Events",
 
     # Advanced Permissions
-    hikari.Permissions.ADMINISTRATOR: "Administrator",
+    hikari.Permissions.ADMINISTRATOR:               "Administrator",
 }
 
 CONSUME_REST_OPTION = lightbulb.OptionModifier.CONSUME_REST
@@ -100,7 +100,7 @@ def get_emote(discord_text: str, /) -> str:
         raise KeyError(f"Emoji {discord_text} cannot be found.")
     return ret
 
-def get_friendly_permissions_formatted(permissions: hikari.Permissions, /, *, formatter: t.Callable[[str], str] = lambda s: f"`{s}`") -> t.List[str]:
+def get_friendly_permissions_formatted(permissions: hikari.Permissions, /, *, formatter: t.Callable[[str], str] = lambda s: f"`{s}`") -> list[str]:
     '''Return a list of highlighted permissions string presented in the permission provided.
     This returns the exact Discord's string of the permission.
 
@@ -113,12 +113,8 @@ def get_friendly_permissions_formatted(permissions: hikari.Permissions, /, *, fo
 
     Returns
     -------
-    t.List[str]
+    list[str]
         A list of permissions string represented in the permission provided.
-
-    Notes
-    -----
-    `Manage Events` cannot be found in Hikari's documentation. Therefore, it is not included.
     '''
 
     l = []
@@ -129,10 +125,6 @@ def get_friendly_permissions_formatted(permissions: hikari.Permissions, /, *, fo
 
 def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed:
     '''Return a default embed to work with for consistency.
-
-    Args:
-        author: The author to set in the footer.
-        **kwargs: `hikari.Embed` constructor.
 
     Parameters
     ----------
