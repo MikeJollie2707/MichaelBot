@@ -383,6 +383,7 @@ plugin.d.emote = helpers.get_emote(":dollar:")
 plugin.add_checks(
     checks.is_db_connected, 
     checks.is_command_enabled, 
+    checks.strict_concurrency, 
     lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS)
 )
 

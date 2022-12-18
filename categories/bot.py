@@ -16,7 +16,11 @@ from categories.economy import CURRENCY_ICON, item_autocomplete
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")
-plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_command_enabled, 
+    checks.strict_concurrency, 
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS),
+)
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
 def get_memory_size(byte: int, /, suffix: str = "B") -> str:

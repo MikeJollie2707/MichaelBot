@@ -3,7 +3,7 @@
 import copy
 import datetime as dt
 import typing as t
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import aiohttp
 import asyncpg
@@ -335,6 +335,132 @@ class NodeExtra:
     queue_loop: bool = False
     working_channel: int = 0
 
+@dataclass
+class CommandActiveSessionManager:
+    '''A manager to enforce strict command concurrency.
+
+    In `lightbulb`, if a command is implemented under two or more types of commands, concurrency will apply to those types individually.
+    This leads to a scenario where you want to force a command `test` to be 1, but you can bypass by using `$test` and `/test`.
+    This class provide a naive container to manage the remaining sessions of the command, regardless of its type.
+    
+    For command creators, to use this class, simply includes the `checks.strict_concurrency` check on top of `lightbulb.set_max_concurrency()`.
+    ```py
+    @plugin.command()
+    @lightbulb.add_checks(checks.strict_concurrency)
+    @lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
+    @lightbulb.command(...)
+    @lightbulb.implements(...)
+    async def foo(ctx):
+        ...
+    ```
+
+    For bot maintainer, only one instance is needed in the bot construction. Acquiring and releasing resources are done in checks and command completion event.
+    ```py
+    # Before command is invoked.
+    if command.max_concurrency:
+        bot.command_concurrency_manager.acquire_session(ctx)
+    ...
+    # After command is finished.
+    bot.command_concurrency_manager.release_session(ctx)
+    ```
+    '''
+    # The idea is to create one instance of this in the bot, with `count` containing the max active sessions.
+    # Then for each command invocation that has concurrency registered, we decrease count by 1 until it reaches 0.
+    # If it reaches 0 and still decrease, we raise error.
+    # When the command finish, we increase the count by 1.
+
+    _active_session_mapping: dict[str, dict[int, int]] = field(default_factory = dict)
+    _bucket_storing: dict[str, tuple[int, t.Type[lightbulb.Bucket]]] = field(default_factory = dict)
+
+    def _register(self, qualname: str, uses: int, bucket: t.Type[lightbulb.Bucket]):
+        '''Register a command to this manager.
+
+        Parameters
+        ----------
+        qualname : str
+            The command's full name.
+        uses : int
+            How many uses before the command runs out of its session.
+        bucket : t.Type[lightbulb.Bucket]
+            The bucket to manage.
+        '''
+        if uses > 0:
+            self._bucket_storing[qualname] = (uses, bucket)
+    def command_registered(self, qualname: str) -> bool:
+        '''Check if the command is registered to the manager or not.
+
+        Parameters
+        ----------
+        qualname : str
+            The command's full name.
+
+        Returns
+        -------
+        bool
+            Whether the command is registered to the manager or not.
+        '''
+        return bool(self._bucket_storing.get(qualname))
+    def acquire_session(self, ctx: lightbulb.Context):
+        '''Acquire one session under the context provided.
+
+        This session must be released via `CommandActiveSessionManager.release_session()` at some point.
+        Otherwise, it'll drain all available sessions of the context.
+
+        Parameters
+        ----------
+        ctx : lightbulb.Context
+            The context to acquire.
+
+        Raises
+        ------
+        lightbulb.MaxConcurrencyLimitReached
+            The command under the context has reached its concurrency limit.
+        '''
+        command = ctx.command
+        qualname = command.qualname
+        if not self.command_registered(qualname):
+            self._register(command.qualname, command.max_concurrency[0], command.max_concurrency[1])
+        
+        # Get the discord's id to determine the scope of active command.
+        cmd_bucket = self._bucket_storing[qualname]
+        session_id = cmd_bucket[1].extract_hash(ctx)
+        # If this command has never been invoked then we add it to the map and use 1 session.
+        if not self._active_session_mapping.get(qualname):
+            self._active_session_mapping[qualname] = {session_id: cmd_bucket[0] - 1}
+        else:
+            ctx_session = self._active_session_mapping[qualname].get(session_id)
+            # If we have no value for the ctx (for some reasons), we add again and take away 1 session.
+            if ctx_session is None:
+                self._active_session_mapping[qualname] = {session_id: cmd_bucket[0] - 1}
+            elif ctx_session <= 0:
+                raise lightbulb.MaxConcurrencyLimitReached(f"Maximum concurrency limit for command '{qualname}' exceeded.")
+            else:
+                self._active_session_mapping[qualname][session_id] -= 1
+    def release_session(self, ctx: lightbulb.Context):
+        '''Release one session under the context provided.
+
+        Parameters
+        ----------
+        ctx : lightbulb.Context
+            The context to release.
+        '''
+        command = ctx.command
+        qualname = command.qualname
+        if not self.command_registered(qualname):
+            return
+        
+        cmd_bucket = self._bucket_storing[qualname]
+        session_id = cmd_bucket[1].extract_hash(ctx)
+        if self._active_session_mapping.get(qualname):
+            ctx_session = self._active_session_mapping[qualname].get(session_id)
+            if ctx_session is not None:
+                self._active_session_mapping[qualname][session_id] += 1
+    def clear_all_sessions(self):
+        '''Clear all active sessions.
+        This should only be used when there's a major error in this manager.
+        '''
+        self._active_session_mapping = {}
+
 class MichaelBot(lightbulb.BotApp):
     '''A subclass of `lightbulb.BotApp`. This allows syntax highlight on many custom attributes.'''
 
@@ -349,6 +475,7 @@ class MichaelBot(lightbulb.BotApp):
         "log_cache",
         "user_cache",
         "item_cache",
+        "custom_command_concurrency_session",
         "lavalink",
         "node_extra"
     )
@@ -385,6 +512,8 @@ class MichaelBot(lightbulb.BotApp):
         self.log_cache = LogCache()
         self.user_cache = UserCache()
         self.item_cache = ItemCache()
+
+        self.custom_command_concurrency_session = CommandActiveSessionManager()
 
         self.lavalink: t.Optional[lavaplayer.LavalinkClient] = None
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node

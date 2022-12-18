@@ -96,3 +96,24 @@ def is_aiohttp_existed(ctx: lightbulb.Context) -> bool:
     if bot.aio_session is None:
         raise errors.NoHTTPClient
     return True
+
+@lightbulb.Check
+async def strict_concurrency(ctx: lightbulb.Context) -> bool:
+    '''
+    Check if the command invoked is under concurrency.
+    This must be checked on commands that includes `lightbulb.set_max_concurrency()`.
+
+    The default behavior of `lightbulb.set_max_concurrency()` is not good enough because
+    it allows different version of the same command (prefix command or slash command) to still
+    activate the command. This check will enforce a stricter concurrency management.
+
+    Exception:
+    - `lightbulb.MaxConcurrencyLimitReached`: The command has reached its concurrency limit.
+    '''
+    command = ctx.command
+    bot: models.MichaelBot = ctx.bot
+
+    if command.max_concurrency:
+        bot.custom_command_concurrency_session.acquire_session(ctx)
+    
+    return True

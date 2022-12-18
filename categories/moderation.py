@@ -9,7 +9,11 @@ from utils import checks, helpers, models
 
 plugin = lightbulb.Plugin("Moderation", "Moderation Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":hammer:")
-plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_command_enabled, 
+    checks.strict_concurrency, 
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS),
+)
 
 def get_purge_iterator(
     bot: models.MichaelBot, 

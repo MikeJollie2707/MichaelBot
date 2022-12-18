@@ -138,6 +138,7 @@ plugin.d.emote = helpers.get_emote(":memo:")
 plugin.add_checks(
     checks.is_db_connected,
     checks.is_command_enabled,
+    checks.strict_concurrency,
     lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_GUILD),
     lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS)
 )

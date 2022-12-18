@@ -6,11 +6,15 @@ import hikari
 import lightbulb
 
 from utils import checks, helpers, models, psql
-from utils.checks import is_dev
 
 plugin = lightbulb.Plugin("Secret", "Developer-only commands.", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":computer:")
-plugin.add_checks(is_dev, checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_dev, 
+    checks.is_command_enabled, 
+    checks.strict_concurrency, 
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS),
+)
 
 @plugin.command()
 @lightbulb.option("guild", "Guild to blacklist (recommend ID).", type = hikari.Guild)

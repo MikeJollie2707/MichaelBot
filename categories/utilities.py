@@ -21,7 +21,11 @@ NOTIFY_REFRESH = 2 * 60
 
 plugin = lightbulb.Plugin(name = "Utilities", description = "Utility Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":gear:")
-plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_command_enabled, 
+    checks.strict_concurrency, 
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS),
+)
 
 # TODO: Deal with errors.CustomAPIFailed more appropriately.
 # Currently, it's sending a command-scope error message and a global unhandled message.

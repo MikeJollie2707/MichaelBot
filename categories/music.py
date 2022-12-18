@@ -15,7 +15,11 @@ from utils.nav import ButtonNavigator, run_view
 
 plugin = lightbulb.Plugin("Music", description = "Music Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":musical_note:")
-plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_command_enabled, 
+    checks.strict_concurrency, 
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS),
+)
 
 MUSIC_EMOTES = {
     "pause": helpers.get_emote(":pause_button:"),

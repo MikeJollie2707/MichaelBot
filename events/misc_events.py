@@ -111,7 +111,6 @@ async def on_shard_ready(event: hikari.ShardReadyEvent):
     
     logger.info("Bot is now ready to go!")
 
-
 @plugin.listener(hikari.GuildJoinEvent)
 async def on_guild_join(event: hikari.GuildJoinEvent):
     bot: models.MichaelBot = event.app
@@ -148,6 +147,15 @@ async def on_guild_message(event: hikari.GuildMessageCreateEvent):
     
     if msg.content.startswith('/'):
         await event.app.rest.create_message(event.channel_id, "L, you just got slashed phone user.", reply = msg.id, mentions_reply = True)
+
+@plugin.listener(lightbulb.CommandCompletionEvent)
+async def on_command_complete(event: lightbulb.CommandCompletionEvent):
+    # This event is not needed when concurrency can be handled correctly by the lib.
+    bot: models.MichaelBot = event.app
+    command = event.command
+    # Remove concurrency
+    if command.max_concurrency:
+        bot.custom_command_concurrency_session.release_session(event.context)
 
 @plugin.listener(hikari.StoppingEvent)
 async def on_stopping(event: hikari.StoppingEvent):

@@ -12,7 +12,11 @@ from utils.funtext import pekofy, uwuify
 
 plugin = lightbulb.Plugin("Fun", description = "Fun Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":grin:")
-plugin.add_checks(checks.is_command_enabled, lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS))
+plugin.add_checks(
+    checks.is_command_enabled, 
+    checks.strict_concurrency, 
+    lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS)
+)
 
 @plugin.command()
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.UserBucket)

@@ -54,6 +54,11 @@ async def on_nsfw_channel(event: lightbulb.CommandErrorEvent, _: lightbulb.NSFWC
 
     await event.context.respond(f"{event.context.author.mention}", embed = embed, user_mentions = True, flags = hikari.MessageFlag.EPHEMERAL)
 async def on_check_failed(event: lightbulb.CommandErrorEvent, exception: lightbulb.CheckFailure):
+    if exception.__cause__:
+        if type(exception.__cause__) in __handler_mapping:
+            event.context.app.dispatch(lightbulb.CommandErrorEvent(event.context.app, exception.__cause__, event.context))
+            return
+    
     embed = __get_generic_error_embed()
     embed.description = f":warning: **Command `{event.context.command.qualname}` does not satisfy the following requirement: {exception.args[0]}.**"
 
