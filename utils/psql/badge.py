@@ -1,9 +1,13 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 import logging
 
 from utils.psql._base import *
 
 @dataclasses.dataclass(slots = True)
-class Badge(_BaseSQLObject):
+class Badge(BaseSQLObject):
     id: str
     sort_id: int
     name: str

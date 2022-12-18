@@ -96,7 +96,7 @@ Type: `Prefix Command`, `Slash Command`
 
 View or edit the bot prefix for the guild. This only affects Prefix Commands.
 
-Type: `Prefix Command`, `Slash Command`
+Type: `Prefix Command`
 
 Cooldown: 5 seconds after 1 use per guild.
 
@@ -108,11 +108,11 @@ Additional Info:
 
 - Author needs to have `Manage Server` permission.
 
-## `report <type> <*reason>`
+## `report`
 
 Report a bug or suggest a feature for the bot. Please be constructive.
 
-Type: `Prefix Command`, `Slash Command` (recommended).
+Type: `Prefix Command`, `Slash Command`.
 
 Cooldown: 5 seconds after 1 use per user.
 
@@ -121,4 +121,4 @@ Parameters:
 - `type`: The type of report you're making. Either `bug` or `suggest`.
 - `reason`: The content you're trying to send.
 
-*Last updated on Jul 25, 2022*
+*Last updated on Dec 17, 2022*

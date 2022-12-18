@@ -1,7 +1,11 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 from utils.psql._base import *
 
 @dataclasses.dataclass(slots = True)
-class Inventory(_BaseSQLObject):
+class Inventory(BaseSQLObject):
     '''Represent an entry in the `UserInventory` table along with possible operations related to the table.'''
 
     user_id: int

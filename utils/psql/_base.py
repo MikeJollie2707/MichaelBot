@@ -6,10 +6,12 @@ import asyncpg
 
 __all__ = (
     # No need to re-import these later on.
-    "dataclasses",
-    "logging",
-    "t",
-    "asyncpg",
+    # BUG: Because for some reasons, griffe can't build docs if I try to from _base import *,
+    # I'll need to comment this out.
+    #"dataclasses",
+    #"logging",
+    #"t",
+    #"asyncpg",
 
     "logger",
     "record_to_type",
@@ -18,7 +20,7 @@ __all__ = (
     "_get_all",
     "_get_one",
     "run_and_return_count",
-    "_BaseSQLObject"
+    "BaseSQLObject"
 )
 
 logger = logging.getLogger("MichaelBot")
@@ -38,8 +40,8 @@ def record_to_type(record: asyncpg.Record, /, result_type: t.Type[T] = dict) -> 
     result_type : t.Type
         The type to convert to. The type must be a dataclass or an object that can be initialized via kwargs or a `dict`. Default to `dict`.
 
-    Return
-    ------
+    Returns
+    -------
     t.Optional[T]
         Either `None` or `result_type`.
     '''
@@ -215,7 +217,7 @@ async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kw
         return None
 
 @dataclasses.dataclass(slots = True)
-class _BaseSQLObject:
+class BaseSQLObject:
     '''The base class of all SQL objects defined in this module.
     
     This class contains generic functions that all SQL classes will provide.
@@ -293,10 +295,6 @@ class _BaseSQLObject:
         -------
         t.Self | dict | None
             Either the object itself or `dict`, depending on `as_dict`. If not existed, `None` is returned.
-        
-        Notes
-        -----
-        This must be overridden by the subclasses.
 
         Raises
         ------
@@ -304,6 +302,10 @@ class _BaseSQLObject:
             The needed keyword is not present in `**kwargs`.
         NotImplementedError
             This function is required to be overridden in subclasses.
+        
+        Notes
+        -----
+        This must be overridden by the subclasses.
         '''
 
         raise NotImplementedError
@@ -328,7 +330,7 @@ class _BaseSQLObject:
         TypeError
             `obj` does not inherit from `__BaseSQLObject`.
         '''
-        if not isinstance(obj, _BaseSQLObject):
+        if not isinstance(obj, BaseSQLObject):
             raise TypeError(f"Type '{type(obj)}' is not a subtype of '__BaseSQLObject'")
         
         query = insert_into_query(cls._tbl_name, len(obj.__slots__))
@@ -348,10 +350,6 @@ class _BaseSQLObject:
         -------
         int
             The amount of entries deleted.
-        
-        Notes
-        -----
-        This must be overridden by the subclasses.
 
         Raises
         ------
@@ -359,6 +357,10 @@ class _BaseSQLObject:
             The needed keyword is not present in `**kwargs`.
         NotImplementedError
             This function is required to be overridden in subclasses.
+        
+        Notes
+        -----
+        This must be overridden by the subclasses.
         '''
 
         raise NotImplementedError
@@ -383,12 +385,6 @@ class _BaseSQLObject:
         -------
         int
             The amount of entries updated.
-        
-        Notes
-        -----
-        When overriding this function, it's required to call the root's version before doing any updating. This is to apply the `_PREVENT_UPDATE` check.
-        This function is rather special, as it'll return 0 if the `_PREVENT_UPDATE` check failed, 1 otherwise. The return value doesn't relate to the amount of entries affected.
-        I'm pretty sure this is bad design but I don't know how to "inject" the check otherwise.
 
         Raises
         ------
@@ -396,6 +392,12 @@ class _BaseSQLObject:
             The needed kw is not present in `**kwargs`.
         NotImplementedError
             This function is required to be overridden in subclasses.
+        
+        Notes
+        -----
+        When overriding this function, it's required to call the root's version before doing any updating. This is to apply the `_PREVENT_UPDATE` check.
+        This function is rather special, as it'll return 0 if the `_PREVENT_UPDATE` check failed, 1 otherwise. The return value doesn't relate to the amount of entries affected.
+        I'm pretty sure this is bad design but I don't know how to "inject" the check otherwise.
         '''
         
         for column in column_value_pair:

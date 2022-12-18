@@ -1,10 +1,14 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 import logging
 
 from utils.psql._base import *
 
 
 @dataclasses.dataclass(slots = True)
-class Item(_BaseSQLObject):
+class Item(BaseSQLObject):
     '''Represent an entry in the `Items` table along with possible operations related to the table.
 
     This is mostly used for the bot's cache purpose. If you're using this directly in a code, you're probably doing it wrong.

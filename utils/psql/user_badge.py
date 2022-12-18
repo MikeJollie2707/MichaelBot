@@ -1,7 +1,11 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 from utils.psql._base import *
 
 @dataclasses.dataclass(slots = True)
-class UserBadge(_BaseSQLObject):
+class UserBadge(BaseSQLObject):
     '''Represent an entry in the `UserEquipment` table along with possible operations related to the table.
     
     Note that `badge_requirement` is a read-only attribute; it doesn't matter if you try to update it, it'll be ignored because it doesn't belong to this table.

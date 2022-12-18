@@ -2,6 +2,12 @@
 
 Economy Commands
 
+## `badges`
+
+View your badges.
+
+Type: `Prefix Command`, `Slash Command`
+
 ## `balance`
 
 View your balance.
@@ -35,6 +41,18 @@ Parameters:
 - `number`: Your guessing number. Stay within 0-50!
 - `money`: The amount to bet. You'll either lose this or get 2x back. At least 1.
 
+## `chop <location>`
+
+Use your axe to explore the surface.
+
+Type: `Prefix Command`, `Slash Command`
+
+Cooldown: 120 seconds per 5 uses per user.
+
+Parameters:
+
+- `location`: The location to explore. Some places are more dangerous than others.
+
 ## `craft <item> [times = 1]`
 
 Craft various items.
@@ -61,18 +79,6 @@ Additional Info:
 - The higher the daily streak, the better your reward will be.
 - If you don't collect your daily within 48 hours since the last time you collect, your streak will be reset to 1.
 
-## `equip <equipment>`
-
-Equip a tool. Get to work!
-
-Type: `Prefix Command`, `Slash Command` (recommended)
-
-Cooldown: 10 seconds per 1 use per user.
-
-Parameters:
-
-- `equipment`: The equipment's name or alias to equip.
-
 ## `equipments`
 
 View your current equipments.
@@ -81,27 +87,65 @@ Type: `Prefix Command`, `Slash Command`
 
 Cooldown: 10 seconds per 1 use per user.
 
-## `explore`
+## `explore <location>`
 
 Explore the world and get resources by killing monsters. You'll need a sword equipped.
 
-Type: `Prefix Command`, `Slash Command`
+Type: `Prefix Command`, `Slash Command` (recommended)
 
-Cooldown: 300 seconds per 1 use per user.
-
-## `inventory [view_option = compact]`
-
-View your inventory.
-
-Type: `Prefix Command`, `Slash Command`
-
-Cooldown: 10 seconds per 1 use per user.
-
-Aliases: `inv`
+Cooldown: 120 seconds per 4 use per user.
 
 Parameters:
 
-- `view_option`: Options to view inventory. Valid options are `full`, `compact`, and `value`. Default to `compact`.
+- `location`: The location to explore. The deeper you go, the higher the reward and risk.
+
+## `inventory`
+
+View your inventory.
+
+Aliases: `inv`
+
+Additional Info:
+
+- This command only works with subcommands.
+
+### `inventory view [view_option = compact]`
+
+View your inventory.
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 5 seconds per 1 use per user.
+
+Parameters:
+
+- `view_option`: Options to view inventory. Valid options are `compact`, `full`, `safe`, `value`.
+
+### `inventory save <item> [amount = ...]`
+
+Transfer an item from your inventory to a safe spot.
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 10 seconds per 1 use per user.
+
+Parameters:
+
+- `item`: An item in your inventory.
+- `amount`: The amount to transfer. By default, all will be transferred.
+
+### `inventory unsave <item> [amount = 1]`
+
+Transfer an item from the safe spot back to the main inventory.
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 10 seconds per 1 use per user.
+
+Parameters:
+
+- `item`: An item in your extra inventory.
+- `amount`: The amount to transfer. By default, only 1 will be transferred.
 
 ## `market`
 
@@ -137,13 +181,17 @@ Parameters:
 - `item`: The item to sell.
 - `amount`: The amount to sell, or 0 to sell all. Default to 1.
 
-## `mine`
+## `mine <location>`
 
 Mine for resources. You'll need a pickaxe equipped.
 
-Type: `Prefix Command`, `Slash Command`
+Type: `Prefix Command`, `Slash Command` (recommended)
 
-Cooldown: 300 seconds per 1 use per user.
+Cooldown: 120 seconds per 4 use per user.
+
+Parameters:
+
+- `location`: The location to mine. The deeper you go, the higher the reward and risk.
 
 ## `trade`
 
@@ -169,6 +217,50 @@ Cooldown: 1 day per 1 use per user (hard).
 
 Parameters:
 
-- `world`: The world to travel to. Valid options are `overworld` and `nether`.
+- `world`: The world to travel to. Valid options are `overworld`, `nether`, `end`.
 
-*Last updated on Jul 25, 2022*
+## `use`
+
+Use a tool or a potion.
+
+Additional Info:
+
+- This command only works with subcommands.
+
+### `use food <food>`
+
+Use a food item.
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 120 seconds per 10 use per user.
+
+Parameters:
+
+- `food`: The food's name or alias to use.
+
+### `use potion <potion>`
+
+Use a potion.
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 5 seconds per 1 use per user.
+
+Parameters:
+
+- `potion`: The potion's name or alias to use.
+
+### `use tool <equipment>`
+
+Use a tool. Get to work!
+
+Type: `Prefix Command`, `Slash Command` (recommended)
+
+Cooldown: 5 seconds per 1 use per user.
+
+Parameters:
+
+- `equipment`: The equipment's name or alias to use.
+
+*Last updated on Dec 17, 2022*

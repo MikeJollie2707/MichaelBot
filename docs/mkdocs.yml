@@ -38,15 +38,6 @@ nav:
     - Logs: user/logger.md
     - Music: user/music.md
     - Utilities: user/utilities.md
-  - Developer Corner:
-    - econ: dev/econ.md
-    - errors.py: dev/errors.md
-    - funtext.py: dev/funtext.md
-    - help.py: dev/help.md
-    - helpers.py: dev/helpers.md
-    - models.py: dev/models.md
-    - nav: dev/menu.md
-    - psql.py: dev/psql.md
   - Economy:
     - Getting Started: econ/start.md
     - Action Commands: econ/action.md
@@ -56,6 +47,15 @@ nav:
     - Potions: econ/potions.md
     - Safe Inventory: econ/safe_inventory.md
     - Badges: econ/badges.md
+  - Developer Corner:
+    - econ: dev/econ.md
+    - errors.py: dev/errors.md
+    - funtext.py: dev/funtext.md
+    - help.py: dev/help.md
+    - helpers.py: dev/helpers.md
+    - models.py: dev/models.md
+    - nav: dev/menu.md
+    - psql: dev/psql.md
 
 dev_addr: '127.0.0.1:8001'
 

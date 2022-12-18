@@ -2,17 +2,7 @@
 
 Logging commands.
 
-## `log-set`
-
-Set a channel as a log channel.
-
-Type: `Prefix Command`
-
-Additional Info:
-
-- This command doesn't do anything. Please use the subcommands.
-
-### `log-set all [channel = None]`
+## `log-enable [channel = None]`
 
 Set a channel to dump all the logs. This automatically enables logging system.
 
@@ -26,60 +16,25 @@ Additional Info:
 
 - Author needs to have `Manage Server`.
 
-### `log-set option <logging_option>`
-
-Enable a logging option.
-
-Type: `Prefix Command`, `Slash Command` (recommended)
-
-Parameters:
-
-- `logging_option`: Log type to turn on. Check `log-view` to see all options.
-
-Additional Info:
-
-- Author needs to have `Manage Server`.
-- It is recommended to use the `Slash Command` version of the command.
-
-### `log-disable`
-
-Disable logging or part of the logging system.
-
-Type: `Prefix Command`
-
-Additional Info:
-
-- This command doesn't do anything. Please use the subcommands.
-
-### `log-disable all`
+## `log-disable`
 
 Disable logging system.
 
 Type: `Prefix Command`, `Slash Command`
 
-### `log-disable option <logging_option>`
-
-Disable a logging option.
-
-Type: `Prefix Command`, `Slash Command` (recommended)
-
-Parameters:
-
-- `logging_option`: Log type to turn off. Check `log-view` to see all options.
-
 Additional Info:
 
 - Author needs to have `Manage Server`.
-- It is recommended to use the `Slash Command` version of the command.
 
-### `log-view`
+## `log-view`
 
-View all log settings.
+View and configure all log settings.
 
 Type: `Prefix Command`, `Slash Command`
 
 Additional Info:
 
 - Author needs to have `Manage Server`.
+- Only 1 instance of this command can be run in a server at a time.
 
-*Last updated on Apr 1, 2022*
+*Last updated on Dec 17, 2022*

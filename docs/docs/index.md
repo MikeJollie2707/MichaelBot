@@ -43,6 +43,12 @@ Cooldown is applied to a certain target. There are 4 targets a cooldown can appl
 
 **Technical:** Most cooldown are soft; they can be reset by resetting the bot or use some commands to reset. Some cooldown are hard-coded; they're saved within the database and you might need to edit the table (and the cache) to remove it.
 
+### Concurrency
+
+Some commands also have a limited amount of time they can be active at a time. This is referred to as max concurrency, where the command will have a maximum of `n` active sessions. This is common for commands that stays active for more than a few seconds. Usually, the bot will limit to 1 per target (target is same as the target in cooldown).
+
+For example, the command `barter` is a command with a session to listen for any inputs from the user. Therefore, it has a max concurrency of 1 per user. This means the same user can't invoke `barter` again until the command is finished (and any cooldown).
+
 ## Parameters
 
 Many commands require parameters to be passed in. Although the `help` command already provide a good amount of info, it is still limited because it is auto-generated. Note that these are mostly applied to Prefix Commands; Slash Commands is super user-friendly so you might not even need to care about most of these stuffs.

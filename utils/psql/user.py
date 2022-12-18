@@ -1,9 +1,13 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 import datetime as dt
 
 from utils.psql._base import *
 
 @dataclasses.dataclass(slots = True)
-class User(_BaseSQLObject):
+class User(BaseSQLObject):
     '''Represent an entry in the `Users` table along with possible operations related to the table.
 
     It is advised to use the cache in the bot instead. These methods are for mostly cache construction.

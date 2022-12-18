@@ -1,7 +1,11 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 from utils.psql._base import *
 
 @dataclasses.dataclass(slots = True)
-class UserTrade(_BaseSQLObject):
+class UserTrade(BaseSQLObject):
     user_id: int
     trade_id: int
     trade_type: str

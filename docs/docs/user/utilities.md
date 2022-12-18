@@ -87,46 +87,20 @@ Additional Info:
 
 ### `embed interactive`
 
-Create a simple embed with prompts.
-
-Type: `Prefix Command`
-
-Cooldown: 3 seconds after 1 use per user.
-
-Additional Info:
-
-- Bot needs to have `Manage Messages`.
-- This is an alternative to `embed simple`.
-
-
-### `embed interactive2`
-
-Create a simple embed with visual prompts.
-
-Type: `Prefix Command`
-
-Cooldown: 3 seconds after 1 use per user.
-
-Additional Info:
-
-- Bot needs to have `Manage Messages`.
-- This is an alternative to `embed simple`.
-
-## `profile [member = None]`
-
-Information about yourself or another member.
+Create a complex embed with visual prompts.
 
 Type: `Prefix Command`, `Slash Command`
 
-Parameters:
+Cooldown: 10 seconds after 1 use per user.
 
-- `member`: A Discord member. Default to you.
+Additional Info:
+
+- Bot needs to have `Manage Messages`.
+- This is an alternative to `embed simple`.
 
 ## `remindme`
 
 Create a reminder. Make sure your DM is open to the bot.
-
-Type: `None`
 
 Aliases: `rmd`, `notify`, `timer`
 
@@ -183,7 +157,7 @@ Additional Info:
 
 Search a term on urbandictionary.
 
-Type: `Prefix Command`, `Slash Command`
+Type: `Prefix Command`
 
 Cooldown: 5 seconds after 1 use per user.
 
@@ -203,4 +177,4 @@ Parameters:
 
 - `city_name`: The city to check. Example: `Paris`.
 
-*Last updated on Jul 25, 2022*
+*Last updated on Dec 17, 2022*

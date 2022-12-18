@@ -26,11 +26,11 @@ This is a more lazy option if you're tight on food, so you decide whether or not
 
 ## Haste Potion
 
-- **Main Effect:** A 50% chance to roll the drop 5 times and get all of them while mining and chopping.
+- **Main Effect:** A 50% chance to roll the drop 7 times and get all of them while mining and chopping.
 - **Passive Effect:** Lower the maximum damage by 2 while mining.
 - **Durability:** 20
 
-Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.
+Note that because it says "roll", you don't necessarily get x7 rewards, but your probability of getting an item is theoretically x7.
 
 ## Fortune Potion
 
@@ -46,21 +46,21 @@ Note that because it says "roll", you don't necessarily get x5 rewards, but your
 
 ## Strength Potion
 
-- **Main Effect:** A 50% chance to roll the drop 5 times and get all of them while exploring.
+- **Main Effect:** A 50% chance to roll the drop 7 times and get all of them while exploring.
 - **Passive Effect:** Lower the maximum damage by 2 while exploring.
 - **Durability:** 20
 
-Note that because it says "roll", you don't necessarily get x5 rewards, but your probability of getting an item is theoretically x5.
+Note that because it says "roll", you don't necessarily get x7 rewards, but your probability of getting an item is theoretically x7.
 
 ## Looting Potion
 
-- **Main Effect:** A 50% chance to multiply the drop by 4 times while exploring.
+- **Main Effect:** A 50% chance to multiply the drop by 5 times while exploring.
 - **Passive Effect:** Lower the maximum damage by 5 while exploring.
 - **Durability:** 20
 
 ## Luck Potion
 
-- **Main Effect:** A 65% chance to multiplies the drop by 2.25 times (rounded up). Also ensure that 1. If a possible drop is already dropped, it'll then drop `max_amount` and 2. If a possible drop is not dropped, it'll then drop `min_amount`.
+- **Main Effect:** A 65% chance to multiplies the drop by 3 times (rounded up). Also ensure that 1. If a possible drop is already dropped, it'll then drop `max_amount` and 2. If a possible drop is not dropped, it'll then drop `min_amount`.
 - **Passive Effect:** Lower the maximum damage by 10 on all dimensions. As a `Legendary` equipment, this cannot be lost upon death while equipped.
 - **Durability:** 50
 
@@ -68,8 +68,8 @@ This is a powerful potion that basically removes the rate in which most items dr
 
 ## Undying Potion
 
-- **Main Effect:** When the user receives a lethal damage or a damage over 40, there is a 100% chance this potion will activate, negating the said damage to the user. If `Fire Potion` is activated, `Fire Potion` will be prioritized over this potion.
+- **Main Effect:** When the user receives a lethal damage or a damage over 60, there is a 100% chance this potion will activate, negating the said damage to the user. If `Fire Potion` is activated, `Fire Potion` will be prioritized over this potion.
 - **Passive Effect:** While equipped, this potion will allow the user to equip 1 more potion. As a `Legendary` equipment, this cannot be lost upon death while equipped.
 - **Durability:** 20
 
-This is an extremely useful potion that guarantees you to not die, while essentially costing you no potion slot. It also renders some locations no longer dangerous, since most of the damage dealt by those location are typically well over 40. Definitely useful to get.
+This is an extremely useful potion that guarantees you to not die, while essentially costing you no potion slot. It also renders some locations no longer dangerous, since most of the damage dealt by those location are typically well over 60. Definitely useful to get.

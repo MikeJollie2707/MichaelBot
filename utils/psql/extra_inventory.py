@@ -1,7 +1,11 @@
+import dataclasses
+import typing as t
+
+import asyncpg
 from utils.psql._base import *
 
 @dataclasses.dataclass(slots = True)
-class ExtraInventory(_BaseSQLObject):
+class ExtraInventory(BaseSQLObject):
     # Although this class is practically a clone of Inventory, we need to manually define all of them because of default args.
     '''Represent an entry in the `UserExtraInventory` table along with possible operations related to the table.'''
 
