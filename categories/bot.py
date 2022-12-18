@@ -7,6 +7,7 @@ from textwrap import dedent
 import hikari
 import humanize
 import lightbulb
+import miru
 import psutil
 
 from utils import checks, converters, helpers, models
@@ -21,6 +22,46 @@ plugin.add_checks(
     checks.strict_concurrency, 
     lightbulb.bot_has_guild_permissions(*helpers.COMMAND_STANDARD_PERMISSIONS),
 )
+
+class ReportModal(miru.Modal):
+    reason = miru.TextInput(label = "Reason", placeholder = "Enter the report.", style = hikari.TextInputStyle.PARAGRAPH, required = True)
+
+    async def callback(self, context: miru.ModalContext) -> None:
+        report_type = self.title
+        bot = context.bot
+
+        REPORT_CHANNEL = 644339079164723201
+        embed = helpers.get_default_embed(
+            title = report_type.capitalize(),
+            description = self.reason.value,
+            timestamp = dt.datetime.now().astimezone()
+        ).set_author(
+            name = context.author.username,
+            icon = context.author.avatar_url
+        ).set_footer(
+            text = f"Sender ID: {context.author.id}"
+        )
+
+        try:
+            msg = await context.bot.rest.create_message(REPORT_CHANNEL, embed = embed)
+            if self.title.upper() == "SUGGEST":
+                await bot.rest.add_reaction(msg.channel_id, msg, helpers.get_emote(":thumbs_up:"))
+                await bot.rest.add_reaction(msg.channel_id, msg, helpers.get_emote(":thumbs_down:"))
+            
+            # Edit prompting button message.
+            await context.interaction.create_initial_response(hikari.ResponseType.MESSAGE_UPDATE, "Report sent successfully! Thank you.", components = None)
+        except hikari.ForbiddenError:
+            await context.respond("I can't send the report for some reasons. Join the support server and notify them about this, along with whatever you're trying to send.")
+
+class ReportView(miru.View):
+    @miru.button(label = "Bug Report", style = hikari.ButtonStyle.PRIMARY)
+    async def bug_button(self, button: miru.Button, ctx: miru.ViewContext):
+        modal = ReportModal(title = "Bug")
+        await ctx.respond_with_modal(modal)
+    @miru.button(label = "Suggestion", style = hikari.ButtonStyle.PRIMARY)
+    async def suggest_button(self, button: miru.Button, ctx: miru.ViewContext):
+        modal = ReportModal(title = "Suggest")
+        await ctx.respond_with_modal(modal)
 
 # https://www.thepythoncode.com/article/get-hardware-system-information-python
 def get_memory_size(byte: int, /, suffix: str = "B") -> str:
@@ -548,39 +589,16 @@ async def prefix(ctx: lightbulb.Context):
     - It is recommended to use the `Slash Command` version of this command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("reason", "The content you're trying to send.", modifier = helpers.CONSUME_REST_OPTION)
-@lightbulb.option("type", "The type of report you're making. Either `bug` or `suggest`.", choices = ["bug", "suggest"])
 @lightbulb.command("report", f"[{plugin.name}] Report a bug or suggest a feature for the bot. Please be constructive.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def report(ctx: lightbulb.Context):
-    report_type = ctx.options.type
-    reason = ctx.options.reason
     bot: models.MichaelBot = ctx.bot
-
-    REPORT_CHANNEL = 644339079164723201
-    if report_type.upper() == "BUG" or report_type.upper() == "SUGGEST":
-        embed = helpers.get_default_embed(
-            title = report_type.capitalize(),
-            description = reason,
-            timestamp = dt.datetime.now().astimezone()
-        ).set_author(
-            name = ctx.author.username,
-            icon = ctx.author.avatar_url
-        ).set_footer(
-            text = f"Sender ID: {ctx.author.id}"
-        )
-
-        try:
-            msg = await bot.rest.create_message(REPORT_CHANNEL, embed = embed)
-            if report_type.upper() == "SUGGEST":
-                await bot.rest.add_reaction(msg.channel_id, msg, helpers.get_emote(":thumbs_up:"))
-                await bot.rest.add_reaction(msg.channel_id, msg, helpers.get_emote(":thumbs_down:"))
-            await ctx.respond("Report sent successfully! Thank you.", reply = True)
-        except hikari.ForbiddenError:
-            await ctx.respond("I can't send the report for some reasons. Join the support server and notify them about this, along with whatever you're trying to send.", reply = True, mentions_reply = True)
-    else:
-        await bot.reset_cooldown(ctx)
-        await ctx.respond("`type` argument must be either `bug` or `suggest`.", reply = True, mentions_reply = True)
+    
+    # An interaction is required to spawn a modal.
+    view = ReportView()
+    msg_proxy = await ctx.respond("Choose the type of report you're making.", components = view.build(), flags = hikari.MessageFlag.EPHEMERAL)
+    await view.start(await msg_proxy)
+    await view.wait()
 
 def load(bot: lightbulb.BotApp):
     bot.add_plugin(plugin)
