@@ -1777,11 +1777,13 @@ def get_activity_loot(action_type: str, equipment_id: str, location: str, extern
                     amount = rng.min_amount
                 else:
                     amount = rng.max_amount
-                amount *= 3
-            if "fortune_potion" in external_buffs or "nature_potion" in external_buffs:
-                amount *= 4
-            if "looting_potion" in external_buffs:
-                amount *= 5
+            if item_id not in PREVENT_MULTIPLY:
+                if "luck_potion" in external_buffs:
+                    amount *= 3
+                if "fortune_potion" in external_buffs or "nature_potion" in external_buffs:
+                    amount *= 4
+                if "looting_potion" in external_buffs:
+                    amount *= 5
             
             if not reward.get(item_id):
                 reward[item_id] = amount
