@@ -126,25 +126,27 @@ async def help_name_autocomplete(option: hikari.AutocompleteInteractionOption, i
     - Bot needs to have `Manage Messages` permission if used as a Prefix Command.
 '''))
 @lightbulb.add_cooldown(length = 5.0, uses = 1, bucket = lightbulb.UserBucket)
-@lightbulb.option("option", "Additional options. Valid options are `dev`/`development` and `stable`.", choices = ("dev", "development", "stable"), default = "stable")
+@lightbulb.option("log_option", "The type of changes to view.", choices = ("dev", "development", "stable", "balance-changes"), default = "stable")
 @lightbulb.command("changelog", f"[{plugin.name}] Show 10 latest changes to the bot.", auto_defer = True)
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def changelog(ctx: lightbulb.Context):
-    '''
-    Show 10 latest changes to the bot.
-    '''
-    
+    log_option: str = ctx.options.log_option
     bot: models.MichaelBot = ctx.bot
+
+    if log_option.lower() not in ("dev", "development", "stable", "balance-changes"):
+        await bot.reset_cooldown(ctx)
+        await ctx.respond("`option` argument must be either `dev`, `development`, or `stable`.", reply = True, mentions_reply = True)
+        return
 
     if isinstance(ctx, lightbulb.PrefixContext):
         await ctx.event.message.delete()
 
-    if ctx.options.option.lower() == "stable":
+    if log_option.lower() == "stable":
         CHANNEL_ID = 644393721512722432
-    elif ctx.options.option.lower() in ("dev", "development"):
+    elif log_option.lower() in ("dev", "development"):
         CHANNEL_ID = 759288597500788766
-    else:
-        return await ctx.respond("`option` argument must be either `dev`, `development`, or `stable`.", reply = True, mentions_reply = True)
+    elif log_option.lower() == "balance-changes":
+        CHANNEL_ID = 1010230928381067285
     
     channel: hikari.GuildTextChannel = bot.cache.get_guild_channel(CHANNEL_ID)
     if channel is None:
