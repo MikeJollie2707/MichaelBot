@@ -118,8 +118,12 @@ def tool_simulator(tool_id: str, location: str, *, external_buffs: list[str] = N
 
 if __name__ == "__main__":
     #average_loot_value("diamond_sword", "nether")
-    tool_simulator("fragile_star_axe", "End City (End)", 
-        external_buffs=["luck_potion"],
+    tool_simulator("diamond_axe", "Crimson Forest (Nether)", 
+        external_buffs=[
+            #"luck_potion",
+            #"haste_potion",
+            #"nature_potion",
+        ],
         sim_time=200
     )
     #loot_value(loot.__BREW_RECIPE["undying_potion"], False)

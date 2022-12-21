@@ -895,7 +895,7 @@ async def use_potion(ctx: lightbulb.Context):
 @lightbulb.set_help(dedent('''
     - It is recommended to use the `Slash Command` version of this command.
 '''))
-@lightbulb.add_cooldown(length = 120, uses = 10, bucket = lightbulb.UserBucket, algorithm = lightbulb.SlidingWindowCooldownAlgorithm)
+@lightbulb.add_cooldown(length = 120, uses = 12, bucket = lightbulb.UserBucket, algorithm = lightbulb.SlidingWindowCooldownAlgorithm)
 @lightbulb.option("food", "The food's name or alias to use.", type = converters.ItemConverter, autocomplete = food_autocomplete)
 @lightbulb.command("food", f"[{plugin.name}] Use a food item.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
