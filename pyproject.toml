@@ -1,6 +1,22 @@
 [tool.ruff]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP", # Small error fixes
+    "B", # Small error fixes
+    "C",
+    "C4", # Unnecessary comprehensions stuff
+    "TID", # Ban relative import because we need to import from main.py dir
+    #"DTZ003", # ruff==0.0.185
+    "ERA",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+]
 ignore = [
-    "E501", 
-    "F304", # ImportStarUsed
+    "E501". # LineTooLong
+    "F403", # ImportStarUsed
     "F405", # ImportStarUsage
 ]

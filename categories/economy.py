@@ -1,14 +1,13 @@
 import asyncio
 import datetime as dt
 import random
-import typing as t
 from enum import IntFlag, auto
 from textwrap import dedent
 
-import lightbulb
-import miru
 import hikari
 import humanize
+import lightbulb
+import miru
 from lightbulb.ext import tasks
 
 from categories.econ import loot, trader
@@ -1069,14 +1068,14 @@ async def inv_view(ctx: lightbulb.Context):
 @lightbulb.option("amount", "The amount to transfer. By default, all will be transferred.", 
     type = int, 
     min_value = 1,
-    default = loot.MAX_SAFE_SPACE_BASE,
+    default = loot.MAX_SAFE_CAPACITY_BASE,
 )
 @lightbulb.option("item", "An item in your inventory.", autocomplete = item_autocomplete)
 @lightbulb.command("save", f"[{plugin.name}] Transfer an item from your inventory to a safe spot.")
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def inv_save(ctx: lightbulb.Context):
     item: psql.Item = ctx.options.item
-    amount: int = min(max(ctx.options.amount, 1), loot.MAX_SAFE_SPACE_BASE)
+    amount: int = min(max(ctx.options.amount, 1), loot.MAX_SAFE_CAPACITY_BASE)
     bot: models.MichaelBot = ctx.bot
 
     if isinstance(ctx, lightbulb.SlashContext):
@@ -1097,10 +1096,10 @@ async def inv_save(ctx: lightbulb.Context):
             return
         
         slots_count = min(shulker_inv.amount, loot.MAX_SHULKER_EFFECT)
-        max_item_per_slot = loot.MAX_SAFE_SPACE_BASE
-        # Extra shulker boxes will increase the cap per slot.
+        max_item_per_slot = loot.MAX_SAFE_CAPACITY_BASE
+        # Extra shulker boxes will increase the capacity cap per slot.
         if shulker_inv.amount > loot.MAX_SHULKER_EFFECT:
-            max_item_per_slot += loot.SAFE_SPACE_PER_EXTRA_SHULKER * (shulker_inv.amount - loot.MAX_SHULKER_EFFECT)
+            max_item_per_slot += loot.SAFE_CAPACITY_PER_EXTRA_SHULKER * (shulker_inv.amount - loot.MAX_SHULKER_EFFECT)
         
         item_inv = await psql.Inventory.fetch_one(conn, user_id = ctx.author.id, item_id = item.id)
         if not item_inv:
