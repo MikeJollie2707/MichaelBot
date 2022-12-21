@@ -190,7 +190,7 @@ class UserCache:
         await psql.User.update(conn, user)
         self.__user_mapping[user.id] = user
     async def update_from_db(self, conn: asyncpg.Connection, user_id: int):
-        user = await psql.User.get_one(conn, user_id)
+        user = await psql.User.fetch_one(conn, id = user_id)
         if user is None:
             del self.__user_mapping[user_id]
         
@@ -346,7 +346,7 @@ class CommandActiveSessionManager:
     For command creators, to use this class, simply includes the `checks.strict_concurrency` check on top of `lightbulb.set_max_concurrency()`.
     ```py
     @plugin.command()
-    @lightbulb.add_checks(checks.strict_concurrency)
+    @lightbulb.add_checks(checks.strict_concurrency) # Has to be above `set_max_concurrency()`.
     @lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
     @lightbulb.command(...)
     @lightbulb.implements(...)

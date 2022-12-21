@@ -399,7 +399,7 @@ async def badges(ctx: lightbulb.Context):
             await ctx.respond("*Cricket noises*", reply = True)
             return
         
-        badges = await psql.Badge.get_all(conn)
+        badges = await psql.Badge.fetch_all(conn)
         available_badges: list[psql.Badge] = []
         for badge in badges:
             for ubadge in ubadges:
@@ -444,7 +444,7 @@ async def balance(ctx: lightbulb.Context):
     bot: models.MichaelBot = ctx.bot
 
     async with bot.pool.acquire() as conn:
-        user = await psql.User.fetch_one(conn, user_id = ctx.author.id)
+        user = await psql.User.fetch_one(conn, id = ctx.author.id)
         await ctx.respond(f"You have {CURRENCY_ICON}{user.balance}.")
 
 @plugin.command()
@@ -800,7 +800,7 @@ async def use_tool(ctx: lightbulb.Context):
             return
         
         # Check for equipment type conflict.
-        existed: psql.Equipment = await psql.Equipment.fetch_equipment(conn, user_id = ctx.author.id, item_id = psql.Equipment.get_equipment_type(item.id))
+        existed: psql.Equipment = await psql.Equipment.fetch_equipment(conn, user_id = ctx.author.id, eq_type = psql.Equipment.get_equipment_type(item.id))
         response_str = ""
 
         if existed:
@@ -830,7 +830,7 @@ async def use_tool(ctx: lightbulb.Context):
                     else:
                         response_str += f"and got back the following items: {reward_str}\n"
                 
-                await psql.Equipment.delete(conn, ctx.author.id, existed.item_id)
+                await psql.Equipment.delete(conn, user_id = ctx.author.id, item_id = existed.item_id)
                 await psql.Equipment.transfer_from_inventory(conn, inv)
         else:
             await psql.Equipment.transfer_from_inventory(conn, inv)

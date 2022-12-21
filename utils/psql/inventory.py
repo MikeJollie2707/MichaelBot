@@ -212,7 +212,7 @@ class Inventory(BaseSQLObject):
             return await Inventory.insert_one(conn, inventory)
         
         if inventory.amount <= 0:
-            return await Inventory.delete(conn, user_id = inventory)
+            return await Inventory.delete(conn, user_id = inventory.user_id, item_id = inventory.item_id)
     
         diff_col = {}
         for col in existed_inv.__slots__:
