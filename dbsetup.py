@@ -33,30 +33,26 @@ async def setup_database(user, password, database, host, port):
                 prefix TEXT NOT NULL DEFAULT '$'
             );
         """)
-        
-        await create_table(conn, "GuildsLogs", """
-            CREATE TABLE GuildsLogs (
-                guild_id INT8 UNIQUE NOT NULL,
-                log_channel INT8 DEFAULT NULL,
-                guild_channel_create BOOL NOT NULL DEFAULT TRUE,
-                guild_channel_delete BOOL NOT NULL DEFAULT TRUE,
-                guild_channel_update BOOL NOT NULL DEFAULT TRUE,
-                guild_ban BOOL NOT NULL DEFAULT TRUE,
-                guild_unban BOOL NOT NULL DEFAULT TRUE,
-                guild_update BOOL NOT NULL DEFAULT TRUE,
-                member_join BOOL NOT NULL DEFAULT TRUE,
-                member_leave BOOL NOT NULL DEFAULT TRUE,
-                member_update BOOL NOT NULL DEFAULT TRUE,
-                guild_bulk_message_delete BOOL NOT NULL DEFAULT TRUE,
-                guild_message_delete BOOL NOT NULL DEFAULT TRUE,
-                guild_message_update BOOL NOT NULL DEFAULT TRUE,
-                role_create BOOL NOT NULL DEFAULT TRUE,
-                role_delete BOOL NOT NULL DEFAULT TRUE,
-                role_update BOOL NOT NULL DEFAULT TRUE,
-                command_complete BOOL NOT NULL DEFAULT FALSE,
-                command_error BOOL NOT NULL DEFAULT TRUE,
-                CONSTRAINT fk_guildslogs_guilds
-                    FOREIGN KEY (guild_id) REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE
+
+        await create_table(conn, "LogSettings", """
+            CREATE TABLE LogSettings (
+                id SERIAL PRIMARY KEY,
+                name TEXT UNIQUE NOT NULL
+            );
+        """)
+        await create_table(conn, "GuildLogSettings", """
+            CREATE TABLE GuildLogSettings (
+                guild_id INT8 NOT NULL REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                setting_name TEXT NOT NULL REFERENCES LogSettings(name) ON UPDATE CASCADE ON DELETE CASCADE,
+                is_enabled BOOL NOT NULL DEFAULT TRUE,
+                PRIMARY KEY (guild_id, setting_name)
+            );
+        """)
+        await create_table(conn, "GuildLogs", """
+            CREATE TABLE GuildLogs (
+                guild_id INT8 NOT NULL REFERENCES Guilds(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                log_channel INT8 UNIQUE,
+                PRIMARY KEY (guild_id)
             );
         """)
         
@@ -176,6 +172,28 @@ async def setup_database(user, password, database, host, port):
                 badge_progress INT NOT NULL DEFAULT 0,
                 PRIMARY KEY (user_id, badge_id)
             );
+        """)
+
+        await conn.execute("""
+            INSERT INTO LogSettings (name) VALUES
+                ('guild_channel_create'),
+                ('guild_channel_delete'),
+                ('guild_channel_update'),
+                ('guild_ban'),
+                ('guild_unban'),
+                ('guild_update'),
+                ('member_join'),
+                ('member_leave'),
+                ('member_update'),
+                ('guild_bulk_message_delete'),
+                ('guild_message_delete'),
+                ('guild_message_update'),
+                ('role_create'),
+                ('role_delete'),
+                ('role_update'),
+                ('command_complete'),
+                ('command_error')
+            ON CONFLICT DO NOTHING;
         """)
 
     except Exception as e:

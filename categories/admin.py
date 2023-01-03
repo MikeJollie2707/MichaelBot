@@ -204,6 +204,8 @@ async def cache_view_log(ctx: lightbulb.Context):
 
     log_cache = bot.log_cache.get(guild_id)
     if log_cache is not None:
+        log_settings = log_cache.settings_dict_view
+        log_cache.log_settings = []
         embed = helpers.get_default_embed(
             title = "Log Cache View",
             author = ctx.author,
@@ -211,6 +213,9 @@ async def cache_view_log(ctx: lightbulb.Context):
         ).add_field(
             name = "Log Module",
             value = f"```{psql.asdict(log_cache)}```"
+        ).add_field(
+            name = "Settings",
+            value = f"```{log_settings}```"
         )
         await ctx.respond(embed = embed, reply = True)
     else:

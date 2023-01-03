@@ -1,9 +1,9 @@
+import asyncio
 import datetime as dt
 import typing as t
 from io import StringIO
 from textwrap import dedent
 
-import asyncio
 import hikari
 import humanize
 import lightbulb
@@ -122,14 +122,15 @@ def is_loggable(event: hikari.Event):
     if log_cache is None: return False
     if type(event) not in __EVENT_OPTION_MAPPING: return False
     if log_cache.log_channel is None: return False
-    if getattr(log_cache, __EVENT_OPTION_MAPPING[type(event)]) is None: return False
 
     channel = bot.cache.get_guild_channel(log_cache.log_channel)
     if channel is None: return False
 
+    enabled_log_settings = [setting.setting_name for setting in log_cache.log_settings if setting.is_enabled]
+
     is_text_channel = channel.type == hikari.ChannelType.GUILD_TEXT
     has_send_message = bot_has_permission_in(bot, channel, hikari.Permissions.SEND_MESSAGES)
-    option_enabled = getattr(log_cache, __EVENT_OPTION_MAPPING[type(event)])
+    option_enabled = __EVENT_OPTION_MAPPING[type(event)] in enabled_log_settings
 
     return is_text_channel and has_send_message and option_enabled
 
@@ -172,6 +173,7 @@ async def log_enable(ctx: lightbulb.Context):
     async with bot.pool.acquire() as conn:
         log_cache = bot.log_cache.get(ctx.guild_id)
         if log_cache is None:
+            # We need to include the settings here so we can update cache if needed.
             existed = await psql.GuildLog.fetch_one(conn, guild_id = ctx.guild_id)
             if existed is None:
                 existed = psql.GuildLog(ctx.guild_id, channel.id)
@@ -182,7 +184,7 @@ async def log_enable(ctx: lightbulb.Context):
             log_cache = existed
         
         log_cache.log_channel = channel
-        await bot.log_cache.update(conn, log_cache)
+        await bot.log_cache.update(conn, log_cache, update_settings = False)
             
     
     await ctx.respond(f"Set channel {channel.mention} as a logging channel.", reply = True)
@@ -201,7 +203,7 @@ async def log_disable(ctx: lightbulb.Context):
     if log_cache is not None:
         log_cache.log_channel = None
         async with bot.pool.acquire() as conn:
-            await bot.log_cache.update(conn, log_cache)
+            await bot.log_cache.update(conn, log_cache, update_settings = False)
     else:
         await ctx.respond("Logging is already disabled.", reply = True, mentions_reply = True)
         return
@@ -293,10 +295,10 @@ async def log_view(ctx: lightbulb.Context):
                 embed.description += "Select a button to toggle between enable and disable.\n"
                 for event in __EVENT_GROUPING[sub_view_value]: # Already check for valid interaction option, no need to check in-bound.
                     friendly_name = __EVENT_FRIENDLY[event]
-                    attr_name = __EVENT_OPTION_MAPPING[event]
+                    event_name = __EVENT_OPTION_MAPPING[event]
                     sub_view.add_item(miru.Button(style = hikari.ButtonStyle.PRIMARY, label = friendly_name, custom_id = BUTTON_PREFIX_ID + __EVENT_OPTION_MAPPING[event]))
 
-                    embed.description += f"- `{friendly_name}`: {'✅' if getattr(log_cache, attr_name) else '❌'}\n"
+                    embed.description += f"- `{friendly_name}`: {'✅' if log_cache.settings_dict_view.get(event_name) else '❌'}\n"
                 sub_view.add_item(return_button)
                 
                 await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
@@ -304,31 +306,39 @@ async def log_view(ctx: lightbulb.Context):
             
             elif interaction.custom_id.startswith(BUTTON_PREFIX_ID):
                 # Remove the prefix.
-                attr_name = interaction.custom_id[len(BUTTON_PREFIX_ID):]
+                event_name = interaction.custom_id[len(BUTTON_PREFIX_ID):]
                 
-                if attr_name == "return":
+                if event_name == "return":
                     embed.description = main_description
                     await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
                     await msg_proxy.edit(embed = embed, components = main_view.build())
                     
                     continue
-                elif attr_name == "submit":
+                elif event_name == "submit":
                     async with bot.pool.acquire() as conn:
                         await bot.log_cache.update(conn, log_cache)
                     await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
                     await msg_proxy.edit("Successfully updated! ✅", embeds = None, components = None)
                     
                     return
-
-                setattr(log_cache, attr_name, not getattr(log_cache, attr_name))
+                
+                # Find where the setting is in the list.
+                index: int = -1
+                for i, setting in enumerate(log_cache.log_settings):
+                    if event_name == setting.setting_name:
+                        index = i
+                        break
+                if index == -1:
+                    raise RuntimeError("Can't find the event in the event list.")
+                log_cache.log_settings[index].is_enabled = not log_cache.log_settings[index].is_enabled
                 
                 embed.description = f"**{sub_view_value.capitalize()} events:**\n"
                 embed.description += "Select a button to toggle between enable and disable.\n"
                 for event in __EVENT_GROUPING[sub_view_value]: # Already check for valid interaction option, no need to check in-bound.
                     friendly_name = __EVENT_FRIENDLY[event]
-                    attr_name = __EVENT_OPTION_MAPPING[event]
+                    event_name = __EVENT_OPTION_MAPPING[event]
 
-                    embed.description += f"- `{friendly_name}`: {'✅' if getattr(log_cache, attr_name) else '❌'}\n"
+                    embed.description += f"- `{friendly_name}`: {'✅' if log_cache.settings_dict_view.get(event_name) else '❌'}\n"
                 
                 await interaction.create_initial_response(hikari.ResponseType.DEFERRED_MESSAGE_UPDATE)
                 await msg_proxy.edit(embed = embed)
@@ -1441,7 +1451,7 @@ async def on_role_update(event: hikari.RoleUpdateEvent):
 async def on_command_invoke(event: lightbulb.CommandCompletionEvent):
     if is_loggable(event):
         bot: models.MichaelBot = event.app
-        log_channel = bot.log_cache[event.guild_id].log_channel
+        log_channel = bot.log_cache[event.context.guild_id].log_channel
         embed = hikari.Embed(color = COLOR_OTHER)
         log_time = dt.datetime.now().astimezone()
 

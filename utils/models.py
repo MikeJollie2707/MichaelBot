@@ -107,10 +107,24 @@ class LogCache:
         return self.__log_mapping.values()
     
     async def insert(self, conn: asyncpg.Connection, guild: psql.GuildLog):
-        await psql.GuildLog.insert_one(conn, guild.guild_id)
+        await psql.GuildLog.insert_one(conn, guild)
         self.__log_mapping[guild.guild_id] = guild
-    async def update(self, conn: asyncpg.Connection, guild: psql.GuildLog):
-        await psql.GuildLog.update(conn, guild)
+    async def update(self, conn: asyncpg.Connection, guild: psql.GuildLog, *, update_settings: bool = True):
+        '''Update the database and cache with this object.
+
+        Parameters
+        ----------
+        conn : asyncpg.Connection
+            The connection to use.
+        guild : psql.GuildLog
+            The object to upsert.
+        update_settings : bool, optional
+            Whether or not to also update `.log_settings`, by default True. If `False`, this method will ignore `.log_settings`, which can be faster.
+        '''
+        async with conn.transaction():
+            await psql.GuildLog.update(conn, guild)
+            if update_settings:
+                await psql.GuildLog.update_settings(conn, guild)
         self.__log_mapping[guild.guild_id] = guild
     async def update_from_db(self, conn: asyncpg.Connection, guild_id: int):
         guild = await psql.GuildLog.fetch_one(conn, guild_id = guild_id)

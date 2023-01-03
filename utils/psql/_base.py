@@ -123,7 +123,7 @@ def update_query(table_name: str, columns: t.Sequence[str]) -> tuple[str, int]:
 
     return (f"UPDATE {table_name} SET {arg_str} ", last_index + 1)
 
-async def _get_all(conn: asyncpg.Connection, query: str, *, where: t.Callable[[T], bool] = lambda r: True, result_type: t.Type[T] = dict) -> list[T]:
+async def _get_all(conn: asyncpg.Connection, query: str, *args, where: t.Callable[[T], bool] = lambda r: True, result_type: type[T] = dict) -> list[T]:
     '''Run a `SELECT` statement and return a list of objects.
 
     This should NOT be used outside of the module. Instead, use `table_name.get_all()`.
@@ -135,6 +135,8 @@ async def _get_all(conn: asyncpg.Connection, query: str, *, where: t.Callable[[T
     query : str 
         The `SELECT` statement to run. This should not contain `WHERE` clause.
         Conditions should be set in `where` parameter.
+    *args : tuple
+        Any parameters to be passed into the query.
     where : t.Callable[[dict], bool]
         Additional conditions to filter. By default, no condition is applied (always return `True`).
     result_type : t.Type[T]
@@ -146,7 +148,7 @@ async def _get_all(conn: asyncpg.Connection, query: str, *, where: t.Callable[[T
         A list of `result_type` or empty list.
     '''
 
-    result = await conn.fetch(query)
+    result = await conn.fetch(query, *args)
     records: list[result_type] = []
     record_obj = None
     for record in result:
