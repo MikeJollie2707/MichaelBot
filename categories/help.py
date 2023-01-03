@@ -29,7 +29,7 @@ __COMMAND_GROUPS_TYPES__ = (
     lightbulb.SlashSubGroup
 )
 
-def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequence[t.Type], remove_hidden: bool = False) -> t.List[lightbulb.Command]:
+def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequence[type], remove_hidden: bool = False) -> list[lightbulb.Command]:
     '''Filter commands with one of the type mentioned in `types`.
 
     Parameters
@@ -54,7 +54,7 @@ def filter_command_type(commands: t.Sequence[lightbulb.Command], types: t.Sequen
                 l.append(command)
     return l
 
-def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.List[hikari.Embed]:
+def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> list[hikari.Embed]:
     '''Return a list of formatted embed for a plugin help.
     This list can be passed into a paginator to display.
 
@@ -79,7 +79,7 @@ def plugin_help_format(ctx: lightbulb.Context, plugin: lightbulb.Plugin) -> t.Li
     if isinstance(ctx, lightbulb.SlashContext):
         types = __SLASH_COMMAND_TYPES__
     
-    commands: t.List[lightbulb.Command] = filter_command_type(plugin.all_commands, types, True)
+    commands: list[lightbulb.Command] = filter_command_type(plugin.all_commands, types, True)
     commands.sort(key = lambda command: command.name)
     for index, command in enumerate(commands):
         # Signature includes command name.
@@ -210,7 +210,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
     A custom help command that's tailored for `MichaelBot`.
     '''
     
-    async def send_help(self, ctx: lightbulb.Context, obj: t.Optional[str]) -> None:
+    async def send_help(self, ctx: lightbulb.Context, obj: str | None) -> None:
         '''
         The main logic for the help command.
         '''
@@ -321,7 +321,7 @@ class MenuLikeHelp(lightbulb.DefaultHelpCommand):
         Send a command help.
         '''
         await ctx.respond(embed = command_help_format(ctx, command))
-    async def send_group_help(self, ctx: lightbulb.Context, group: t.Union[lightbulb.commands.PrefixCommandGroup, lightbulb.commands.PrefixSubGroup]) -> None:
+    async def send_group_help(self, ctx: lightbulb.Context, group: lightbulb.commands.PrefixCommandGroup | lightbulb.commands.PrefixSubGroup) -> None:
         '''
         Send a group help.
 

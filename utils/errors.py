@@ -3,6 +3,7 @@
 import hikari
 import lightbulb
 
+
 class CustomAPIFailed(hikari.HTTPError):
     '''Exception raised when a third-party API call failed (not status 200).'''
 

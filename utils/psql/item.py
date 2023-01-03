@@ -2,7 +2,6 @@ import dataclasses
 import typing as t
 
 import asyncpg
-import logging
 
 from utils.psql._base import *
 
@@ -21,7 +20,7 @@ class Item(BaseSQLObject):
     description: str
     rarity: str
     sell_price: int
-    buy_price: t.Optional[int] = None
+    buy_price: int | None = None
     aliases: list[str] = dataclasses.field(default_factory = list)
     durability: int = None
 

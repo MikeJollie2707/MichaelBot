@@ -2,7 +2,9 @@ import dataclasses
 import typing as t
 
 import asyncpg
+
 from utils.psql._base import *
+
 
 @dataclasses.dataclass(slots = True)
 class UserTrade(BaseSQLObject):
@@ -95,7 +97,7 @@ class UserTrade(BaseSQLObject):
         query += f"WHERE user_id = (${index}) AND trade_id = (${index + 1}) AND trade_type = (${index + 2});"
         return await run_and_return_count(conn, query, *(column_value_pair.values()), _user_id, _trade_id, _trade_type)
     @classmethod
-    async def update(conn: asyncpg.Connection, user_trade: t.Self):
+    async def update(cls, conn: asyncpg.Connection, user_trade: t.Self):
         '''Update an entry based on the provided object, or insert if it's not found.
 
         This function calls `fetch_one()` internally, causing an overhead.

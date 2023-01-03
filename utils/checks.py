@@ -4,6 +4,7 @@ import lightbulb
 
 from utils import errors, models, psql
 
+
 @lightbulb.Check
 def is_dev(ctx: lightbulb.Context) -> bool:
     '''

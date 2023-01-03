@@ -7,6 +7,7 @@ import pytimeparse
 
 from utils import models, psql
 
+
 class IntervalConverter(lightbulb.BaseConverter):
     '''A converter to convert a string into a `datetime.timedelta` object.'''
     async def convert(self, arg: str) -> datetime.timedelta:

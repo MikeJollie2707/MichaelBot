@@ -1,10 +1,11 @@
 import dataclasses
+import datetime as dt
 import typing as t
 
 import asyncpg
-import datetime as dt
 
 from utils.psql._base import *
+
 
 @dataclasses.dataclass(slots = True)
 class User(BaseSQLObject):
@@ -18,9 +19,9 @@ class User(BaseSQLObject):
     is_whitelist: bool = True
     balance: int = 0
     world: str = "overworld"
-    last_travel: t.Optional[dt.datetime] = None
+    last_travel: dt.datetime | None = None
     daily_streak: int = 0
-    last_daily: t.Optional[dt.datetime] = None
+    last_daily: dt.datetime | None = None
     health: int = 100
     
     _tbl_name: t.ClassVar[str] = "Users"

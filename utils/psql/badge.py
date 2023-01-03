@@ -2,9 +2,9 @@ import dataclasses
 import typing as t
 
 import asyncpg
-import logging
 
 from utils.psql._base import *
+
 
 @dataclasses.dataclass(slots = True)
 class Badge(BaseSQLObject):

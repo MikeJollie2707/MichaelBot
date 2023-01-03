@@ -166,7 +166,7 @@ async def mock(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.MessageCommand)
 async def peko(ctx: lightbulb.Context):
     message: hikari.Message = ctx.options.target
-    if message.content != None:
+    if message.content:
         text = pekofy(message.content)
         await ctx.respond(text, reply = True)
     else:
@@ -197,7 +197,7 @@ async def uwu(ctx: lightbulb.Context):
     text = ""
     if isinstance(ctx, lightbulb.MessageContext):
         message: hikari.Message = ctx.options.target
-        if message.content != None:
+        if message.content:
             text = uwuify(message.content)
         else:
             await ctx.respond("Oh nyo, rawr this message doesn't have a-any blushes text. (ꈍᴗꈍ)", reply = True, mentions_reply = True)

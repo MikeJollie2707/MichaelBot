@@ -2,7 +2,9 @@ import dataclasses
 import typing as t
 
 import asyncpg
+
 from utils.psql._base import *
+
 
 @dataclasses.dataclass(slots = True)
 class ExtraInventory(BaseSQLObject):

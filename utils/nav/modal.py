@@ -3,6 +3,7 @@ import typing as t
 
 import miru
 
+
 class ModalWithCallback(miru.Modal):
     '''A class to create Discord modal.
 
@@ -12,7 +13,7 @@ class ModalWithCallback(miru.Modal):
     To attach callbacks, use `as_...()` methods (you can use it as a decorator).
     '''
 
-    def __init__(self, title: str, *, custom_id: t.Optional[str] = None, timeout: t.Optional[t.Union[float, int, dt.timedelta]] = 300) -> None:
+    def __init__(self, title: str, *, custom_id: str | None = None, timeout: float | int | dt.timedelta | None = 300) -> None:
         super().__init__(title, custom_id=custom_id, timeout=timeout)
         self.__callback = None
         self.__timeout = None
@@ -25,7 +26,7 @@ class ModalWithCallback(miru.Modal):
         self.__timeout = callback
     def as_check(self, callback: t.Callable[[miru.ModalContext], t.Awaitable[bool]]):
         self.__check = callback
-    def as_error(self, callback: t.Callable[[Exception, t.Optional[miru.ModalContext]], t.Awaitable[None]]):
+    def as_error(self, callback: t.Callable[[Exception, miru.ModalContext | None], t.Awaitable[None]]):
         self.__on_error = callback
     
     async def callback(self, context: miru.ModalContext) -> None:
@@ -40,7 +41,7 @@ class ModalWithCallback(miru.Modal):
         if self.__check:
             return await self.__check(context)
         return await super().modal_check(context)
-    async def on_error(self, error: Exception, context: t.Optional[miru.ModalContext] = None) -> None:
+    async def on_error(self, error: Exception, context: miru.ModalContext | None = None) -> None:
         if self.__on_error:
             return await self.__on_error(error, context)
         return await super().on_error(error, context)

@@ -13,6 +13,7 @@ import lightbulb
 
 from utils import psql
 
+
 class GuildCache:
     '''A wrapper around `dict[str, psql.Guild]`
 
@@ -238,7 +239,7 @@ class ItemCache:
         '''Return a copy of the item matching the item's id.'''
 
         return copy.deepcopy(self.__item_mapping[item_id])
-    def get(self, item_id: str) -> t.Optional[psql.Item]:
+    def get(self, item_id: str) -> psql.Item | None:
         '''Return a copy of the item matching the item's id, or `None` if none was found.'''
 
         return copy.deepcopy(self.__item_mapping.get(item_id))
@@ -384,9 +385,9 @@ class CommandActiveSessionManager:
     # When the command finish, we increase the count by 1.
 
     _active_session_mapping: dict[str, dict[int, int]] = field(default_factory = dict)
-    _bucket_storing: dict[str, tuple[int, t.Type[lightbulb.Bucket]]] = field(default_factory = dict)
+    _bucket_storing: dict[str, tuple[int, type[lightbulb.Bucket]]] = field(default_factory = dict)
 
-    def _register(self, qualname: str, uses: int, bucket: t.Type[lightbulb.Bucket]):
+    def _register(self, qualname: str, uses: int, bucket: type[lightbulb.Bucket]):
         '''Register a command to this manager.
 
         Parameters
@@ -498,7 +499,7 @@ class MichaelBot(lightbulb.BotApp):
         prefix = None, 
         ignore_bots = True, 
         owner_ids: t.Sequence[int] = (), 
-        default_enabled_guilds: t.Union[int, t.Sequence[int]] = (), 
+        default_enabled_guilds: int | t.Sequence[int] = (), 
         help_class = None, 
         help_slash_command = False, 
         delete_unbound_commands = True, 
@@ -518,8 +519,8 @@ class MichaelBot(lightbulb.BotApp):
         
         self.online_at: dt.datetime = None
 
-        self.pool: t.Optional[asyncpg.Pool] = None
-        self.aio_session: t.Optional[aiohttp.ClientSession] = None
+        self.pool: asyncpg.Pool | None = None
+        self.aio_session: aiohttp.ClientSession | None = None
 
         # Store some db info. This allows read-only operation much cheaper.
         self.guild_cache = GuildCache()
@@ -529,7 +530,7 @@ class MichaelBot(lightbulb.BotApp):
 
         self.custom_command_concurrency_session = CommandActiveSessionManager()
 
-        self.lavalink: t.Optional[lavaplayer.LavalinkClient] = None
+        self.lavalink: lavaplayer.LavalinkClient | None = None
         # Currently lavaplayer doesn't support adding attr to lavaplayer.objects.Node
         # so we'll make a dictionary to manually track additional info.
         self.node_extra: dict[int, NodeExtra] = {}
@@ -561,7 +562,7 @@ class MichaelBot(lightbulb.BotApp):
             **kwargs
         )
     
-    def get_slash_command(self, name: str) -> t.Optional[lightbulb.SlashCommand]:
+    def get_slash_command(self, name: str) -> lightbulb.SlashCommand | None:
         '''Get the slash command with the given name, or `None` if none was found.
 
         Unlike the default behavior in `lightbulb.BotApp`, this also searches for subcommands.
@@ -586,11 +587,7 @@ class MichaelBot(lightbulb.BotApp):
         if not isinstance(maybe_group, lightbulb.SlashCommandGroup):
             return None
 
-        this: t.Optional[
-            t.Union[
-                lightbulb.SlashCommandGroup, lightbulb.SlashSubGroup, lightbulb.SlashSubCommand
-            ]
-        ] = maybe_group
+        this: lightbulb.SlashCommandGroup | lightbulb.SlashSubGroup | lightbulb.SlashSubCommand | None = maybe_group
         for part in parts:
             if this is None or isinstance(this, lightbulb.SlashSubCommand):
                 return None

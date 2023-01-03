@@ -2,9 +2,11 @@
 
 import asyncio
 import sys
+
 import asyncpg
 
 from main import load_info
+
 
 async def create_table(conn: asyncpg.Connection, table_name: str, query: str):
     print(f"Creating {table_name} table...", end = '')

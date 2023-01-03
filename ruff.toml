@@ -1,4 +1,3 @@
-[tool.ruff]
 select = [
     "E",
     "F",
@@ -8,7 +7,7 @@ select = [
     "C",
     "C4", # Unnecessary comprehensions stuff
     "TID", # Ban relative import because we need to import from main.py dir
-    #"DTZ003", # ruff==0.0.185
+    "DTZ003",
     "ERA",
     "PLC",
     "PLE",
@@ -16,7 +15,19 @@ select = [
     "PLW",
 ]
 ignore = [
-    "E501". # LineTooLong
+    "E501", # LineTooLong
     "F403", # ImportStarUsed
     "F405", # ImportStarUsage
+    "C901", # FunctionIsTooComplex
 ]
+extend-exclude = [
+    "categories/econ/econ_sim.py",
+    "categories/test.py",
+    "deprecated",
+]
+
+fix = true
+fixable = ["I001", "UP"]
+
+[per-file-ignores]
+"__init__.py" = ["F401", "F403", "F405"]

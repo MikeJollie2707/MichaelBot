@@ -58,6 +58,8 @@ async with pool.acquire() as conn:
 ```
 '''
 
+from dataclasses import asdict
+
 from utils.psql.active_trade import ActiveTrade
 from utils.psql.badge import Badge
 from utils.psql.equipment import Equipment
@@ -68,6 +70,6 @@ from utils.psql.guildlog import GuildLog
 from utils.psql.inventory import Inventory
 from utils.psql.item import Item
 from utils.psql.reminder import Reminders
+from utils.psql.user import User
 from utils.psql.user_badge import UserBadge
 from utils.psql.user_trade import UserTrade
-from utils.psql.user import User

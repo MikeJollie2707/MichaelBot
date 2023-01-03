@@ -1,9 +1,9 @@
 import datetime as dt
-from textwrap import dedent
 import typing as t
+from textwrap import dedent
 
-import lightbulb
 import hikari
+import lightbulb
 
 from utils import checks, helpers, models
 
@@ -24,14 +24,21 @@ def get_purge_iterator(
 ) -> hikari.LazyIterator[hikari.Message]:
     '''Get an iterator of messages based on the criteria specified.
 
-    Args:
-        bot (models.MichaelBot): The bot instance.
-        channel_id (int): The channel to purge.
-        amount (int, optional): The maximum amount of messages to delete. If 0, then there's no max.
-        predicate (Callable[[hikari.Message], bool], optional): A callback that filter out the message to delete. By default, no filter is applied.
+    Parameters
+    ----------
+    bot : models.MichaelBot
+        The bot instance.
+    channel_id : int
+        The channel to purge.
+    amount : int, optional
+        The maximum amount of messages to delete. If 0, then there's no max.
+    predicate : t.Callable[[hikari.Message], bool], optional
+        A callback that filter out the message to delete. By default, no filter is applied.
 
-    Returns:
-        hikari.LazyIterator[hikari.Message]: _description_
+    Returns
+    -------
+    hikari.LazyIterator[hikari.Message]
+        The iterator containing messages to delete.
     '''
     bulk_delete_limit = dt.datetime.now().astimezone() - dt.timedelta(weeks = 2)
     if amount > 0:
@@ -53,13 +60,19 @@ async def do_purge(
 ) -> int:
     '''This is a coroutine. Purge messages using the iterator provided.
 
-    Args:
-        bot (models.MichaelBot): The bot instance.
-        iterator (hikari.LazyIterator[hikari.Message]): An iterator of Message. Should be obtained via `get_purge_iterator()`.
-        channel_id (int): The channel to delete. This must match what is passed through `get_purge_iterator()`.
-    
-    Return:
-        int: The number of messages successfully deleted.
+    Parameters
+    ----------
+    bot : models.MichaelBot
+        The bot instance.
+    iterator : hikari.LazyIterator[hikari.Message]
+        An iterator of `hikari.Message`. Should be obtained via `get_purge_iterator()`.
+    channel_id : int
+        The channel to delete. This must match what is passed through `get_purge_iterator()`.
+
+    Returns
+    -------
+    int
+        The number of messages successfully deleted.
     '''
 
     count: int = 0
@@ -74,6 +87,7 @@ async def do_purge(
         if count >= 1000:
             break
     return count
+
 @plugin.command()
 @lightbulb.set_help(dedent('''
     - The bot can delete messages up to 2 weeks. It can't delete any messages past that point.
@@ -139,7 +153,8 @@ async def purge_member(ctx: lightbulb.Context):
         if isinstance(ctx, lightbulb.PrefixContext) and ctx.author.id == member.id:
             amount += 1
 
-    predicate = lambda m: m.author.id == member.id
+    def predicate(m: hikari.Message) -> bool:
+        return m.author.id == member.id
     
     iterator = get_purge_iterator(bot, ctx.channel_id, predicate = predicate, amount = amount)
     count = await do_purge(bot, iterator, ctx.channel_id)

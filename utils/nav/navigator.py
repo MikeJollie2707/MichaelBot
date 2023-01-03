@@ -11,7 +11,7 @@ from utils import helpers
 
 T = t.TypeVar("T")
 
-async def run_view(view: miru.View, ctx: lightbulb.Context, initial_content: t.Union[str, hikari.Embed] = None) -> None:
+async def run_view(view: miru.View, ctx: lightbulb.Context, initial_content: str | hikari.Embed = None) -> None:
     '''A simplified way to run a `miru.View`.
 
     Parameters
@@ -107,7 +107,7 @@ class ButtonNavigator(nav.NavigatorView):
             A list of ids that are allowed to interact with this view. Default to `None`.
         '''
 
-        self._author_ids: t.Optional[t.Sequence[int]] = kwargs.pop("authors", None)
+        self._author_ids: t.Sequence[int] | None = kwargs.pop("authors", None)
         super().__init__(*args, **kwargs)
 
         for index, item in enumerate(self.pages):

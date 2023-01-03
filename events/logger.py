@@ -1,6 +1,5 @@
 import asyncio
 import datetime as dt
-import typing as t
 from io import StringIO
 from textwrap import dedent
 
@@ -11,7 +10,7 @@ import miru
 
 from utils import checks, helpers, models, psql
 
-__EVENT_OPTION_MAPPING: dict[t.Type[hikari.Event], str] = {
+__EVENT_OPTION_MAPPING: dict[type[hikari.Event], str] = {
     hikari.GuildChannelCreateEvent: "guild_channel_create",
     hikari.GuildChannelDeleteEvent: "guild_channel_delete",
     hikari.GuildChannelUpdateEvent: "guild_channel_update",
@@ -36,7 +35,7 @@ __EVENT_OPTION_MAPPING: dict[t.Type[hikari.Event], str] = {
     lightbulb.SlashCommandErrorEvent: "command_error"
 }
 
-__EVENT_GROUPING: dict[str, list[t.Type[hikari.Event]]] = {
+__EVENT_GROUPING: dict[str, list[type[hikari.Event]]] = {
     "channel": [
         hikari.GuildChannelCreateEvent,
         hikari.GuildChannelDeleteEvent,
@@ -67,7 +66,7 @@ __EVENT_GROUPING: dict[str, list[t.Type[hikari.Event]]] = {
     #]
 }
 
-__EVENT_FRIENDLY: dict[t.Type[hikari.Event], str] = {
+__EVENT_FRIENDLY: dict[type[hikari.Event], str] = {
     hikari.GuildChannelCreateEvent: "Create Channel Events",
     hikari.GuildChannelDeleteEvent: "Delete Channel Events",
     hikari.GuildChannelUpdateEvent: "Update Channel Events",
@@ -109,7 +108,7 @@ def is_loggable(event: hikari.Event):
     # Since most events we're logging are guild-related, they all have `.get_guild()` method.
     if isinstance(event, hikari.RoleEvent):
         guild = bot.cache.get_guild(event.guild_id)
-    elif isinstance(event, lightbulb.CommandCompletionEvent) or isinstance(event, lightbulb.CommandErrorEvent):
+    elif isinstance(event, (lightbulb.CommandCompletionEvent, lightbulb.CommandErrorEvent)):
         guild = event.context.get_guild()
     else:
         guild = event.get_guild()

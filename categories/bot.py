@@ -10,10 +10,9 @@ import lightbulb
 import miru
 import psutil
 
+from categories.economy import CURRENCY_ICON, item_autocomplete
 from utils import checks, converters, helpers, models
 from utils.nav import ButtonNavigator, run_view
-
-from categories.economy import CURRENCY_ICON, item_autocomplete
 
 plugin = lightbulb.Plugin("Bot", description = "Bot-related Commands", include_datastore = True)
 plugin.d.emote = helpers.get_emote(":robot:")
@@ -594,8 +593,6 @@ async def prefix(ctx: lightbulb.Context):
 @lightbulb.command("report", f"[{plugin.name}] Report a bug or suggest a feature for the bot. Please be constructive.")
 @lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def report(ctx: lightbulb.Context):
-    bot: models.MichaelBot = ctx.bot
-    
     # An interaction is required to spawn a modal.
     view = ReportView()
     msg_proxy = await ctx.respond("Choose the type of report you're making.", components = view.build(), flags = hikari.MessageFlag.EPHEMERAL)

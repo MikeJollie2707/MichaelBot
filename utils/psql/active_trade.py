@@ -1,10 +1,11 @@
 import dataclasses
+import datetime as dt
 import typing as t
 
 import asyncpg
-import datetime as dt
 
 from utils.psql._base import *
+
 
 @dataclasses.dataclass(slots = True)
 class ActiveTrade(BaseSQLObject):

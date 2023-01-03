@@ -26,7 +26,7 @@ __all__ = (
 logger = logging.getLogger("MichaelBot")
 T = t.TypeVar('T')
 
-def record_to_type(record: asyncpg.Record, /, result_type: t.Type[T] = dict) -> T | dict | None:
+def record_to_type(record: asyncpg.Record, /, result_type: type[T] = dict) -> T | dict | None:
     '''Convert a `asyncpg.Record` into a `dict` or `None` if the object is already `None`.
 
     This is for convenience purpose, where `dict(Record)` will return `{}` which is not an accurate
@@ -162,7 +162,7 @@ async def _get_all(conn: asyncpg.Connection, query: str, *args, where: t.Callabl
     
     return records
 
-async def _get_one(conn: asyncpg.Connection, query: str, *constraints, result_type: t.Type[T] = dict) -> t.Optional[T]:
+async def _get_one(conn: asyncpg.Connection, query: str, *constraints, result_type: type[T] = dict) -> T | None:
     '''Run a `SELECT` statement and return the first object that matches the constraints.
 
     Parameters
@@ -185,7 +185,7 @@ async def _get_one(conn: asyncpg.Connection, query: str, *constraints, result_ty
     record = await conn.fetchrow(query, *constraints)
     return record_to_type(record, result_type)
 
-async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kwargs) -> t.Optional[int]:
+async def run_and_return_count(conn: asyncpg.Connection, query: str, *args, **kwargs) -> int | None:
     '''Execute an SQL operation and return the number of entries affected.
 
     Warnings
@@ -226,6 +226,14 @@ class BaseSQLObject:
     Some functions will need to be overridden for their specific purposes.
 
     It's required to follow certain behavior laid out in the docstring of each functions (ie. Manually enforce `_PREVENT_UPDATE` check in `update_column()`).
+
+    The following functions will needed to be implemented if used:
+
+    - `fetch_all_where()`
+    - `fetch_one()`
+    - `delete()`
+    - `update_column()`
+    - `update()`
     '''
 
     _tbl_name: t.ClassVar[str]
@@ -333,7 +341,7 @@ class BaseSQLObject:
             `obj` does not inherit from `__BaseSQLObject`.
         '''
         if not isinstance(obj, BaseSQLObject):
-            raise TypeError(f"Type '{type(obj)}' is not a subtype of '__BaseSQLObject'")
+            raise TypeError(f"Type '{type(obj)}' is not a subtype of 'BaseSQLObject'")
         
         query = insert_into_query(cls._tbl_name, len(obj.__slots__))
         return await run_and_return_count(conn, query, *[getattr(obj, attr) for attr in obj.__slots__])

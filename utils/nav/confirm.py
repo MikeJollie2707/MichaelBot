@@ -8,15 +8,16 @@ import miru
 from utils import helpers
 from utils.nav.menu import run_view
 
+
 class ConfirmView(miru.View):
     '''
     A confirmation menu.
     '''
-    def __init__(self, *, timeout: t.Optional[float] = 120, autodefer: bool = True, authors: t.Sequence[int] = None) -> None:
+    def __init__(self, *, timeout: float | None = 120, autodefer: bool = True, authors: t.Sequence[int] = None) -> None:
         self._author_ids = authors
         super().__init__(timeout = timeout, autodefer = autodefer)
 
-        self.result: t.Optional[bool] = None
+        self.result: bool | None = None
     
     async def view_check(self, context: miru.Context) -> bool:
         if not self._author_ids:
@@ -36,7 +37,7 @@ class ConfirmView(miru.View):
         self.result = False
         self.stop()
     
-    async def wait(self) -> t.Optional[bool]:
+    async def wait(self) -> bool | None:
         '''
         Wait until the view times out or stops manually.
 

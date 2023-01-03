@@ -4,11 +4,11 @@ from __future__ import annotations
 import typing as t
 
 import hikari
-import miru
 import lightbulb
+import miru
 
 from utils import helpers
-from utils.nav.navigator import timeout_button, run_view
+from utils.nav.navigator import run_view, timeout_button
 
 PageLike = t.TypeVar("PageLike", str, hikari.Embed)
 
@@ -23,7 +23,7 @@ class MenuComponent:
 
     The child nodes can be accessed using dictionary notation IF there are child nodes.
     '''
-    def __init__(self, content: PageLike, options: t.Union[t.Dict[MenuButton, MenuComponent], list] = None):
+    def __init__(self, content: PageLike, options: dict[MenuButton, MenuComponent] | list = None):
         '''
         Create a node that stores the content and optionally, its options.
         The `options` can be a list, which will set the content to `None` regardless of what is passed.
@@ -31,8 +31,8 @@ class MenuComponent:
         It is recommended to not pass a `dict` through `options`, but instead, use `.add_options()`.
         '''
         self.content = content
-        self.options : t.Union[t.Dict[MenuButton, MenuComponent], list] = options
-        self.__parent__ : t.Optional[MenuComponent] = None
+        self.options : dict[MenuButton, MenuComponent] | list = options
+        self.__parent__ : MenuComponent | None = None
 
         if isinstance(self.options, list):
             self.content = None
@@ -78,7 +78,7 @@ class MenuComponent:
             return self.options[key]
         else:
             raise LookupError("Duplicated keys.")
-    def add_options(self, options: t.Dict[MenuButton, PageLike]):
+    def add_options(self, options: dict[MenuButton, PageLike]):
         '''Add multiple options into the current node.
 
         Warnings
@@ -87,7 +87,7 @@ class MenuComponent:
 
         Parameters
         ----------
-        options : t.Dict[MenuButton, PageLike]
+        options : dict[MenuButton, PageLike]
             A mapping of {button: content}.
 
         Raises
@@ -105,14 +105,14 @@ class MenuComponent:
             self.options[key] = MenuComponent(options[key])
             self.options[key].__parent__ = self
     
-    def add_list_options(self, key: str, contents: t.List[PageLike]) -> MenuComponent:
+    def add_list_options(self, key: str, contents: list[PageLike]) -> MenuComponent:
         '''Append a fake node to this node. Return the newly added node to do whatever you want.
 
         Parameters
         ----------
         key : str
             The button for the new option.
-        contents : t.List[PageLike]
+        contents : list[PageLike]
             A list of content for the new option.
 
         Returns
@@ -141,13 +141,13 @@ class MenuComponent:
         self.options[key] = component
         return component
     
-    def force_add_list_options(self, contents: t.List[PageLike]):
+    def force_add_list_options(self, contents: list[PageLike]):
         '''Turn the current node into a fake node.
         This is also the only way to edit a fake node.
 
         Parameters
         ----------
-        contents : t.List[PageLike]
+        contents : list[PageLike]
             A list of content for the option.
         '''
         if self.options is None:
@@ -157,7 +157,7 @@ class MenuComponent:
             self.options.append(content)
         self.content = None
     
-    def __getitem__(self, key: MenuButton) -> t.Optional[MenuComponent]:
+    def __getitem__(self, key: MenuButton) -> MenuComponent | None:
         '''Return the MenuComponent with the matching key, or `None` if none was found.
 
         Parameters
@@ -167,7 +167,7 @@ class MenuComponent:
 
         Returns
         -------
-        t.Optional[MenuComponent]
+        MenuComponent | None
             The option with matching key, or `None` if none was found.
 
         Raises
@@ -249,13 +249,13 @@ class NextMenuButton(MenuButton):
     def __init__(
         self, 
         *, 
-        style: t.Union[hikari.ButtonStyle, int] = hikari.ButtonStyle.PRIMARY, 
-        label: t.Optional[str] = None, 
+        style: hikari.ButtonStyle | int = hikari.ButtonStyle.PRIMARY, 
+        label: str | None = None, 
         disabled: bool = False, 
-        custom_id: t.Optional[str] = "next_menu_button", 
-        url: t.Optional[str] = None, 
-        emoji: t.Union[hikari.Emoji, str, None] = helpers.get_emote(":arrow_forward:"),
-        row: t.Optional[int] = None
+        custom_id: str | None = "next_menu_button", 
+        url: str | None = None, 
+        emoji: hikari.Emoji | str | None = helpers.DEFAULT_NAV_EMOJIS["next_page"],
+        row: int | None = None
     ) -> None:
         super().__init__(style=style, label=label, disabled=disabled, custom_id=custom_id, url=url, emoji=emoji, row=row)
     
@@ -276,13 +276,13 @@ class PrevMenuButton(MenuButton):
     def __init__(
         self, 
         *, 
-        style: t.Union[hikari.ButtonStyle, int] = hikari.ButtonStyle.PRIMARY, 
-        label: t.Optional[str] = None, 
+        style: hikari.ButtonStyle | int = hikari.ButtonStyle.PRIMARY, 
+        label: str | None = None, 
         disabled: bool = False, 
-        custom_id: t.Optional[str] = "prev_menu_button", 
-        url: t.Optional[str] = None, 
-        emoji: t.Union[hikari.Emoji, str, None] = helpers.get_emote(":arrow_backward:"),
-        row: t.Optional[int] = None
+        custom_id: str | None = "prev_menu_button", 
+        url: str | None = None, 
+        emoji: hikari.Emoji | str | None = helpers.DEFAULT_NAV_EMOJIS["prev_page"],
+        row: int | None = None
     ) -> None:
         super().__init__(style=style, label=label, disabled=disabled, custom_id=custom_id, url=url, emoji=emoji, row=row)
     
@@ -303,13 +303,13 @@ class FirstMenuButton(MenuButton):
     def __init__(
         self, 
         *, 
-        style: t.Union[hikari.ButtonStyle, int] = hikari.ButtonStyle.PRIMARY, 
-        label: t.Optional[str] = None, 
+        style: hikari.ButtonStyle | int = hikari.ButtonStyle.PRIMARY, 
+        label: str | None = None, 
         disabled: bool = False, 
-        custom_id: t.Optional[str] = "first_menu_button", 
-        url: t.Optional[str] = None, 
-        emoji: t.Union[hikari.Emoji, str, None] = helpers.get_emote(":last_track_button:"),
-        row: t.Optional[int] = None
+        custom_id: str | None = "first_menu_button", 
+        url: str | None = None, 
+        emoji: hikari.Emoji | str | None = helpers.DEFAULT_NAV_EMOJIS["first_page"],
+        row: int | None = None
     ) -> None:
         super().__init__(style=style, label=label, disabled=disabled, custom_id=custom_id, url=url, emoji=emoji, row=row)
     
@@ -328,13 +328,13 @@ class LastMenuButton(MenuButton):
     def __init__(
         self, 
         *, 
-        style: t.Union[hikari.ButtonStyle, int] = hikari.ButtonStyle.PRIMARY, 
-        label: t.Optional[str] = None, 
+        style: hikari.ButtonStyle | int = hikari.ButtonStyle.PRIMARY, 
+        label: str | None = None, 
         disabled: bool = False, 
-        custom_id: t.Optional[str] = "last_menu_button", 
-        url: t.Optional[str] = None, 
-        emoji: t.Union[hikari.Emoji, str, None] = helpers.get_emote(":next_track_button:"),
-        row: t.Optional[int] = None
+        custom_id: str | None = "last_menu_button", 
+        url: str | None = None, 
+        emoji: hikari.Emoji | str | None = helpers.DEFAULT_NAV_EMOJIS["last_page"],
+        row: int | None = None
     ) -> None:
         super().__init__(style=style, label=label, disabled=disabled, custom_id=custom_id, url=url, emoji=emoji, row=row)
     
@@ -350,7 +350,7 @@ class LastMenuButton(MenuButton):
         
 class ComplexView(miru.View):
     '''A complex menu.'''
-    def __init__(self, menu: MenuComponent, *, timeout: t.Optional[float] = 120, autodefer: bool = True, authors: t.Sequence[int] = None) -> None:
+    def __init__(self, menu: MenuComponent, *, timeout: float | None = 120, autodefer: bool = True, authors: t.Sequence[int] = None) -> None:
         '''Construct a complex menu.
 
         Parameters

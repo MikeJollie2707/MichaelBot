@@ -160,12 +160,12 @@ def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed
     
     return embed
 
-def mention(mentionable_object: t.Union[hikari.PartialUser, hikari.PartialRole, hikari.TextableGuildChannel], /) -> str:
+def mention(mentionable_object: hikari.PartialUser | hikari.PartialRole | hikari.TextableGuildChannel, /) -> str:
     '''Return the appropriate mention string for a mentionable object.
 
     Parameters
     ----------
-    mentionable_object : t.Union[hikari.PartialUser, hikari.PartialRole, hikari.TextableGuildChannel]
+    mentionable_object : hikari.PartialUser | hikari.PartialRole | hikari.TextableGuildChannel
         The object to mention.
 
     Returns
@@ -197,7 +197,7 @@ async def sleep_until(when: dt.datetime, /):
         await asyncio.sleep(time.total_seconds())
 
 # Default emojis for the navigators and stuffs. Just save it here for now.
-__default_emojis__ = {
+DEFAULT_NAV_EMOJIS = {
     "first_page": get_emote(":last_track_button:"),
     "prev_page": get_emote(":arrow_backward:"),
     "next_page": get_emote(":arrow_forward:"),
