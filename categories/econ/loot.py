@@ -64,14 +64,14 @@ SUDDEN_DEATH_MESSAGES = (
 # Define the maximum healing effect of a food item. This also define what item is considered as food.
 FOOD_HEALING = {
     "rotten_flesh": 1,
-    "mushroom": 10,
-    "apple": 10,
-    "orange": 10,
-    "cherries": 8,
-    "carrot": 14,
-    "bacon": 17,
-    "meat": 20,
-    "chicken": 20,
+    "mushroom": 8,
+    "apple": 8,
+    "orange": 8,
+    "cherries": 7,
+    "carrot": 10,
+    "bacon": 12,
+    "meat": 15,
+    "chicken": 15,
     "gold_apple": 60,
 }
 
