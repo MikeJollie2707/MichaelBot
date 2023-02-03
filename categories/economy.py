@@ -10,6 +10,7 @@ import lightbulb
 import miru
 from lightbulb.ext import tasks
 
+from categories import game
 from categories.econ import loot, trader
 from utils import checks, converters, helpers, models, nav, psql
 
@@ -495,6 +496,133 @@ async def bet(ctx: lightbulb.Context):
         
     rsp += f"Your balance now: {CURRENCY_ICON}{user.balance}."
     await ctx.respond(rsp, reply = True)
+
+@plugin.command()
+@lightbulb.set_max_concurrency(uses = 1, bucket = lightbulb.UserBucket)
+@lightbulb.option("money", "The amount to bet. You'll either lose this or get 3x back. At least 100.", type = int, default = 100, min_value = 100)
+@lightbulb.command("blackjack", f"[{plugin.name}] Play a game of Blackjack (simplified) to win some money (and maybe rewards?).")
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
+async def blackjack(ctx: lightbulb.Context):
+    money: int = max(100, ctx.options.money)
+    bot: models.MichaelBot = ctx.bot
+
+    user = bot.user_cache[ctx.author.id]
+    if user.balance < money:
+        await ctx.respond(f"You don't have enough money to bet {CURRENCY_ICON}{money}!", reply = True, mentions_reply = True)
+        return
+    if user.balance == money:
+        confirm_menu = nav.ConfirmView(timeout = 10, authors = (ctx.author.id, ))
+        resp = await ctx.respond("You're betting all your money right now, are you sure about this?", reply = True, components = confirm_menu.build())
+        await confirm_menu.start(await resp)
+        res = await confirm_menu.wait()
+        if not res:
+            if res is None:
+                await ctx.respond("Confirmation timed out. I'll take it as a \"No\".", reply = True, mentions_reply = True)
+            else:
+                await ctx.respond("Aight stay safe!", reply = True, mentions_reply = True)
+            return
+    
+    session = game.blackjack.BlackjackSession()
+    state = session.start(ctx.author.id)
+    
+    view = miru.View()
+    view.add_item(miru.Button(label = "Draw", custom_id = "draw"))
+    view.add_item(miru.Button(label = "Stand", custom_id = "stand"))
+
+    # Because the session can end immediately after start (win in turn 0),
+    # we have to at least display stuff.
+    player_field = ', '.join([str(card) for card in state.player_hand])
+    dealer_field = ', '.join([str(card) for card in state.dealer_hand])
+    player_field += f"\n**Total:** {game.blackjack.sum_hand(state.player_hand)}"
+    dealer_field += f"\n**Total:** {game.blackjack.sum_hand(state.dealer_hand, filter = lambda c: c._is_revealed)}"
+    embed = helpers.get_default_embed(
+        title = "Blackjack",
+        author = ctx.author,
+    )
+    embed.add_field(
+        name = "Your Hand:",
+        value = player_field,
+        inline = True
+    ).add_field(
+        name = "Dealer Hand:",
+        value = dealer_field,
+        inline = True
+    )
+    proxy = await ctx.respond(embed = embed, components = view.build())
+    msg = await proxy
+
+    def is_valid_interaction(event: hikari.InteractionCreateEvent) -> bool:
+        if not isinstance(event.interaction, hikari.ComponentInteraction):
+            return False
+        
+        return event.interaction.message.id == msg.id and event.interaction.member.id == ctx.author.id
+    while session.is_ongoing():
+        try:
+            event: hikari.InteractionCreateEvent = await bot.wait_for(hikari.InteractionCreateEvent, timeout = 120, predicate = is_valid_interaction)
+            interaction: hikari.ComponentInteraction = event.interaction
+            if interaction.custom_id == "draw":
+                state.player_choice = game.blackjack.PlayerChoice.DRAW
+            else:
+                state.player_choice = game.blackjack.PlayerChoice.STAND
+            
+            session.next(state)
+            
+            player_field = ', '.join([str(card) for card in state.player_hand])
+            dealer_field = ', '.join([str(card) for card in state.dealer_hand])
+            player_field += f"\n**Total:** {game.blackjack.sum_hand(state.player_hand)}"
+            dealer_field += f"\n**Total:** {game.blackjack.sum_hand(state.dealer_hand, filter = lambda c: c.is_revealed)}"
+            embed.edit_field(0,
+                "Your Hand:",
+                player_field,
+                inline = True
+            ).edit_field(1,
+                "Dealer Hand:",
+                dealer_field,
+                inline = True
+            )
+
+            await interaction.create_initial_response(
+                hikari.ResponseType.MESSAGE_UPDATE,
+                embed = embed,
+            )
+        except asyncio.TimeoutError:
+            await msg.edit("Game aborted. I'll just take your money then, k thks!", components = None)
+            return
+    
+    for i in range(len(state.dealer_hand)):
+        state.dealer_hand[i].reveal()
+    
+    player_field = ', '.join([str(card) for card in state.player_hand])
+    dealer_field = ', '.join([str(card) for card in state.dealer_hand])
+    player_field += f"\n**Total:** {game.blackjack.sum_hand(state.player_hand)}"
+    dealer_field += f"\n**Total:** {game.blackjack.sum_hand(state.dealer_hand)}"
+    embed.edit_field(0,
+        "Your Hand:",
+        player_field,
+        inline = True
+    ).edit_field(1,
+        "Dealer Hand:",
+        dealer_field,
+        inline = True
+    )
+    announce: str = ""
+    if session.result == game.blackjack.GameResult.PLAYER_WIN:
+        user = bot.user_cache[ctx.author.id]
+        user.balance += money
+        announce = "You won!"
+    elif session.result == game.blackjack.GameResult.DEALER_WIN:
+        user = bot.user_cache[ctx.author.id]
+        user.balance -= money
+        announce = "Dealer won!"
+    else:
+        announce = "Tied!"
+    
+    async with bot.pool.acquire() as conn:
+        await bot.user_cache.update(conn, user)
+
+    await msg.edit(content = announce, embed = embed, components = None)
+
+    session.end()
 
 @plugin.command()
 @lightbulb.add_checks(checks.is_dev)
