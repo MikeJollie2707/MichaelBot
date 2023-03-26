@@ -470,7 +470,7 @@ async def queue_loop(ctx: lightbulb.Context):
             return
         
         fnode.queue_loop = not fnode.queue_loop
-        if fnode["queue_loop"]:
+        if fnode.queue_loop:
             await ctx.respond(f"{MUSIC_EMOTES['queue_loop']} **Enabled!**", reply = True)
         else:
             await ctx.respond(f"{MUSIC_EMOTES['queue_loop']} **Disabled!**", reply = True)
