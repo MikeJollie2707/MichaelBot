@@ -74,7 +74,7 @@ class UserBadge(BaseSQLObject):
 
         return await _get_one(conn, query, _user_id, _badge_id, result_type = UserBadge if not as_dict else dict)
     @classmethod
-    async def insert_one(conn: asyncpg.Connection, ubadge: t.Self):
+    async def insert_one(cls, conn: asyncpg.Connection, ubadge: t.Self):
         query = insert_into_query("Users_Badges", len(UserBadge.__slots__) - 1)
 
         return await run_and_return_count(conn, query, ubadge.user_id, ubadge.badge_id, ubadge.badge_progress)
