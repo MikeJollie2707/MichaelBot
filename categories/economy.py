@@ -2058,10 +2058,12 @@ async def _trade(ctx: lightbulb.Context):
                 label = f"Trade {trade.id}",
                 value = str(trade.id)
             ))
-    view.add_item(miru.Select(
-        options = options,
-        placeholder = "Select a trade to perform"
-    ))
+    
+    if options:
+        view.add_item(miru.Select(
+            options = options,
+            placeholder = "Select a trade to perform"
+        ))
 
     # Logically this should be ephemeral, but you can't get an ephemeral message object...
     resp = await ctx.respond(embed = embed, components = view.build())
@@ -2074,6 +2076,7 @@ async def _trade(ctx: lightbulb.Context):
         
         return event.interaction.message.id == msg.id and event.interaction.member.id == ctx.author.id
     
+    # Maybe change this to while options cuz we only need to listen if there's trade available?
     while True:
         try:
             event = await bot.wait_for(hikari.InteractionCreateEvent, timeout = 120, predicate = is_select_interaction)
@@ -2164,10 +2167,13 @@ async def _trade(ctx: lightbulb.Context):
                         break
                 
                 view.clear_items()
-                view.add_item(miru.Select(
-                    options = options,
-                    placeholder = "Select a trade to perform"
-                ))
+                if options:
+                    view.add_item(miru.Select(
+                        options = options,
+                        placeholder = "Select a trade to perform"
+                    ))
+                else:
+                    break
             
             try:
                 await msg.edit(embed = embed, components = view.build())
@@ -2250,10 +2256,12 @@ async def _barter(ctx: lightbulb.Context):
                 label = f"Barter {barter.id}",
                 value = str(barter.id)
             ))
-    view.add_item(miru.Select(
-        options = options,
-        placeholder = "Select a barter to perform"
-    ))
+    
+    if options:
+        view.add_item(miru.Select(
+            options = options,
+            placeholder = "Select a barter to perform"
+        ))
 
     # Logically this should be ephemeral, but you can't get an ephemeral message object...
     resp = await ctx.respond(embed = embed, components = view.build())
@@ -2328,10 +2336,13 @@ async def _barter(ctx: lightbulb.Context):
                         break
                 
                 view.clear_items()
-                view.add_item(miru.Select(
-                    options = options,
-                    placeholder = "Select a barter to perform"
-                ))
+                if options:
+                    view.add_item(miru.Select(
+                        options = options,
+                        placeholder = "Select a barter to perform"
+                    ))
+                else:
+                    break
             try:
                 await msg.edit(embed = embed, components = view.build())
             except hikari.NotFoundError:
