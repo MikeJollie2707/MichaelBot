@@ -144,9 +144,6 @@ async def on_guild_message(event: hikari.GuildMessageCreateEvent):
     msg = event.message
     if msg.author.is_bot or event.guild_id != 868449475323101224:
         return
-    
-    if msg.content.startswith('/'):
-        await event.app.rest.create_message(event.channel_id, "L, you just got slashed phone user.", reply = msg.id, mentions_reply = True)
 
 @plugin.listener(lightbulb.CommandCompletionEvent)
 async def on_command_complete(event: lightbulb.CommandCompletionEvent):
