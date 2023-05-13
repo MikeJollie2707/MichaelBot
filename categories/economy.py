@@ -882,7 +882,7 @@ async def daily(ctx: lightbulb.Context):
             bot.user_cache.update_local(user)
 
             daily_loot = loot.get_daily_loot(user.daily_streak)
-            if user.daily_streak % 10 == 0:
+            if user.daily_streak % 5 == 0:
                 daily_loot["streak_freezer"] = 1
             await add_reward_to_user(conn, bot, ctx.author.id, daily_loot)
             response += f"You received: {get_reward_str(bot, daily_loot, option = 'emote')}\n"
