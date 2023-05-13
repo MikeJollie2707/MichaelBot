@@ -2,23 +2,35 @@ select = [
     "E",
     "F",
     "I",
+    "N",
     "UP", # Small error fixes
+    "ANN",
     "B", # Small error fixes
+    "COM",
     "C",
     "C4", # Unnecessary comprehensions stuff
-    "TID", # Ban relative import because we need to import from main.py dir
     "DTZ003",
+    "T201", # Detect print()
+    #"PYI001",
+    "RET",
+    "SIM",
+    "TID", # Ban relative import because we need to import from main.py dir
+    "ARG",
     "ERA",
-    "PLC",
-    "PLE",
-    "PLR",
-    "PLW",
+    "PL",
+    "RUF",
 ]
 ignore = [
     "E501", # LineTooLong
     "F403", # ImportStarUsed
     "F405", # ImportStarUsage
     "C901", # FunctionIsTooComplex
+    "ANN002", # missing-type-args
+    "ANN003", # missing-type-kwargs
+    "ANN101", # missing-type-self
+    "ANN102", # missing-type-cls
+    "ANN204", # missing-return-type-special-method
+    "ANN401", # any-type
 ]
 extend-exclude = [
     "categories/econ/econ_sim.py",

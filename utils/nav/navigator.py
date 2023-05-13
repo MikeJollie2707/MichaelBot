@@ -14,6 +14,8 @@ T = t.TypeVar("T")
 async def run_view(view: miru.View, ctx: lightbulb.Context, initial_content: str | hikari.Embed = None) -> None:
     '''A simplified way to run a `miru.View`.
 
+    Internally, this will call `view.start()`, followed by a `view.wait()`.
+
     Parameters
     ----------
     view : miru.View

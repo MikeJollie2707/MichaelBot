@@ -60,7 +60,7 @@ __RANDOM_ACTIONS = [
     " *whispers to self*",
 ]
 
-def uwuify(text: str, /, *, allow_nyvowels = True, stutter_chance: float = 0.20, emote_chance: float = 0.8, action_chance: float = 0.05) -> str:
+def uwuify(text: str, /, *, allow_nyvowels: bool = True, stutter_chance: float = 0.20, emote_chance: float = 0.8, action_chance: float = 0.05) -> str:
     '''Transform a text into uwu text.
 
     Parameters

@@ -150,12 +150,12 @@ def get_default_embed(*, author: hikari.Member = None, **kwargs) -> hikari.Embed
         url = url,
         description = description,
         color = color,
-        timestamp = timestamp
+        timestamp = timestamp,
     )
     if author is not None:
         embed.set_footer(
             text = f"Requested by {author.username}",
-            icon = author.avatar_url
+            icon = author.avatar_url,
         )
     
     return embed
@@ -184,7 +184,7 @@ def mention(mentionable_object: hikari.PartialUser | hikari.PartialRole | hikari
     
     return mentionable_object.mention
 
-async def sleep_until(when: dt.datetime, /):
+async def sleep_until(when: dt.datetime, /) -> t.Awaitable[None]:
     '''Wait until the specified time.
 
     Parameters
