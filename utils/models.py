@@ -123,7 +123,7 @@ class LogCache:
             Whether or not to also update `.log_settings`, by default True. If `False`, this method will ignore `.log_settings`, which can be faster.
         '''
         async with conn.transaction():
-            await psql.GuildLog.update(conn, guild)
+            await psql.GuildLog.update_except_settings(conn, guild)
             if update_settings:
                 await psql.GuildLog.update_settings(conn, guild)
         self.__log_mapping[guild.guild_id] = guild
@@ -158,7 +158,7 @@ class UserCache:
     '''
 
     def __init__(self) -> None:
-        self.__user_mapping: dict[str, psql.User] = {}
+        self.__user_mapping: dict[int, psql.User] = {}
     
     def __getitem__(self, user_id: int):
         return copy.deepcopy(self.__user_mapping[user_id])
@@ -243,7 +243,7 @@ class ItemCache:
         '''Return a copy of the item matching the item's id, or `None` if none was found.'''
 
         return copy.deepcopy(self.__item_mapping.get(item_id))
-    def get_by_name(self, name_or_alias: str):
+    def get_by_name(self, name_or_alias: str) -> psql.Item | None:
         '''Return a copy of the item matching the item's name or alias, or `None` if none was found.'''
 
         if self.get(name_or_alias):
@@ -336,10 +336,10 @@ class DefaultColor:
             DefaultColor.available_names.append(attr)
 
     @staticmethod
-    def get_color(color: str):
+    def get_color(color: str) -> hikari.Color:
         return getattr(DefaultColor(), color)
     @staticmethod
-    def load():
+    def load() -> None:
         '''Load this class. This will make `available_names` available.
         '''
         _ = DefaultColor()
@@ -387,7 +387,7 @@ class CommandActiveSessionManager:
     _active_session_mapping: dict[str, dict[int, int]] = field(default_factory = dict)
     _bucket_storing: dict[str, tuple[int, type[lightbulb.Bucket]]] = field(default_factory = dict)
 
-    def _register(self, qualname: str, uses: int, bucket: type[lightbulb.Bucket]):
+    def _register(self, qualname: str, uses: int, bucket: type[lightbulb.Bucket]) -> None:
         '''Register a command to this manager.
 
         Parameters
@@ -415,7 +415,7 @@ class CommandActiveSessionManager:
             Whether the command is registered to the manager or not.
         '''
         return bool(self._bucket_storing.get(qualname))
-    def acquire_session(self, ctx: lightbulb.Context):
+    def acquire_session(self, ctx: lightbulb.Context) -> None:
         '''Acquire one session under the context provided.
 
         This session must be released via `CommandActiveSessionManager.release_session()` at some point.
@@ -451,7 +451,7 @@ class CommandActiveSessionManager:
                 raise lightbulb.MaxConcurrencyLimitReached(f"Maximum concurrency limit for command '{qualname}' exceeded.")
             else:
                 self._active_session_mapping[qualname][session_id] -= 1
-    def release_session(self, ctx: lightbulb.Context):
+    def release_session(self, ctx: lightbulb.Context) -> None:
         '''Release one session under the context provided.
 
         Parameters
@@ -470,7 +470,7 @@ class CommandActiveSessionManager:
             ctx_session = self._active_session_mapping[qualname].get(session_id)
             if ctx_session is not None:
                 self._active_session_mapping[qualname][session_id] += 1
-    def clear_all_sessions(self):
+    def clear_all_sessions(self) -> None:
         '''Clear all active sessions.
         This should only be used when there's a major error in this manager.
         '''
@@ -492,7 +492,7 @@ class MichaelBot(lightbulb.BotApp):
         "item_cache",
         "custom_command_concurrency_session",
         "lavalink",
-        "node_extra"
+        "node_extra",
     )
     def __init__(self, 
         token, 
@@ -504,7 +504,7 @@ class MichaelBot(lightbulb.BotApp):
         help_slash_command = False, 
         delete_unbound_commands = True, 
         case_insensitive_prefix_commands = False, 
-        **kwargs
+        **kwargs,
     ) -> None:
         '''
         Parameters

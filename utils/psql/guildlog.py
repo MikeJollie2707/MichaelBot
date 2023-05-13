@@ -416,6 +416,16 @@ class GuildLog(BaseSQLObject):
     async def update(cls, conn: asyncpg.Connection, obj: t.Self) -> int:
         '''Update an entry based on the provided object, or insert if it's not found.
 
+        Warnings
+        --------
+        This function is provided for documentation purpose. It will raise `NotImplementedError`.
+        Use `update_except_settings()` or `update_settings()` instead.
+        '''
+        raise NotImplementedError
+    @classmethod
+    async def update_except_settings(cls, conn: asyncpg.Connection, obj: t.Self) -> int:
+        '''Update an entry based on the provided object, or insert if it's not found.
+
         This function calls `fetch_one()` internally, causing an overhead.
 
         Parameters
@@ -436,7 +446,7 @@ class GuildLog(BaseSQLObject):
         
         diff_col = {}
         for col in existed_log.__slots__:
-            if getattr(existed_log, col) != getattr(obj, col):
+            if col not in cls._PREVENT_UPDATE and getattr(existed_log, col) != getattr(obj, col):
                 diff_col[col] = getattr(obj, col)
         
         return await GuildLog.update_column(conn, diff_col, guild_id = obj.guild_id)
