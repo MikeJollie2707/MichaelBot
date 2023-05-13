@@ -112,7 +112,7 @@ async def purge(ctx: lightbulb.Context):
     lightbulb.has_guild_permissions(hikari.Permissions.MANAGE_MESSAGES)
 )
 @lightbulb.add_cooldown(length = 10.0, uses = 1, bucket = lightbulb.GuildBucket)
-@lightbulb.option("amount", "The amount of messages to delete. Default to all.", type = int, min_value = 0, max_value = 500, default = 0)
+@lightbulb.option("amount", "The amount of messages to delete, or 0 to delete all. Default to 0.", type = int, min_value = 0, max_value = 500, default = 0)
 @lightbulb.command("messages", f"[{plugin.name}] Purge the most recent messages.", inherit_checks = True)
 @lightbulb.implements(lightbulb.PrefixSubCommand, lightbulb.SlashSubCommand)
 async def purge_messages(ctx: lightbulb.Context):

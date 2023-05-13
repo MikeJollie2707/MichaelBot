@@ -222,7 +222,7 @@ async def log_view(ctx: lightbulb.Context):
     # Make sure this is the correct button.
     BUTTON_PREFIX_ID = "log-sub_view-"
 
-    main_description = '\n'.join([f"- **{event_category.capitalize()} Events**" for event_category in __EVENT_GROUPING.keys()])
+    main_description = ''.join([f"- **{event_category.capitalize()} Events**\n" for event_category in __EVENT_GROUPING.keys()])
     embed = helpers.get_default_embed(
         title = f"Log Settings for {ctx.get_guild().name}",
         description = main_description,
