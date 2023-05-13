@@ -154,6 +154,16 @@ async def on_command_complete(event: lightbulb.CommandCompletionEvent):
     if command.max_concurrency:
         bot.custom_command_concurrency_session.release_session(event.context)
 
+@plugin.listener(lightbulb.CommandErrorEvent)
+async def on_command_error(event: lightbulb.CommandErrorEvent):
+    # This event is here to prevent any errors raised in concurrency commands, which would prevent releasing the bucket for further uses.
+    # It's pretty much the same as on_command_complete().
+    bot: models.MichaelBot = event.app
+    command = event.context.command
+
+    if command and command.max_concurrency:
+        bot.custom_command_concurrency_session.release_session(event.context)
+
 @plugin.listener(hikari.StoppingEvent)
 async def on_stopping(event: hikari.StoppingEvent):
     bot: models.MichaelBot = event.app
