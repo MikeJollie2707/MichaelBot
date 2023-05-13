@@ -266,6 +266,15 @@ async def cache_view_item(ctx: lightbulb.Context):
         await ctx.respond("Cache for this item doesn't exist.", reply = True, mentions_reply = True)
 
 @plugin.command()
+@lightbulb.command("drop-all-concurrencies", "Drop all active concurrency sessions.", hidden = True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def drop_all_concurrencies(ctx: lightbulb.Context):
+    bot: models.MichaelBot = ctx.bot
+
+    bot.custom_command_concurrency_session.clear_all_sessions()
+    await ctx.respond("Done!", reply = True)
+
+@plugin.command()
 @lightbulb.option("value_name", "The value's exact name. This should exist in either loot.py or trader.py")
 @lightbulb.command("get-econ-value", "Display secret values of economy setting.", hidden = True)
 @lightbulb.implements(lightbulb.PrefixCommand)
